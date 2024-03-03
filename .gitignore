@@ -17,17 +17,12 @@ npm-debug.log*
 !.vscode/extensions.json
 
 # Android
-/android/*.iml
-/android/.gradle
-/android/local.properties
-/android/.idea/caches
-/android/.idea/libraries
-/android/.idea/shelf
-/android/.idea/modules.xml
-/android/.idea/workspace.xml
-/android/.idea/navEditor.xml
-/android/.idea/assetWizardSettings.xml
-/android/app/build
-/android/captures
-/android/.externalNativeBuild
-/android/.cxx
+*.iml
+.gradle
+local.properties
+.idea
+build
+captures
+.externalNativeBuild
+.cxx
+
