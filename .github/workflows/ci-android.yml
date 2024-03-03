@@ -29,4 +29,3 @@ jobs:
       - name: Run lint
         run: |
           ./gradlew lint
-          cat app/build/reports/lint-results-debug.txt

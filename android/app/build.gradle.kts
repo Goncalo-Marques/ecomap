@@ -36,6 +36,7 @@ android {
 
     lint {
         warningsAsErrors = true
+        textReport = true
     }
 }
 
