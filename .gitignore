@@ -1,11 +1,17 @@
+# Dependencies
+vendor
+node_modules
+
 # Build files
 build
 dist
 bin
 
-# Dependencies
-vendor
-node_modules
+# Generated files
+*.gen.go
+
+# Secrets
+secrets
 
 # Logs
 logs
@@ -15,9 +21,12 @@ npm-debug.log*
 # Editor directories and files
 .vscode
 !.vscode/extensions.json
+.idea
 
-# Generated files
-*.gen.go
-
-# Secrets
-secrets
+# Android
+*.iml
+.gradle
+local.properties
+captures
+.externalNativeBuild
+.cxx

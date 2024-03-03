@@ -10,7 +10,9 @@ The following section focuses on the development part of the project, including 
 
 - [Prerequisites](#prerequisites)
   - [Web App](#web-app)
+  - [Android App](#android-app)
 - [Web App](#web-app-1)
+- [Android App](#android-app-1)
 - [Contributing](#contributing)
 
 ## Prerequisites
@@ -25,6 +27,12 @@ Install the dependencies inside the `web` directory with:
 npm install
 ```
 
+### Android App
+
+The Android application targets Android SDK 34.
+
+Install [Android Studio](https://developer.android.com/studio) before you start contributing to the Android project.
+
 ## Web App
 
 The web application can be found in the `web` directory. It uses [Svelte](https://svelte.dev/).
@@ -34,6 +42,12 @@ The web application contains several scripts to lint, build and run the project.
 ```shell
 npm run
 ```
+
+## Android App
+
+The Android application can be found in the `android` directory.
+
+Use [gradlew](android/gradlew) to lint, build and run the project from the command line.
 
 ## Contributing
 
