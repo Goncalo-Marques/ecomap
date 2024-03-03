@@ -22,9 +22,11 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
+          distribution: "temurin"
+          java-version: "17"
+          cache: "gradle"
 
       - name: Run lint
-        run: ./gradlew lint
+        run: |
+          ./gradlew lint
+          cat app/build/reports/lint-results-debug.txt
