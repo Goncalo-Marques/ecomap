@@ -15,3 +15,14 @@ npm-debug.log*
 # Editor directories and files
 .vscode
 !.vscode/extensions.json
+
+# Android
+*.iml
+.gradle
+local.properties
+.idea
+build
+captures
+.externalNativeBuild
+.cxx
+
