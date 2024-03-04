@@ -19,7 +19,7 @@ The following section focuses on the development part of the project, including 
 
 ### Web App
 
-The web application runs on [Node.js](https://nodejs.org/) version 20.
+The web application runss on [Node.js](https://nodejs.org/) version 20.
 
 Install the dependencies inside the `web` directory with:
 
