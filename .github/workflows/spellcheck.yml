@@ -15,3 +15,5 @@ jobs:
 
       - name: Run spell checker
         uses: streetsidesoftware/cspell-action@v6
+        with:
+          incremental_files_only: false
