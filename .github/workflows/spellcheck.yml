@@ -1,0 +1,17 @@
+name: Check spelling
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  spellcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run spell checker
+        uses: streetsidesoftware/cspell-action@v6
