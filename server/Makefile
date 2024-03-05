@@ -1,7 +1,7 @@
 GOPATH=$(shell go env GOPATH)
 
 LINTER_VERSION=v1.56.2
-OAPI_CODEGEN_VERSION=v2.1.0 # TODO: keep an eye on the new version that uses go1.22
+OAPI_CODEGEN_VERSION=dd08298 # TODO: keep an eye on the new version that uses go1.22
 
 API_SWAGGER_DIR=api/swagger
 API_SWAGGER_PACKAGE=ecomap

@@ -13,7 +13,7 @@ paths:
   /employees/{employeeId}:
     get:
       summary: Get employee by ID.
-      operationId: getEmployeeById
+      operationId: getEmployeeByID
       description: Returns a employee.
       tags:
         - Employee
