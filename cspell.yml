@@ -3,22 +3,23 @@ version: "0.2"
 language: en
 useGitignore: true
 ignoreWords:
-  - ecomap
+  - aapt
   - androidx
   - appcompat
-  - constraintlayout
-  - gradlew
-  - proguard
-  - mipmap
-  - aapt
-  - sharedpref
-  - Compat
   - Avenir
+  - Compat
+  - constraintlayout
+  - ecomap
+  - goncalo
+  - gradlew
+  - mipmap
   - Parens
+  - proguard
+  - sharedpref
 ignorePaths:
+  - "*.svg"
   - gradle
   - gradle.properties
   - gradlew
   - gradlew.bat
   - proguard-rules.pro
-  - "*.svg"
