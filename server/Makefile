@@ -36,7 +36,7 @@ lint:
 	command -v golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin $(LINTER_VERSION)
 	golangci-lint run --timeout=5m
 
-## build: build servre to the dist directory
+## build: build server to the dist directory
 build:
 	go build -o dist/server ./cmd
 
