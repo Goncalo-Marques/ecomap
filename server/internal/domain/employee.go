@@ -7,9 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	ErrEmployeeNotFound = errors.New("employee not found") // Returned when an employee is not found.
-)
+var ErrEmployeeNotFound = errors.New("employee not found") // Returned when an employee is not found.
 
 // EditableEmployee defines the editable employee structure.
 type EditableEmployee struct {
