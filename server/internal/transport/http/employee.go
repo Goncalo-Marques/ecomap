@@ -7,6 +7,7 @@ import (
 
 	spec "github.com/goncalo-marques/ecomap/server/api/swagger/ecomap"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
+	"github.com/goncalo-marques/ecomap/server/internal/logging"
 )
 
 const (
@@ -23,7 +24,7 @@ func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employ
 		case errors.Is(err, domain.ErrEmployeeNotFound):
 			notFound(w, errEmployeeNotFound)
 		default:
-			internalServerError(ctx, w, err)
+			internalServerError(w)
 		}
 
 		return
@@ -33,7 +34,8 @@ func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employ
 
 	responseBody, err := json.Marshal(employee)
 	if err != nil {
-		internalServerError(ctx, w, err)
+		logging.Logger.ErrorContext(ctx, errFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
 		return
 	}
 

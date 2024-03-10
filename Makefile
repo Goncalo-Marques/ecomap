@@ -3,7 +3,10 @@ default:
 
 # TODO: Update readme with docker as requirement (add link to docs) and how to set up secrets
 # TODO: Serve docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/?sbsearch=docker
-# TODO: Use slog from std lib
+# TODO: server router to /api
+# TODO: logging attr badkey
+# TODO: add migrations test docker
+# TODO: docker to api
 
 ## dev: TODO
 dev:

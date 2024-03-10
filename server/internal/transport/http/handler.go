@@ -37,6 +37,10 @@ func New(service Service) *handler {
 	return h
 }
 
+func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.handler.ServeHTTP(w, r)
+}
+
 // setHeaderJSON sets the header with the content type json.
 func setHeaderJSON(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
@@ -21,8 +22,13 @@ func (s *service) GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Emp
 		slog.String(logging.EmployeeID, id.String()),
 	}
 
-	// TODO: create read transaction
-	employee, err := s.store.GetEmployeeByID(ctx, id)
+	var employee domain.Employee
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		employee, err = s.store.GetEmployeeByID(ctx, tx, id)
+		return err
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrEmployeeNotFound):

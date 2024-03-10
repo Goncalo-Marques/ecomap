@@ -1,12 +1,15 @@
 package http
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
 	spec "github.com/goncalo-marques/ecomap/server/api/swagger/ecomap"
-	"github.com/goncalo-marques/ecomap/server/internal/logging"
+)
+
+// Common fault descriptions.
+const (
+	errFailedToMarshalResponseBody = "http: failed to marshal response body"
 )
 
 // Fault code const.
@@ -26,9 +29,8 @@ func notFound(w http.ResponseWriter, message string) {
 	_ = fault(w, http.StatusNotFound, faultCodeNotFound, message)
 }
 
-// internalServerError logs the error and sets the header with the internal server error status code.
-func internalServerError(ctx context.Context, w http.ResponseWriter, err error) {
-	logging.Logger.ErrorContext(ctx, "http: internal server error", logging.Error(err))
+// internalServerError sets the header with the internal server error status code.
+func internalServerError(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
 

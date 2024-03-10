@@ -1,5 +1,8 @@
 GOPATH=$(shell go env GOPATH)
 
+BUILD_GIT_HASH = $(shell git describe --always --dirty)
+BUILD_TIMESTAMP = $(shell TZ="GMT" LC_TIME="en_US.utf8" date)
+
 LINTER_VERSION=v1.56.2
 OAPI_CODEGEN_VERSION=dd08298 # TODO: keep an eye on the new version that uses go1.22
 
@@ -36,9 +39,13 @@ lint:
 	command -v golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin $(LINTER_VERSION)
 	golangci-lint run --timeout=5m
 
+BUILD_FLAGS = "\
+-X 'main.BuildGitHash=$(BUILD_GIT_HASH)'\
+-X 'main.BuildTimestamp=$(BUILD_TIMESTAMP)'"
+
 ## build: build server to the dist directory
 build:
-	go build -o dist/server ./cmd
+	go build -ldflags $(BUILD_FLAGS) -o dist/server ./cmd/server
 
 ## help: print this help message
 help:

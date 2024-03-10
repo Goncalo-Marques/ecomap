@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
@@ -12,7 +13,10 @@ import (
 
 // Store defines the store interface.
 type Store interface {
-	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
+	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
+
+	NewReadOnlyTx(ctx context.Context) (pgx.Tx, error)
+	NewReadWriteTx(ctx context.Context) (pgx.Tx, error)
 }
 
 // handler defines the http handler structure.
@@ -25,6 +29,46 @@ func New(store Store) *service {
 	return &service{
 		store: store,
 	}
+}
+
+// rollbackFunc returns a function to rollback a transaction.
+func rollbackFunc(ctx context.Context, tx pgx.Tx) func() {
+	return func() {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			logging.Logger.ErrorContext(ctx, "service: failed to rollback transaction", logging.Error(err))
+		}
+	}
+}
+
+// readOnlyTx returns a read only transaction wrapper.
+func (s *service) readOnlyTx(ctx context.Context, f func(pgx.Tx) error) error {
+	tx, err := s.store.NewReadOnlyTx(ctx)
+	if err != nil {
+		return err
+	}
+	defer rollbackFunc(ctx, tx)()
+
+	if err := f(tx); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
+}
+
+// readWriteTx returns a read and write transaction wrapper.
+func (s *service) readWriteTx(ctx context.Context, f func(pgx.Tx) error) error {
+	tx, err := s.store.NewReadWriteTx(ctx)
+	if err != nil {
+		return err
+	}
+	defer rollbackFunc(ctx, tx)()
+
+	if err := f(tx); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 // logInfoAndWrapError logs the error at the info level and returns the error wrapped with the provided description.
