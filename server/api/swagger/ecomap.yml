@@ -5,14 +5,14 @@ info:
 tags:
   - name: Employee
 servers:
-  - url: https://TODO.com/api
+  - url: https://TODO.com/api # TODO: Document actual url.
 security:
-  - BearerAuth: [] # TODO
+  - BearerAuth: [] # TODO: Document actual auth method in use.
 
 paths:
   /employees/{employeeId}:
     get:
-      summary: Get employee by ID.
+      summary: Get employee by id.
       operationId: getEmployeeByID
       description: Returns a employee.
       tags:
@@ -46,7 +46,7 @@ paths:
           $ref: "#/components/responses/500"
 
 components:
-  securitySchemes: # TODO
+  securitySchemes: # TODO: Document actual auth method in use.
     BearerAuth:
       type: http
       scheme: bearer
