@@ -1,16 +1,16 @@
-## default: TODO
+## default: TODO docs
 default: 
+	echo "TODO"
 
 # TODO: Update readme with docker as requirement (add link to docs) and how to set up secrets
 # TODO: Serve docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/?sbsearch=docker
 # TODO: server router to /api
-# TODO: logging attr badkey
 # TODO: add migrations test docker
 # TODO: docker to api
 
-## dev: TODO
+## dev: TODO docs
 dev:
-	docker compose up
+	echo "TODO"
 
 ## help: print this help message
 help:
