@@ -18,7 +18,7 @@ const (
 
 // GetEmployeeByID returns the employee by id.
 func (s *service) GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error) {
-	logAttrs := []slog.Attr{
+	logAttrs := []any{
 		slog.String(logging.EmployeeID, id.String()),
 	}
 
@@ -32,9 +32,9 @@ func (s *service) GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Emp
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrEmployeeNotFound):
-			return domain.Employee{}, logInfoAndWrapError(ctx, err, errGetEmployeeByID, logAttrs)
+			return domain.Employee{}, logInfoAndWrapError(ctx, err, errGetEmployeeByID, logAttrs...)
 		default:
-			return domain.Employee{}, logAndWrapError(ctx, err, errGetEmployeeByID, logAttrs)
+			return domain.Employee{}, logAndWrapError(ctx, err, errGetEmployeeByID, logAttrs...)
 		}
 	}
 
