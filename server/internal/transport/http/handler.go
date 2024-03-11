@@ -10,6 +10,13 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
+// Base url const.
+const (
+	baseURLBackOffice = "/"
+	baseURLAPI        = "/api"
+	baseURLDocs       = "/docs"
+)
+
 // Service defines the service interface.
 type Service interface {
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
@@ -28,6 +35,7 @@ func New(service Service) *handler {
 	}
 
 	h.handler = spec.HandlerWithOptions(h, spec.StdHTTPServerOptions{
+		BaseURL:    baseURLAPI,
 		BaseRouter: http.DefaultServeMux,
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			badRequest(w, err.Error())
@@ -37,6 +45,7 @@ func New(service Service) *handler {
 	return h
 }
 
+// ServeHTTP responds to an http request.
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.handler.ServeHTTP(w, r)
 }
