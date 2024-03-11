@@ -14,7 +14,7 @@ const (
 	errEmployeeNotFound = "employee not found"
 )
 
-// GetEmployeeByID returns the employee by id.
+// GetEmployeeByID handles the http request that gets the employee by id.
 func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdParam) {
 	ctx := r.Context()
 

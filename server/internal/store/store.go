@@ -15,6 +15,7 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/store/tx"
 )
 
+// migrationsURL defines the source url of the migrations.
 const migrationsURL = "file://db/migrations"
 
 // store defines the store structure.

@@ -15,7 +15,7 @@ const (
 	errGetEmployeeByID = "store: failed to get employee by id"
 )
 
-// GetEmployeeByID returns the employee by id.
+// GetEmployeeByID executes a db query to return the employee by id.
 func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
 	row := tx.QueryRow(ctx, `
 		SELECT id, name, date_of_birth
