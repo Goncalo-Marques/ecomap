@@ -13,7 +13,7 @@ import (
 // Base url const.
 const (
 	baseURLBackOffice = "/"
-	baseURLAPI        = "/api"
+	baseURLApi        = "/api"
 	baseURLDocs       = "/docs"
 )
 
@@ -35,7 +35,7 @@ func New(service Service) *handler {
 	}
 
 	h.handler = spec.HandlerWithOptions(h, spec.StdHTTPServerOptions{
-		BaseURL:    baseURLAPI,
+		BaseURL:    baseURLApi,
 		BaseRouter: http.DefaultServeMux,
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			badRequest(w, err.Error())

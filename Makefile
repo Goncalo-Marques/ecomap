@@ -6,6 +6,7 @@ default:
 # TODO: Serve docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/?sbsearch=docker
 # TODO: add migrations test docker
 # TODO: docker to api
+# TODO: use secrets in github
 
 ## dev: TODO docs
 dev:
