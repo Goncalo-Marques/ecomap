@@ -49,14 +49,9 @@ func New(ctx context.Context, config config.Database) (*store, error) {
 	}, nil
 }
 
-// NewReadOnlyTx returns a new read only transaction for the current db.
-func (s *store) NewReadOnlyTx(ctx context.Context) (pgx.Tx, error) {
-	return tx.NewReadOnlyTx(ctx, s.db)
-}
-
-// NewReadWriteTx returns a new read and write transaction for the current db.
-func (s *store) NewReadWriteTx(ctx context.Context) (pgx.Tx, error) {
-	return tx.NewReadWriteTx(ctx, s.db)
+// NewTx returns a new transaction for the current db.
+func (s *store) NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error) {
+	return tx.New(ctx, s.db, isoLevel, accessMode)
 }
 
 // Close closes the db.

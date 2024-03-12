@@ -15,8 +15,7 @@ import (
 type Store interface {
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 
-	NewReadOnlyTx(ctx context.Context) (pgx.Tx, error)
-	NewReadWriteTx(ctx context.Context) (pgx.Tx, error)
+	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)
 }
 
 // handler defines the http handler structure.
@@ -43,7 +42,7 @@ func rollbackFunc(ctx context.Context, tx pgx.Tx) func() {
 
 // readOnlyTx returns a read only transaction wrapper.
 func (s *service) readOnlyTx(ctx context.Context, f func(pgx.Tx) error) error {
-	tx, err := s.store.NewReadOnlyTx(ctx)
+	tx, err := s.store.NewTx(ctx, pgx.ReadCommitted, pgx.ReadOnly)
 	if err != nil {
 		return err
 	}
@@ -58,7 +57,7 @@ func (s *service) readOnlyTx(ctx context.Context, f func(pgx.Tx) error) error {
 
 // readWriteTx returns a read and write transaction wrapper.
 func (s *service) readWriteTx(ctx context.Context, f func(pgx.Tx) error) error {
-	tx, err := s.store.NewReadWriteTx(ctx)
+	tx, err := s.store.NewTx(ctx, pgx.RepeatableRead, pgx.ReadWrite)
 	if err != nil {
 		return err
 	}

@@ -14,11 +14,26 @@ type tx struct {
 	pgx.Tx
 }
 
+// New returns a new transaction.
+func New(ctx context.Context, db *pgxpool.Pool, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error) {
+	pgxTx, err := db.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel:   isoLevel,
+		AccessMode: accessMode,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("tx: failed to initialize transaction: %w", err)
+	}
+
+	return &tx{
+		Tx: pgxTx,
+	}, nil
+}
+
 // Commit commits the transaction.
 func (tx tx) Commit(ctx context.Context) error {
 	err := tx.Tx.Commit(ctx)
 	if err != nil {
-		return fmt.Errorf("store: failed to commit transaction: %w", err)
+		return fmt.Errorf("tx: failed to commit transaction: %w", err)
 	}
 
 	return nil
@@ -33,38 +48,8 @@ func (tx tx) Rollback(ctx context.Context) error {
 			return nil
 		}
 
-		return fmt.Errorf("store: failed to rollback transaction: %w", err)
+		return fmt.Errorf("tx: failed to rollback transaction: %w", err)
 	}
 
 	return nil
-}
-
-// NewReadOnlyTx returns a new transaction that only performs read operations.
-func NewReadOnlyTx(ctx context.Context, db *pgxpool.Pool) (pgx.Tx, error) {
-	pgxTx, err := db.BeginTx(ctx, pgx.TxOptions{
-		IsoLevel:   pgx.ReadCommitted,
-		AccessMode: pgx.ReadOnly,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("store: failed to initialize read only transaction: %w", err)
-	}
-
-	return &tx{
-		Tx: pgxTx,
-	}, nil
-}
-
-// NewReadWriteTx returns a new transaction that performs read and write operations.
-func NewReadWriteTx(ctx context.Context, db *pgxpool.Pool) (pgx.Tx, error) {
-	pgxTx, err := db.BeginTx(ctx, pgx.TxOptions{
-		IsoLevel:   pgx.RepeatableRead,
-		AccessMode: pgx.ReadWrite,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("store: failed to initialize read write transaction: %w", err)
-	}
-
-	return &tx{
-		Tx: pgxTx,
-	}, nil
 }
