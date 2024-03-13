@@ -9,8 +9,8 @@ OAPI_CODEGEN_VERSION=dd08298 # TODO: keep an eye on the new version that uses go
 API_SWAGGER_DIR=api/swagger
 API_SWAGGER_PACKAGE=ecomap
 
-## default: run clean, tidy, vendor, generate-oapi, lint and build
-default: clean tidy vendor generate-oapi lint build
+## default: run clean, generate-oapi, tidy, vendor, lint and build
+default: clean generate-oapi tidy vendor  lint build
 
 ## clean: clean the vendor, dist and api generated directories
 clean:
