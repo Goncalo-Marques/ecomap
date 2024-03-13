@@ -1,6 +1,6 @@
 <script lang="ts">
 	let inputValue: string;
-	let promise: Promise<any>;
+	let promise: Promise<{ id: string; name: string; dateOfBirth: string }>;
 
 	async function getEmployee(employeeId: string) {
 		const res = await fetch(`/api/employees/${employeeId}`);
