@@ -55,20 +55,21 @@ func (s *service) readOnlyTx(ctx context.Context, f func(pgx.Tx) error) error {
 	return tx.Commit(ctx)
 }
 
+// TODO: Avoid lint issue (remove this comments in the future)
 // readWriteTx returns a read and write transaction wrapper.
-func (s *service) readWriteTx(ctx context.Context, f func(pgx.Tx) error) error {
-	tx, err := s.store.NewTx(ctx, pgx.RepeatableRead, pgx.ReadWrite)
-	if err != nil {
-		return err
-	}
-	defer rollbackFunc(ctx, tx)()
+// func (s *service) readWriteTx(ctx context.Context, f func(pgx.Tx) error) error {
+// 	tx, err := s.store.NewTx(ctx, pgx.RepeatableRead, pgx.ReadWrite)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer rollbackFunc(ctx, tx)()
 
-	if err := f(tx); err != nil {
-		return err
-	}
+// 	if err := f(tx); err != nil {
+// 		return err
+// 	}
 
-	return tx.Commit(ctx)
-}
+// 	return tx.Commit(ctx)
+// }
 
 // logInfoAndWrapError logs the error at the info level and returns the error wrapped with the provided description.
 func logInfoAndWrapError(ctx context.Context, err error, description string, logAttrs ...any) error {
