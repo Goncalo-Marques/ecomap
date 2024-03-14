@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	spec "github.com/goncalo-marques/ecomap/server/api/swagger/ecomap"
+	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
@@ -14,7 +14,12 @@ import (
 const (
 	baseURLBackOffice = "/"
 	baseURLApi        = "/api"
-	baseURLDocs       = "/docs"
+	baseURLDocs       = "/docs/"
+)
+
+// Directories to serve.
+const (
+	dirSwaggerUI = "./api/swagger"
 )
 
 // Service defines the service interface.
@@ -34,13 +39,20 @@ func New(service Service) *handler {
 		service: service,
 	}
 
+	router := http.NewServeMux()
+
+	// Handle API.
 	h.handler = spec.HandlerWithOptions(h, spec.StdHTTPServerOptions{
 		BaseURL:    baseURLApi,
-		BaseRouter: http.DefaultServeMux,
+		BaseRouter: router,
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			badRequest(w, err.Error())
 		},
 	})
+
+	// Handle swagger documentation.
+	swaggerFS := http.FileServer(http.Dir(dirSwaggerUI))
+	router.Handle(baseURLDocs, http.StripPrefix(baseURLDocs, swaggerFS))
 
 	return h
 }

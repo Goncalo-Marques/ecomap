@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	spec "github.com/goncalo-marques/ecomap/server/api/swagger/ecomap"
+	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 )
 
 // Common fault descriptions.

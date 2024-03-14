@@ -5,7 +5,7 @@ import (
 
 	oapitypes "github.com/oapi-codegen/runtime/types"
 
-	spec "github.com/goncalo-marques/ecomap/server/api/swagger/ecomap"
+	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 

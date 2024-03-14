@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	spec "github.com/goncalo-marques/ecomap/server/api/swagger/ecomap"
+	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
 )
