@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     outputs:
-      CONTAINER_TAG: ${{ steps.docker-build.outputs.CONTAINER_TAG }}
+      tag: ${{ steps.docker-build.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,8 +70,7 @@ jobs:
           export BUILD_GIT_HASH=$(git describe --always --dirty)
           export BUILD_TIMESTAMP=$(TZ="GMT" LC_TIME="en_US.utf8" date)
           docker build -t $CONTAINER_TAG -f server.Dockerfile --build-arg BUILD_GIT_HASH="$BUILD_GIT_HASH" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" .
-          echo "CONTAINER_TAG=$CONTAINER_TAG"
-          echo "CONTAINER_TAG=$CONTAINER_TAG" >> "$GITHUB_OUTPUT"
+          echo "tag=$CONTAINER_TAG" >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: build
@@ -79,7 +78,7 @@ jobs:
     environment: prod
     steps:
       - name: Push container
-        run: docker push ${{ needs.build.outputs.CONTAINER_TAG }}
+        run: docker push ${{ needs.build.outputs.tag }}
 
       - name: Deploy to Cloud Run
         id: deploy
