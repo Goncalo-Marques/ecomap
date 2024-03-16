@@ -1,20 +1,23 @@
 services:
-  db:
-    image: postgis/postgis:latest
+  database:
+    build:
+      context: .
+      dockerfile: database.Dockerfile
     ports:
       - 5432:5432
     environment:
       - POSTGRES_DB=ecomap
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_PASSWORD=postgres
     volumes:
-      - database_data:/var/lib/postgresql/data
-    secrets:
-      - postgres_password
+      - ecomap_database_data:/var/lib/postgresql/data # TODO: update this
+
+  server:
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+    ports:
+      - 8080:8080
 
 volumes:
- database_data: null
-
-secrets:
-  postgres_password:
-    file: ./secrets/postgres_password.txt
+ ecomap_database_data:
