@@ -8,6 +8,7 @@ ignoreWords:
   - appcompat
   - Avenir
   - Compat
+  - cloudrun
   - constraintlayout
   - ecomap
   - goncalo
