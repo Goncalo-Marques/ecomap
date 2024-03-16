@@ -1,5 +1,5 @@
 # Build go binary.
-FROM golang:1.22 as builder
+FROM golang:1.22 AS builder
 
 ARG BUILD_GIT_HASH
 ARG BUILD_TIMESTAMP
