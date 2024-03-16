@@ -10,7 +10,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - ecomap_database_data:/var/lib/postgresql/data # TODO: update this
+      - ecomap_database_data:/var/lib/postgresql/data
 
   server:
     build:
