@@ -78,7 +78,7 @@ jobs:
     environment: prod
     steps:
       - name: Push container
-        run: docker push ${{ needs.build.outputs.output1 }}
+        run: docker push "${{ needs.build.outputs.output1 }}""
 
       - name: Deploy to Cloud Run
         id: deploy
