@@ -38,8 +38,9 @@ jobs:
       - name: Build container
         id: docker-build
         run: |
-          echo "CONTAINER_TAG=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-          docker build -t $GITHUB_OUTPUT .
+          export CONTAINER_TAG="${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}"
+          echo $CONTAINER_TAG >> $GITHUB_OUTPUT
+          docker build -t $CONTAINER_TAG .
 
   deploy:
     needs: build
