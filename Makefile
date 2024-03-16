@@ -3,9 +3,7 @@ default:
 	echo "TODO"
 
 # TODO: Update readme with docker as requirement (add link to docs) and how to set up secrets
-# TODO: Serve docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/?sbsearch=docker
 # TODO: add migrations test docker
-# TODO: docker to api
 # TODO: use secrets in github
 
 ## dev: TODO docs

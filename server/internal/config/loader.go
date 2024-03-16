@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	configFileEnvKey  = "CONFIG_FILE" // TODO: set this in the docker file
+	configFileEnvKey  = "CONFIG_FILE"
 	defaultConfigFile = "config.yml"
 )
 
