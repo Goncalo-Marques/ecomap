@@ -7,34 +7,41 @@ ignoreWords:
   - androidx
   - appcompat
   - Avenir
+  - codegen
   - Compat
   - constraintlayout
+  - deepmap
   - ecomap
+  - golangci
   - goncalo
+  - GOPATH
   - gradlew
   - jackc
+  - ldflags
+  - libboost
   - mipmap
+  - oapi
   - oapitypes
   - openapi
   - Parens
+  - pgrouting
   - pgxpool
+  - postgis
   - proguard
   - sharedpref
   - transporthttp
-  - Makefile
-  - oapi
-  - postgis
-  - libboost
-  - pgrouting
-  - ldflags
 ignorePaths:
   - "*.svg"
   - .golangci.yml
+  - go.mod
+  - go.sum
   - gradle
   - gradle.properties
   - gradlew
   - gradlew.bat
   - proguard-rules.pro
+  - server/api/swagger/ui
+  - server/config.yml
 ignoreRegExpList:
   - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.
   - "import\\s*.*\".*?\"" # Ignore go single line imports.
