@@ -50,19 +50,37 @@ Install [Android Studio](https://developer.android.com/studio) before you start 
 
 ### Quick Start
 
-In the project root directory, there is a [Makefile](Makefile) that contains some targets to help develop and build the web and server applications together.
+In the project root directory, there is a [Makefile](Makefile) that contains some targets to help develop and build the web and server applications.
 
-In a development context:
-
-```shell
-make dev
-```
-
-Build and run the applications in a Docker container:
+Build and run both applications in a Docker container:
 
 ```shell
 make up
 ```
+
+---
+
+Or, if the goal is to run each application independently, see the following steps.
+
+1. Start the web application in a development context:
+
+   ```shell
+   make dev-web
+   ```
+
+1. Update the server [configuration file](server/config.yml), especially regarding the database connection string
+
+   - To run the database locally, use the [Docker Compose file](docker-compose.yml):
+
+     ```shell
+     docker compose up database
+     ```
+
+1. Start the server application in a development context:
+
+   ```shell
+   make dev-server
+   ```
 
 ### Web App
 
@@ -79,7 +97,7 @@ npm run
 The server application can be found in the `server` directory. It contains the Go code that serves the following routes:
 
 | Route    | Description     |
-|----------|-----------------|
+| -------- | --------------- |
 | /        | Web Application |
 | /api     | Rest API        |
 | /docs/ui | Swagger UI      |
@@ -98,9 +116,9 @@ Inside the `api/swagger` directory, there is also a `ui` folder that contains th
 
 The server application requires a [PostgreSQL](https://www.postgresql.org/) database to manipulate the persistent data. There is a [Docker Compose](https://docs.docker.com/compose/) file ([docker-compose.yml](docker-compose.yml)) in the project root directory that already contains a `database` service that can be run locally.
 
-The database migrations can be found in `db/migrations` in the `server` directory. When the server starts, it will make sure that the database is running the configured migration version. This behavior can also be configured and disabled if necessary. 
+The database migrations can be found in `db/migrations` in the `server` directory. When the server starts, it will make sure that the database is running the configured migration version. This behavior can also be configured and disabled if necessary.
 
-Note that there is a configuration file in the `server` directory that contains some placeholder variables that allow the server to be configured. By default, the server reads the [config.yml](server/config.yml) file, but this can be overridden by setting the `CONFIG_FILE` environment variable with a path to a valid configuration file in any other directory.  
+Note that there is a configuration file in the `server` directory that contains some placeholder variables that allow the server to be configured. By default, the server reads the [config.yml](server/config.yml) file, but this can be overridden by setting the `CONFIG_FILE` environment variable with a path to a valid configuration file in any other directory.
 
 ### Android App
 
