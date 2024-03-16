@@ -86,6 +86,13 @@ jobs:
     needs: build
     environment: prod
     steps:
+      - name: Login to Google Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.REGION }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_CREDENTIALS }}
+
       - name: Download container
         uses: actions/download-artifact@v4
         with:
