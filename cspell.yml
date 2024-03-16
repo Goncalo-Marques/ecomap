@@ -29,6 +29,7 @@ ignoreWords:
   - postgis
   - proguard
   - sharedpref
+  - temurin
   - transporthttp
 ignorePaths:
   - "*.svg"
