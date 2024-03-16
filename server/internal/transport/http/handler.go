@@ -12,13 +12,14 @@ import (
 
 // Base url const.
 const (
-	baseURLBackOffice = "/"
-	baseURLApi        = "/api"
-	baseURLDocs       = "/docs/"
+	baseURLWebApp = "/"
+	baseURLApi    = "/api"
+	baseURLDocs   = "/docs/"
 )
 
 // Directories to serve.
 const (
+	dirWebApp    = "./dist/web"
 	dirSwaggerUI = "./api/swagger"
 )
 
@@ -40,6 +41,10 @@ func New(service Service) *handler {
 	}
 
 	router := http.NewServeMux()
+
+	// Handle web application.
+	webAppFS := http.FileServer(http.Dir(dirWebApp))
+	router.Handle(baseURLWebApp, webAppFS)
 
 	// Handle API.
 	h.handler = spec.HandlerWithOptions(h, spec.StdHTTPServerOptions{
