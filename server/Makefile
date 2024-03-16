@@ -35,7 +35,7 @@ generate-oapi:
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate client $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/client.gen.go
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate std-http $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/server.gen.go
 
-## lint: install golangci-lint and analyse the source code with the configuration in .golangci.yml
+## lint: install golangci-lint and analyze the source code with the configuration in .golangci.yml
 lint:
 	command -v golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin $(LINTER_VERSION)
 	golangci-lint run --timeout=5m

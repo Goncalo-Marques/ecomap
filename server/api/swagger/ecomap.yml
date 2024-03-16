@@ -5,7 +5,7 @@ info:
 tags:
   - name: Employee
 servers:
-  - url: https://server-7fzc7ivuwa-no.a.run.app/api
+  - url: https://server-7fzc7ivuwa-ew.a.run.app/api
     description: Production server.
   - url: http://localhost:8080/api
     description: Local server.

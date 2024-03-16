@@ -1,16 +1,17 @@
 BUILD_GIT_HASH = $(shell git describe --always --dirty)
 BUILD_TIMESTAMP = $(shell TZ="GMT" LC_TIME="en_US.utf8" date)
 
-## default: build and start docker containers 
+## default: run up 
 default: up
 
-# TODO: Update readme with docker as requirement (add link to docs) and how to set up secrets
-# TODO: add migrations test docker
-# TODO: use secrets in github
+## dev-web: start development web app
+dev-web:
+	npm run --prefix web dev
 
-## dev: TODO docs
-dev:
-	echo "TODO"
+## dev-server: start development server app
+dev-server:
+	make -C server
+	cd server && dist/server
 
 ## build: build server, web app and docker containers
 build:
