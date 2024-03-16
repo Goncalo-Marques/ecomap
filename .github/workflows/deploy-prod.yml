@@ -69,7 +69,7 @@ jobs:
           export CONTAINER_TAG=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}
           export BUILD_GIT_HASH=$(git describe --always --dirty)
           export BUILD_TIMESTAMP=$(TZ="GMT" LC_TIME="en_US.utf8" date)
-          docker build -t $CONTAINER_TAG -f server.Dockerfile --output type=tar,dest=server.tar --build-arg BUILD_GIT_HASH="$BUILD_GIT_HASH" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" .
+          docker build -t $CONTAINER_TAG -f server.Dockerfile --output type=docker,dest=/tmp/server.tar --build-arg BUILD_GIT_HASH="$BUILD_GIT_HASH" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" .
           echo "container_tag=$CONTAINER_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Upload container
