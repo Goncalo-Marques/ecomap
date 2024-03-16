@@ -22,23 +22,51 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+          cache-dependency-path: ./web/package-lock.json
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+          cache-dependency-path: ./server/go.sum
+
       - name: Set up Google Authentication
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
           token_format: access_token
+
+      - name: Set up server configs
+        run: |
+          sed -i "s/{DB_USER}/${{ secrets.DB_USER }}/" server/config.yml
+          sed -i "s/{DB_PASSWORD}/${{ secrets.DB_PASSWORD }}/" server/config.yml
+          sed -i "s/{DB_HOST}/${{ secrets.DB_HOST }}/" server/config.yml
+          sed -i "s/{DB_PORT}/${{ secrets.DB_PORT }}/" server/config.yml
+          sed -i "s/{DB_NAME}/${{ secrets.DB_NAME }}/" server/config.yml
 
       - name: Login to Google Artifact Registry
         uses: docker/login-action@v3
         with:
-          registry: "${{ vars.REGION }}-docker.pkg.dev"
+          registry: ${{ vars.REGION }}-docker.pkg.dev
           username: _json_key
-          password: "${{ secrets.GCP_CREDENTIALS }}"
+          password: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Build app
+        run: |
+          make -C server
+          npm --prefix web ci
+          npm run --prefix web build
+          mv web/dist server/dist/web
 
       - name: Build container
         id: docker-build
         run: |
-          export CONTAINER_TAG="${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}"
+          export CONTAINER_TAG=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}
           export BUILD_GIT_HASH=$(git describe --always --dirty)
           export BUILD_TIMESTAMP=$(TZ="GMT" LC_TIME="en_US.utf8" date)
           echo $CONTAINER_TAG >> $GITHUB_OUTPUT
@@ -50,7 +78,7 @@ jobs:
     environment: prod
     steps:
       - name: Push container
-        run: docker push "${{ needs.build.outputs.CONTAINER_TAG }}"
+        run: docker push ${{ needs.build.outputs.CONTAINER_TAG }}
 
       - name: Deploy to Cloud Run
         id: deploy
