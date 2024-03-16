@@ -1,0 +1,23 @@
+services:
+  database:
+    build:
+      context: .
+      dockerfile: database.Dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=ecomap
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ecomap_database_data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+    ports:
+      - 8080:8080
+
+volumes:
+ ecomap_database_data:

@@ -3,22 +3,32 @@ version: "0.2"
 language: en
 useGitignore: true
 ignoreWords:
-  - ecomap
+  - aapt
   - androidx
   - appcompat
-  - constraintlayout
-  - gradlew
-  - proguard
-  - mipmap
-  - aapt
-  - sharedpref
-  - Compat
   - Avenir
+  - Compat
+  - constraintlayout
+  - ecomap
+  - goncalo
+  - gradlew
+  - jackc
+  - mipmap
+  - oapitypes
+  - openapi
   - Parens
+  - pgxpool
+  - proguard
+  - sharedpref
+  - transporthttp
 ignorePaths:
+  - "*.svg"
   - gradle
   - gradle.properties
   - gradlew
   - gradlew.bat
   - proguard-rules.pro
-  - "*.svg"
+ignoreRegExpList:
+  - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.
+  - "import\\s*.*\".*?\"" # Ignore go single line imports.
+  - "//\\s*go:generate.*" # Ignore go generate directive.
