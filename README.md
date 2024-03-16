@@ -50,7 +50,7 @@ Install [Android Studio](https://developer.android.com/studio) before you start 
 
 ### Quick Start
 
-In the project root directory, there is a makefile that contains some targets to help develop and build the web and server applications together.
+In the project root directory, there is a [Makefile](Makefile) that contains some targets to help develop and build the web and server applications together.
 
 In a development context:
 
@@ -84,7 +84,7 @@ The server application can be found in the `server` directory. It contains the G
 | /api     | Rest API        |
 | /docs/ui | Swagger UI      |
 
-The server contains a makefile that defines a set of tasks that can be run to help with development. The available targets can be checked by running the following command inside the `server` directory:
+The server contains a [Makefile](server/Makefile) that defines a set of tasks that can be run to help with development. The available targets can be checked by running the following command inside the `server` directory:
 
 ```shell
 make help
@@ -92,15 +92,15 @@ make help
 
 To serve the web application, the server expects the web static files to be in the `dist/web` directory.
 
-The Rest API is documented in a [Swagger Specification](https://swagger.io/specification/v3/) file (`ecomap.yml`) in the `api/swagger` directory. This file is also used by the server to generate the API models and server boilerplate code to handle the HTTP API (see the `generate-oapi` makefile target).
+The Rest API is documented in a [Swagger Specification](https://swagger.io/specification/v3/) file ([ecomap.yml](server/api/swagger/ecomap.yml)) in the `api/swagger` directory. This file is also used by the server to generate the API models and server boilerplate code to handle the HTTP API (see the `generate-oapi` Makefile target).
 
-Inside the `api/swagger` directory, there is also a `ui` folder that contains the [Swagger UI](https://swagger.io/tools/swagger-ui/) that is served by the server to present the Rest API documentation. See the `README.md` file in `api/swagger` for more information.
+Inside the `api/swagger` directory, there is also a `ui` folder that contains the [Swagger UI](https://swagger.io/tools/swagger-ui/) that is served by the server to present the Rest API documentation. See the [README.md](server/api/swagger/README.md) file in `api/swagger` for more information.
 
-The server application requires a [PostgreSQL](https://www.postgresql.org/) database to manipulate the persistent data. There is a [Docker Compose](https://docs.docker.com/compose/) file (`docker-compose.yml`) in the project root directory that already contains a `database` service that can be run locally.
+The server application requires a [PostgreSQL](https://www.postgresql.org/) database to manipulate the persistent data. There is a [Docker Compose](https://docs.docker.com/compose/) file ([docker-compose.yml](docker-compose.yml)) in the project root directory that already contains a `database` service that can be run locally.
 
 The database migrations can be found in `db/migrations` in the `server` directory. When the server starts, it will make sure that the database is running the configured migration version. This behavior can also be configured and disabled if necessary. 
 
-Note that there is a configuration file in the `server` directory that contains some placeholder variables that allow the server to be configured. By default, the server reads the `config.yml` file, but this can be overridden by setting the `CONFIG_FILE` environment variable with a path to a valid configuration file in any other directory.  
+Note that there is a configuration file in the `server` directory that contains some placeholder variables that allow the server to be configured. By default, the server reads the [config.yml](server/config.yml) file, but this can be overridden by setting the `CONFIG_FILE` environment variable with a path to a valid configuration file in any other directory.  
 
 ### Android App
 
