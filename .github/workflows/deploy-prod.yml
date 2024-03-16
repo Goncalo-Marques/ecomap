@@ -43,6 +43,7 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
           token_format: access_token
+          service_account: ${{ secrets.GCP_SA }}
 
       - name: Set up server configs
         run: |
@@ -91,6 +92,7 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
           token_format: access_token
+          service_account: ${{ secrets.GCP_SA }}
 
       - name: Login to Google Artifact Registry
         uses: docker/login-action@v3
