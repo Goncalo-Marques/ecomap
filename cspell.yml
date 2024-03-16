@@ -21,8 +21,15 @@ ignoreWords:
   - proguard
   - sharedpref
   - transporthttp
+  - Makefile
+  - oapi
+  - postgis
+  - libboost
+  - pgrouting
+  - ldflags
 ignorePaths:
   - "*.svg"
+  - .golangci.yml
   - gradle
   - gradle.properties
   - gradlew
