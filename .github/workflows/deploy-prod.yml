@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     outputs:
-      tag: ${{ steps.docker-build.outputs.tag }}
+      output1: ${{ steps.docker-build.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
     environment: prod
     steps:
       - name: Push container
-        run: docker push ${{ needs.build.outputs.tag }}
+        run: docker push ${{ needs.build.outputs.output1 }}
 
       - name: Deploy to Cloud Run
         id: deploy
