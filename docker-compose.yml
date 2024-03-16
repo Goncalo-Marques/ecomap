@@ -19,5 +19,45 @@ services:
     ports:
       - 8080:8080
 
+  migrate-database:
+    build:
+      context: .
+      dockerfile: database.Dockerfile
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_DB=ecomap
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  migrate-up:
+    build:
+      context: .
+    command:
+      [
+        "-path",
+        "server/db/migrations/",
+        "-database",
+        "postgres://postgres:postgres@migrate-database:5433/ecomap?sslmode=disable",
+        "up",
+      ]
+    depends_on:
+      - migrate-database
+
+  migrate-down:
+    build:
+      context: .
+    command:
+      [
+        "-path",
+        "server/db/migrations/",
+        "-database",
+        "postgres://postgres:postgres@migrate-database:5433/ecomap?sslmode=disable",
+        "down",
+        "-all",
+      ]
+    depends_on:
+      - migrate-up
+
 volumes:
- ecomap_database_data:
+  ecomap_database_data:
