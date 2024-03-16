@@ -10,7 +10,7 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
-// Base url const.
+// Base URL const.
 const (
 	baseURLWebApp = "/"
 	baseURLApi    = "/api"
