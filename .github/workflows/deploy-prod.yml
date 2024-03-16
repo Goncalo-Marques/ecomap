@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     outputs:
-      output1: ${{ steps.docker_build.outputs.tag }}
+      container_tag: ${{ steps.docker_build.outputs.container_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
           export BUILD_GIT_HASH=$(git describe --always --dirty)
           export BUILD_TIMESTAMP=$(TZ="GMT" LC_TIME="en_US.utf8" date)
           docker build -t $CONTAINER_TAG -f server.Dockerfile --build-arg BUILD_GIT_HASH="$BUILD_GIT_HASH" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" .
-          echo "tag=$CONTAINER_TAG" >> "$GITHUB_OUTPUT"
+          echo "container_tag=$CONTAINER_TAG" >> "$GITHUB_OUTPUT"
 
   deploy:
     runs-on: ubuntu-latest
@@ -78,7 +78,7 @@ jobs:
     environment: prod
     steps:
       - name: Push container
-        run: docker push "${{ needs.build.outputs.output1 }}""
+        run: docker push ${{ needs.build.outputs.container_tag }}
 
       - name: Deploy to Cloud Run
         id: deploy
@@ -86,7 +86,7 @@ jobs:
         with:
           service: ${{ vars.SERVICE_NAME_SERVER }}
           region: ${{ vars.REGION }}
-          image: ${{ needs.build.outputs.CONTAINER_TAG }}
+          image: ${{ needs.build.outputs.container_tag }}
 
       - name: Show deployment URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"
