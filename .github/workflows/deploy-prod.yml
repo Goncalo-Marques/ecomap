@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     outputs:
-      output1: ${{ steps.docker-build.outputs.tag }}
+      output1: ${{ steps.docker_build.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
           mv web/dist server/dist/web
 
       - name: Build container
-        id: docker-build
+        id: docker_build
         run: |
           export CONTAINER_TAG=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}
           export BUILD_GIT_HASH=$(git describe --always --dirty)
@@ -73,8 +73,8 @@ jobs:
           echo "tag=$CONTAINER_TAG" >> "$GITHUB_OUTPUT"
 
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+    needs: build
     environment: prod
     steps:
       - name: Push container
