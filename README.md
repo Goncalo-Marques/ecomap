@@ -116,7 +116,7 @@ Inside the `api/swagger` directory, there is also a `ui` folder that contains th
 
 The server application requires a [PostgreSQL](https://www.postgresql.org/) database to manipulate the persistent data. There is a [Docker Compose](https://docs.docker.com/compose/) file ([docker-compose.yml](docker-compose.yml)) in the project root directory that already contains a `database` service that can be run locally.
 
-The database migrations can be found in `db/migrations` in the `server` directory. When the server starts, it will make sure that the database is running the configured migration version. This behavior can also be configured and disabled if necessary.
+The database migrations can be found in `database/migrations` in the `server` directory. When the server starts, it will make sure that the database is running the configured migration version. This behavior can also be configured and disabled if necessary.
 
 Note that there is a configuration file in the `server` directory that contains some placeholder variables that allow the server to be configured. By default, the server reads the [config.yml](server/config.yml) file, but this can be overridden by setting the `CONFIG_FILE` environment variable with a path to a valid configuration file in any other directory.
 

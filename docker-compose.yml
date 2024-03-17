@@ -20,4 +20,4 @@ services:
       - 8080:8080
 
 volumes:
- ecomap_database_data:
+  ecomap_database_data:

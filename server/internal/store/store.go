@@ -16,17 +16,17 @@ import (
 )
 
 // migrationsURL defines the source url of the migrations.
-const migrationsURL = "file://db/migrations"
+const migrationsURL = "file://database/migrations"
 
 // store defines the store structure.
 type store struct {
-	db *pgxpool.Pool
+	database *pgxpool.Pool
 }
 
 // New returns a new store.
 func New(ctx context.Context, config config.Database) (*store, error) {
 	// Initialize database connection pool.
-	db, err := pgxpool.New(ctx, config.URL)
+	database, err := pgxpool.New(ctx, config.URL)
 	if err != nil {
 		return nil, fmt.Errorf("store: failed to initialize pool: %w", err)
 	}
@@ -45,16 +45,16 @@ func New(ctx context.Context, config config.Database) (*store, error) {
 	}
 
 	return &store{
-		db: db,
+		database: database,
 	}, nil
 }
 
-// NewTx returns a new transaction for the current db.
+// NewTx returns a new transaction for the current database.
 func (s *store) NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error) {
-	return tx.New(ctx, s.db, isoLevel, accessMode)
+	return tx.New(ctx, s.database, isoLevel, accessMode)
 }
 
-// Close closes the db.
+// Close closes the database.
 func (s *store) Close() {
-	s.db.Close()
+	s.database.Close()
 }
