@@ -21,7 +21,7 @@ FROM alpine:latest
 WORKDIR /app
 
 COPY --from=builder /app/api/swagger /app/api/swagger
-COPY --from=builder /app/db/migrations /app/db/migrations
+COPY --from=builder /app/database/migrations /app/database/migrations
 COPY --from=builder /app/dist/web /app/dist/web
 COPY --from=builder /app/dist/server /app/dist/server
 COPY --from=builder /app/config.yml /app/config.yml

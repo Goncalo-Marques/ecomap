@@ -15,8 +15,8 @@ type tx struct {
 }
 
 // New returns a new transaction.
-func New(ctx context.Context, db *pgxpool.Pool, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error) {
-	pgxTx, err := db.BeginTx(ctx, pgx.TxOptions{
+func New(ctx context.Context, database *pgxpool.Pool, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error) {
+	pgxTx, err := database.BeginTx(ctx, pgx.TxOptions{
 		IsoLevel:   isoLevel,
 		AccessMode: accessMode,
 	})
