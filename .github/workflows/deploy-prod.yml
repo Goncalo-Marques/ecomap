@@ -48,7 +48,7 @@ jobs:
 
       - name: Build app
         run: |
-          make -C server
+          make -C server generate-oapi
           npm --prefix web ci
           npm run --prefix web build
           mv web/dist server/dist/web
