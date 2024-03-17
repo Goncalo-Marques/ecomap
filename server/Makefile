@@ -10,8 +10,8 @@ API_SWAGGER_SPEC_FILE=api/swagger/ecomap.yml
 API_SWAGGER_GEN_DIR=api/ecomap
 API_SWAGGER_GEN_PACKAGE=ecomap
 
-## default: run clean, generate-oapi, tidy, vendor, lint, test and build
-default: clean generate-oapi tidy vendor lint test build
+## default: run clean, generate, tidy, vendor, lint, test and build
+default: clean generate tidy vendor lint test build
 
 ## clean: clean the vendor, dist and api generated directories
 clean:
@@ -34,6 +34,9 @@ generate-oapi:
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate types $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/models.gen.go
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate client $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/client.gen.go
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate std-http $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/server.gen.go
+
+## generate: run generate-oapi
+generate: generate-oapi
 
 ## lint: install golangci-lint and analyze the source code with the configuration in .golangci.yml
 lint:

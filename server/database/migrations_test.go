@@ -1,6 +1,6 @@
 //go:build integration
 
-package migrations_test
+package database_test
 
 import (
 	"context"
@@ -15,12 +15,12 @@ import (
 )
 
 // migrationsURL defines the source url of the migrations.
-const migrationsURL = "file://../../../database/migrations"
+const migrationsURL = "file://migrations"
 
 func TestMigrations(t *testing.T) {
 	ctx := context.Background()
 
-	databaseContainer := container.NewDatabase(ctx)
+	databaseContainer := container.NewDatabase(ctx, pathDockerfileContext)
 	defer databaseContainer.Terminate(ctx)
 
 	m, err := migrate.New(migrationsURL, databaseContainer.ConnectionString(ctx))

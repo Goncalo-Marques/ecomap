@@ -23,8 +23,8 @@ jobs:
           go-version: 1.22
           cache-dependency-path: ./server/go.sum
 
-      - name: Generate OpenAPI
-        run: make generate-oapi
+      - name: Code generation
+        run: make generate
 
       - name: Run lint
         run: make lint
@@ -42,8 +42,8 @@ jobs:
           go-version: 1.22
           cache-dependency-path: ./server/go.sum
 
-      - name: Generate OpenAPI
-        run: make generate-oapi
+      - name: Code generation
+        run: make generate
 
       - name: Install dependencies
         run: make vendor
@@ -64,8 +64,8 @@ jobs:
           go-version: 1.22
           cache-dependency-path: ./server/go.sum
 
-      - name: Generate OpenAPI
-        run: make generate-oapi
+      - name: Code generation
+        run: make generate
 
       - name: Install dependencies
         run: make vendor
@@ -86,8 +86,8 @@ jobs:
           go-version: 1.22
           cache-dependency-path: ./server/go.sum
 
-      - name: Generate OpenAPI
-        run: make generate-oapi
+      - name: Code generation
+        run: make generate
 
       - name: Install dependencies
         run: make vendor

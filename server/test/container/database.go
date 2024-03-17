@@ -28,7 +28,7 @@ type database struct {
 }
 
 // NewDatabase returns a new database test container.
-func NewDatabase(ctx context.Context) *database {
+func NewDatabase(ctx context.Context, dockerfileContext string) *database {
 	port := fmt.Sprintf("%s/tcp", databasePort)
 
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
