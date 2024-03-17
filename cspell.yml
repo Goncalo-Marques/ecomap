@@ -3,22 +3,49 @@ version: "0.2"
 language: en
 useGitignore: true
 ignoreWords:
-  - ecomap
+  - aapt
   - androidx
   - appcompat
-  - constraintlayout
-  - gradlew
-  - proguard
-  - mipmap
-  - aapt
-  - sharedpref
-  - Compat
   - Avenir
+  - codegen
+  - Compat
+  - constraintlayout
+  - deepmap
+  - ecomap
+  - golangci
+  - goncalo
+  - GOPATH
+  - gradlew
+  - jackc
+  - ldflags
+  - libboost
+  - mipmap
+  - oapi
+  - oapitypes
+  - openapi
   - Parens
+  - pgrouting
+  - pgxpool
+  - postgis
+  - proguard
+  - sharedpref
+  - sslmode
+  - temurin
+  - testcontainers
+  - transporthttp
 ignorePaths:
+  - "*.svg"
+  - .golangci.yml
+  - go.mod
+  - go.sum
   - gradle
   - gradle.properties
   - gradlew
   - gradlew.bat
   - proguard-rules.pro
-  - "*.svg"
+  - server/api/swagger/ui
+  - server/config.yml
+ignoreRegExpList:
+  - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.
+  - "import\\s*.*\".*?\"" # Ignore go single line imports.
+  - "//\\s*go:generate.*" # Ignore go generate directive.

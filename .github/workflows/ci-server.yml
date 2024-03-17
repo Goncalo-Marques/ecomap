@@ -1,0 +1,96 @@
+name: CI Server
+
+on:
+  pull_request:
+    paths:
+      - "server/**"
+
+defaults:
+  run:
+    working-directory: ./server
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+          cache-dependency-path: ./server/go.sum
+
+      - name: Generate OpenAPI
+        run: make generate-oapi
+
+      - name: Run lint
+        run: make lint
+  
+  test-unit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+          cache-dependency-path: ./server/go.sum
+
+      - name: Generate OpenAPI
+        run: make generate-oapi
+
+      - name: Install dependencies
+        run: make vendor
+
+      - name: Run unit tests
+        run: make test-unit
+
+  test-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+          cache-dependency-path: ./server/go.sum
+
+      - name: Generate OpenAPI
+        run: make generate-oapi
+
+      - name: Install dependencies
+        run: make vendor
+
+      - name: Run integration tests
+        run: make test-integration
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+          cache-dependency-path: ./server/go.sum
+
+      - name: Generate OpenAPI
+        run: make generate-oapi
+
+      - name: Install dependencies
+        run: make vendor
+
+      - name: Run build
+        run: make build

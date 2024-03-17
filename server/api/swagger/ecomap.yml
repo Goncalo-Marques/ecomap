@@ -1,0 +1,124 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: EcoMap Rest API
+tags:
+  - name: Employee
+servers:
+  - url: https://server-7fzc7ivuwa-ew.a.run.app/api
+    description: Production server.
+  - url: http://localhost:8080/api
+    description: Local server.
+security:
+  - BearerAuth: [] # TODO: Document actual auth method in use.
+
+paths:
+  /employees/{employeeId}:
+    get:
+      summary: Get employee by id.
+      operationId: getEmployeeByID
+      description: Returns a employee.
+      tags:
+        - Employee
+      parameters:
+        - $ref: "#/components/parameters/EmployeeIdParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        400:
+          description: Invalid employee ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes: # TODO: Document actual auth method in use.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    EmployeeIdParam:
+      name: employeeId
+      in: path
+      description: Promotion identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+      example: "9e3a65b0-0579-4203-8112-d09ab3c6b1ff"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    EditableEmployee:
+      type: object
+      required:
+        - name
+        - dateOfBirth
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "2006-01-02"
+    Employee:
+      allOf:
+        - $ref: "#/components/schemas/EditableEmployee"
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              $ref: "#/components/schemas/UUID"
+
+  responses:
+    401:
+      description: Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    403:
+      description: Forbidden.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    500:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

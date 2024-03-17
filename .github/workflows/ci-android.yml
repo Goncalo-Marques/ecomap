@@ -2,8 +2,6 @@ name: CI Android
 
 on:
   pull_request:
-    branches:
-      - main
     paths:
       - "android/**"
 
@@ -22,9 +20,9 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
-          java-version: "17"
-          cache: "gradle"
+          distribution: temurin
+          java-version: 17
+          cache: gradle
 
       - name: Run lint
         run: |
