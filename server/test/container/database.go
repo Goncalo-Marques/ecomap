@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/docker/go-connections/nat"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
@@ -36,6 +37,7 @@ func NewDatabase(ctx context.Context) *database {
 			FromDockerfile: testcontainers.FromDockerfile{
 				Context:    dockerfileContext,
 				Dockerfile: "database.Dockerfile",
+				KeepImage:  true,
 			},
 			ExposedPorts: []string{port},
 			AutoRemove:   true,
@@ -50,6 +52,7 @@ func NewDatabase(ctx context.Context) *database {
 	})
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, "container: failed to create database container", logging.Error(err))
+		return nil
 	}
 
 	return &database{
@@ -58,8 +61,15 @@ func NewDatabase(ctx context.Context) *database {
 }
 
 // ConnectionString returns the database connection string.
-func (s database) ConnectionString() string {
-	return fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", databaseUser, databasePassword, databasePort, databaseName)
+func (s *database) ConnectionString(ctx context.Context) string {
+	port := fmt.Sprintf("%s/tcp", databasePort)
+	mappedPort, err := s.container.MappedPort(ctx, nat.Port(port))
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, "container: failed to get database mapped port", logging.Error(err))
+		return ""
+	}
+
+	return fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", databaseUser, databasePassword, mappedPort.Port(), databaseName)
 }
 
 // Terminate terminates the container.

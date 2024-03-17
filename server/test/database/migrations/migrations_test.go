@@ -7,13 +7,15 @@ import (
 	"testing"
 
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/stretchr/testify/require"
 
 	"github.com/goncalo-marques/ecomap/server/test/container"
 )
 
 // migrationsURL defines the source url of the migrations.
-const migrationsURL = "file://database/migrations"
+const migrationsURL = "file://../../../database/migrations"
 
 func TestMigrations(t *testing.T) {
 	ctx := context.Background()
@@ -21,7 +23,7 @@ func TestMigrations(t *testing.T) {
 	databaseContainer := container.NewDatabase(ctx)
 	defer databaseContainer.Terminate(ctx)
 
-	m, err := migrate.New(migrationsURL, databaseContainer.ConnectionString())
+	m, err := migrate.New(migrationsURL, databaseContainer.ConnectionString(ctx))
 	require.NoError(t, err)
 	defer m.Close()
 
