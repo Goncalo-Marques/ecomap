@@ -10,8 +10,8 @@ API_SWAGGER_SPEC_FILE=api/swagger/ecomap.yml
 API_SWAGGER_GEN_DIR=api/ecomap
 API_SWAGGER_GEN_PACKAGE=ecomap
 
-## default: run clean, generate-oapi, tidy, vendor, lint and build
-default: clean generate-oapi tidy vendor lint build
+## default: run clean, generate-oapi, tidy, vendor, lint, test and build
+default: clean generate-oapi tidy vendor lint test build
 
 ## clean: clean the vendor, dist and api generated directories
 clean:
@@ -39,6 +39,17 @@ generate-oapi:
 lint:
 	command -v golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin $(LINTER_VERSION)
 	golangci-lint run --timeout=5m
+
+## test-unit: run unit tests
+test-unit:
+	go test ./...
+
+## test-integration: run integration tests
+test-integration:
+	go test -tags=integration ./...
+
+## test: run unit and integration tests
+test: test-unit test-integration
 
 BUILD_FLAGS = " \
 -X 'main.BuildGitHash=$(BUILD_GIT_HASH)' \
