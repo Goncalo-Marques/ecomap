@@ -1,8 +1,6 @@
 services:
   database:
-    build:
-      context: .
-      dockerfile: database.Dockerfile
+    image: pgrouting/pgrouting
     ports:
       - 5432:5432
     environment:
