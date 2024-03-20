@@ -61,7 +61,6 @@ jobs:
           mv web/dist server/dist/web
 
       - name: Build container
-        id: docker_build
         run: |
           export CONTAINER_TAG=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}
           export BUILD_GIT_HASH=$(git describe --always --dirty)
