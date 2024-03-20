@@ -18,6 +18,8 @@ ignoreWords:
   - goncalo
   - GOPATH
   - gradlew
+  - healthcheck
+  - isready
   - jackc
   - ldflags
   - libboost
