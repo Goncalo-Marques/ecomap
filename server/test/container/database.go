@@ -42,8 +42,9 @@ func NewDatabase(ctx context.Context, dockerfileContext string) *database {
 			ExposedPorts: []string{port},
 			AutoRemove:   true,
 			Env: map[string]string{
-				"POSTGRES_DB":       databaseName,
+				"PGUSER":            databaseUser,
 				"POSTGRES_USER":     databaseUser,
+				"POSTGRES_DB":       databaseName,
 				"POSTGRES_PASSWORD": databasePassword,
 			},
 			WaitingFor: wait.ForLog("database system is ready to accept connections").

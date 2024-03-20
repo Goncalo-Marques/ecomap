@@ -27,6 +27,7 @@ ignoreWords:
   - openapi
   - Parens
   - pgrouting
+  - PGUSER
   - pgxpool
   - postgis
   - proguard
