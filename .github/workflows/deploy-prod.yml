@@ -10,11 +10,9 @@ on:
       - "server.Dockerfile"
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     environment: prod
-    outputs:
-      container_tag: ${{ steps.docker_build.outputs.container_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,8 +30,18 @@ jobs:
           go-version: 1.22
           cache-dependency-path: ./server/go.sum
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Google Authentication
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          token_format: access_token
+
+      - name: Login to Google Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.REGION }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Set up server configs
         run: |
@@ -51,50 +59,16 @@ jobs:
           mkdir -p server/dist
           mv web/dist server/dist/web
 
-      - name: Build container
-        id: docker_build
+      - name: Build image
         run: |
-          export CONTAINER_TAG=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}
+          export IMAGE_TAG=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/${{ vars.SERVICE_NAME_SERVER }}:${{ github.sha }}
           export BUILD_GIT_HASH=$(git describe --always --dirty)
           export BUILD_TIMESTAMP=$(TZ="GMT" LC_TIME="en_US.utf8" date)
-          docker buildx build -t $CONTAINER_TAG -f server.Dockerfile --output type=docker,dest=/tmp/server.tar --build-arg BUILD_GIT_HASH="$BUILD_GIT_HASH" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" .
-          echo "container_tag=$CONTAINER_TAG" >> "$GITHUB_OUTPUT"
+          docker build -t $IMAGE_TAG -f server.Dockerfile --build-arg BUILD_GIT_HASH="$BUILD_GIT_HASH" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" .
+          echo "IMAGE=$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Upload container
-        uses: actions/upload-artifact@v4
-        with:
-          name: server
-          path: /tmp/server.tar
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment: prod
-    steps:
-      - name: Set up Google Authentication
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-          token_format: access_token
-
-      - name: Login to Google Artifact Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ vars.REGION }}-docker.pkg.dev
-          username: _json_key
-          password: ${{ secrets.GCP_CREDENTIALS }}
-
-      - name: Download container
-        uses: actions/download-artifact@v4
-        with:
-          name: server
-          path: /tmp
-
-      - name: Load image
-        run: docker load --input /tmp/server.tar
-
-      - name: Push container
-        run: docker push ${{ needs.build.outputs.container_tag }}
+      - name: Push image
+        run: docker push ${{ env.IMAGE }}
 
       - name: Deploy to Cloud Run
         id: deploy
@@ -102,7 +76,7 @@ jobs:
         with:
           service: ${{ vars.SERVICE_NAME_SERVER }}
           region: ${{ vars.REGION }}
-          image: ${{ needs.build.outputs.container_tag }}
+          image: ${{ env.IMAGE }}
 
       - name: Show deployment URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"

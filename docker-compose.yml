@@ -1,21 +1,28 @@
 services:
   database:
-    build:
-      context: .
-      dockerfile: database.Dockerfile
+    image: pgrouting/pgrouting
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_DB=ecomap
+      - PGUSER=postgres
       - POSTGRES_USER=postgres
+      - POSTGRES_DB=ecomap
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ecomap_database_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   server:
     build:
       context: .
       dockerfile: server.Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - 8080:8080
 

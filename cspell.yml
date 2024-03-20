@@ -18,6 +18,8 @@ ignoreWords:
   - goncalo
   - GOPATH
   - gradlew
+  - healthcheck
+  - isready
   - jackc
   - ldflags
   - libboost
@@ -27,6 +29,7 @@ ignoreWords:
   - openapi
   - Parens
   - pgrouting
+  - PGUSER
   - pgxpool
   - postgis
   - proguard

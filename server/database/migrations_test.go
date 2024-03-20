@@ -20,7 +20,7 @@ const migrationsURL = "file://migrations"
 func TestMigrations(t *testing.T) {
 	ctx := context.Background()
 
-	databaseContainer := container.NewDatabase(ctx, pathDockerfileContext)
+	databaseContainer := container.NewDatabase(ctx)
 	defer databaseContainer.Terminate(ctx)
 
 	m, err := migrate.New(migrationsURL, databaseContainer.ConnectionString(ctx))

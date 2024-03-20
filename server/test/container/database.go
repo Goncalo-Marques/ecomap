@@ -28,22 +28,19 @@ type database struct {
 }
 
 // NewDatabase returns a new database test container.
-func NewDatabase(ctx context.Context, dockerfileContext string) *database {
+func NewDatabase(ctx context.Context) *database {
 	port := fmt.Sprintf("%s/tcp", databasePort)
 
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		Started: true,
 		ContainerRequest: testcontainers.ContainerRequest{
-			FromDockerfile: testcontainers.FromDockerfile{
-				Context:    dockerfileContext,
-				Dockerfile: "database.Dockerfile",
-				KeepImage:  true,
-			},
+			Image:        "pgrouting/pgrouting",
 			ExposedPorts: []string{port},
 			AutoRemove:   true,
 			Env: map[string]string{
-				"POSTGRES_DB":       databaseName,
+				"PGUSER":            databaseUser,
 				"POSTGRES_USER":     databaseUser,
+				"POSTGRES_DB":       databaseName,
 				"POSTGRES_PASSWORD": databasePassword,
 			},
 			WaitingFor: wait.ForLog("database system is ready to accept connections").
@@ -62,6 +59,13 @@ func NewDatabase(ctx context.Context, dockerfileContext string) *database {
 
 // ConnectionString returns the database connection string.
 func (s *database) ConnectionString(ctx context.Context) string {
+	if s == nil {
+		return ""
+	}
+	if s.container == nil {
+		return ""
+	}
+
 	port := fmt.Sprintf("%s/tcp", databasePort)
 	mappedPort, err := s.container.MappedPort(ctx, nat.Port(port))
 	if err != nil {
@@ -74,6 +78,13 @@ func (s *database) ConnectionString(ctx context.Context) string {
 
 // Terminate terminates the container.
 func (s *database) Terminate(ctx context.Context) {
+	if s == nil {
+		return
+	}
+	if s.container == nil {
+		return
+	}
+
 	if err := s.container.Terminate(ctx); err != nil {
 		logging.Logger.ErrorContext(ctx, "container: failed to terminate database container", logging.Error(err))
 	}
