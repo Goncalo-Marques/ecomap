@@ -34,6 +34,7 @@ ignoreWords:
   - postgis
   - proguard
   - sharedpref
+  - signin
   - sslmode
   - temurin
   - testcontainers
@@ -51,6 +52,7 @@ ignorePaths:
   - server/api/swagger/ui
   - server/deployments
   - server/config.yml
+  - web/src/locales
 ignoreRegExpList:
   - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.
   - "import\\s*.*\".*?\"" # Ignore go single line imports.
