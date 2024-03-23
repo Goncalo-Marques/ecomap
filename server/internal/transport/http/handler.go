@@ -3,6 +3,8 @@ package http
 import (
 	"context"
 	"net/http"
+	"path"
+	"strings"
 
 	"github.com/google/uuid"
 
@@ -21,6 +23,13 @@ const (
 const (
 	dirWebApp    = "./dist/web"
 	dirSwaggerUI = "./api/swagger"
+	dirIndexHTML = "index.html"
+)
+
+// Request header const.
+const (
+	requestHeaderAcceptKey       = "Accept"
+	requestHeaderAcceptHTMLValue = "text/html"
 )
 
 // Service defines the service interface.
@@ -44,7 +53,16 @@ func New(service Service) *handler {
 
 	// Handle web application.
 	webAppFS := http.FileServer(http.Dir(dirWebApp))
-	router.Handle(baseURLWebApp, webAppFS)
+	router.HandleFunc(baseURLWebApp, func(w http.ResponseWriter, r *http.Request) {
+		// Handle single-page application routing.
+		if r.URL.Path != baseURLWebApp && strings.Contains(r.Header.Get(requestHeaderAcceptKey), requestHeaderAcceptHTMLValue) {
+			http.ServeFile(w, r, path.Join(dirWebApp, dirIndexHTML))
+			return
+		}
+
+		// Handle base file server.
+		webAppFS.ServeHTTP(w, r)
+	})
 
 	// Handle API.
 	h.handler = spec.HandlerWithOptions(h, spec.StdHTTPServerOptions{
