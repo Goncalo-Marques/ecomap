@@ -14,7 +14,7 @@ import (
 const (
 	baseURLWebApp = "/"
 	baseURLApi    = "/api"
-	baseURLDocs   = "/docs/"
+	baseURLDocs   = "/api/docs/"
 )
 
 // Directories to serve.
