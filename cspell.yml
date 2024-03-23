@@ -50,6 +50,7 @@ ignorePaths:
   - gradlew.bat
   - proguard-rules.pro
   - server/api/swagger/ui
+  - server/deployments
   - server/config.yml
   - web/src/locales
 ignoreRegExpList:
