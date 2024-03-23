@@ -1,0 +1,9 @@
+{
+	"$schema": "./schema.json",
+	"signin.title": "Sign in",
+	"signin.username.label": "Username",
+	"signin.username.placeholder": "Enter your username",
+	"signin.password.label": "Password",
+	"signin.password.placeholder": "Enter your password",
+	"signin.button": "Sign in"
+}
