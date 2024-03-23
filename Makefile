@@ -18,6 +18,7 @@ build:
 	make -C server
 	npm --prefix web ci
 	npm run --prefix web build
+	mkdir -p server/dist
 	mv web/dist server/dist/web
 	docker compose build --build-arg BUILD_GIT_HASH="$(BUILD_GIT_HASH)" --build-arg BUILD_TIMESTAMP="$(BUILD_TIMESTAMP)"
 
