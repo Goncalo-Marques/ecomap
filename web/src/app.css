@@ -1,14 +1,31 @@
-:root {
-	font-family: sans-serif;
-	color: rgba(255, 255, 255, 0.87);
-	background-color: #242424;
+@import "./styles/reset.css";
+@import "./styles/fonts.css";
+@import "./styles/colors.css";
+@import "./styles/shadows.css";
+@import "./styles/transitions.css";
+
+html {
+	font-family: Inter, sans-serif;
+	color: var(--gray-900);
+	background-color: var(--gray-50);
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
 }
 
-body {
-	min-height: 100vh;
+input,
+button {
+	outline-color: var(--gray-900);
 }
 
-body,
-p {
-	margin: 0;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 600;
+}
+
+h1 {
+	font-size: 2.25rem;
 }

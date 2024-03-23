@@ -1,0 +1,9 @@
+{
+	"$schema": "./schema.json",
+	"signin.title": "Iniciar sessão",
+	"signin.username.label": "Utilizador",
+	"signin.username.placeholder": "Digite o seu nome de utilizador",
+	"signin.password.label": "Password",
+	"signin.password.placeholder": "Digite a sua password",
+	"signin.button": "Iniciar sessão"
+}

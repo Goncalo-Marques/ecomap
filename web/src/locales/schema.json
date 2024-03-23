@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"properties": {
+		"signin.title": {
+			"type": "string"
+		},
+		"signin.username.label": {
+			"type": "string"
+		},
+		"signin.username.placeholder": {
+			"type": "string"
+		},
+		"signin.password.label": {
+			"type": "string"
+		},
+		"signin.password.placeholder": {
+			"type": "string"
+		},
+		"signin.button": {
+			"type": "string"
+		}
+	}
+}
