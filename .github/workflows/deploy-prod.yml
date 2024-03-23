@@ -45,11 +45,11 @@ jobs:
 
       - name: Set up server configs
         run: |
-          sed -i "s/{DB_USER}/${{ secrets.DB_USER }}/" server/config.yml
-          sed -i "s/{DB_PASSWORD}/${{ secrets.DB_PASSWORD }}/" server/config.yml
-          sed -i "s/{DB_HOST}/${{ secrets.DB_HOST }}/" server/config.yml
-          sed -i "s/{DB_PORT}/${{ secrets.DB_PORT }}/" server/config.yml
-          sed -i "s/{DB_NAME}/${{ secrets.DB_NAME }}/" server/config.yml
+          sed -i "s/{DB_USER}/${{ secrets.DB_USER }}/" server/deployments/prod/config.yml
+          sed -i "s/{DB_PASSWORD}/${{ secrets.DB_PASSWORD }}/" server/deployments/prod/config.yml
+          sed -i "s/{DB_HOST}/${{ secrets.DB_HOST }}/" server/deployments/prod/config.yml
+          sed -i "s/{DB_PORT}/${{ secrets.DB_PORT }}/" server/deployments/prod/config.yml
+          sed -i "s/{DB_NAME}/${{ secrets.DB_NAME }}/" server/deployments/prod/config.yml
 
       - name: Build app
         run: |
