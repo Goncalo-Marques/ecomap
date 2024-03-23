@@ -31,7 +31,7 @@ function translate(
 	const localeMap = locales[locale];
 	let text = localeMap[id];
 
-	// Replace placeholder variables inside text
+	// Replace placeholder variables inside text.
 	for (const key of Object.keys(vars)) {
 		text = text.replace(/{{.*}}/g, String(vars[key]));
 	}
