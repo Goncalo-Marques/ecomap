@@ -82,8 +82,9 @@ func main() {
 	handlerHTTP := transporthttp.New(service)
 
 	serverHTTP := &http.Server{
-		Addr:    addressHTTP,
-		Handler: handlerHTTP,
+		Addr:     addressHTTP,
+		Handler:  handlerHTTP,
+		ErrorLog: slog.NewLogLogger(logging.Logger.Handler(), slog.LevelError),
 	}
 
 	go func() {
