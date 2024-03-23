@@ -51,7 +51,7 @@ export const t = derived(locale, function ($locale) {
 	/**
 	 * Translates a given text to the locale configured in the application.
 	 * @param id Identifier of the text to be localized.
-	 * @param vars Map used to replaced placeholder values inside a given text.
+	 * @param vars Map used to replace placeholder values inside a given text.
 	 */
 	return function (id: LocaleTextID, vars: Record<string, unknown> = {}) {
 		return translate($locale, id, vars);
