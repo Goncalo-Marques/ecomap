@@ -14,6 +14,7 @@ ignoreWords:
   - constraintlayout
   - deepmap
   - ecomap
+  - fkey
   - golangci
   - goncalo
   - GOPATH
@@ -31,6 +32,7 @@ ignoreWords:
   - pgrouting
   - PGUSER
   - pgxpool
+  - pkey
   - postgis
   - proguard
   - sharedpref
