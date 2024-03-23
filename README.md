@@ -96,11 +96,11 @@ npm run
 
 The server application can be found in the `server` directory. It contains the Go code that serves the following routes:
 
-| Route    | Description     |
-| -------- | --------------- |
-| /        | Web Application |
-| /api     | Rest API        |
-| /docs/ui | Swagger UI      |
+| Route        | Description     |
+| ------------ | --------------- |
+| /            | Web Application |
+| /api         | Rest API        |
+| /api/docs/ui | Swagger UI      |
 
 The server contains a [Makefile](server/Makefile) that defines a set of tasks that can be run to help with development. The available targets can be checked by running the following command inside the `server` directory:
 
