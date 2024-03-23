@@ -20,7 +20,7 @@ const locales: Record<string, Record<LocaleTextID, string>> = {
  * Localizes text to a given locale.
  * @param locale Locale to localize a given text.
  * @param id Identifier of the text to be localized.
- * @param vars Map used to replaced placeholder values inside a given text.
+ * @param vars Map used to replace placeholder values inside a given text.
  * @returns Localized text.
  */
 function translate(
