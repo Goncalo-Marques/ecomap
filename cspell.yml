@@ -33,6 +33,7 @@ ignoreWords:
   - PGUSER
   - pgxpool
   - pkey
+  - plpgsql
   - postgis
   - proguard
   - sharedpref
