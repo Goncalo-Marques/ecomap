@@ -175,10 +175,12 @@ CREATE TABLE public.warehouses_trucks (
 -- Routes.
 CREATE TABLE public.routes (
     id                      uuid        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    truck_id                uuid        NOT NULL,
     departure_warehouse_id  uuid        NOT NULL,
     arrival_warehouse_id    uuid        NOT NULL,
     created_time            timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_pkey                          PRIMARY KEY (id),
+    CONSTRAINT routes_truck_id_fkey                 FOREIGN KEY (truck_id)                  REFERENCES public.trucks (id),
     CONSTRAINT routes_departure_warehouse_id_fkey   FOREIGN KEY (departure_warehouse_id)    REFERENCES public.warehouses (id),
     CONSTRAINT routes_arrival_warehouse_id_fkey     FOREIGN KEY (arrival_warehouse_id)      REFERENCES public.warehouses (id)
 );
