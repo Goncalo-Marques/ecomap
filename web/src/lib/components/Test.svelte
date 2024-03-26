@@ -6,9 +6,7 @@
 	import Style from "ol/style/Style";
 	import Stroke from "ol/style/Stroke";
 	import Fill from "ol/style/Fill";
-	import { add } from "ol/coordinate";
-	import VectorImageLayer from "ol/layer/VectorImage";
-
+    
 	function addLayer() {
 		const vectorLayer = new VectorLayer({
 			source: new VectorSource({
@@ -27,11 +25,4 @@
 
 		$map.addLayer(vectorLayer);
 	}
-
-	function log() {
-		console.log("LOG: ", $map.getView().getCenter());
-	}
 </script>
-
-<button on:click={addLayer}>BUTTON </button>
-<button on:click={log}>LOG </button>

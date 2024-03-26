@@ -9,29 +9,34 @@
 	import { onMount } from "svelte";
 
     /**
-     * 
+     * Zoom value for map view  
+     * @default 5
      */
-    export let zoom: number
+    export let zoom: number = 5
 
     /**
-     * 
+     * Center latitude of map
+     * @default 50
      */
-    export let lat: number
+    export let lat: number = 50
 
     /**
-     * 
+     * Center longitude of map
+     * @default 20
      */
-    export let lon: number
+    export let lon: number = 20
 
     /**
-     * 
+     * Map Viewport width size
+     * @default 100vw
      */
-    export let map_width: string
+    export let map_width: string = '100vw'
 
     /**
-     * 
+     * Map Viewport height size
+     * @default 100vh
      */
-    export let map_height: string
+    export let map_height: string = '100vh'
 
     const map_id: string = "map_id"
 
@@ -57,7 +62,7 @@
 </script>
 
 <div id={map_id} style="--map_width: {map_width}; --map_height: {map_height}">
-    <a style="position:absolute;left:0;bottom:0;z-index:999;" href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>
+    <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>
 </div>
 
 <style>
@@ -67,12 +72,15 @@
         position: relative;
     }
     a {
+        position:absolute;
         color: var(--gray-950);
         background-color: var(--white);
-        margin: 0;
-        padding: 1px .5em;
         font-size: 12px;
+        padding: 1px .5em;
         border-radius: 0px 5px;
         opacity: 0.8;
+        left:0;
+        bottom:0;
+        z-index:999;
     }
 </style>
