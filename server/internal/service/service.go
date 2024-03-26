@@ -11,22 +11,35 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
 )
 
+// AuthenticationService defines the authentication service interface.
+type AuthenticationService interface {
+	ValidPassword(password string) bool
+	HashPassword(password string) (string, error)
+	CheckPasswordHash(password, hash string) (bool, error)
+
+	NewJWT(subject string) (string, error)
+	ParseJWT(tokenString string) (string, error)
+}
+
 // Store defines the store interface.
 type Store interface {
+	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 
 	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)
 }
 
-// handler defines the http handler structure.
+// service defines the service structure.
 type service struct {
-	store Store
+	authnService AuthenticationService
+	store        Store
 }
 
 // New returns a new http handler.
-func New(store Store) *service {
+func New(authnService AuthenticationService, store Store) *service {
 	return &service{
-		store: store,
+		authnService: authnService,
+		store:        store,
 	}
 }
 

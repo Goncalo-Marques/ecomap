@@ -4,7 +4,8 @@ package logging
 const (
 	BuildGitHash   = "build.gitHash"
 	BuildTimestamp = "build.timestamp"
-	Hostname       = "hostname"
+	HostName       = "host.name"
 
-	EmployeeID = "employee.id"
+	EmployeeID       = "employee.id"
+	EmployeeUsername = "employee.username"
 )

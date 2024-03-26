@@ -9,17 +9,51 @@ servers:
     description: Production server.
   - url: http://localhost:8080/api
     description: Local server.
-security:
-  - BearerAuth: []
 
 paths:
-  /employees/{employeeId}:
-    get:
-      summary: Get employee by id.
-      operationId: getEmployeeByID
-      description: Returns a employee.
+  /employees/signin:
+    post:
+      summary: Sign in an employee.
+      operationId: signInEmployee
+      description: Returns a JSON Web Token for the specified username and password.
       tags:
         - Employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignIn"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWT"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Incorrect credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /employees/{employeeId}:
+    get:
+      summary: Get an employee by ID.
+      operationId: getEmployeeByID
+      description: Returns the employee with the specified identifier.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: []
       parameters:
         - $ref: "#/components/parameters/EmployeeIdParam"
       responses:
@@ -36,9 +70,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         401:
-          $ref: "#/components/responses/401"
+          $ref: "#/components/responses/Unauthorized"
         403:
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/Forbidden"
         404:
           description: Employee not found.
           content:
@@ -46,7 +80,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         500:
-          $ref: "#/components/responses/500"
+          $ref: "#/components/responses/InternalServerError"
 
 components:
   securitySchemes:
@@ -59,7 +93,7 @@ components:
     EmployeeIdParam:
       name: employeeId
       in: path
-      description: Promotion identifier.
+      description: Employee identifier.
       required: true
       schema:
         $ref: "#/components/schemas/UUID"
@@ -79,6 +113,25 @@ components:
           type: string
         message:
           type: string
+
+    SignIn:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    JWT:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVcJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiWiBmFtZSI6IkPvaG4gRG9lIiWiaWF0IjOxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssW5c
 
     EditableEmployee:
       type: object
@@ -104,19 +157,19 @@ components:
               $ref: "#/components/schemas/UUID"
 
   responses:
-    401:
+    Unauthorized:
       description: Access token is missing or invalid.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-    403:
+    Forbidden:
       description: Forbidden.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-    500:
+    InternalServerError:
       description: Unexpected error.
       content:
         application/json:

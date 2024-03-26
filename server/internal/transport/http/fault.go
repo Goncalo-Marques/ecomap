@@ -7,14 +7,21 @@ import (
 	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 )
 
+// Common fault messages.
+const (
+	errRequestBodyInvalid   = "invalid request body"
+	errIncorrectCredentials = "incorrect credentials"
+)
+
 // Common fault descriptions.
 const (
-	errFailedToMarshalResponseBody = "http: failed to marshal response body"
+	descriptionFailedToMarshalResponseBody = "http: failed to marshal response body"
 )
 
 // Fault code const.
 const (
 	faultCodeBadRequest          = "bad_request"
+	faultCodeUnauthorized        = "unauthorized"
 	faultCodeNotFound            = "not_found"
 	faultCodeInternalServerError = "internal_server_error"
 )
@@ -22,6 +29,11 @@ const (
 // badRequest writes an error response and sets the header with the bad request status code.
 func badRequest(w http.ResponseWriter, message string) {
 	_ = fault(w, http.StatusBadRequest, faultCodeBadRequest, message)
+}
+
+// unauthorized writes an error response and sets the header with the unauthorized status code.
+func unauthorized(w http.ResponseWriter, message string) {
+	_ = fault(w, http.StatusUnauthorized, faultCodeUnauthorized, message)
 }
 
 // notFound writes an error response and sets the header with the not found status code.
