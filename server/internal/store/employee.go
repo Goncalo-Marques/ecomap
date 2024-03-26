@@ -19,7 +19,8 @@ const (
 // GetEmployeeSignIn executes a query to return the sign-in of the employee with the specified username.
 func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT username, password FROM public.employees 
+		SELECT username, password 
+		FROM public.employees 
 		WHERE username = $1 
 	`, username)
 
@@ -44,7 +45,7 @@ func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username strin
 func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
 	row := tx.QueryRow(ctx, `
 		SELECT id, name, date_of_birth
-		FROM employee
+		FROM public.employee
 		WHERE id = $1
 	`, id)
 
