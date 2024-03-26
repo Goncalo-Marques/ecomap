@@ -18,6 +18,36 @@
 		},
 		"signin.button": {
 			"type": "string"
+		},
+		"sidebar.dashboard": {
+			"type": "string"
+		},
+		"sidebar.map": {
+			"type": "string"
+		},
+		"sidebar.routes": {
+			"type": "string"
+		},
+		"sidebar.containers": {
+			"type": "string"
+		},
+		"sidebar.warehouses": {
+			"type": "string"
+		},
+		"sidebar.trucks": {
+			"type": "string"
+		},
+		"sidebar.reports": {
+			"type": "string"
+		},
+		"sidebar.employees": {
+			"type": "string"
+		},
+		"notFound.title": {
+			"type": "string"
+		},
+		"notFound.description": {
+			"type": "string"
 		}
 	}
 }

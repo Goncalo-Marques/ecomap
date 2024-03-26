@@ -5,5 +5,15 @@
 	"signin.username.placeholder": "Enter your username",
 	"signin.password.label": "Password",
 	"signin.password.placeholder": "Enter your password",
-	"signin.button": "Sign in"
+	"signin.button": "Sign in",
+	"sidebar.dashboard": "Dashboard",
+	"sidebar.map": "Map",
+	"sidebar.routes": "Routes",
+	"sidebar.containers": "Containers",
+	"sidebar.warehouses": "Warehouses",
+	"sidebar.trucks": "Trucks",
+	"sidebar.reports": "Reports",
+	"sidebar.employees": "Employees",
+	"notFound.title": "Page not found",
+	"notFound.description": "The page you are looking for does not exist."
 }

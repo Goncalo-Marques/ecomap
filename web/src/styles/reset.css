@@ -37,3 +37,12 @@ h6 {
 button {
 	border: none;
 }
+
+ul {
+	padding: unset;
+}
+
+a {
+	text-decoration: none;
+	color: unset;
+}

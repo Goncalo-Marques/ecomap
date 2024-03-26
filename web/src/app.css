@@ -5,7 +5,7 @@
 @import "./styles/transitions.css";
 
 html {
-	font-family: Inter, sans-serif;
+	font: var(--text-base-regular);
 	color: var(--gray-900);
 	background-color: var(--gray-50);
 	line-height: 1.5;
@@ -14,18 +14,7 @@ html {
 
 input,
 button {
+	background-color: unset;
+	color: inherit;
 	outline-color: var(--gray-900);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	font-weight: 600;
-}
-
-h1 {
-	font-size: 2.25rem;
 }
