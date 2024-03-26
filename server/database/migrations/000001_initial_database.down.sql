@@ -26,11 +26,11 @@ DROP TYPE public.containers_reports_issue_type;
 
 -- Containers.
 DROP TABLE public.containers;
-DROP TYPE public.containers_container_type;
+DROP TYPE public.containers_category;
 
 -- Employees.
 DROP TABLE public.employees;
-DROP TYPE public.employees_employee_type;
+DROP TYPE public.employees_role;
 
 -- Users.
 DROP TABLE public.users;
