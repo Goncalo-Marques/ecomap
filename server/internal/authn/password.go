@@ -9,8 +9,8 @@ import (
 
 const (
 	passwordMinLength       = 14
-	passwordMinDigits       = 14
-	passwordMinSpecialChars = 14
+	passwordMinDigits       = 1
+	passwordMinSpecialChars = 1
 )
 
 // ValidPassword returns true if the password matches the requirements, false otherwise.
