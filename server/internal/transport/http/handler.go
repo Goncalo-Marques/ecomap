@@ -34,6 +34,7 @@ const (
 
 // Service defines the service interface.
 type Service interface {
+	SignInEmployee(ctx context.Context, username string, password string) (string, error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 }
 

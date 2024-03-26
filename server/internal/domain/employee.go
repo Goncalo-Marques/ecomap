@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: Avoid lint issue (remove this in the future)
+// Employee errors.
 var (
 	ErrEmployeeNotFound = errors.New("employee not found") // Returned when an employee is not found.
 )

@@ -9,11 +9,17 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/goncalo-marques/ecomap/server/internal/authn"
 	"github.com/goncalo-marques/ecomap/server/internal/config"
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
 	"github.com/goncalo-marques/ecomap/server/internal/service"
 	"github.com/goncalo-marques/ecomap/server/internal/store"
 	transporthttp "github.com/goncalo-marques/ecomap/server/internal/transport/http"
+)
+
+// Environment variable keys.
+const (
+	envKeyJWTSigningKey = "JWT_SIGNING_KEY"
 )
 
 // Default configuration values.
@@ -25,16 +31,16 @@ const (
 var (
 	BuildGitHash   string
 	BuildTimestamp string
-	Hostname       string
+	HostName       string
 )
 
 func main() {
 	var err error
 
-	if len(Hostname) == 0 {
-		Hostname, err = os.Hostname()
+	if len(HostName) == 0 {
+		HostName, err = os.Hostname()
 		if err != nil {
-			logging.Logger.Error("main: failed to get hostname", logging.Error(err))
+			logging.Logger.Error("main: failed to get host name", logging.Error(err))
 			return
 		}
 	}
@@ -44,7 +50,7 @@ func main() {
 	logging.Init(slogHandler,
 		slog.String(logging.BuildGitHash, BuildGitHash),
 		slog.String(logging.BuildTimestamp, BuildTimestamp),
-		slog.String(logging.Hostname, Hostname),
+		slog.String(logging.HostName, HostName),
 	)
 
 	// Initialize base context.
@@ -66,8 +72,16 @@ func main() {
 	}
 	defer store.Close()
 
+	// Set up authentication service.
+	jwtSigningKey, ok := os.LookupEnv(envKeyJWTSigningKey)
+	if !ok {
+		logging.Logger.WarnContext(ctx, "main: failed to get jwt signing key")
+	}
+
+	authnService := authn.New([]byte(jwtSigningKey))
+
 	// Set up service.
-	service := service.New(store)
+	service := service.New(authnService, store)
 
 	// Handle signals.
 	sigs := make(chan os.Signal, 1)
