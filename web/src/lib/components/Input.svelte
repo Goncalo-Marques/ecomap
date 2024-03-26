@@ -11,7 +11,7 @@
 	 * A space-separated list of the classes of the element.
 	 * @default ""
 	 */
-	let className: HTMLInputAttributes["class"] = "";
+	let className: string = "";
 	export { className as class };
 
 	/**

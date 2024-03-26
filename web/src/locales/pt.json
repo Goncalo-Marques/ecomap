@@ -5,5 +5,15 @@
 	"signin.username.placeholder": "Digite o seu nome de utilizador",
 	"signin.password.label": "Password",
 	"signin.password.placeholder": "Digite a sua password",
-	"signin.button": "Iniciar sessão"
+	"signin.button": "Iniciar sessão",
+	"sidebar.dashboard": "Painel",
+	"sidebar.map": "Mapa",
+	"sidebar.routes": "Routas",
+	"sidebar.containers": "Contentores",
+	"sidebar.warehouses": "Armazéns",
+	"sidebar.trucks": "Camiões",
+	"sidebar.reports": "Reportes",
+	"sidebar.employees": "Colaboradores",
+	"notFound.title": "Página não encontrada",
+	"notFound.description": "A página que procura não existe."
 }
