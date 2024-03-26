@@ -43,22 +43,22 @@ CREATE TRIGGER users_update_modified_time
     EXECUTE PROCEDURE public.update_modified_time();
 
 -- Employees.
-CREATE TYPE public.employees_employee_type AS ENUM ('waste_operator', 'manager');
+CREATE TYPE public.employees_role AS ENUM ('waste_operator', 'manager');
 
 CREATE TABLE public.employees (
-    id              uuid                            NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    username        varchar(50)                     NOT NULL,
-    password        varchar(60)                     NOT NULL,
-    first_name      varchar(50)                     NOT NULL,
-    last_name       varchar(50)                     NOT NULL,
-    type            public.employees_employee_type  NOT NULL,
-    date_of_birth   date                            NOT NULL,
-    phone_number    varchar(20)                     NOT NULL,
-    geom            geometry                        NOT NULL,
-    schedule_start  time                            NOT NULL,
-    schedule_end    time                            NOT NULL,
-    created_time    timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id              uuid                    NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    username        varchar(50)             NOT NULL,
+    password        varchar(60)             NOT NULL,
+    first_name      varchar(50)             NOT NULL,
+    last_name       varchar(50)             NOT NULL,
+    role            public.employees_role   NOT NULL,
+    date_of_birth   date                    NOT NULL,
+    phone_number    varchar(20)             NOT NULL,
+    geom            geometry                NOT NULL,
+    schedule_start  time                    NOT NULL,
+    schedule_end    time                    NOT NULL,
+    created_time    timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_time   timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT employees_pkey           PRIMARY KEY (id),
     CONSTRAINT employees_username_key   UNIQUE (username)
 );
@@ -74,14 +74,14 @@ CREATE TRIGGER employees_update_modified_time
     EXECUTE PROCEDURE public.update_modified_time();
 
 -- Containers.
-CREATE TYPE public.containers_container_type AS ENUM ('general', 'paper', 'plastic', 'metal', 'glass', 'organic', 'hazardous');
+CREATE TYPE public.containers_category AS ENUM ('general', 'paper', 'plastic', 'metal', 'glass', 'organic', 'hazardous');
 
 CREATE TABLE public.containers (
-    id              uuid                                NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    type            public.containers_container_type    NOT NULL,
-    geom            geometry                            NOT NULL,
-    created_time    timestamp                           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp                           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id              uuid                        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    category        public.containers_category  NOT NULL,
+    geom            geometry                    NOT NULL,
+    created_time    timestamp                   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_time   timestamp                   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT containers_pkey  PRIMARY KEY (id)
 );
 
