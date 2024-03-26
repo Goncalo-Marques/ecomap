@@ -20,7 +20,7 @@ const (
 func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error) {
 	row := tx.QueryRow(ctx, `
 		SELECT username, password 
-		FROM public.employees 
+		FROM employees 
 		WHERE username = $1 
 	`, username)
 
@@ -45,7 +45,7 @@ func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username strin
 func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
 	row := tx.QueryRow(ctx, `
 		SELECT id, name, date_of_birth
-		FROM public.employee
+		FROM employee
 		WHERE id = $1
 	`, id)
 
