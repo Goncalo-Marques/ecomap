@@ -14,7 +14,7 @@ const (
 
 var ErrJWTInvalid = errors.New("invalid jwt") // Returned when the JWT is invalid.
 
-// SubjectRole defines the role of subject.
+// SubjectRole defines the role of the subject.
 type SubjectRole string
 
 const (
