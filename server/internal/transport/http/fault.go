@@ -18,36 +18,28 @@ const (
 	descriptionFailedToMarshalResponseBody = "http: failed to marshal response body"
 )
 
-// Fault code const.
-const (
-	faultCodeBadRequest          = "bad_request"
-	faultCodeUnauthorized        = "unauthorized"
-	faultCodeNotFound            = "not_found"
-	faultCodeInternalServerError = "internal_server_error"
-)
-
 // badRequest writes an error response and sets the header with the bad request status code.
 func badRequest(w http.ResponseWriter, message string) {
-	_ = fault(w, http.StatusBadRequest, faultCodeBadRequest, message)
+	_ = fault(w, http.StatusBadRequest, spec.ErrorCodeBadRequest, &message)
 }
 
 // unauthorized writes an error response and sets the header with the unauthorized status code.
 func unauthorized(w http.ResponseWriter, message string) {
-	_ = fault(w, http.StatusUnauthorized, faultCodeUnauthorized, message)
+	_ = fault(w, http.StatusUnauthorized, spec.ErrorCodeUnauthorized, &message)
 }
 
 // notFound writes an error response and sets the header with the not found status code.
 func notFound(w http.ResponseWriter, message string) {
-	_ = fault(w, http.StatusNotFound, faultCodeNotFound, message)
+	_ = fault(w, http.StatusNotFound, spec.ErrorCodeNotFound, &message)
 }
 
 // internalServerError sets the header with the internal server error status code.
 func internalServerError(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusInternalServerError)
+	_ = fault(w, http.StatusInternalServerError, spec.ErrorCodeInternalServerError, nil)
 }
 
 // fault writes an error response and sets the header with the provided status code and content type json.
-func fault(w http.ResponseWriter, statusCode int, code, message string) error {
+func fault(w http.ResponseWriter, statusCode int, code spec.ErrorCode, message *string) error {
 	setHeaderJSON(w)
 	w.WriteHeader(statusCode)
 

@@ -107,10 +107,14 @@ components:
       type: object
       required:
         - code
-        - message
       properties:
         code:
           type: string
+          enum:
+            - bad_request
+            - unauthorized
+            - not_found
+            - internal_server_error
         message:
           type: string
 
