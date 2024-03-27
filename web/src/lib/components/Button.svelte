@@ -8,7 +8,7 @@
 	 * A space-separated list of the classes of the element.
 	 * @default ""
 	 */
-	let className: HTMLButtonAttributes["class"] = "";
+	let className: string = "";
 	export { className as class };
 
 	/**
@@ -59,45 +59,45 @@
 
 	.primary {
 		color: var(--white);
-		background-color: var(--blue-700);
+		background-color: var(--green-700);
 
 		&:hover:enabled {
-			background-color: var(--blue-800);
+			background-color: var(--green-800);
 		}
 
 		&:active:enabled {
-			background-color: var(--blue-900);
+			background-color: var(--green-900);
 		}
 	}
 	.secondary {
-		color: var(--blue-700);
+		color: var(--green-700);
 		background-color: transparent;
-		border: 1px solid var(--blue-700);
+		border: 1px solid var(--green-700);
 
 		&:hover:enabled {
-			color: var(--blue-800);
-			border-color: var(--blue-800);
-			background-color: var(--blue-100);
+			color: var(--green-800);
+			border-color: var(--green-800);
+			background-color: var(--green-50);
 		}
 
 		&:active:enabled {
-			color: var(--blue-800);
-			border-color: var(--blue-800);
-			background-color: var(--blue-200);
+			color: var(--green-800);
+			border-color: var(--green-800);
+			background-color: var(--green-100);
 		}
 	}
 	.tertiary {
-		color: var(--blue-700);
+		color: var(--green-700);
 		background-color: transparent;
 
 		&:hover:enabled {
-			color: var(--blue-800);
-			background-color: var(--blue-100);
+			color: var(--green-800);
+			background-color: var(--green-50);
 		}
 
 		&:active:enabled {
-			color: var(--blue-800);
-			background-color: var(--blue-200);
+			color: var(--green-800);
+			background-color: var(--green-100);
 		}
 	}
 
