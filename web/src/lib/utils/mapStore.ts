@@ -71,27 +71,6 @@ export function createMap(
 	get(map).addLayer(layerGroup);
 }
 
-export function mapEvents() {
-	const mapValue = get(map);
-
-	// Example value
-	mapValue.on("click", e => {
-		mapValue.forEachFeatureAtPixel(e.pixel, feature => {
-			console.log(feature.get("concelho"));
-		});
-	});
-}
-
-export function setStandard() {
-	layerGroup.getLayersArray()[0].setVisible(true);
-	layerGroup.getLayersArray()[1].setVisible(false);
-}
-
-export function setHumanitarian() {
-	layerGroup.getLayersArray()[0].setVisible(false);
-	layerGroup.getLayersArray()[1].setVisible(true);
-}
-
 /**
  * Add's vector layer to map with geojson
  *

@@ -1,5 +1,5 @@
 <script lang="ts">    
-    import {map, createMap, mapEvents} from '../utils/mapStore'
+    import {map, createMap} from '../utils/mapStore'
 	import { onMount } from "svelte";
 
     /**
@@ -24,9 +24,6 @@
 
     // Create Map
     createMap(lon, lat, zoom)
-
-    // Example map events
-    mapEvents()
 
     // Mount map into div
     onMount(() => {
