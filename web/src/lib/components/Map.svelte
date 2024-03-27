@@ -20,18 +20,6 @@
      */
     export let lon: number = -4
 
-    /**
-     * Map Viewport width size
-     * @default 100%
-     */
-    export let map_width: string = '100%'
-
-    /**
-     * Map Viewport height size
-     * @default 100%
-     */
-    export let map_height: string = '100%'
-
     const map_id: string = "map_id"
 
     // Create Map
@@ -46,14 +34,14 @@
 	});
 </script>
 
-<div id={map_id} style="--map_width: {map_width}; --map_height: {map_height}">
+<div id={map_id}>
     <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>
 </div>
 
 <style>
     div {
-        width:  var(--map_width);
-        height: var(--map_height);
+        width:  100%;
+        height: 100%;
         position: relative;
     }
     a {
