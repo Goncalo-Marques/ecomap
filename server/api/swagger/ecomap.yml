@@ -49,7 +49,10 @@ paths:
     get:
       summary: Get an employee by ID.
       operationId: getEmployeeByID
-      description: Returns the employee with the specified identifier.
+      description: |
+        Returns the employee with the specified identifier.
+
+        Required roles: `waste_operator`, `manager`
       tags:
         - Employee
       security:
