@@ -1,63 +1,48 @@
-<script lang="ts">
-	import Map from "ol/Map";
-	import View from "ol/View";
-	import TileLayer from "ol/layer/Tile";
-	import XYZ from "ol/source/XYZ";
-	import { transform } from "ol/proj";
-    
-    import {map} from '../utils/store'
+<script lang="ts">    
+    import {map, createMap, mapEvents} from '../utils/mapStore'
 	import { onMount } from "svelte";
 
     /**
      * Zoom value for map view  
-     * @default 5
+     * @default 7
      */
-    export let zoom: number = 5
+    export let zoom: number = 7
 
     /**
      * Center latitude of map
-     * @default 50
+     * @default 40
      */
-    export let lat: number = 50
+    export let lat: number = 40
 
     /**
      * Center longitude of map
-     * @default 20
+     * @default -4
      */
-    export let lon: number = 20
+    export let lon: number = -4
 
     /**
      * Map Viewport width size
-     * @default 100vw
+     * @default 100%
      */
-    export let map_width: string = '100vw'
+    export let map_width: string = '100%'
 
     /**
      * Map Viewport height size
-     * @default 100vh
+     * @default 100%
      */
-    export let map_height: string = '100vh'
+    export let map_height: string = '100%'
 
     const map_id: string = "map_id"
 
+    // Create Map
+    createMap(lon, lat, zoom)
+
+    // Example map events
+    mapEvents()
+
+    // Mount map into div
     onMount(() => {
         $map.setTarget(map_id)
-	});
-
-    $map = new Map({
-			layers: [
-				new TileLayer({
-					source: new XYZ({
-						url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        tileSize: 256,
-                        crossOrigin: 'anonymous'
-					}),
-				}),
-			],
-			view: new View({
-				center: transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
-				zoom: zoom,
-			}),
 	});
 </script>
 
@@ -67,7 +52,7 @@
 
 <style>
     div {
-        width: var(--map_width);
+        width:  var(--map_width);
         height: var(--map_height);
         position: relative;
     }

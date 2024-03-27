@@ -3,8 +3,9 @@
 	import Test from "../lib/components/Test.svelte";
 
 </script>
-    <Map/>
-	<Test />
+	<Test>
+		<Map/>
+	</Test>
 <main>
 	
 </main>

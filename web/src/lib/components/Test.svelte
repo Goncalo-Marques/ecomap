@@ -1,28 +1,77 @@
 <script lang="ts">
-	import VectorSource from "ol/source/Vector";
-	import { map } from "../utils/store";
-	import VectorLayer from "ol/layer/Vector";
-	import GeoJSON from "ol/format/GeoJSON";
-	import Style from "ol/style/Style";
-	import Stroke from "ol/style/Stroke";
-	import Fill from "ol/style/Fill";
-    
-	function addLayer() {
-		const vectorLayer = new VectorLayer({
-			source: new VectorSource({
-				url: "http://localhost:8000/concelhos.geojson",
-				format: new GeoJSON(),
-			}),
-			style: new Style({
-				stroke: new Stroke({
-					color: "#000000",
-				}),
-				fill: new Fill({
-					color: "#f7000050",
-				}),
-			}),
-		});
-
-		$map.addLayer(vectorLayer);
-	}
+	import {
+		addVectorLayer,
+		setStandard,
+		setHumanitarian,
+	} from "../utils/mapStore";
 </script>
+
+<main>
+	<div class="side">
+		<button
+			on:click={() => {
+				addVectorLayer("http://localhost:8000/concelhos.geojson");
+			}}
+		>
+			Poly
+		</button>
+		<button
+			on:click={() => {
+				addVectorLayer("http://localhost:8000/empresas_baixo_vouga.geojson");
+			}}
+		>
+			Point
+		</button>
+
+		<h2>Layers</h2>
+
+		<div>
+			<input
+				type="radio"
+				name="baseLayer"
+				id="osmStandard"
+				value="osmStandard"
+				checked
+				on:click={setStandard}
+			/><label for="osmStandard">osmStandard</label>
+		</div>
+		<div>
+			<input
+				type="radio"
+				name="baseLayer"
+				id="osmHumanitarian"
+				value="osmHumanitarian"
+				on:click={setHumanitarian}
+			/><label for="osmHumanitarian">osmHumanitarian</label>
+		</div>
+	</div>
+	<div class="view">
+		<slot />
+	</div>
+</main>
+
+<style>
+	* {
+		box-sizing: border-box;
+	}
+
+	main {
+		display: flex;
+	}
+
+	.side {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		float: left;
+
+		width: 200px;
+		height: 100vh;
+		padding: 10px;
+	}
+
+	.view {
+		float: none;
+		width: 100%;
+	}
+</style>
