@@ -77,11 +77,11 @@ CREATE TRIGGER employees_update_modified_time
 CREATE TYPE containers_category AS ENUM ('general', 'paper', 'plastic', 'metal', 'glass', 'organic', 'hazardous');
 
 CREATE TABLE containers (
-    id              uuid                        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    category        containers_category  NOT NULL,
-    geom            geometry                    NOT NULL,
-    created_time    timestamp                   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp                   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id              uuid                NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    category        containers_category NOT NULL,
+    geom            geometry            NOT NULL,
+    created_time    timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_time   timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT containers_pkey  PRIMARY KEY (id)
 );
 
@@ -94,16 +94,16 @@ CREATE TRIGGER containers_update_modified_time
 CREATE TYPE containers_reports_issue_type AS ENUM ('full', 'vandalized', 'misplaced', 'non-existent', 'other');
 
 CREATE TABLE containers_reports (
-    id              uuid                                    NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    container_id    uuid                                    NOT NULL,
-    issue_type      containers_reports_issue_type    NOT NULL,
+    id              uuid                            NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    container_id    uuid                            NOT NULL,
+    issue_type      containers_reports_issue_type   NOT NULL,
     description     varchar(500),
     attachment      bytea,
-    issuer_id       uuid                                    NOT NULL,
+    issuer_id       uuid                            NOT NULL,
     resolver_id     uuid,
-    resolved        boolean                                 NOT NULL    DEFAULT FALSE,
-    created_time    timestamp                               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp                               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    resolved        boolean                         NOT NULL    DEFAULT FALSE,
+    created_time    timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_time   timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT containers_reports_pkey              PRIMARY KEY (id),
     CONSTRAINT containers_reports_container_id_fkey FOREIGN KEY (container_id)  REFERENCES containers (id),
     CONSTRAINT containers_reports_issuer_id_fkey    FOREIGN KEY (issuer_id)     REFERENCES users (id),
@@ -211,10 +211,10 @@ CREATE INDEX routes_containers_created_time_idx ON routes_containers (created_ti
 CREATE TYPE routes_employees_employee_role AS ENUM ('driver', 'collector');
 
 CREATE TABLE routes_employees (
-    route_id        uuid                                    NOT NULL,
-    employee_id     uuid                                    NOT NULL,
-    employee_role   routes_employees_employee_role   NOT NULL,
-    created_time    timestamp                               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    route_id        uuid                            NOT NULL,
+    employee_id     uuid                            NOT NULL,
+    employee_role   routes_employees_employee_role  NOT NULL,
+    created_time    timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_employees_pkey                PRIMARY KEY (route_id, employee_id),
     CONSTRAINT routes_employees_route_id_fkey       FOREIGN KEY (route_id)              REFERENCES routes (id),
     CONSTRAINT routes_employees_employee_id_fkey    FOREIGN KEY (employee_id)           REFERENCES employees (id)
