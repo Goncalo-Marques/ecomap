@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { t } from "../../lib/utils/i8n";
+	import Map from '../../lib/components/map/Map.svelte'
 </script>
 
-<main>{$t("sidebar.map")}</main>
+<main>
+	<Map />
+</main>
+
+<style>
+	main {
+		width: 100%;
+	}
+</style>

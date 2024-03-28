@@ -7,46 +7,39 @@ import GeoJSON from "ol/format/GeoJSON";
 import { Vector as VectorSource, XYZ } from "ol/source";
 import { WebGLTile as TileLayer, Layer } from "ol/layer";
 import { fromLonLat } from "ol/proj";
-import LayerGroup from "ol/layer/Group";
 
 import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer.js";
 import WebGLPointsLayer from "ol/layer/WebGLPoints.js";
 
-export const map = writable<Map>();
+export const map = writable<Map|null>(null);
+
+const styles: any = {
+    'route-1': {
+        'stroke-color': ['*', ['get', 'COLOR'], [220, 220, 220]],
+        'stroke-width': 2,
+        'stroke-offset': -1,
+        'fill-color': ['*', ['get', 'COLOR'], [255, 255, 255, 0.6]],
+    },
+    'route-2': {
+        'stroke-color': '#e609d7',
+        'fill-color': '#f0b10585',
+    }
+};
 
 class WebGLLayer extends Layer {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	createRenderer(): any {
-		return new WebGLVectorLayerRenderer(this, {
-			style: {
-				"stroke-color": "#000000",
-				"fill-color": "#f7000050",
-			},
-		});
-	}
+	private id: string;
+
+    constructor(options: any) {
+        super(options);
+        this.id = options.id;
+    }
+
+    createRenderer(): any {
+        return new WebGLVectorLayerRenderer(this, {
+            style: styles[this.id]
+        });
+    }
 }
-
-const osmStandard = new TileLayer({
-	source: new XYZ({
-		url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-		tileSize: 256,
-		crossOrigin: "anonymous",
-	}),
-	visible: true,
-});
-
-const osmHumanitarian = new TileLayer({
-	source: new XYZ({
-		url: "https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
-		tileSize: 256,
-		crossOrigin: "anonymous",
-	}),
-	visible: false,
-});
-
-const layerGroup = new LayerGroup({
-	layers: [osmStandard, osmHumanitarian],
-});
 
 export function createMap(
 	lon: number,
@@ -56,19 +49,23 @@ export function createMap(
 ) {
 	map.set(
 		new Map({
+			layers: [
+				new TileLayer({
+					source: new XYZ({
+						url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+						tileSize: 256,
+						crossOrigin: "anonymous",
+					}),
+					visible: true,
+				})
+			],
 			view: new View({
 				center: fromLonLat([lon, lat]),
 				zoom: zoom,
 				projection: projection,
-				extent: [
-					-1354248.9461922427, 4274625.428689052, 523429.8051994869,
-					5593519.232428095,
-				],
 			}),
 		}),
 	);
-
-	get(map).addLayer(layerGroup);
 }
 
 /**
@@ -80,13 +77,14 @@ export function addVectorLayer(url: string) {
 	const mapValue = get(map);
 
 	const vectorLayer = new WebGLLayer({
+		id: 'route-2',
 		source: new VectorSource({
 			url: url,
 			format: new GeoJSON(),
 		}),
 	});
 
-	mapValue.addLayer(vectorLayer);
+	mapValue?.addLayer(vectorLayer);
 }
 
 /**
@@ -107,5 +105,5 @@ export function addPointLayer(url: string) {
 		},
 	});
 
-	mapValue.addLayer(pointsLayer);
+	mapValue?.addLayer(pointsLayer);
 }

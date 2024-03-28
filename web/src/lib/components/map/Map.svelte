@@ -1,6 +1,7 @@
 <script lang="ts">    
-    import {map, createMap} from '../utils/mapStore'
-	import { onMount } from "svelte";
+    import {map, createMap} from './mapStore'
+	import { onDestroy, onMount } from "svelte";
+    import {} from 'ol/ol.css'
 
     /**
      * Zoom value for map view  
@@ -22,13 +23,21 @@
 
     const map_id: string = "map_id"
 
-    // Create Map
-    createMap(lon, lat, zoom)
-
     // Mount map into div
-    onMount(() => {
+    onMount(() => {   
+        createMap(lon, lat, zoom)
+        
+        if (!$map) {
+            return
+        }
+
         $map.setTarget(map_id)
 	});
+
+    onDestroy(() => {
+        map.set(null)
+    })
+
 </script>
 
 <div id={map_id}>
