@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
+	"github.com/goncalo-marques/ecomap/server/internal/authz"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
@@ -32,6 +33,11 @@ const (
 	requestHeaderAcceptHTMLValue = "text/html"
 )
 
+// AuthorizationService defines the authorization service interface.
+type AuthorizationService interface {
+	Middleware(options authz.MiddlewareOptions) func(http.Handler) http.Handler
+}
+
 // Service defines the service interface.
 type Service interface {
 	SignInEmployee(ctx context.Context, username string, password string) (string, error)
@@ -40,14 +46,16 @@ type Service interface {
 
 // handler defines the http handler structure.
 type handler struct {
-	handler http.Handler
-	service Service
+	authzService AuthorizationService
+	service      Service
+	handler      http.Handler
 }
 
 // New returns a new http handler.
-func New(service Service) *handler {
+func New(authzService AuthorizationService, service Service) *handler {
 	h := &handler{
-		service: service,
+		authzService: authzService,
+		service:      service,
 	}
 
 	router := http.NewServeMux()
@@ -66,9 +74,22 @@ func New(service Service) *handler {
 	})
 
 	// Handle API.
+	authzMiddleware := authzService.Middleware(authz.MiddlewareOptions{
+		UnauthorizedHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			unauthorized(w, err.Error())
+		},
+		ForbiddenHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			forbidden(w, err.Error())
+		},
+		InternalServerErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			internalServerError(w)
+		},
+	})
+
 	h.handler = spec.HandlerWithOptions(h, spec.StdHTTPServerOptions{
-		BaseURL:    baseURLApi,
-		BaseRouter: router,
+		BaseURL:     baseURLApi,
+		BaseRouter:  router,
+		Middlewares: []spec.MiddlewareFunc{authzMiddleware},
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			badRequest(w, err.Error())
 		},
