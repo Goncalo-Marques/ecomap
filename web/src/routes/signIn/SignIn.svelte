@@ -6,7 +6,6 @@
 	import httpClient from "../../lib/utils/httpClient";
 	import { t } from "../../lib/utils/i8n";
 	import { decodeTokenPayload } from "../../lib/utils/auth";
-	import { SubjectRole } from "../../domain/role";
 
 	/**
 	 * Error message displayed after an error occurs with the server.
