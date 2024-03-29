@@ -15,6 +15,18 @@
 	export { className as class };
 
 	/**
+	 * Indicates if the input contains an error.
+	 * @default false
+	 */
+	export let error: boolean = false;
+
+	/**
+	 * The text below the input that contains additional information about how the input will be used.
+	 * @default null
+	 */
+	export let helperText: string | null = null;
+
+	/**
 	 * Global attribute valid for all elements, including all the input types, it defines a unique identifier (ID) which must be unique in the whole document.
 	 * @default null
 	 */
@@ -49,7 +61,17 @@
 	{#if label}
 		{label}
 	{/if}
-	<input {autocomplete} class={className} {id} {name} {placeholder} {type} />
+	<input
+		{autocomplete}
+		class={`${error ? "error" : ""} ${className}`}
+		{id}
+		{name}
+		{placeholder}
+		{type}
+	/>
+	{#if helperText}
+		<span class={`helper-text ${error ? "error" : ""}`}>{helperText}</span>
+	{/if}
 </label>
 
 <style>
@@ -63,9 +85,27 @@
 		padding: 0.375rem 0.5rem;
 		border: 1px solid var(--gray-300);
 		border-radius: 0.25rem;
+		color: var(--gray-900);
 
 		&::placeholder {
 			color: var(--gray-400);
+		}
+
+		&.error {
+			border-color: var(--red-500);
+
+			&:focus {
+				outline-color: var(--red-500);
+			}
+		}
+	}
+
+	.helper-text {
+		font: var(--text-xs-regular);
+		color: var(--gray-400);
+
+		&.error {
+			color: var(--red-500);
 		}
 	}
 </style>
