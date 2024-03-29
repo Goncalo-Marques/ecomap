@@ -51,12 +51,10 @@ paths:
       operationId: getEmployeeByID
       description: |
         Returns the employee with the specified identifier.
-
-        Required roles: `waste_operator`, `manager`
       tags:
         - Employee
       security:
-        - BearerAuth: []
+        - BearerAuth: [waste_operator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdParam"
       responses:
