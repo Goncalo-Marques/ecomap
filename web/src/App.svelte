@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Router, Route, navigate } from "svelte-routing";
+	import { Router, Route } from "svelte-routing";
 	import SignIn from "./routes/signIn/SignIn.svelte";
 	import Dashboard from "./routes/backOffice/dashboard/Dashboard.svelte";
 	import Map from "./routes/backOffice/map/Map.svelte";
@@ -14,19 +14,9 @@
 	import {
 		BackOfficeRouterPaths,
 		backOfficeBasename,
-		BackOfficeRoutes,
 		CommonRoutes,
 	} from "./routes/constants/routes";
-	import url from "./lib/utils/url";
 	import PrivateRouter from "./routes/components/PrivateRouter.svelte";
-
-	// Redirect to dashboard page if pathname is at root level.
-	if (
-		$url.pathname === `/${backOfficeBasename}` ||
-		$url.pathname === `/${backOfficeBasename}/`
-	) {
-		navigate(BackOfficeRoutes.DASHBOARD);
-	}
 </script>
 
 <Router>
