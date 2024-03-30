@@ -13,7 +13,6 @@
 	 * @returns `true` if user is authenticated. Otherwise, returns `false`.
 	 */
 	function verifyAuthentication(): boolean {
-		// Redirect to sign in page if user is not authenticated.
 		const authenticated = isAuthenticated();
 
 		isUserAuthenticated.set(authenticated);
@@ -26,6 +25,7 @@
 	 * Verifies if the user is authenticated and if not, redirects to sign in page.
 	 */
 	function onUrlChange() {
+		// Redirect to sign in page if user is not authenticated.
 		if (!verifyAuthentication()) {
 			location.replace(CommonRoutes.SIGN_IN);
 		}
