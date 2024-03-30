@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Router, Route } from "svelte-routing";
+	import { Router, Route, navigate } from "svelte-routing";
 	import SignIn from "./routes/signIn/SignIn.svelte";
 	import Dashboard from "./routes/backOffice/dashboard/Dashboard.svelte";
 	import Map from "./routes/backOffice/map/Map.svelte";
@@ -15,8 +15,16 @@
 		BackOfficeRouterPaths,
 		backOfficeBasename,
 		CommonRoutes,
+		BackOfficeRoutes,
 	} from "./routes/constants/routes";
 	import PrivateRouter from "./routes/components/PrivateRouter.svelte";
+	import { isAuthenticated } from "./lib/utils/auth";
+	import url from "./lib/utils/url";
+
+	// Redirect to back office dashboard page if user is authenticated and URL pathname is at the root level.
+	if (isAuthenticated() && $url.pathname === "/") {
+		navigate(BackOfficeRoutes.DASHBOARD);
+	}
 </script>
 
 <Router>
