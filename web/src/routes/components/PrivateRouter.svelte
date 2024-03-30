@@ -38,9 +38,7 @@
 		// URL subscription to watch for route changes.
 		const unsubscribe = url.subscribe(onUrlChange);
 
-		return function () {
-			unsubscribe();
-		};
+		return () => unsubscribe();
 	});
 </script>
 
