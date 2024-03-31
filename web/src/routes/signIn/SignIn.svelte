@@ -68,12 +68,6 @@
 			},
 		});
 
-		// Check if the request failed to reach the server.
-		if (!res.error && !res.response.ok) {
-			responseErrorMessage = $t("error.unexpected");
-			return;
-		}
-
 		if (res.error) {
 			const { code } = res.error;
 
