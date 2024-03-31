@@ -13,6 +13,9 @@ API_SWAGGER_GEN_PACKAGE=ecomap
 ## default: run clean, generate, tidy, vendor, lint, test and build
 default: clean generate tidy vendor lint test build
 
+## dev: run clean, generate, tidy, vendor and build
+dev: clean generate tidy vendor build
+
 ## clean: clean the vendor, dist and api generated directories
 clean:
 	rm -rf vendor/

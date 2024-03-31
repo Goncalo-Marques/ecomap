@@ -53,7 +53,7 @@ paths:
       tags:
         - Employee
       security:
-        - BearerAuth: []
+        - BearerAuth: [waste_operator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdParam"
       responses:
@@ -113,6 +113,7 @@ components:
           enum:
             - bad_request
             - unauthorized
+            - forbidden
             - not_found
             - internal_server_error
         message:

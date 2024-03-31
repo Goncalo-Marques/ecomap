@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { Link } from "svelte-routing";
 	import Logo from "./Logo.svelte";
-	import { AppRoutes } from "../../constants/appRoutes";
+	import { BackOfficeRoutes } from "../../../constants/routes";
 </script>
 
 <div class="top-bar">
-	<Link to={AppRoutes.DASHBOARD}>
+	<Link to={BackOfficeRoutes.DASHBOARD}>
 		<div class="logo-container">
 			<Logo />
 			<h1>EcoMap</h1>

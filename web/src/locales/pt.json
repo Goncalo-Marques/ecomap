@@ -1,11 +1,14 @@
 {
 	"$schema": "./schema.json",
+	"error.requiredField": "Campo obrigatório",
+	"error.unexpected": "Ocorreu um erro inesperado. Tente novamente mais tarde ou contacte a equipa de apoio.",
 	"signin.title": "Iniciar sessão",
 	"signin.username.label": "Utilizador",
 	"signin.username.placeholder": "Digite o seu nome de utilizador",
 	"signin.password.label": "Password",
 	"signin.password.placeholder": "Digite a sua password",
 	"signin.button": "Iniciar sessão",
+	"signin.error.incorrectCredentials": "Credenciais inválidas. O nome de utilizador ou a palavra-passe estão incorrectos.",
 	"sidebar.dashboard": "Painel",
 	"sidebar.map": "Mapa",
 	"sidebar.routes": "Routas",
@@ -15,5 +18,7 @@
 	"sidebar.reports": "Reportes",
 	"sidebar.employees": "Colaboradores",
 	"notFound.title": "Página não encontrada",
-	"notFound.description": "A página que procura não existe."
+	"notFound.description": "A página que procura não existe.",
+	"forbidden.title": "Acesso proibido",
+	"forbidden.description": "Não tem autorização para aceder a esta página."
 }

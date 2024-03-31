@@ -10,7 +10,7 @@ dev-web:
 
 ## dev-server: start development server app
 dev-server:
-	make -C server
+	make dev -C server
 	cd server && dist/server
 
 ## build: build server, web app and docker containers

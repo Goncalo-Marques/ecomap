@@ -1,6 +1,12 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"properties": {
+		"error.requiredField": {
+			"type": "string"
+		},
+		"error.unexpected": {
+			"type": "string"
+		},
 		"signin.title": {
 			"type": "string"
 		},
@@ -17,6 +23,9 @@
 			"type": "string"
 		},
 		"signin.button": {
+			"type": "string"
+		},
+		"signin.error.incorrectCredentials": {
 			"type": "string"
 		},
 		"sidebar.dashboard": {
@@ -47,6 +56,12 @@
 			"type": "string"
 		},
 		"notFound.description": {
+			"type": "string"
+		},
+		"forbidden.title": {
+			"type": "string"
+		},
+		"forbidden.description": {
 			"type": "string"
 		}
 	}
