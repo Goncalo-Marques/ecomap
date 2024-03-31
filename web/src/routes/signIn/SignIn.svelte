@@ -5,7 +5,7 @@
 	import Input from "../../lib/components/Input.svelte";
 	import httpClient from "../../lib/utils/httpClient";
 	import { t } from "../../lib/utils/i8n";
-	import { decodeTokenPayload } from "../../lib/utils/auth";
+	import { storeToken } from "../../lib/utils/auth";
 
 	/**
 	 * Error message displayed after an error occurs with the server.
@@ -86,19 +86,12 @@
 			return;
 		}
 
-		const { token } = res.data;
-
-		const payload = decodeTokenPayload(token);
-		if (!payload) {
+		try {
+			storeToken(res.data.token);
+		} catch (e) {
 			responseErrorMessage = $t("error.unexpected");
 			return;
 		}
-
-		const expireTimeInMs = payload.exp * 1000;
-		const expireDate = new Date(expireTimeInMs);
-
-		// Save JWT token in a cookie.
-		document.cookie = `token=${token}; Path=/; Expires=${expireDate}; SameSite=Strict; Secure`;
 
 		navigate(BackOfficeRoutes.DASHBOARD);
 	}

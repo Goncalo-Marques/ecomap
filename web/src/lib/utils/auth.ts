@@ -50,3 +50,20 @@ export function decodeTokenPayload(token: string): TokenPayload | null {
 
 	return payload;
 }
+
+/**
+ * Stores token in cookies.
+ * @param token JWT token.
+ * @throws {Error} Invalid token payload.
+ */
+export function storeToken(token: string) {
+	const payload = decodeTokenPayload(token);
+	if (!payload) {
+		throw new Error("Couldn't decode token payload");
+	}
+
+	const expireTimeInMs = payload.exp * 1000;
+	const expireDate = new Date(expireTimeInMs);
+
+	document.cookie = `token=${token}; Path=/; Expires=${expireDate}; SameSite=Strict; Secure`;
+}
