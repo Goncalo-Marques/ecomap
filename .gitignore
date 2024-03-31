@@ -9,6 +9,7 @@ bin
 
 # Generated files
 *.gen.go
+web/api
 
 # Logs
 logs

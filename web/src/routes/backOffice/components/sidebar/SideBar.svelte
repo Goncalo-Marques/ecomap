@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { Link } from "svelte-routing";
-	import Icon from "../../../lib/components/Icon.svelte";
-	import url from "../../../lib/utils/url";
-	import { t } from "../../../lib/utils/i8n";
-	import { AppRoutes } from "../../constants/appRoutes";
+	import Icon from "../../../../lib/components/Icon.svelte";
+	import url from "../../../../lib/utils/url";
+	import { t } from "../../../../lib/utils/i8n";
+	import { BackOfficeRoutes } from "../../../constants/routes";
 </script>
 
 <nav>
 	<ul>
 		<li>
 			<Link
-				to={AppRoutes.DASHBOARD}
-				data-selected={$url.pathname === AppRoutes.DASHBOARD ||
-					$url.pathname.startsWith(`${AppRoutes.DASHBOARD}/`)}
+				to={BackOfficeRoutes.DASHBOARD}
+				data-selected={$url.pathname === BackOfficeRoutes.DASHBOARD ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.DASHBOARD}/`)}
 			>
 				<Icon name="dashboard" />
 				<span>{$t("sidebar.dashboard")}</span>
@@ -20,9 +20,9 @@
 		</li>
 		<li>
 			<Link
-				to={AppRoutes.MAP}
-				data-selected={$url.pathname === AppRoutes.MAP ||
-					$url.pathname.startsWith(`${AppRoutes.MAP}/`)}
+				to={BackOfficeRoutes.MAP}
+				data-selected={$url.pathname === BackOfficeRoutes.MAP ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.MAP}/`)}
 			>
 				<Icon name="map" />
 				<span>{$t("sidebar.map")}</span>
@@ -30,9 +30,9 @@
 		</li>
 		<li>
 			<Link
-				to={AppRoutes.ROUTES}
-				data-selected={$url.pathname === AppRoutes.ROUTES ||
-					$url.pathname.startsWith(`${AppRoutes.ROUTES}/`)}
+				to={BackOfficeRoutes.ROUTES}
+				data-selected={$url.pathname === BackOfficeRoutes.ROUTES ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.ROUTES}/`)}
 			>
 				<Icon name="route" />
 				<span>{$t("sidebar.routes")}</span>
@@ -40,9 +40,9 @@
 		</li>
 		<li>
 			<Link
-				to={AppRoutes.CONTAINERS}
-				data-selected={$url.pathname === AppRoutes.CONTAINERS ||
-					$url.pathname.startsWith(`${AppRoutes.CONTAINERS}/`)}
+				to={BackOfficeRoutes.CONTAINERS}
+				data-selected={$url.pathname === BackOfficeRoutes.CONTAINERS ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.CONTAINERS}/`)}
 			>
 				<Icon name="delete" />
 				<span>{$t("sidebar.containers")}</span>
@@ -50,9 +50,9 @@
 		</li>
 		<li>
 			<Link
-				to={AppRoutes.WAREHOUSES}
-				data-selected={$url.pathname === AppRoutes.WAREHOUSES ||
-					$url.pathname.startsWith(`${AppRoutes.WAREHOUSES}/`)}
+				to={BackOfficeRoutes.WAREHOUSES}
+				data-selected={$url.pathname === BackOfficeRoutes.WAREHOUSES ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.WAREHOUSES}/`)}
 			>
 				<Icon name="warehouse" />
 				<span>{$t("sidebar.warehouses")}</span>
@@ -60,9 +60,9 @@
 		</li>
 		<li>
 			<Link
-				to={AppRoutes.TRUCKS}
-				data-selected={$url.pathname === AppRoutes.TRUCKS ||
-					$url.pathname.startsWith(`${AppRoutes.TRUCKS}/`)}
+				to={BackOfficeRoutes.TRUCKS}
+				data-selected={$url.pathname === BackOfficeRoutes.TRUCKS ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.TRUCKS}/`)}
 			>
 				<Icon name="local_shipping" />
 				<span>{$t("sidebar.trucks")}</span>
@@ -70,9 +70,9 @@
 		</li>
 		<li>
 			<Link
-				to={AppRoutes.REPORTS}
-				data-selected={$url.pathname === AppRoutes.REPORTS ||
-					$url.pathname.startsWith(`${AppRoutes.REPORTS}/`)}
+				to={BackOfficeRoutes.REPORTS}
+				data-selected={$url.pathname === BackOfficeRoutes.REPORTS ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.REPORTS}/`)}
 			>
 				<Icon name="description" />
 				<span>{$t("sidebar.reports")}</span>
@@ -80,9 +80,9 @@
 		</li>
 		<li>
 			<Link
-				to={AppRoutes.EMPLOYEES}
-				data-selected={$url.pathname === AppRoutes.EMPLOYEES ||
-					$url.pathname.startsWith(`${AppRoutes.EMPLOYEES}/`)}
+				to={BackOfficeRoutes.EMPLOYEES}
+				data-selected={$url.pathname === BackOfficeRoutes.EMPLOYEES ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.EMPLOYEES}/`)}
 			>
 				<Icon name="group" />
 				<span>{$t("sidebar.employees")}</span>
