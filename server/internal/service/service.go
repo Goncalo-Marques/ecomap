@@ -7,8 +7,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/goncalo-marques/ecomap/server/internal/authn"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
+)
+
+const (
+	descriptionFailedCheckPasswordHash = "service: failed to check password hash"
+	descriptionFailedCreateJWT         = "service: failed to create jwt"
 )
 
 // AuthenticationService defines the authentication service interface.
@@ -17,13 +23,13 @@ type AuthenticationService interface {
 	HashPassword(password string) (string, error)
 	CheckPasswordHash(password, hash string) (bool, error)
 
-	NewJWT(subject string) (string, error)
-	ParseJWT(tokenString string) (string, error)
+	NewJWT(subject string, subjectRoles []authn.SubjectRole) (string, error)
 }
 
 // Store defines the store interface.
 type Store interface {
 	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error)
+	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username string) (domain.Employee, error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 
 	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)

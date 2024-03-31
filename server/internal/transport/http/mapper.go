@@ -20,7 +20,7 @@ func jwtFromJWTToken(token string) spec.JWT {
 func employeeFromDomain(employee domain.Employee) spec.Employee {
 	return spec.Employee{
 		Id:          employee.ID,
-		Name:        employee.Name,
+		Name:        employee.FirstName,
 		DateOfBirth: dateFromTime(employee.DateOfBirth),
 	}
 }
