@@ -36,4 +36,5 @@ export enum BackOfficeRoutes {
  */
 export enum CommonRoutes {
 	SIGN_IN = "/signin",
+	FORBIDDEN = "/forbidden",
 }

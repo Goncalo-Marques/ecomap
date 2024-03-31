@@ -57,6 +57,12 @@
 		},
 		"notFound.description": {
 			"type": "string"
+		},
+		"forbidden.title": {
+			"type": "string"
+		},
+		"forbidden.description": {
+			"type": "string"
 		}
 	}
 }

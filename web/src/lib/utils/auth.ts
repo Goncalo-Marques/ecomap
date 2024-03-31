@@ -24,16 +24,6 @@ export function getToken(): string | null {
 }
 
 /**
- * Indicates if subject is authenticated.
- * @returns `true` when subject is authenticated. Otherwise, returns `false`.
- */
-export function isAuthenticated(): boolean {
-	const token = getToken();
-
-	return !!token;
-}
-
-/**
  * Decodes payload from token.
  * @param token JWT token.
  * @returns Decoded payload or `null` when payload is not found within the token.

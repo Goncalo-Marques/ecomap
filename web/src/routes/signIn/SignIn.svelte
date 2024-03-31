@@ -3,9 +3,9 @@
 	import { BackOfficeRoutes } from "../constants/routes";
 	import Button from "../../lib/components/Button.svelte";
 	import Input from "../../lib/components/Input.svelte";
-	import httpClient from "../../lib/utils/httpClient";
 	import { t } from "../../lib/utils/i8n";
 	import { storeToken } from "../../lib/utils/auth";
+	import ecomapHttpClient from "../../lib/clients/ecomap/http";
 
 	/**
 	 * Error message displayed after an error occurs with the server.
@@ -61,7 +61,7 @@
 			return;
 		}
 
-		const res = await httpClient.POST("/employees/signin", {
+		const res = await ecomapHttpClient.POST("/employees/signin", {
 			body: {
 				username,
 				password,
