@@ -69,7 +69,7 @@ func (s *service) SignInEmployee(ctx context.Context, username string, password 
 		role = authn.SubjectRoleManager
 	}
 
-	token, err := s.authnService.NewJWT(employee.ID.String(), role)
+	token, err := s.authnService.NewJWT(employee.ID.String(), []authn.SubjectRole{role})
 	if err != nil {
 		return "", logAndWrapError(ctx, err, descriptionFailedCreateJWT, logAttrs...)
 	}

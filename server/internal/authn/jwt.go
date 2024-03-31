@@ -30,7 +30,7 @@ type Claims struct {
 }
 
 // NewJWT returns a new signed JSON Web Token with an expiration time of 24 hours and the specified claims.
-func (s *service) NewJWT(subject string, subjectRoles ...SubjectRole) (string, error) {
+func (s *service) NewJWT(subject string, subjectRoles []SubjectRole) (string, error) {
 	expiresAt := time.Now().Add(jwtExpirationTime).UTC()
 	issuedAt := time.Now().UTC()
 

@@ -23,7 +23,7 @@ type AuthenticationService interface {
 	HashPassword(password string) (string, error)
 	CheckPasswordHash(password, hash string) (bool, error)
 
-	NewJWT(subject string, subjectRoles ...authn.SubjectRole) (string, error)
+	NewJWT(subject string, subjectRoles []authn.SubjectRole) (string, error)
 }
 
 // Store defines the store interface.
