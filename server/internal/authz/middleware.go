@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
-	"github.com/goncalo-marques/ecomap/server/internal/authn"
 )
 
 const (
@@ -22,6 +21,7 @@ const (
 
 var (
 	ErrAuthorizationHeaderInvalid = errors.New("invalid authorization header") // Returned when the Authorization header is invalid.
+	ErrJWTInvalid                 = errors.New("invalid jwt")                  // Returned when the JWT is invalid.
 	ErrRolesInvalid               = errors.New("invalid roles")                // Returned when the subject does not contain any of the required roles.
 	ErrAuthorizationInvalid       = errors.New("invalid authorization")        // Returned when the subject is not the one actually contained in the path wildcard.
 )
@@ -31,9 +31,8 @@ type ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 
 // MiddlewareOptions defines the middleware options structure.
 type MiddlewareOptions struct {
-	UnauthorizedHandlerFunc        ErrorHandlerFunc
-	ForbiddenHandlerFunc           ErrorHandlerFunc
-	InternalServerErrorHandlerFunc ErrorHandlerFunc
+	UnauthorizedHandlerFunc ErrorHandlerFunc
+	ForbiddenHandlerFunc    ErrorHandlerFunc
 }
 
 // Middleware validates the JWT in the Authorization header and ensures that the associated subject has the necessary
@@ -52,14 +51,6 @@ func (s *service) Middleware(options MiddlewareOptions) func(http.Handler) http.
 	if forbidden == nil {
 		forbidden = func(w http.ResponseWriter, r *http.Request, err error) {
 			http.Error(w, err.Error(), http.StatusForbidden)
-		}
-	}
-
-	// internalServerError defines a function to handle an internal server error HTTP response.
-	internalServerError := options.InternalServerErrorHandlerFunc
-	if internalServerError == nil {
-		internalServerError = func(w http.ResponseWriter, r *http.Request, err error) {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
 
@@ -108,18 +99,6 @@ func (s *service) Middleware(options MiddlewareOptions) func(http.Handler) http.
 		return nil
 	}
 
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
-	// TODO: test each branch
 	return func(nextHandler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -144,13 +123,7 @@ func (s *service) Middleware(options MiddlewareOptions) func(http.Handler) http.
 				// Get JWT claims.
 				claims, err := s.authnService.ParseJWT(token)
 				if err != nil {
-					switch {
-					case errors.Is(err, authn.ErrJWTInvalid):
-						unauthorized(w, r, fmt.Errorf("%s: %w", descriptionFailedToParseJWT, ErrAuthorizationHeaderInvalid))
-					default:
-						internalServerError(w, r, fmt.Errorf("%s: %w", descriptionFailedToParseJWT, err))
-					}
-
+					unauthorized(w, r, fmt.Errorf("%s: %w", descriptionFailedToParseJWT, ErrJWTInvalid))
 					return
 				}
 

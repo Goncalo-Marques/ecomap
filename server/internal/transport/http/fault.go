@@ -15,8 +15,7 @@ const (
 
 // Common fault descriptions.
 const (
-	descriptionFailedToExecuteAuthorizationMiddleware = "http: failed to execute authorization middleware"
-	descriptionFailedToMarshalResponseBody            = "http: failed to marshal response body"
+	descriptionFailedToMarshalResponseBody = "http: failed to marshal response body"
 )
 
 // badRequest writes an error response and sets the header with the bad request status code.

@@ -1,7 +1,7 @@
 package authn
 
 import (
-	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -10,9 +10,9 @@ import (
 const (
 	jwtIssuer         = "server"
 	jwtExpirationTime = time.Hour * 24
-)
 
-var ErrJWTInvalid = errors.New("invalid jwt") // Returned when the JWT is invalid.
+	descriptionFailedToParseJWTWithClaims = "authn: failed to parse jwt with claims"
+)
 
 // SubjectRole defines the role of the subject.
 type SubjectRole string
@@ -52,19 +52,14 @@ func (s *service) NewJWT(subject string, subjectRoles ...SubjectRole) (string, e
 	return tokenString, nil
 }
 
-// ParseJWT parses the given token and returns the associated subject.
-// If the token is invalid, ErrJWTInvalid is returned.
+// ParseJWT parses the given token and returns the associated subject, or returns an error if the token is invalid.
 func (s *service) ParseJWT(tokenString string) (Claims, error) {
 	var claims Claims
-	token, err := jwt.ParseWithClaims(tokenString, &claims, func(t *jwt.Token) (interface{}, error) {
+	_, err := jwt.ParseWithClaims(tokenString, &claims, func(t *jwt.Token) (interface{}, error) {
 		return s.jwtSigningKey, nil
 	})
 	if err != nil {
-		return Claims{}, err
-	}
-
-	if !token.Valid {
-		return Claims{}, ErrJWTInvalid
+		return Claims{}, fmt.Errorf("%s: %w", descriptionFailedToParseJWTWithClaims, err)
 	}
 
 	return claims, nil

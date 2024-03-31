@@ -13,7 +13,6 @@ import (
 	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 	"github.com/goncalo-marques/ecomap/server/internal/authz"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
-	"github.com/goncalo-marques/ecomap/server/internal/logging"
 )
 
 // Base URL const.
@@ -36,6 +35,7 @@ const (
 	requestHeaderValueAcceptHTML = "text/html"
 
 	errAuthorizationHeaderInvalid = "invalid authorization header"
+	errJWTInvalid                 = "invalid jwt"
 	errRolesInvalid               = "invalid subject roles"
 	errAuthorizationInvalid       = "unauthorized subject"
 	errParamInvalidFormat         = "invalid parameter format"
@@ -87,6 +87,8 @@ func New(authzService AuthorizationService, service Service) *handler {
 			switch {
 			case errors.Is(err, authz.ErrAuthorizationHeaderInvalid):
 				unauthorized(w, errAuthorizationHeaderInvalid)
+			case errors.Is(err, authz.ErrJWTInvalid):
+				unauthorized(w, errJWTInvalid)
 			default:
 				unauthorized(w, err.Error())
 			}
@@ -100,10 +102,6 @@ func New(authzService AuthorizationService, service Service) *handler {
 			default:
 				forbidden(w, err.Error())
 			}
-		},
-		InternalServerErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
-			logging.Logger.ErrorContext(r.Context(), descriptionFailedToExecuteAuthorizationMiddleware, logging.Error(err))
-			internalServerError(w)
 		},
 	})
 
