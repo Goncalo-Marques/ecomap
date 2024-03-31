@@ -126,6 +126,12 @@ The Android application can be found in the `android` directory.
 
 Use [gradlew](android/gradlew) to lint, build and run the project from the command line.
 
+The Android application uses the [Google Maps SDK for Android](https://developers.google.com/maps/documentation/android-sdk). Create a `secrets.properties` file in the `android` directory with the following content:
+
+```
+MAPS_API_KEY=<REPLACE_WITH_YOUR_API_KEY>
+```
+
 ## Contributing
 
 ### Branches
