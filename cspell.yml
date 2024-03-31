@@ -45,6 +45,7 @@ ignoreWords:
 ignorePaths:
   - "*.svg"
   - .golangci.yml
+  - build.gradle.kts
   - go.mod
   - go.sum
   - gradle
