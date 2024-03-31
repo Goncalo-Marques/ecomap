@@ -1,10 +1,10 @@
 /**
  * Basename for back office routes.
  */
-export const backOfficeBasename = "backOffice";
+export const backOfficeBasename = "back-office";
 
 /**
- * Paths of /backOffice router.
+ * Paths of back office router.
  */
 export enum BackOfficeRouterPaths {
 	DASHBOARD = "dashboard",
