@@ -28,6 +28,11 @@ func unauthorized(w http.ResponseWriter, message string) {
 	_ = fault(w, http.StatusUnauthorized, spec.ErrorCodeUnauthorized, &message)
 }
 
+// forbidden writes an error response and sets the header with the forbidden status code.
+func forbidden(w http.ResponseWriter, message string) {
+	_ = fault(w, http.StatusForbidden, spec.ErrorCodeForbidden, &message)
+}
+
 // notFound writes an error response and sets the header with the not found status code.
 func notFound(w http.ResponseWriter, message string) {
 	_ = fault(w, http.StatusNotFound, spec.ErrorCodeNotFound, &message)

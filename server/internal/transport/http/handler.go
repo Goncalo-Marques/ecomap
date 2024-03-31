@@ -2,6 +2,8 @@ package http
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"path"
 	"strings"
@@ -9,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
+	"github.com/goncalo-marques/ecomap/server/internal/authz"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
@@ -28,9 +31,20 @@ const (
 
 // Request header const.
 const (
-	requestHeaderAcceptKey       = "Accept"
-	requestHeaderAcceptHTMLValue = "text/html"
+	requestHeaderKeyAccept       = "Accept"
+	requestHeaderValueAcceptHTML = "text/html"
+
+	errAuthorizationHeaderInvalid = "invalid authorization header"
+	errJWTInvalid                 = "invalid jwt"
+	errRolesInvalid               = "invalid subject roles"
+	errAuthorizationInvalid       = "unauthorized subject"
+	errParamInvalidFormat         = "invalid parameter format"
 )
+
+// AuthorizationService defines the authorization service interface.
+type AuthorizationService interface {
+	Middleware(options authz.MiddlewareOptions) func(http.Handler) http.Handler
+}
 
 // Service defines the service interface.
 type Service interface {
@@ -40,14 +54,16 @@ type Service interface {
 
 // handler defines the http handler structure.
 type handler struct {
-	handler http.Handler
-	service Service
+	authzService AuthorizationService
+	service      Service
+	handler      http.Handler
 }
 
 // New returns a new http handler.
-func New(service Service) *handler {
+func New(authzService AuthorizationService, service Service) *handler {
 	h := &handler{
-		service: service,
+		authzService: authzService,
+		service:      service,
 	}
 
 	router := http.NewServeMux()
@@ -56,7 +72,7 @@ func New(service Service) *handler {
 	webAppFS := http.FileServer(http.Dir(dirWebApp))
 	router.HandleFunc(baseURLWebApp, func(w http.ResponseWriter, r *http.Request) {
 		// Handle single-page application routing.
-		if r.URL.Path != baseURLWebApp && strings.Contains(r.Header.Get(requestHeaderAcceptKey), requestHeaderAcceptHTMLValue) {
+		if r.URL.Path != baseURLWebApp && strings.Contains(r.Header.Get(requestHeaderKeyAccept), requestHeaderValueAcceptHTML) {
 			http.ServeFile(w, r, path.Join(dirWebApp, dirIndexHTML))
 			return
 		}
@@ -66,11 +82,42 @@ func New(service Service) *handler {
 	})
 
 	// Handle API.
+	authzMiddleware := authzService.Middleware(authz.MiddlewareOptions{
+		UnauthorizedHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			switch {
+			case errors.Is(err, authz.ErrAuthorizationHeaderInvalid):
+				unauthorized(w, errAuthorizationHeaderInvalid)
+			case errors.Is(err, authz.ErrJWTInvalid):
+				unauthorized(w, errJWTInvalid)
+			default:
+				unauthorized(w, err.Error())
+			}
+		},
+		ForbiddenHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			switch {
+			case errors.Is(err, authz.ErrRolesInvalid):
+				forbidden(w, errRolesInvalid)
+			case errors.Is(err, authz.ErrAuthorizationInvalid):
+				forbidden(w, errAuthorizationInvalid)
+			default:
+				forbidden(w, err.Error())
+			}
+		},
+	})
+
 	h.handler = spec.HandlerWithOptions(h, spec.StdHTTPServerOptions{
-		BaseURL:    baseURLApi,
-		BaseRouter: router,
+		BaseURL:     baseURLApi,
+		BaseRouter:  router,
+		Middlewares: []spec.MiddlewareFunc{authzMiddleware},
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
-			badRequest(w, err.Error())
+			var invalidParamFormatError *spec.InvalidParamFormatError
+
+			switch {
+			case errors.As(err, &invalidParamFormatError):
+				badRequest(w, fmt.Sprintf("%s: %s", errParamInvalidFormat, invalidParamFormatError.ParamName))
+			default:
+				badRequest(w, err.Error())
+			}
 		},
 	})
 

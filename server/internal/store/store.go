@@ -15,6 +15,13 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/store/tx"
 )
 
+// Common failure descriptions.
+const (
+	descriptionFailedQuery    = "store: failed to query"
+	descriptionFailedScanRow  = "store: failed to scan row"
+	descriptionFailedScanRows = "store: failed to scan rows"
+)
+
 // migrationsURL defines the source url of the migrations.
 const migrationsURL = "file://database/migrations"
 
