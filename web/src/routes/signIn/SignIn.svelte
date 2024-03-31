@@ -88,7 +88,7 @@
 
 		try {
 			storeToken(res.data.token);
-		} catch (e) {
+		} catch {
 			responseErrorMessage = $t("error.unexpected");
 			return;
 		}
