@@ -48,6 +48,8 @@ type AuthorizationService interface {
 
 // Service defines the service interface.
 type Service interface {
+	SignInUser(ctx context.Context, username string, password string) (string, error)
+
 	SignInEmployee(ctx context.Context, username string, password string) (string, error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 }
