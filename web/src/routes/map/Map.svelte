@@ -6,32 +6,15 @@
 		addClusterLayer,
 		addVectorLayer,
 	} from "../../lib/components/map/mapStore";
-	import type { Layer } from "ol/layer";
-
-	let show = false
-	let layers : Layer[]
-
 	onMount(() => {
-		addClusterLayer("http://localhost:8000/contentores.geojson");
-		setTimeout(() => {
-			addVectorLayer("http://localhost:8000/rede_viaria.geojson");
-		}, 2000);
-	});
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha");
+		addVectorLayer("http://localhost:8000/concelhos.geojson", "Concelhos")
 
-	function handleMessage(event: any) {
-		show = true
-		layers = event.detail.layers
-	}
-	
+	});
 </script>
 
 <main>
-	<Map on:message={handleMessage}/>
-	{#if show}
-		{#each layers as layer}
-			<p>{layer}</p>
-		{/each}
-	{/if}
+	<Map /> 
 </main>
 
 <style>

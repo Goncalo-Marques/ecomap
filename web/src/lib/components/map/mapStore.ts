@@ -3,13 +3,11 @@ import { writable, get, derived } from "svelte/store";
 import View from "ol/View";
 import GeoJSON from "ol/format/GeoJSON";
 
-import { Vector as VectorSource, XYZ, Cluster } from "ol/source";
+import { Vector as VectorSource, XYZ, Cluster, OSM } from "ol/source";
 import { WebGLTile as TileLayer, Layer } from "ol/layer";
 import { fromLonLat } from "ol/proj";
 
-import WebGLVectorLayerRenderer, {
-	type Options,
-} from "ol/renderer/webgl/VectorLayer.js";
+import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer.js";
 import WebGLPointsLayer from "ol/layer/WebGLPoints.js";
 
 import { boundingExtent } from "ol/extent";
@@ -21,19 +19,41 @@ import type { FeatureLike } from "ol/Feature";
 import type { Options as OptionsLayer } from "ol/layer/Layer";
 import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
 import type { WebGLStyle } from "ol/style/webgl";
-import { createEventDispatcher } from "svelte";
 
 export const map = writable<Map | null>(null);
 
-
 const defaultVectorStyle: VectorStyle = {
-	"stroke-color": "#e609d7",
-	"fill-color": "#f0b10585",
-}
+	"stroke-color": "#fff",
+	"fill-color": "#3980a885",
+};
 
 const defaultIconStyle: WebGLStyle = {
-	'icon-src': '/images/logo.svg' 
-}
+	"icon-src": "/images/logo.svg",
+};
+
+const defaultClusterIcon = new Style({
+	image: new Icon({
+		src: "/images/logo.svg",
+	}),
+});
+
+const defaultClusterSymbol: Style = new Style({
+	image: new Circle({
+		radius: 20,
+		stroke: new Stroke({
+			color: "#fff",
+		}),
+		fill: new Fill({
+			color: "#68b083",
+		}),
+	}),
+	text: new Text({
+		text: "",
+		fill: new Fill({
+			color: "#fff",
+		}),
+	}),
+});
 
 /**
  * Custom vector layer
@@ -54,43 +74,6 @@ class WebGLLayer extends Layer {
 }
 
 /**
- *
- * @param size Number os icons inside each Cluster
- * @returns Icon or Circle Style according to size number
- */
-function createClusterIcon(size: number) {
-	const icon = new Style({
-		image: new Icon({
-			src: "/images/logo.svg",
-		}),
-	});
-
-	const circle: Style = new Style({
-		image: new Circle({
-			radius: 20,
-			stroke: new Stroke({
-				color: "#fff",
-			}),
-			fill: new Fill({
-				color: "#68b083",
-			}),
-		}),
-		text: new Text({
-			text: size.toString(),
-			fill: new Fill({
-				color: "#fff",
-			}),
-		}),
-	});
-
-	if (size >= 2) {
-		return circle;
-	}
-
-	return icon;
-}
-
-/**
  * Set's map store as a new Map
  *
  * @param lon Center longitude
@@ -106,14 +89,12 @@ export function createMap(
 	layerName: string = "baseLayer",
 ) {
 	const baseLayer = new TileLayer({
-		source: new XYZ({
-			url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-			tileSize: 256,
-		}),
+		source: new OSM(),
 		visible: true,
+		zIndex: 0
 	});
 
-	baseLayer.setProperties({ "layer-name": layerName });
+	baseLayer.set("layer-name", layerName )
 
 	map.set(
 		new Map({
@@ -129,6 +110,8 @@ export function createMap(
 			}),
 		}),
 	);
+	console.log("LEN: ",get(map)?.getAllLayers().length);
+	
 }
 
 /**
@@ -136,7 +119,11 @@ export function createMap(
  *
  * @param url receives geojson data
  */
-export function addVectorLayer(url: string, style: VectorStyle = defaultVectorStyle) {
+export function addVectorLayer(
+	url: string,
+	layerName: string,
+	style: VectorStyle = defaultVectorStyle,
+) {
 	const mapValue = get(map);
 
 	const vectorLayer = new WebGLLayer(
@@ -145,10 +132,12 @@ export function addVectorLayer(url: string, style: VectorStyle = defaultVectorSt
 				url: url,
 				format: new GeoJSON(),
 			}),
+			zIndex: mapValue?.getAllLayers().length
 		},
 		style,
 	);
 
+	vectorLayer.set("layer-name", layerName )
 	mapValue?.addLayer(vectorLayer);
 }
 
@@ -157,7 +146,10 @@ export function addVectorLayer(url: string, style: VectorStyle = defaultVectorSt
  *
  * @param url receives geojson data
  */
-export function addPointLayer(url: string, style: WebGLStyle = defaultIconStyle) {
+export function addPointLayer(
+	url: string,
+	style: WebGLStyle = defaultIconStyle,
+) {
 	const mapValue = get(map);
 
 	const pointsLayer = new WebGLPointsLayer({
@@ -165,7 +157,8 @@ export function addPointLayer(url: string, style: WebGLStyle = defaultIconStyle)
 			url: url,
 			format: new GeoJSON(),
 		}),
-		style: style
+		style: style,
+		zIndex: mapValue?.getAllLayers().length
 	});
 
 	mapValue?.addLayer(pointsLayer);
@@ -176,10 +169,16 @@ export function addPointLayer(url: string, style: WebGLStyle = defaultIconStyle)
  *
  * @param url receives geojson data
  */
-export function addClusterLayer(url: string) {
+export function addClusterLayer(
+	url: string,
+	layerName: string,
+	clusterStyle: Style = defaultClusterSymbol,
+	iconStyle: Style = defaultClusterIcon
+) {
 	const mapValue = get(map);
 
 	const cluster = new VectorLayer({
+		zIndex: mapValue?.getAllLayers().length,
 		source: new Cluster({
 			distance: 50,
 			minDistance: 10,
@@ -190,15 +189,24 @@ export function addClusterLayer(url: string) {
 		}),
 		style: (feature: FeatureLike) => {
 			const size = feature.get("features").length;
-			let style = createClusterIcon(size);
-			return style;
+
+			clusterStyle.getText()?.setText(size.toString());
+
+			return size >= 2 ? clusterStyle : iconStyle;
 		},
 	});
+
+	cluster.set("layer-name", layerName )
 
 	mapValue?.addLayer(cluster);
 
 	mapValue?.on("click", e => {
 		cluster.getFeatures(e.pixel).then(clickedFeatures => {
+			mapValue.forEachFeatureAtPixel(e.pixel, feature => {
+				console.log(feature.getStyleFunction());
+				
+			});
+
 			if (clickedFeatures.length) {
 				const features = clickedFeatures[0].get("features");
 				if (features.length > 1) {
@@ -211,6 +219,19 @@ export function addClusterLayer(url: string) {
 				} else {
 					console.log("APENAS 1: ", features);
 				}
+			}
+		});
+	});
+
+	let hoverFeature: FeatureLike;
+	mapValue?.on("pointermove", e => {
+		cluster.getFeatures(e.pixel).then(features => {
+			if (features[0] !== hoverFeature) {
+				hoverFeature = features[0];
+
+				mapValue.getTargetElement().style.cursor = hoverFeature ? "pointer": "";
+
+				cluster.getSource()?.changed();
 			}
 		});
 	});
