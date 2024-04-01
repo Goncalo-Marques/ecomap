@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EcoMap</string>
+    <string name="sign_in_username">Utilizador</string>
+    <string name="sign_in_logo_description">Logótipo EcoMap</string>
+    <string name="sign_in_password">Palavra-passe</string>
+    <string name="sign_in_sign_in_button">Iniciar sessão</string>
+    <string name="sign_in_create_account_button">Criar conta</string>
+</resources>
