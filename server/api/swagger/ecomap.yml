@@ -3,6 +3,7 @@ info:
   version: 1.0.0
   title: EcoMap Rest API
 tags:
+  - name: User
   - name: Employee
 servers:
   - url: https://server-7fzc7ivuwa-ew.a.run.app/api
@@ -11,6 +12,41 @@ servers:
     description: Local server.
 
 paths:
+  /users/signin:
+    post:
+      summary: Sign in a user.
+      operationId: signInUser
+      description: Returns a JSON Web Token for the specified username and password.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignIn"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWT"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Incorrect credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
   /employees/signin:
     post:
       summary: Sign in an employee.

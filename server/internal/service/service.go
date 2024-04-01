@@ -28,6 +28,9 @@ type AuthenticationService interface {
 
 // Store defines the store interface.
 type Store interface {
+	GetUserSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error)
+	GetUserByUsername(ctx context.Context, tx pgx.Tx, username string) (domain.User, error)
+
 	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error)
 	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username string) (domain.Employee, error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)

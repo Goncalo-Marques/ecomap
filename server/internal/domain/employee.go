@@ -39,9 +39,3 @@ type Employee struct {
 	CreatedTime  time.Time
 	ModifiedTime time.Time
 }
-
-// EmployeeWithSignIn defines the employee with the sign-in structure.
-type EmployeeWithSignIn struct {
-	SignIn
-	Employee
-}
