@@ -17,16 +17,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/fragment_map" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_focus_current_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_container_view_map"
-        app:layout_constraintEnd_toEndOf="@+id/fragment_container_view_map"
-        app:srcCompat="@android:drawable/ic_menu_mylocation" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
