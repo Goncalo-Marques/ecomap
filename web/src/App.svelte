@@ -17,31 +17,10 @@
 		BackOfficeRouterPaths,
 		backOfficeBasename,
 		CommonRoutes,
-		BackOfficeRoutes,
 	} from "./routes/constants/routes";
-	import url from "./lib/utils/url";
-	import { decodeTokenPayload, getToken } from "./lib/utils/auth";
-	import { SubjectRole } from "./domain/role";
 
 	onMount(() => {
-		const token = getToken();
-		if (!token) {
-			navigate(CommonRoutes.SIGN_IN, { replace: true });
-			return;
-		}
-
-		const payload = decodeTokenPayload(token);
-		if (!payload) {
-			navigate(CommonRoutes.SIGN_IN, { replace: true });
-			return;
-		}
-
-		if ($url.pathname === "/") {
-			if (payload.roles.includes(SubjectRole.MANAGER)) {
-				// Redirect to back office dashboard page if user is a manager and URL pathname is at the root level.
-				navigate(BackOfficeRoutes.DASHBOARD, { replace: true });
-			}
-		}
+		navigate(CommonRoutes.SIGN_IN, { replace: true });
 	});
 </script>
 
