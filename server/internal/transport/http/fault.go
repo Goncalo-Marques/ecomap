@@ -10,7 +10,7 @@ import (
 // Common fault messages.
 const (
 	errRequestBodyInvalid   = "invalid request body"
-	errFieldInvalid         = "invalid field"
+	errFieldValueInvalid    = "invalid field value"
 	errCredentialsIncorrect = "incorrect credentials"
 )
 

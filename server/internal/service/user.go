@@ -32,16 +32,16 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 	editableUser.LastName = domain.Name(replaceSpacesWithHyphen(string(editableUser.LastName)))
 
 	if !editableUser.Username.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldInvalid{FieldName: fieldUsername}, descriptionInvalidField, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldUsername}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if !s.authnService.ValidPassword([]byte(editableUser.Password)) {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldInvalid{FieldName: fieldPassword}, descriptionInvalidField, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldPassword}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if !editableUser.FirstName.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldInvalid{FieldName: fieldFirstName}, descriptionInvalidField, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldFirstName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if !editableUser.LastName.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldInvalid{FieldName: fieldLastName}, descriptionInvalidField, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldLastName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
 	hashedPassword, err := s.authnService.HashPassword([]byte(editableUser.Password))

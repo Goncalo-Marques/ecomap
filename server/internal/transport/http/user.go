@@ -36,11 +36,11 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	domainEditableUser := userPostToDomainEditableUserWithPassword(userPost)
 	domainUser, err := h.service.CreateUser(ctx, domainEditableUser)
 	if err != nil {
-		var domainErrFieldInvalid *domain.ErrFieldInvalid
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
 
 		switch {
-		case errors.As(err, &domainErrFieldInvalid):
-			badRequest(w, fmt.Sprintf("%s: %s", errFieldInvalid, domainErrFieldInvalid.FieldName))
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
 		case errors.Is(err, domain.ErrUserAlreadyExists):
 			conflict(w, errUserAlreadyExists)
 		default:

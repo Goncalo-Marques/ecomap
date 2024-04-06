@@ -11,12 +11,12 @@ var (
 )
 
 // Returned when a field contains an invalid value.
-type ErrFieldInvalid struct {
+type ErrFieldValueInvalid struct {
 	FieldName string
 }
 
-func (e *ErrFieldInvalid) Error() string {
-	return fmt.Sprintf("invalid field: %s", e.FieldName)
+func (e *ErrFieldValueInvalid) Error() string {
+	return fmt.Sprintf("invalid field value: %s", e.FieldName)
 }
 
 // Field constraints.

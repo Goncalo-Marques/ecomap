@@ -19,7 +19,7 @@ const (
 	fieldFirstName = "firstName"
 	fieldLastName  = "lastName"
 
-	descriptionInvalidField            = "service: invalid field"
+	descriptionInvalidFieldValue       = "service: invalid field value"
 	descriptionFailedHashPassword      = "service: failed to hash password"
 	descriptionFailedCheckPasswordHash = "service: failed to check password hash"
 	descriptionFailedCreateJWT         = "service: failed to create jwt"
