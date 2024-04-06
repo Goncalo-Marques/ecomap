@@ -8,6 +8,7 @@ const (
 
 	ServiceMethod = "service.method"
 
+	UserID        = "user.id"
 	UserUsername  = "user.username"
 	UserFirstName = "user.firstName"
 	UserLastName  = "user.lastName"
