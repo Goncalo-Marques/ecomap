@@ -103,12 +103,13 @@
 			return;
 		}
 
-		// Stores token in cookies.
-		storeToken(token, payload.exp);
-
 		if (payload.roles.includes(SubjectRole.MANAGER)) {
+			storeToken(token, payload.exp);
+
 			// Redirect to back office dashboard page if user is a manager.
 			navigate(BackOfficeRoutes.DASHBOARD, { replace: true });
+		} else {
+			responseErrorMessage = $t("error.unexpected");
 		}
 	}
 
