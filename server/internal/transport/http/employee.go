@@ -57,7 +57,7 @@ func (h *handler) SignInEmployee(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetEmployeeByID handles the http request to get an employee by id.
-func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdParam) {
+func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdPathParam) {
 	ctx := r.Context()
 
 	domainEmployee, err := h.service.GetEmployeeByID(ctx, employeeID)
