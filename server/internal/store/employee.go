@@ -11,16 +11,19 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
+// TODO: Replicate User methods.
+
 // GetEmployeeSignIn executes a query to return the sign-in of the employee with the specified username.
-func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error) {
+func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error) {
 	row := tx.QueryRow(ctx, `
 		SELECT username, password 
 		FROM employees 
 		WHERE username = $1 
-	`, username)
+	`,
+		username,
+	)
 
 	var signIn domain.SignIn
-
 	err := row.Scan(
 		&signIn.Username,
 		&signIn.Password,
@@ -37,12 +40,14 @@ func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username strin
 }
 
 // GetEmployeeByUsername executes a query to return the employee with the specified username.
-func (s *store) GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username string) (domain.Employee, error) {
+func (s *store) GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error) {
 	rows, err := tx.Query(ctx, `
 		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_time, modified_time 
 		FROM employees 
 		WHERE username = $1 
-	`, username)
+	`,
+		username,
+	)
 	if err != nil {
 		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
 	}
@@ -66,7 +71,9 @@ func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (d
 		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_time, modified_time 
 		FROM employees 
 		WHERE id = $1 
-	`, id)
+	`,
+		id,
+	)
 	if err != nil {
 		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
 	}

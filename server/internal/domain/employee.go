@@ -22,8 +22,8 @@ const (
 
 // EditableEmployee defines the editable employee structure.
 type EditableEmployee struct {
-	FirstName     string
-	LastName      string
+	FirstName     Name
+	LastName      Name
 	Role          EmployeeRole
 	DateOfBirth   time.Time
 	PhoneNumber   string

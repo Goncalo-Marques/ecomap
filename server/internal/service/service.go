@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -13,6 +14,13 @@ import (
 )
 
 const (
+	fieldUsername  = "username"
+	fieldPassword  = "password"
+	fieldFirstName = "firstName"
+	fieldLastName  = "lastName"
+
+	descriptionInvalidField            = "service: invalid field"
+	descriptionFailedHashPassword      = "service: failed to hash password"
 	descriptionFailedCheckPasswordHash = "service: failed to check password hash"
 	descriptionFailedCreateJWT         = "service: failed to create jwt"
 )
@@ -28,11 +36,12 @@ type AuthenticationService interface {
 
 // Store defines the store interface.
 type Store interface {
-	GetUserSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error)
-	GetUserByUsername(ctx context.Context, tx pgx.Tx, username string) (domain.User, error)
+	CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (domain.User, error)
+	GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
+	GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error)
 
-	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username string) (domain.SignIn, error)
-	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username string) (domain.Employee, error)
+	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
+	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 
 	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)
@@ -77,21 +86,20 @@ func (s *service) readOnlyTx(ctx context.Context, f func(pgx.Tx) error) error {
 	return tx.Commit(ctx)
 }
 
-// TODO: Avoid lint issue (remove this comments in the future)
 // readWriteTx returns a read and write transaction wrapper.
-// func (s *service) readWriteTx(ctx context.Context, f func(pgx.Tx) error) error {
-// 	tx, err := s.store.NewTx(ctx, pgx.RepeatableRead, pgx.ReadWrite)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer rollbackFunc(ctx, tx)()
+func (s *service) readWriteTx(ctx context.Context, f func(pgx.Tx) error) error {
+	tx, err := s.store.NewTx(ctx, pgx.RepeatableRead, pgx.ReadWrite)
+	if err != nil {
+		return err
+	}
+	defer rollbackFunc(ctx, tx)()
 
-// 	if err := f(tx); err != nil {
-// 		return err
-// 	}
+	if err := f(tx); err != nil {
+		return err
+	}
 
-// 	return tx.Commit(ctx)
-// }
+	return tx.Commit(ctx)
+}
 
 // logInfoAndWrapError logs the error at the info level and returns the error wrapped with the provided description.
 func logInfoAndWrapError(ctx context.Context, err error, description string, logAttrs ...any) error {
@@ -105,4 +113,9 @@ func logAndWrapError(ctx context.Context, err error, description string, logAttr
 	logAttrs = append(logAttrs, logging.Error(err))
 	logging.Logger.ErrorContext(ctx, description, logAttrs...)
 	return fmt.Errorf("%s: %w", description, err)
+}
+
+// replaceSpacesWithHyphen returns s with no extra spaces and separates it with a hyphen.
+func replaceSpacesWithHyphen(s string) string {
+	return strings.Join(strings.Fields(s), "-")
 }

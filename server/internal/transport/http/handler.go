@@ -48,9 +48,10 @@ type AuthorizationService interface {
 
 // Service defines the service interface.
 type Service interface {
-	SignInUser(ctx context.Context, username string, password string) (string, error)
+	CreateUser(ctx context.Context, editableUser domain.EditableUserWithPassword) (domain.User, error)
+	SignInUser(ctx context.Context, username domain.Username, password string) (string, error)
 
-	SignInEmployee(ctx context.Context, username string, password string) (string, error)
+	SignInEmployee(ctx context.Context, username domain.Username, password string) (string, error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 }
 
@@ -112,11 +113,11 @@ func New(authzService AuthorizationService, service Service) *handler {
 		BaseRouter:  router,
 		Middlewares: []spec.MiddlewareFunc{authzMiddleware},
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
-			var invalidParamFormatError *spec.InvalidParamFormatError
+			var specInvalidParamFormatError *spec.InvalidParamFormatError
 
 			switch {
-			case errors.As(err, &invalidParamFormatError):
-				badRequest(w, fmt.Sprintf("%s: %s", errParamInvalidFormat, invalidParamFormatError.ParamName))
+			case errors.As(err, &specInvalidParamFormatError):
+				badRequest(w, fmt.Sprintf("%s: %s", errParamInvalidFormat, specInvalidParamFormatError.ParamName))
 			default:
 				badRequest(w, err.Error())
 			}

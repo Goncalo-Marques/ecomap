@@ -29,6 +29,7 @@ ignoreWords:
   - oapitypes
   - openapi
   - Parens
+  - pgconn
   - pgrouting
   - PGUSER
   - pgxpool

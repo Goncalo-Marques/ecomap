@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -11,9 +12,53 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
 )
 
+const (
+	errUserAlreadyExists = "username already exists"
+)
+
 // CreateUser handles the http request to create a user.
 func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var userPost spec.UserPost
+	err = json.Unmarshal(requestBody, &userPost)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	domainEditableUser := userPostToDomainEditableUserWithPassword(userPost)
+	domainUser, err := h.service.CreateUser(ctx, domainEditableUser)
+	if err != nil {
+		var domainErrFieldInvalid *domain.ErrFieldInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldInvalid, domainErrFieldInvalid.FieldName))
+		case errors.Is(err, domain.ErrUserAlreadyExists):
+			conflict(w, errUserAlreadyExists)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	user := userFromDomainUser(domainUser)
+	responseBody, err := json.Marshal(user)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusCreated, responseBody)
 }
 
 // ListUsers handles the http request to list users.
@@ -63,11 +108,11 @@ func (h *handler) SignInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.service.SignInUser(ctx, signIn.Username, signIn.Password)
+	token, err := h.service.SignInUser(ctx, domain.Username(signIn.Username), signIn.Password)
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrCredentialsIncorrect):
-			unauthorized(w, errIncorrectCredentials)
+			unauthorized(w, errCredentialsIncorrect)
 		default:
 			internalServerError(w)
 		}
@@ -76,7 +121,6 @@ func (h *handler) SignInUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jwt := jwtFromJWTToken(token)
-
 	responseBody, err := json.Marshal(jwt)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
