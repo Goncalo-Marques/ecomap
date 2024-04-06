@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import { navigate } from "svelte-routing";
 	import { BackOfficeRoutes } from "../constants/routes";
 	import Button from "../../lib/components/Button.svelte";
 	import Input from "../../lib/components/Input.svelte";
 	import { t } from "../../lib/utils/i8n";
-	import { storeToken } from "../../lib/utils/auth";
+	import { decodeTokenPayload, getToken } from "../../lib/utils/auth";
 	import ecomapHttpClient from "../../lib/clients/ecomap/http";
+	import { SubjectRole } from "../../domain/role";
+	import type { TokenPayload } from "../../domain/jwt";
 
 	/**
 	 * Error message displayed after an error occurs with the server.
@@ -38,6 +41,18 @@
 		} else {
 			formErrorMessages.password = "";
 		}
+	}
+
+	/**
+	 * Stores token in cookies.
+	 * @param token JWT token.
+	 * @param expirationTime JWT expiration time.
+	 */
+	function storeToken(token: string, expirationTime: number) {
+		const expireTimeInMs = expirationTime * 1000;
+		const expireDate = new Date(expireTimeInMs);
+
+		document.cookie = `token=${token}; Path=/; Expires=${expireDate}; SameSite=Strict; Secure`;
 	}
 
 	/**
@@ -80,15 +95,49 @@
 			return;
 		}
 
-		try {
-			storeToken(res.data.token);
-		} catch {
+		const { token } = res.data;
+
+		const payload = decodeTokenPayload(token);
+		if (!payload) {
 			responseErrorMessage = $t("error.unexpected");
 			return;
 		}
 
-		navigate(BackOfficeRoutes.DASHBOARD);
+		if (payload.roles.includes(SubjectRole.MANAGER)) {
+			storeToken(token, payload.exp);
+
+			// Redirect to back office dashboard page if user is a manager.
+			navigate(BackOfficeRoutes.DASHBOARD, { replace: true });
+		} else {
+			responseErrorMessage = $t("error.unexpected");
+		}
 	}
+
+	/**
+	 * Retrieves user roles.
+	 * @returns User roles.
+	 */
+	function getUserRoles(): TokenPayload["roles"] {
+		const token = getToken();
+		if (!token) {
+			return [];
+		}
+
+		const payload = decodeTokenPayload(token);
+		if (!payload) {
+			return [];
+		}
+
+		return payload.roles;
+	}
+
+	onMount(() => {
+		const roles = getUserRoles();
+		if (roles.includes(SubjectRole.MANAGER)) {
+			// Redirect to back office dashboard page if user is a manager.
+			navigate(BackOfficeRoutes.DASHBOARD, { replace: true });
+		}
+	});
 </script>
 
 <main>

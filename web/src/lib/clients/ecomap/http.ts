@@ -16,7 +16,10 @@ const ecomapHttpClient = createClient<paths>({
 
 			switch (response.status) {
 				case 401:
-					navigate(CommonRoutes.SIGN_IN);
+					// Only redirect if the page is not the sign in page.
+					if (location.pathname !== CommonRoutes.SIGN_IN) {
+						navigate(CommonRoutes.SIGN_IN);
+					}
 					break;
 
 				case 403:
