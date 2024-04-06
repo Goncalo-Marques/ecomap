@@ -118,7 +118,7 @@
 	onMount(() => {
 		const roles = getUserRoles();
 		if (roles.includes(SubjectRole.MANAGER)) {
-			// Redirect to back office dashboard page if user is a manager and URL pathname is at sign in route.
+			// Redirect to back office dashboard page if user is a manager.
 			navigate(BackOfficeRoutes.DASHBOARD, { replace: true });
 		}
 	});
