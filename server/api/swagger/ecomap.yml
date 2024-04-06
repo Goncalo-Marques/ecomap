@@ -12,6 +12,259 @@ servers:
     description: Local server.
 
 paths:
+  /users:
+    post:
+      summary: Create a user.
+      operationId: createUser
+      description: Creates a new user with the specified data.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Username already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List users.
+      operationId: listUsers
+      description: Returns the users with the specified filter.
+      tags:
+        - User
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+        - $ref: "#/components/parameters/SortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - name: username
+          in: query
+          description: Username to filter by.
+          schema:
+            type: string
+        - name: firstName
+          in: query
+          description: First name to filter by.
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: Last name to filter by.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersPaginated"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/{userId}:
+    get:
+      summary: Get a user by ID.
+      operationId: getUserByID
+      description: Returns the user with the specified identifier.
+      tags:
+        - User
+      security:
+        - BearerAuth: [user, manager]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid user ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a user by ID.
+      operationId: patchUserByID
+      description: Modifies the user with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - User
+      security:
+        - BearerAuth: [user, manager]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid user ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a user by ID.
+      operationId: deleteUserByID
+      description: Deletes the user with the specified identifier.
+      tags:
+        - User
+      security:
+        - BearerAuth: [user, manager]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid user ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/password:
+    put:
+      summary: Update a user password.
+      operationId: updateUserPassword
+      description: Updates the password of the user with the specified username.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Incorrect credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/reset-password:
+    put:
+      summary: Reset a user password.
+      operationId: resetUserPassword
+      description: Resets the password of the user with the specified username.
+      tags:
+        - User
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordReset"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
   /users/signin:
     post:
       summary: Sign in a user.
@@ -91,7 +344,7 @@ paths:
       security:
         - BearerAuth: [waste_operator, manager]
       parameters:
-        - $ref: "#/components/parameters/EmployeeIdParam"
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
       responses:
         200:
           description: Successful operation.
@@ -126,7 +379,49 @@ components:
       bearerFormat: JWT
 
   parameters:
-    EmployeeIdParam:
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Amount of resources to get for the provided filter.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 100
+    OffsetQueryParam:
+      name: offset
+      in: query
+      description: Amount of resources to skip for the provided filter.
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    SortQueryParam:
+      name: sort
+      in: query
+      description: Name of the field to sort by.
+      schema:
+        type: string
+        example: username
+    OrderQueryParam:
+      name: order
+      in: query
+      description: Order to sort by.
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+
+    UserIdPathParam:
+      name: userId
+      in: path
+      description: User identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    EmployeeIdPathParam:
       name: employeeId
       in: path
       description: Employee identifier.
@@ -135,10 +430,6 @@ components:
         $ref: "#/components/schemas/UUID"
 
   schemas:
-    UUID:
-      type: string
-      format: uuid
-      example: "9e3a65b0-0579-4203-8112-d09ab3c6b1ff"
     Error:
       type: object
       required:
@@ -154,6 +445,34 @@ components:
             - internal_server_error
         message:
           type: string
+    UUID:
+      type: string
+      format: uuid
+      example: "9e3a65b0-0579-4203-8112-d09ab3c6b1ff"
+    Date:
+      type: string
+      format: date
+      example: "2017-07-21"
+    DateTime:
+      type: string
+      format: date-time
+      example: "2017-07-21T17:32:28Z"
+    Username:
+      type: string
+      minLength: 1
+      maxLength: 50
+      example: john-doe
+    Password:
+      type: string
+      description: In addition to the length restrictions, the password should contain at least one regular character, one special character, and one number.
+      minLength: 14
+      maxLength: 72
+      example: ReallySecurePassword$123
+    Name:
+      type: string
+      minLength: 1
+      maxLength: 50
+      example: John
 
     SignIn:
       type: object
@@ -162,9 +481,9 @@ components:
         - password
       properties:
         username:
-          type: string
+          $ref: "#/components/schemas/Username"
         password:
-          type: string
+          $ref: "#/components/schemas/Password"
     JWT:
       type: object
       required:
@@ -173,6 +492,97 @@ components:
         token:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVcJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiWiBmFtZSI6IkPvaG4gRG9lIiWiaWF0IjOxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssW5c
+    PasswordChange:
+      type: object
+      required:
+        - username
+        - oldPassword
+        - newPassword
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        oldPassword:
+          $ref: "#/components/schemas/Password"
+        newPassword:
+          $ref: "#/components/schemas/Password"
+    PasswordReset:
+      type: object
+      required:
+        - username
+        - newPassword
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        newPassword:
+          $ref: "#/components/schemas/Password"
+    PaginatedResponse:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+          description: The total amount of resources available for the provided filter.
+          minimum: 0
+
+    UserPost:
+      type: object
+      required:
+        - username
+        - password
+        - firstName
+        - lastName
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+    UserPatch:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - firstName
+        - lastName
+        - createdTime
+        - modifiedTime
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        username:
+          $ref: "#/components/schemas/Username"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        createdTime:
+          $ref: "#/components/schemas/DateTime"
+        modifiedTime:
+          $ref: "#/components/schemas/DateTime"
+    UsersPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - users
+          properties:
+            users:
+              type: array
+              items:
+                $ref: "#/components/schemas/User"
 
     EditableEmployee:
       type: object
@@ -184,9 +594,7 @@ components:
           type: string
           example: "John Doe"
         dateOfBirth:
-          type: string
-          format: date
-          example: "2006-01-02"
+          $ref: "#/components/schemas/Date"
     Employee:
       allOf:
         - $ref: "#/components/schemas/EditableEmployee"
