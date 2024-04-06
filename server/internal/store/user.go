@@ -39,6 +39,28 @@ func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.E
 	return user, nil
 }
 
+// GetUserByUsername executes a query to return the user with the specified username.
+func (s *store) GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error) {
+	row := tx.QueryRow(ctx, `
+		SELECT id, username, first_name, last_name, created_time, modified_time 
+		FROM users 
+		WHERE username = $1 
+	`,
+		username,
+	)
+
+	user, err := getUserFromRow(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserNotFound)
+		}
+
+		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	}
+
+	return user, nil
+}
+
 // GetUserSignIn executes a query to return the sign-in of the user with the specified username.
 func (s *store) GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error) {
 	row := tx.QueryRow(ctx, `
@@ -63,28 +85,6 @@ func (s *store) GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Us
 	}
 
 	return signIn, nil
-}
-
-// GetUserByUsername executes a query to return the user with the specified username.
-func (s *store) GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error) {
-	row := tx.QueryRow(ctx, `
-		SELECT id, username, first_name, last_name, created_time, modified_time 
-		FROM users 
-		WHERE username = $1 
-	`,
-		username,
-	)
-
-	user, err := getUserFromRow(row)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserNotFound)
-		}
-
-		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
-	}
-
-	return user, nil
 }
 
 // getUserFromRow returns the user by scanning the given row.

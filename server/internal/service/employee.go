@@ -19,6 +19,32 @@ const (
 	descriptionFailedGetEmployeeSignIn     = "service: failed to get employee sign-in"
 )
 
+// GetEmployeeByID returns the employee with the specified identifier.
+func (s *service) GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "GetEmployeeByID"),
+		slog.String(logging.EmployeeID, id.String()),
+	}
+
+	var employee domain.Employee
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		employee, err = s.store.GetEmployeeByID(ctx, tx, id)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrEmployeeNotFound):
+			return domain.Employee{}, logInfoAndWrapError(ctx, err, descriptionFailedGetEmployeeByID, logAttrs...)
+		default:
+			return domain.Employee{}, logAndWrapError(ctx, err, descriptionFailedGetEmployeeByID, logAttrs...)
+		}
+	}
+
+	return employee, nil
+}
+
 // SignInEmployee returns a JSON Web Token for the specified username and password.
 func (s *service) SignInEmployee(ctx context.Context, username domain.Username, password string) (string, error) {
 	logAttrs := []any{
@@ -75,30 +101,4 @@ func (s *service) SignInEmployee(ctx context.Context, username domain.Username, 
 	}
 
 	return token, nil
-}
-
-// GetEmployeeByID returns the employee with the specified identifier.
-func (s *service) GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error) {
-	logAttrs := []any{
-		slog.String(logging.ServiceMethod, "GetEmployeeByID"),
-		slog.String(logging.EmployeeID, id.String()),
-	}
-
-	var employee domain.Employee
-	var err error
-
-	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
-		employee, err = s.store.GetEmployeeByID(ctx, tx, id)
-		return err
-	})
-	if err != nil {
-		switch {
-		case errors.Is(err, domain.ErrEmployeeNotFound):
-			return domain.Employee{}, logInfoAndWrapError(ctx, err, descriptionFailedGetEmployeeByID, logAttrs...)
-		default:
-			return domain.Employee{}, logAndWrapError(ctx, err, descriptionFailedGetEmployeeByID, logAttrs...)
-		}
-	}
-
-	return employee, nil
 }
