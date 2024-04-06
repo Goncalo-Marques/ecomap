@@ -162,6 +162,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        409:
+          description: Username already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
     delete:
