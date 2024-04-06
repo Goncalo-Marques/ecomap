@@ -42,7 +42,7 @@ func (s *service) SignInEmployee(ctx context.Context, username string, password 
 		}
 	}
 
-	valid, err := s.authnService.CheckPasswordHash(password, signIn.Password)
+	valid, err := s.authnService.CheckPasswordHash([]byte(password), []byte(signIn.Password))
 	if err != nil {
 		return "", logAndWrapError(ctx, err, descriptionFailedCheckPasswordHash, logAttrs...)
 	}

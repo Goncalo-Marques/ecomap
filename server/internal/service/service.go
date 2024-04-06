@@ -19,9 +19,9 @@ const (
 
 // AuthenticationService defines the authentication service interface.
 type AuthenticationService interface {
-	ValidPassword(password string) bool
-	HashPassword(password string) (string, error)
-	CheckPasswordHash(password, hash string) (bool, error)
+	ValidPassword(password []byte) bool
+	HashPassword(password []byte) ([]byte, error)
+	CheckPasswordHash(password, hash []byte) (bool, error)
 
 	NewJWT(subject string, subjectRoles []authn.SubjectRole) (string, error)
 }
