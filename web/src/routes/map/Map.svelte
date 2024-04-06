@@ -8,7 +8,15 @@
 	} from "../../lib/components/map/mapStore";
 	onMount(() => {
 		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha");
-		addVectorLayer("http://localhost:8000/concelhos.geojson", "Concelhos")
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 1");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 2");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 3");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
 
 	});
 </script>

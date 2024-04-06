@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { map, createMap } from "./mapStore";
-	import { createEventDispatcher, onDestroy, onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import {} from "ol/ol.css";
 	import type { Layer } from "ol/layer";
 	import LayerItem from "./layerItem.svelte";
-
-	const dispatch = createEventDispatcher();
 
 	/**
 	 * Zoom value for map view
@@ -49,7 +47,6 @@
 	<section class="layers" >
 		<header>
 			<h2>Layers</h2>
-			<hr />
 		</header>
 		<div class="item-container">
 			{#if layers}
@@ -61,12 +58,6 @@
 			{/if}
 		</div>
 	</section>
-
-	<!-- <a
-		href="https://www.openstreetmap.org/copyright"
-		target="_blank"
-		rel="noopener noreferrer">© OpenStreetMap contributors</a
-	> -->
 </div>
 
 <style> 
@@ -79,34 +70,25 @@
 		height: 100%;
 		position: relative;
 	}
-	
-	/* a {
-		position: absolute;
-		color: var(--gray-950);
-		background-color: var(--white);
-		font-size: 12px;
-		padding: 1px 0.5em;
-		border-radius: 0px 5px 0px 0px;
-		opacity: 0.8;
-		left: 0;
-		bottom: 0;
-		z-index: 500;
-	} */
 
 	.layers {
-		position: absolute;
-		min-width: 360px;
-		background-color: white;
+		min-width: 256px;
 		z-index: 999;
-		top: 3em;
-		left: 3em;
+		position: absolute;
+		background-color: var(--white);
 		border-radius: 4px;
+		max-height: 300px;
+
+		bottom: 3em;
+		left: 3em;
 		padding: 10px;
+		overflow: auto;
+
 	}
 
 	.item-container {
 		display: flex;
-		flex-direction: column-reverse;
+		flex-direction: column;
 		gap: 5px;
 	}
 

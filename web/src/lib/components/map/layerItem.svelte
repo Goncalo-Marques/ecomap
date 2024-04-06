@@ -10,8 +10,6 @@
 
     let visible : boolean = true
 
-	let layerIndex: number | undefined;
-
 	function refreshMap() {
 		$map?.getAllLayers().forEach(obj => {
 			obj.getSource()?.changed();
@@ -30,15 +28,10 @@
 
 		if (index) {
 			layer.setZIndex(index + 1);
-			layerIndex = layer.getZIndex();
 			refreshMap();
 		}
 	}
-
-	onMount(() => {
-		layerIndex = layer.getZIndex();
-	});
-
+	
     function setVisibility() {
         if (visible) {
             visible = false
@@ -51,14 +44,9 @@
 </script>
 
 <div class="layer-item" bind:this={nodeRef}>
-	<h4 class="number">{layerIndex}</h4>
 	<h4>{layer.get("layer-name")}</h4>
 
 	<div class="all-buttons">
-		<!-- <button class="buttons" on:click={zIndexUp}><Icon name="keyboard_double_arrow_down"/></button>
-
-		<button class="buttons" on:click={zIndexUp}><Icon name="keyboard_double_arrow_up"/></button> -->
-
         <button class="buttons material-symbols-rounded" on:click={setVisibility}>
             {#if visible}
                 <Icon name="visibility" />
@@ -66,8 +54,6 @@
                 <Icon name="visibility_off" />
             {/if}
         </button>
-        
-		<button class="buttons" on:click={remove}> <Icon name="delete" /> </button>
 	</div>
 </div>
 

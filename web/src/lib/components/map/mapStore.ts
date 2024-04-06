@@ -10,7 +10,7 @@ import { fromLonLat } from "ol/proj";
 import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer.js";
 import WebGLPointsLayer from "ol/layer/WebGLPoints.js";
 
-import { boundingExtent } from "ol/extent";
+import { boundingExtent, type Extent } from "ol/extent";
 
 import { Circle, Fill, Icon, Stroke, Style, Text } from "ol/style.js";
 import { Vector as VectorLayer } from "ol/layer.js";
@@ -21,6 +21,14 @@ import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
 import type { WebGLStyle } from "ol/style/webgl";
 
 export const map = writable<Map | null>(null);
+
+const docElement = document.documentElement;
+const style = getComputedStyle(docElement);
+
+let cssVars = {
+	text_sm_semibold: style.getPropertyValue('--text-sm-semibold'),
+	indigo_400 : style.getPropertyValue('--indigo-400')
+}
 
 const defaultVectorStyle: VectorStyle = {
 	"stroke-color": "#fff",
@@ -41,16 +49,19 @@ const defaultClusterSymbol: Style = new Style({
 	image: new Circle({
 		radius: 20,
 		stroke: new Stroke({
-			color: "#fff",
+			color: cssVars.indigo_400,
+			width: 2
 		}),
 		fill: new Fill({
-			color: "#68b083",
+			color: "#fff",
 		}),
 	}),
 	text: new Text({
 		text: "",
+		font: cssVars.text_sm_semibold,
+		textAlign: "center",
 		fill: new Fill({
-			color: "#fff",
+			color: "#000",
 		}),
 	}),
 });
@@ -110,8 +121,6 @@ export function createMap(
 			}),
 		}),
 	);
-	console.log("LEN: ",get(map)?.getAllLayers().length);
-	
 }
 
 /**
@@ -148,6 +157,7 @@ export function addVectorLayer(
  */
 export function addPointLayer(
 	url: string,
+	layerName: string,
 	style: WebGLStyle = defaultIconStyle,
 ) {
 	const mapValue = get(map);
@@ -161,6 +171,7 @@ export function addPointLayer(
 		zIndex: mapValue?.getAllLayers().length
 	});
 
+	pointsLayer.set("layer-name", layerName )
 	mapValue?.addLayer(pointsLayer);
 }
 
@@ -192,6 +203,7 @@ export function addClusterLayer(
 
 			clusterStyle.getText()?.setText(size.toString());
 
+
 			return size >= 2 ? clusterStyle : iconStyle;
 		},
 	});
@@ -202,20 +214,14 @@ export function addClusterLayer(
 
 	mapValue?.on("click", e => {
 		cluster.getFeatures(e.pixel).then(clickedFeatures => {
-			mapValue.forEachFeatureAtPixel(e.pixel, feature => {
-				console.log(feature.getStyleFunction());
-				
-			});
-
 			if (clickedFeatures.length) {
-				const features = clickedFeatures[0].get("features");
+				const features: FeatureLike[] = clickedFeatures[0].get("features");
 				if (features.length > 1) {
-					const extent = boundingExtent(
-						features.map((r: any) => r.getGeometry().getCoordinates()),
+					console.log("fetatures: ", features);
+					
+					const extent: Extent = boundingExtent(features.map((r: any)=> r.getGeometry().getCoordinates()),
 					);
-					mapValue
-						.getView()
-						.fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
+					mapValue.getView().fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
 				} else {
 					console.log("APENAS 1: ", features);
 				}
