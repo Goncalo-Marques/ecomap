@@ -19,13 +19,10 @@ const (
 	fieldFirstName = "firstName"
 	fieldLastName  = "lastName"
 
-	filterLimit     = "limit"
-	filterOffset    = "offset"
-	filterSort      = "sort"
-	filterOrder     = "order"
-	filterUsername  = "username"
-	filterFirstName = "firstName"
-	filterLastName  = "lastName"
+	filterLimit  = "limit"
+	filterOffset = "offset"
+	filterSort   = "sort"
+	filterOrder  = "order"
 
 	descriptionInvalidFieldValue       = "service: invalid field value"
 	descriptionInvalidFilterValue      = "service: invalid filter value"
@@ -50,6 +47,7 @@ type Store interface {
 	GetUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
 	GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error)
 	GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
+	PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error)
 
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error)

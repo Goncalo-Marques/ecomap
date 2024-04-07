@@ -19,6 +19,7 @@ const (
 	descriptionFailedGetUserByID       = "service: failed to get user by id"
 	descriptionFailedGetUserByUsername = "service: failed to get user by username"
 	descriptionFailedGetUserSignIn     = "service: failed to get user sign-in"
+	descriptionFailedPatchUser         = "service: failed to patch user"
 )
 
 // CreateUser creates a new user with the specified data.
@@ -89,15 +90,6 @@ func (s *service) ListUsers(ctx context.Context, filter domain.UsersFilter) (dom
 	}
 	if !filter.Order.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOrder}, descriptionInvalidFilterValue, logAttrs...)
-	}
-	if filter.Username != nil && !filter.Username.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterUsername}, descriptionInvalidFilterValue, logAttrs...)
-	}
-	if filter.FirstName != nil && !filter.FirstName.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterFirstName}, descriptionInvalidFilterValue, logAttrs...)
-	}
-	if filter.LastName != nil && !filter.LastName.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterLastName}, descriptionInvalidFilterValue, logAttrs...)
 	}
 
 	var paginatedUsers domain.PaginatedResponse[domain.User]
@@ -189,4 +181,54 @@ func (s *service) SignInUser(ctx context.Context, username domain.Username, pass
 	}
 
 	return token, nil
+}
+
+// PatchUser modifies the user with the specified identifier. Only the specified fields in the request body are updated.
+func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "PatchUser"),
+		slog.String(logging.UserID, id.String()),
+	}
+
+	if editableUser.Username != nil {
+		username := domain.Username(replaceSpacesWithHyphen(string(*editableUser.Username)))
+		editableUser.Username = &username
+	}
+	if editableUser.FirstName != nil {
+		firstName := domain.Name(replaceSpacesWithHyphen(string(*editableUser.FirstName)))
+		editableUser.FirstName = &firstName
+	}
+	if editableUser.LastName != nil {
+		lastName := domain.Name(replaceSpacesWithHyphen(string(*editableUser.LastName)))
+		editableUser.LastName = &lastName
+	}
+
+	if editableUser.Username != nil && !editableUser.Username.Valid() {
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldUsername}, descriptionInvalidFieldValue, logAttrs...)
+	}
+	if editableUser.FirstName != nil && !editableUser.FirstName.Valid() {
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldFirstName}, descriptionInvalidFieldValue, logAttrs...)
+	}
+	if editableUser.LastName != nil && !editableUser.LastName.Valid() {
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldLastName}, descriptionInvalidFieldValue, logAttrs...)
+	}
+
+	var user domain.User
+	var err error
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		user, err = s.store.PatchUser(ctx, tx, id, editableUser)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrUserNotFound),
+			errors.Is(err, domain.ErrUserAlreadyExists):
+			return domain.User{}, logInfoAndWrapError(ctx, err, descriptionFailedPatchUser, logAttrs...)
+		default:
+			return domain.User{}, logAndWrapError(ctx, err, descriptionFailedPatchUser, logAttrs...)
+		}
+	}
+
+	return user, nil
 }

@@ -232,6 +232,37 @@ func (s *store) GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Us
 	return signIn, nil
 }
 
+// PatchUser executes a query to patch a user with the specified identifier and data.
+func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error) {
+	row := tx.QueryRow(ctx, `
+		UPDATE users SET
+			username = coalesce($2, username),
+			first_name = coalesce($3, first_name),
+			last_name = coalesce($4, last_name) 
+		WHERE id = $1
+		RETURNING id, username, first_name, last_name, created_time, modified_time 
+	`,
+		id,
+		editableUser.Username,
+		editableUser.FirstName,
+		editableUser.LastName,
+	)
+
+	user, err := getUserFromRow(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserNotFound)
+		}
+		if getConstraintName(err) == constraintUsersUsernameKey {
+			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserAlreadyExists)
+		}
+
+		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	}
+
+	return user, nil
+}
+
 // getUserFromRow returns the user by scanning the given row.
 func getUserFromRow(row pgx.Row) (domain.User, error) {
 	var user domain.User
