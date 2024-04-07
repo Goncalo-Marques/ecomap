@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	errUserNotFound      = "user not found"
 	errUserAlreadyExists = "username already exists"
 )
 
@@ -68,7 +69,29 @@ func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.
 
 // GetUserByID handles the http request to get a user by ID.
 func (h *handler) GetUserByID(w http.ResponseWriter, r *http.Request, userID spec.UserIdPathParam) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	domainUser, err := h.service.GetUserByID(ctx, userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrUserNotFound):
+			notFound(w, errUserNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	user := userFromDomainUser(domainUser)
+	responseBody, err := json.Marshal(user)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // PatchUserByID handles the http request to modify a user by ID.

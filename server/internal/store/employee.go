@@ -13,30 +13,30 @@ import (
 
 // TODO: Replicate User methods.
 
-// GetEmployeeSignIn executes a query to return the sign-in of the employee with the specified username.
-func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error) {
-	row := tx.QueryRow(ctx, `
-		SELECT username, password 
+// GetEmployeeByID executes a query to return the employee with the specified identifier.
+func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
+	rows, err := tx.Query(ctx, `
+		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_time, modified_time 
 		FROM employees 
-		WHERE username = $1 
+		WHERE id = $1 
 	`,
-		username,
-	)
-
-	var signIn domain.SignIn
-	err := row.Scan(
-		&signIn.Username,
-		&signIn.Password,
+		id,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.SignIn{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrEmployeeNotFound)
-		}
+		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
+	}
+	defer rows.Close()
 
-		return domain.SignIn{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	employees, err := getEmployeesFromRows(rows)
+	if err != nil {
+		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedScanRows, err)
 	}
 
-	return signIn, nil
+	if len(employees) == 0 {
+		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedScanRows, domain.ErrEmployeeNotFound)
+	}
+
+	return employees[0], nil
 }
 
 // GetEmployeeByUsername executes a query to return the employee with the specified username.
@@ -65,30 +65,30 @@ func (s *store) GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username d
 	return employees[0], nil
 }
 
-// GetEmployeeByID executes a query to return the employee with the specified identifier.
-func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
-	rows, err := tx.Query(ctx, `
-		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_time, modified_time 
+// GetEmployeeSignIn executes a query to return the sign-in of the employee with the specified username.
+func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error) {
+	row := tx.QueryRow(ctx, `
+		SELECT username, password 
 		FROM employees 
-		WHERE id = $1 
+		WHERE username = $1 
 	`,
-		id,
+		username,
+	)
+
+	var signIn domain.SignIn
+	err := row.Scan(
+		&signIn.Username,
+		&signIn.Password,
 	)
 	if err != nil {
-		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
-	}
-	defer rows.Close()
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.SignIn{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrEmployeeNotFound)
+		}
 
-	employees, err := getEmployeesFromRows(rows)
-	if err != nil {
-		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedScanRows, err)
+		return domain.SignIn{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
 	}
 
-	if len(employees) == 0 {
-		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedScanRows, domain.ErrEmployeeNotFound)
-	}
-
-	return employees[0], nil
+	return signIn, nil
 }
 
 // getEmployeesFromRows returns the employees by scanning the given rows.

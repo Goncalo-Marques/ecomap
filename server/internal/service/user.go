@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"github.com/goncalo-marques/ecomap/server/internal/authn"
@@ -14,6 +15,7 @@ import (
 
 const (
 	descriptionFailedCreateUser        = "service: failed to create user"
+	descriptionFailedGetUserByID       = "service: failed to get user by id"
 	descriptionFailedGetUserByUsername = "service: failed to get user by username"
 	descriptionFailedGetUserSignIn     = "service: failed to get user sign-in"
 )
@@ -63,6 +65,32 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 			return domain.User{}, logInfoAndWrapError(ctx, err, descriptionFailedCreateUser, logAttrs...)
 		default:
 			return domain.User{}, logAndWrapError(ctx, err, descriptionFailedCreateUser, logAttrs...)
+		}
+	}
+
+	return user, nil
+}
+
+// GetUserByID returns the user with the specified identifier.
+func (s *service) GetUserByID(ctx context.Context, id uuid.UUID) (domain.User, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "GetUserByID"),
+		slog.String(logging.UserID, id.String()),
+	}
+
+	var user domain.User
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		user, err = s.store.GetUserByID(ctx, tx, id)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrUserNotFound):
+			return domain.User{}, logInfoAndWrapError(ctx, err, descriptionFailedGetUserByID, logAttrs...)
+		default:
+			return domain.User{}, logAndWrapError(ctx, err, descriptionFailedGetUserByID, logAttrs...)
 		}
 	}
 
