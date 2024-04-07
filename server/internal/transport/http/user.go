@@ -231,7 +231,38 @@ func (h *handler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
 
 // ResetUserPassword handles the http request to reset a user password.
 func (h *handler) ResetUserPassword(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var passwordReset spec.PasswordReset
+	err = json.Unmarshal(requestBody, &passwordReset)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	err = h.service.ResetUserPassword(ctx, domain.Username(passwordReset.Username), domain.Password(passwordReset.NewPassword))
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrUserNotFound):
+			notFound(w, errUserNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	writeResponseJSON(w, http.StatusNoContent, nil)
 }
 
 // SignInUser handles the http request to sign in a user.

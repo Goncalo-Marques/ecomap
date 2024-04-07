@@ -191,11 +191,6 @@ func (s *service) UpdateUserPassword(ctx context.Context, username domain.Userna
 		slog.String(logging.UserUsername, string(username)),
 	}
 
-	username = domain.Username(replaceSpacesWithHyphen(string(username)))
-
-	if !username.Valid() {
-		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldUsername}, descriptionInvalidFieldValue, logAttrs...)
-	}
 	if !s.authnService.ValidPassword([]byte(newPassword)) {
 		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
 	}
@@ -240,6 +235,40 @@ func (s *service) UpdateUserPassword(ctx context.Context, username domain.Userna
 		switch {
 		case errors.Is(err, domain.ErrUserNotFound):
 			return logInfoAndWrapError(ctx, domain.ErrCredentialsIncorrect, descriptionFailedUpdateUserPassword, logAttrs...)
+		default:
+			return logAndWrapError(ctx, err, descriptionFailedUpdateUserPassword, logAttrs...)
+		}
+	}
+
+	return nil
+}
+
+// ResetUserPassword resets the password of the user with the specified username.
+func (s *service) ResetUserPassword(ctx context.Context, username domain.Username, newPassword domain.Password) error {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "ResetUserPassword"),
+		slog.String(logging.UserUsername, string(username)),
+	}
+
+	if !s.authnService.ValidPassword([]byte(newPassword)) {
+		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
+	}
+
+	hashedPassword, err := s.authnService.HashPassword([]byte(newPassword))
+	if err != nil {
+		return logAndWrapError(ctx, err, descriptionFailedHashPassword, logAttrs...)
+	}
+
+	newPassword = domain.Password(hashedPassword)
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		err = s.store.UpdateUserPassword(ctx, tx, username, newPassword)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrUserNotFound):
+			return logInfoAndWrapError(ctx, err, descriptionFailedUpdateUserPassword, logAttrs...)
 		default:
 			return logAndWrapError(ctx, err, descriptionFailedUpdateUserPassword, logAttrs...)
 		}

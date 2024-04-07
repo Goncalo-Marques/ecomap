@@ -235,7 +235,7 @@ paths:
                 $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
-  /users/reset-password:
+  /users/password-reset:
     put:
       summary: Reset a user password.
       operationId: resetUserPassword
