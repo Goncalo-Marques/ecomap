@@ -40,3 +40,41 @@ type User struct {
 	CreatedTime  time.Time
 	ModifiedTime time.Time
 }
+
+// UserSort defines the field of the user to sort.
+type UserSort string
+
+const (
+	UserSortUsername     UserSort = "username"
+	UserSortFirstName    UserSort = "firstName"
+	UserSortLastName     UserSort = "lastName"
+	UserSortCreatedTime  UserSort = "createdTime"
+	UserSortModifiedTime UserSort = "modifiedTime"
+)
+
+// Field returns the name of the field to sort by.
+func (s UserSort) Field() UserSort {
+	return s
+}
+
+// Valid returns true if the field is valid, false otherwise.
+func (s UserSort) Valid() bool {
+	switch s {
+	case UserSortUsername,
+		UserSortFirstName,
+		UserSortLastName,
+		UserSortCreatedTime,
+		UserSortModifiedTime:
+		return true
+	default:
+		return false
+	}
+}
+
+// UsersFilter defines the users filter structure.
+type UsersFilter struct {
+	PaginatedRequest[UserSort]
+	Username  *Username
+	FirstName *Name
+	LastName  *Name
+}

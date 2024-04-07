@@ -11,6 +11,7 @@ import (
 const (
 	errRequestBodyInvalid   = "invalid request body"
 	errFieldValueInvalid    = "invalid field value"
+	errFilterValueInvalid   = "invalid filter value"
 	errCredentialsIncorrect = "incorrect credentials"
 )
 

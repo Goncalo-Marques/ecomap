@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -38,6 +40,126 @@ func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.E
 	}
 
 	return user, nil
+}
+
+// ListUsers executes a query to return the users for the specified filter.
+func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error) {
+	filterFields := make([]string, 0, 3)
+	argsWhere := make([]any, 0, 3)
+
+	// Append the optional fields to filter.
+	if filter.Username != nil {
+		filterFields = append(filterFields, "username")
+		argsWhere = append(argsWhere, *filter.Username)
+	}
+	if filter.FirstName != nil {
+		filterFields = append(filterFields, "first_name")
+		argsWhere = append(argsWhere, *filter.FirstName)
+	}
+	if filter.LastName != nil {
+		filterFields = append(filterFields, "last_name")
+		argsWhere = append(argsWhere, *filter.LastName)
+	}
+
+	var sqlWhere string
+	if len(filterFields) > 0 {
+		for i, field := range filterFields {
+			filterFields[i] = field + " ILIKE '%%' || $%d || '%%'"
+		}
+
+		sqlWhere = " WHERE " + strings.Join(filterFields, " AND ")
+	}
+
+	// Format the where sql parameters.
+	if len(argsWhere) > 0 {
+		sqlParamIndices := make([]any, len(argsWhere))
+		for i := range argsWhere {
+			sqlParamIndices[i] = i + 1
+		}
+
+		sqlWhere = fmt.Sprintf(sqlWhere, sqlParamIndices...)
+	}
+
+	// Get users count.
+	var total int
+	row := tx.QueryRow(ctx, `
+		SELECT count(id) 
+		FROM users 
+	`+sqlWhere,
+		argsWhere...,
+	)
+
+	err := row.Scan(&total)
+	if err != nil {
+		return domain.PaginatedResponse[domain.User]{}, err
+	}
+
+	var sqlSort string
+	argsSort := make([]any, 0, 2)
+
+	// Append the field to sort, if provided.
+	var sortField domain.UserSort
+	if filter.Sort != nil {
+		sortField = filter.Sort.Field()
+	}
+
+	sqlSort = " ORDER BY "
+	switch sortField {
+	case domain.UserSortUsername:
+		sqlSort += "username"
+	case domain.UserSortFirstName:
+		sqlSort += "first_name"
+	case domain.UserSortLastName:
+		sqlSort += "last_name"
+	case domain.UserSortCreatedTime:
+		sqlSort += "created_time"
+	case domain.UserSortModifiedTime:
+		sqlSort += "modified_time"
+	default:
+		sqlSort += "created_time"
+	}
+
+	order := " ASC"
+	if filter.Order == domain.OrderDesc {
+		order = " DESC"
+	}
+	sqlSort += order
+
+	// Append the limit and offset.
+	sqlSort += " LIMIT $%d OFFSET $%d"
+	argsSort = append(argsSort, filter.Limit, filter.Offset)
+
+	// Format the sort sql parameters.
+	if len(argsSort) > 0 {
+		sqlParamIndices := make([]any, len(argsSort))
+		for i := range argsSort {
+			sqlParamIndices[i] = len(argsWhere) + i + 1
+		}
+
+		sqlSort = fmt.Sprintf(sqlSort, sqlParamIndices...)
+	}
+
+	// Get users.
+	rows, err := tx.Query(ctx, `
+		SELECT id, username, first_name, last_name, created_time, modified_time 
+		FROM users 
+	`+sqlWhere+sqlSort,
+		slices.Concat(argsWhere, argsSort)...,
+	)
+	if err != nil {
+		return domain.PaginatedResponse[domain.User]{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
+	}
+	defer rows.Close()
+
+	users, err := getUsersFromRows(rows)
+	if err != nil {
+		return domain.PaginatedResponse[domain.User]{}, fmt.Errorf("%s: %w", descriptionFailedScanRows, err)
+	}
+
+	return domain.PaginatedResponse[domain.User]{
+		Total:   total,
+		Results: users,
+	}, nil
 }
 
 // GetUserByID executes a query to return the user with the specified identifier.
@@ -128,18 +250,17 @@ func getUserFromRow(row pgx.Row) (domain.User, error) {
 	return user, nil
 }
 
-// TODO: Remove comments when necessary.
 // getUsersFromRows returns the users by scanning the given rows.
-// func getUsersFromRows(rows pgx.Rows) ([]domain.User, error) {
-// 	var users []domain.User
-// 	for rows.Next() {
-// 		user, err := getUserFromRow(rows)
-// 		if err != nil {
-// 			return nil, err
-// 		}
+func getUsersFromRows(rows pgx.Rows) ([]domain.User, error) {
+	var users []domain.User
+	for rows.Next() {
+		user, err := getUserFromRow(rows)
+		if err != nil {
+			return nil, err
+		}
 
-// 		users = append(users, user)
-// 	}
+		users = append(users, user)
+	}
 
-// 	return users, nil
-// }
+	return users, nil
+}

@@ -51,7 +51,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := userFromDomainUser(domainUser)
+	user := userFromDomain(domainUser)
 	responseBody, err := json.Marshal(user)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -64,7 +64,53 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 // ListUsers handles the http request to list users.
 func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.ListUsersParams) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	var domainSort domain.Sort[domain.UserSort]
+	if params.Sort != nil {
+		domainSort = domain.UserSort(*params.Sort)
+	}
+
+	domainUsersFilter := domain.UsersFilter{
+		PaginatedRequest: domain.PaginatedRequest[domain.UserSort]{
+			Limit:  limitToDomain(params.Limit),
+			Offset: offsetToDomain(params.Offset),
+			Sort:   domainSort,
+			Order:  orderToDomain((*spec.OrderQueryParam)(params.Order)),
+		},
+		Username:  (*domain.Username)(params.Username),
+		FirstName: (*domain.Name)(params.FirstName),
+		LastName:  (*domain.Name)(params.LastName),
+	}
+
+	domainPaginatedUsers, err := h.service.ListUsers(ctx, domainUsersFilter)
+	if err != nil {
+		var domainErrFilterValueInvalid *domain.ErrFilterValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFilterValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFilterValueInvalid, domainErrFilterValueInvalid.FilterName))
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	users := usersFromDomain(domainPaginatedUsers.Results)
+	specUsersPaginated := spec.UsersPaginated{
+		Total: domainPaginatedUsers.Total,
+		Users: users,
+	}
+
+	responseBody, err := json.Marshal(specUsersPaginated)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // GetUserByID handles the http request to get a user by ID.
@@ -83,7 +129,7 @@ func (h *handler) GetUserByID(w http.ResponseWriter, r *http.Request, userID spe
 		return
 	}
 
-	user := userFromDomainUser(domainUser)
+	user := userFromDomain(domainUser)
 	responseBody, err := json.Marshal(user)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
