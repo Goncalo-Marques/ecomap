@@ -220,7 +220,7 @@ func (h *handler) SignInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.service.SignInUser(ctx, domain.Username(signIn.Username), signIn.Password)
+	token, err := h.service.SignInUser(ctx, domain.Username(signIn.Username), domain.Password(signIn.Password))
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrCredentialsIncorrect):

@@ -210,7 +210,7 @@ func (s *service) DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User
 }
 
 // SignInUser returns a JSON Web Token for the specified username and password.
-func (s *service) SignInUser(ctx context.Context, username domain.Username, password string) (string, error) {
+func (s *service) SignInUser(ctx context.Context, username domain.Username, password domain.Password) (string, error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "SignInUser"),
 		slog.String(logging.UserUsername, string(username)),
