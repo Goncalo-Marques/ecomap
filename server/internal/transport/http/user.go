@@ -254,7 +254,7 @@ func (h *handler) ResetUserPassword(w http.ResponseWriter, r *http.Request) {
 		case errors.As(err, &domainErrFieldValueInvalid):
 			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
 		case errors.Is(err, domain.ErrUserNotFound):
-			unauthorized(w, errUserNotFound)
+			notFound(w, errUserNotFound)
 		default:
 			internalServerError(w)
 		}
