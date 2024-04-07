@@ -90,15 +90,6 @@ func (s *service) ListUsers(ctx context.Context, filter domain.UsersFilter) (dom
 	if !filter.Order.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOrder}, descriptionInvalidFilterValue, logAttrs...)
 	}
-	if filter.Username != nil && !filter.Username.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterUsername}, descriptionInvalidFilterValue, logAttrs...)
-	}
-	if filter.FirstName != nil && !filter.FirstName.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterFirstName}, descriptionInvalidFilterValue, logAttrs...)
-	}
-	if filter.LastName != nil && !filter.LastName.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterLastName}, descriptionInvalidFilterValue, logAttrs...)
-	}
 
 	var paginatedUsers domain.PaginatedResponse[domain.User]
 	var err error

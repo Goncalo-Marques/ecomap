@@ -19,13 +19,10 @@ const (
 	fieldFirstName = "firstName"
 	fieldLastName  = "lastName"
 
-	filterLimit     = "limit"
-	filterOffset    = "offset"
-	filterSort      = "sort"
-	filterOrder     = "order"
-	filterUsername  = "username"
-	filterFirstName = "firstName"
-	filterLastName  = "lastName"
+	filterLimit  = "limit"
+	filterOffset = "offset"
+	filterSort   = "sort"
+	filterOrder  = "order"
 
 	descriptionInvalidFieldValue       = "service: invalid field value"
 	descriptionInvalidFilterValue      = "service: invalid filter value"
