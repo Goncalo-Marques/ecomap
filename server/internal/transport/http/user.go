@@ -66,23 +66,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.ListUsersParams) {
 	ctx := r.Context()
 
-	var domainSort domain.Sort[domain.UserSort]
-	if params.Sort != nil {
-		domainSort = domain.UserSort(*params.Sort)
-	}
-
-	domainUsersFilter := domain.UsersFilter{
-		PaginatedRequest: domain.PaginatedRequest[domain.UserSort]{
-			Limit:  limitToDomain(params.Limit),
-			Offset: offsetToDomain(params.Offset),
-			Sort:   domainSort,
-			Order:  orderToDomain((*spec.OrderQueryParam)(params.Order)),
-		},
-		Username:  (*domain.Username)(params.Username),
-		FirstName: (*domain.Name)(params.FirstName),
-		LastName:  (*domain.Name)(params.LastName),
-	}
-
+	domainUsersFilter := listUsersParamsToDomainUsersFilter(params)
 	domainPaginatedUsers, err := h.service.ListUsers(ctx, domainUsersFilter)
 	if err != nil {
 		var domainErrFilterValueInvalid *domain.ErrFilterValueInvalid
@@ -97,13 +81,8 @@ func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.
 		return
 	}
 
-	users := usersFromDomain(domainPaginatedUsers.Results)
-	specUsersPaginated := spec.UsersPaginated{
-		Total: domainPaginatedUsers.Total,
-		Users: users,
-	}
-
-	responseBody, err := json.Marshal(specUsersPaginated)
+	usersPaginated := usersPaginatedFromDomain(domainPaginatedUsers)
+	responseBody, err := json.Marshal(usersPaginated)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
 		internalServerError(w)

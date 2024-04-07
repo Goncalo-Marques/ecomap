@@ -56,6 +56,16 @@ func orderToDomain(order *spec.OrderQueryParam) domain.Order {
 	return domain.Order(*order)
 }
 
+// paginatedRequestToDomain returns a domain paginated request based on the standardized query parameter models.
+func paginatedRequestToDomain[T any](limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam, order *spec.OrderQueryParam, sort domain.Sort[T]) domain.PaginatedRequest[T] {
+	return domain.PaginatedRequest[T]{
+		Limit:  limitToDomain(limit),
+		Offset: offsetToDomain(offset),
+		Sort:   sort,
+		Order:  orderToDomain(order),
+	}
+}
+
 // userPostToDomainEditableUserWithPassword returns a domain editable user with password based on the standardized user
 // post.
 func userPostToDomainEditableUserWithPassword(userPost spec.UserPost) domain.EditableUserWithPassword {
@@ -75,6 +85,26 @@ func userPatchToDomainEditableUserPatch(userPatch spec.UserPatch) domain.Editabl
 		Username:  (*domain.Username)(userPatch.Username),
 		FirstName: (*domain.Name)(userPatch.FirstName),
 		LastName:  (*domain.Name)(userPatch.LastName),
+	}
+}
+
+// listUsersParamsToDomainUsersFilter returns a domain users filter based on the standardized list users parameters.
+func listUsersParamsToDomainUsersFilter(params spec.ListUsersParams) domain.UsersFilter {
+	var domainSort domain.Sort[domain.UserSort]
+	if params.Sort != nil {
+		domainSort = domain.UserSort(*params.Sort)
+	}
+
+	return domain.UsersFilter{
+		PaginatedRequest: paginatedRequestToDomain(
+			params.Limit,
+			params.Offset,
+			(*spec.OrderQueryParam)(params.Order),
+			domainSort,
+		),
+		Username:  (*domain.Username)(params.Username),
+		FirstName: (*domain.Name)(params.FirstName),
+		LastName:  (*domain.Name)(params.LastName),
 	}
 }
 
@@ -98,6 +128,14 @@ func usersFromDomain(users []domain.User) []spec.User {
 	}
 
 	return specUsers
+}
+
+// usersPaginatedFromDomain returns a standardized users paginated response based on the domain model.
+func usersPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.User]) spec.UsersPaginated {
+	return spec.UsersPaginated{
+		Total: paginatedResponse.Total,
+		Users: usersFromDomain(paginatedResponse.Results),
+	}
 }
 
 // employeeFromDomain returns a standardized employee based on the domain model.
