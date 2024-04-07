@@ -189,7 +189,29 @@ func (h *handler) PatchUserByID(w http.ResponseWriter, r *http.Request, userID s
 
 // DeleteUserByID handles the http request to delete a user by ID.
 func (h *handler) DeleteUserByID(w http.ResponseWriter, r *http.Request, userID spec.UserIdPathParam) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	domainUser, err := h.service.DeleteUserByID(ctx, userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrUserNotFound):
+			notFound(w, errUserNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	user := userFromDomain(domainUser)
+	responseBody, err := json.Marshal(user)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // UpdateUserPassword handles the http request to update a user password.

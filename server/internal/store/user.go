@@ -91,7 +91,7 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFil
 
 	err := row.Scan(&total)
 	if err != nil {
-		return domain.PaginatedResponse[domain.User]{}, err
+		return domain.PaginatedResponse[domain.User]{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
 	}
 
 	var sqlSort string
@@ -238,9 +238,9 @@ func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editable
 		UPDATE users SET
 			username = coalesce($2, username),
 			first_name = coalesce($3, first_name),
-			last_name = coalesce($4, last_name) 
+			last_name = coalesce($4, last_name)
 		WHERE id = $1
-		RETURNING id, username, first_name, last_name, created_time, modified_time 
+		RETURNING id, username, first_name, last_name, created_time, modified_time
 	`,
 		id,
 		editableUser.Username,
@@ -255,6 +255,28 @@ func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editable
 		}
 		if getConstraintName(err) == constraintUsersUsernameKey {
 			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserAlreadyExists)
+		}
+
+		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	}
+
+	return user, nil
+}
+
+// DeleteUserByID executes a query to delete the user with the specified identifier.
+func (s *store) DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error) {
+	row := tx.QueryRow(ctx, `
+		DELETE FROM users
+		WHERE id = $1
+		RETURNING id, username, first_name, last_name, created_time, modified_time
+	`,
+		id,
+	)
+
+	user, err := getUserFromRow(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserNotFound)
 		}
 
 		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
