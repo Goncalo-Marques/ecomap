@@ -448,6 +448,7 @@ components:
             - unauthorized
             - forbidden
             - not_found
+            - conflict
             - internal_server_error
         message:
           type: string

@@ -32,11 +32,11 @@ func (h *handler) SignInEmployee(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.service.SignInEmployee(ctx, signIn.Username, signIn.Password)
+	token, err := h.service.SignInEmployee(ctx, domain.Username(signIn.Username), signIn.Password)
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrCredentialsIncorrect):
-			unauthorized(w, errIncorrectCredentials)
+			unauthorized(w, errCredentialsIncorrect)
 		default:
 			internalServerError(w)
 		}
@@ -45,7 +45,6 @@ func (h *handler) SignInEmployee(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jwt := jwtFromJWTToken(token)
-
 	responseBody, err := json.Marshal(jwt)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -73,7 +72,6 @@ func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employ
 	}
 
 	employee := employeeFromDomain(domainEmployee)
-
 	responseBody, err := json.Marshal(employee)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))

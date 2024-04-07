@@ -10,7 +10,8 @@ import (
 // Common fault messages.
 const (
 	errRequestBodyInvalid   = "invalid request body"
-	errIncorrectCredentials = "incorrect credentials"
+	errFieldValueInvalid    = "invalid field value"
+	errCredentialsIncorrect = "incorrect credentials"
 )
 
 // Common fault descriptions.
@@ -36,6 +37,11 @@ func forbidden(w http.ResponseWriter, message string) {
 // notFound writes an error response and sets the header with the not found status code.
 func notFound(w http.ResponseWriter, message string) {
 	_ = fault(w, http.StatusNotFound, spec.ErrorCodeNotFound, &message)
+}
+
+// conflict writes an error response and sets the header with the conflict status code.
+func conflict(w http.ResponseWriter, message string) {
+	_ = fault(w, http.StatusConflict, spec.ErrorCodeConflict, &message)
 }
 
 // internalServerError sets the header with the internal server error status code.

@@ -8,7 +8,9 @@ const (
 
 	ServiceMethod = "service.method"
 
-	UserUsername = "user.username"
+	UserUsername  = "user.username"
+	UserFirstName = "user.firstName"
+	UserLastName  = "user.lastName"
 
 	EmployeeID       = "employee.id"
 	EmployeeUsername = "employee.username"

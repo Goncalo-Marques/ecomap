@@ -14,16 +14,16 @@ import (
 )
 
 const (
-	descriptionFailedGetEmployeeSignIn     = "service: failed to get employee sign-in"
-	descriptionFailedGetEmployeeByUsername = "service: failed to get employee by username"
 	descriptionFailedGetEmployeeByID       = "service: failed to get employee by id"
+	descriptionFailedGetEmployeeByUsername = "service: failed to get employee by username"
+	descriptionFailedGetEmployeeSignIn     = "service: failed to get employee sign-in"
 )
 
 // SignInEmployee returns a JSON Web Token for the specified username and password.
-func (s *service) SignInEmployee(ctx context.Context, username string, password string) (string, error) {
+func (s *service) SignInEmployee(ctx context.Context, username domain.Username, password string) (string, error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "SignInEmployee"),
-		slog.String(logging.EmployeeUsername, username),
+		slog.String(logging.EmployeeUsername, string(username)),
 	}
 
 	var signIn domain.SignIn
@@ -42,7 +42,7 @@ func (s *service) SignInEmployee(ctx context.Context, username string, password 
 		}
 	}
 
-	valid, err := s.authnService.CheckPasswordHash(password, signIn.Password)
+	valid, err := s.authnService.CheckPasswordHash([]byte(password), []byte(signIn.Password))
 	if err != nil {
 		return "", logAndWrapError(ctx, err, descriptionFailedCheckPasswordHash, logAttrs...)
 	}
