@@ -183,6 +183,7 @@ export function addPointLayer(
 export function addClusterLayer(
 	url: string,
 	layerName: string,
+	layerColor: String,
 	clusterStyle: Style = defaultClusterSymbol,
 	iconStyle: Style = defaultClusterIcon
 ) {
@@ -208,7 +209,9 @@ export function addClusterLayer(
 		},
 	});
 
-	cluster.set("layer-name", layerName )
+	cluster.set("layer-name", layerName)
+	cluster.set("layer-color", layerColor)
+
 
 	mapValue?.addLayer(cluster);
 

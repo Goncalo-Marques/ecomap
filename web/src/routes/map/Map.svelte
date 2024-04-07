@@ -7,17 +7,11 @@
 		addVectorLayer,
 	} from "../../lib/components/map/mapStore";
 	onMount(() => {
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 1");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 2");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 3");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4");
-
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha", "green");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 1", "blue");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 2", "red");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 3", "lightgreen");
+		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha 4", "black");
 	});
 </script>
 

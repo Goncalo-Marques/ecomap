@@ -4,6 +4,7 @@
 	import {} from "ol/ol.css";
 	import type { Layer } from "ol/layer";
 	import LayerItem from "./layerItem.svelte";
+	import Icon from "../Icon.svelte";
 
 	/**
 	 * Zoom value for map view
@@ -46,7 +47,8 @@
 <div id={map_id} class="map">
 	<section class="layers" >
 		<header>
-			<h2>Layers</h2>
+			<Icon name="layers" />
+			<h1>Layers</h1>
 		</header>
 		<div class="item-container">
 			{#if layers}
@@ -63,6 +65,16 @@
 <style> 
 	* {
 		box-sizing: border-box;
+	}
+
+	header{
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	h1{
+		font: var(--text-base-semibold);
 	}
 
 	.map {
@@ -83,17 +95,17 @@
 		left: 3em;
 		padding: 10px;
 		overflow: auto;
-
 	}
 
 	.item-container {
+		margin-top: 12px;
 		display: flex;
 		flex-direction: column;
-		gap: 5px;
+		gap: 8px;
 	}
 
-	.item-container::after,
+	/* .item-container::after,
 	.item-container::before {
 		content: "";
-	}
+	} */
 </style>
