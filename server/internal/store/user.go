@@ -263,6 +263,27 @@ func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editable
 	return user, nil
 }
 
+// UpdateUserPassword executes a query to update the password of the user with the specified username.
+func (s *store) UpdateUserPassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error {
+	commandTag, err := tx.Exec(ctx, `
+		UPDATE users SET
+			password = $2
+		WHERE username = $1 
+	`,
+		username,
+		password,
+	)
+	if err != nil {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserNotFound)
+	}
+
+	return nil
+}
+
 // DeleteUserByID executes a query to delete the user with the specified identifier.
 func (s *store) DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error) {
 	row := tx.QueryRow(ctx, `

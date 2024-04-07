@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	fieldUsername  = "username"
-	fieldPassword  = "password"
-	fieldFirstName = "firstName"
-	fieldLastName  = "lastName"
+	fieldUsername    = "username"
+	fieldPassword    = "password"
+	fieldNewPassword = "newPassword"
+	fieldFirstName   = "firstName"
+	fieldLastName    = "lastName"
 
 	filterLimit  = "limit"
 	filterOffset = "offset"
@@ -48,6 +49,7 @@ type Store interface {
 	GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error)
 	GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
 	PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error)
+	UpdateUserPassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
 	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
 
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)

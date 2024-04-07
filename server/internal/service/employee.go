@@ -46,7 +46,7 @@ func (s *service) GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Emp
 }
 
 // SignInEmployee returns a JSON Web Token for the specified username and password.
-func (s *service) SignInEmployee(ctx context.Context, username domain.Username, password string) (string, error) {
+func (s *service) SignInEmployee(ctx context.Context, username domain.Username, password domain.Password) (string, error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "SignInEmployee"),
 		slog.String(logging.EmployeeUsername, string(username)),

@@ -66,23 +66,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.ListUsersParams) {
 	ctx := r.Context()
 
-	var domainSort domain.Sort[domain.UserSort]
-	if params.Sort != nil {
-		domainSort = domain.UserSort(*params.Sort)
-	}
-
-	domainUsersFilter := domain.UsersFilter{
-		PaginatedRequest: domain.PaginatedRequest[domain.UserSort]{
-			Limit:  limitToDomain(params.Limit),
-			Offset: offsetToDomain(params.Offset),
-			Sort:   domainSort,
-			Order:  orderToDomain((*spec.OrderQueryParam)(params.Order)),
-		},
-		Username:  (*domain.Username)(params.Username),
-		FirstName: (*domain.Name)(params.FirstName),
-		LastName:  (*domain.Name)(params.LastName),
-	}
-
+	domainUsersFilter := listUsersParamsToDomainUsersFilter(params)
 	domainPaginatedUsers, err := h.service.ListUsers(ctx, domainUsersFilter)
 	if err != nil {
 		var domainErrFilterValueInvalid *domain.ErrFilterValueInvalid
@@ -97,13 +81,8 @@ func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.
 		return
 	}
 
-	users := usersFromDomain(domainPaginatedUsers.Results)
-	specUsersPaginated := spec.UsersPaginated{
-		Total: domainPaginatedUsers.Total,
-		Users: users,
-	}
-
-	responseBody, err := json.Marshal(specUsersPaginated)
+	usersPaginated := usersPaginatedFromDomain(domainPaginatedUsers)
+	responseBody, err := json.Marshal(usersPaginated)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
 		internalServerError(w)
@@ -216,7 +195,38 @@ func (h *handler) DeleteUserByID(w http.ResponseWriter, r *http.Request, userID 
 
 // UpdateUserPassword handles the http request to update a user password.
 func (h *handler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var passwordChange spec.PasswordChange
+	err = json.Unmarshal(requestBody, &passwordChange)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	err = h.service.UpdateUserPassword(ctx, domain.Username(passwordChange.Username), domain.Password(passwordChange.OldPassword), domain.Password(passwordChange.NewPassword))
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrCredentialsIncorrect):
+			unauthorized(w, errCredentialsIncorrect)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	writeResponseJSON(w, http.StatusNoContent, nil)
 }
 
 // ResetUserPassword handles the http request to reset a user password.
@@ -241,7 +251,7 @@ func (h *handler) SignInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.service.SignInUser(ctx, domain.Username(signIn.Username), signIn.Password)
+	token, err := h.service.SignInUser(ctx, domain.Username(signIn.Username), domain.Password(signIn.Password))
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrCredentialsIncorrect):
