@@ -19,6 +19,7 @@ import (
 // Common failure descriptions.
 const (
 	descriptionFailedQuery    = "store: failed to query"
+	descriptionFailedExec     = "store: failed to exec"
 	descriptionFailedScanRow  = "store: failed to scan row"
 	descriptionFailedScanRows = "store: failed to scan rows"
 )

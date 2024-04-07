@@ -195,7 +195,38 @@ func (h *handler) DeleteUserByID(w http.ResponseWriter, r *http.Request, userID 
 
 // UpdateUserPassword handles the http request to update a user password.
 func (h *handler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var passwordChange spec.PasswordChange
+	err = json.Unmarshal(requestBody, &passwordChange)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	err = h.service.UpdateUserPassword(ctx, domain.Username(passwordChange.Username), domain.Password(passwordChange.OldPassword), domain.Password(passwordChange.NewPassword))
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrCredentialsIncorrect):
+			unauthorized(w, errCredentialsIncorrect)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	writeResponseJSON(w, http.StatusNoContent, nil)
 }
 
 // ResetUserPassword handles the http request to reset a user password.

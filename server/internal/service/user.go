@@ -14,13 +14,14 @@ import (
 )
 
 const (
-	descriptionFailedCreateUser        = "service: failed to create user"
-	descriptionFailedListUsers         = "service: failed to list users"
-	descriptionFailedGetUserByID       = "service: failed to get user by id"
-	descriptionFailedGetUserByUsername = "service: failed to get user by username"
-	descriptionFailedGetUserSignIn     = "service: failed to get user sign-in"
-	descriptionFailedPatchUser         = "service: failed to patch user"
-	descriptionFailedDeleteUserByID    = "service: failed to delete user by id"
+	descriptionFailedCreateUser         = "service: failed to create user"
+	descriptionFailedListUsers          = "service: failed to list users"
+	descriptionFailedGetUserByID        = "service: failed to get user by id"
+	descriptionFailedGetUserByUsername  = "service: failed to get user by username"
+	descriptionFailedGetUserSignIn      = "service: failed to get user sign-in"
+	descriptionFailedPatchUser          = "service: failed to patch user"
+	descriptionFailedUpdateUserPassword = "service: failed to update user password"
+	descriptionFailedDeleteUserByID     = "service: failed to delete user by id"
 )
 
 // CreateUser creates a new user with the specified data.
@@ -181,6 +182,70 @@ func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser doma
 	}
 
 	return user, nil
+}
+
+// UpdateUserPassword updates the password of the user with the specified username.
+func (s *service) UpdateUserPassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "UpdateUserPassword"),
+		slog.String(logging.UserUsername, string(username)),
+	}
+
+	username = domain.Username(replaceSpacesWithHyphen(string(username)))
+
+	if !username.Valid() {
+		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldUsername}, descriptionInvalidFieldValue, logAttrs...)
+	}
+	if !s.authnService.ValidPassword([]byte(newPassword)) {
+		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
+	}
+
+	var signIn domain.SignIn
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		signIn, err = s.store.GetUserSignIn(ctx, tx, username)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrUserNotFound):
+			return logInfoAndWrapError(ctx, domain.ErrCredentialsIncorrect, descriptionFailedGetUserSignIn, logAttrs...)
+		default:
+			return logAndWrapError(ctx, err, descriptionFailedGetUserSignIn, logAttrs...)
+		}
+	}
+
+	valid, err := s.authnService.CheckPasswordHash([]byte(oldPassword), []byte(signIn.Password))
+	if err != nil {
+		return logAndWrapError(ctx, err, descriptionFailedCheckPasswordHash, logAttrs...)
+	}
+
+	if !valid {
+		return logInfoAndWrapError(ctx, domain.ErrCredentialsIncorrect, descriptionFailedCheckPasswordHash, logAttrs...)
+	}
+
+	hashedPassword, err := s.authnService.HashPassword([]byte(newPassword))
+	if err != nil {
+		return logAndWrapError(ctx, err, descriptionFailedHashPassword, logAttrs...)
+	}
+
+	newPassword = domain.Password(hashedPassword)
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		err = s.store.UpdateUserPassword(ctx, tx, username, newPassword)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrUserNotFound):
+			return logInfoAndWrapError(ctx, domain.ErrCredentialsIncorrect, descriptionFailedUpdateUserPassword, logAttrs...)
+		default:
+			return logAndWrapError(ctx, err, descriptionFailedUpdateUserPassword, logAttrs...)
+		}
+	}
+
+	return nil
 }
 
 // DeleteUserByID deletes the user with the specified identifier.
