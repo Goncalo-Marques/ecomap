@@ -142,7 +142,49 @@ func (h *handler) GetUserByID(w http.ResponseWriter, r *http.Request, userID spe
 
 // PatchUserByID handles the http request to modify a user by ID.
 func (h *handler) PatchUserByID(w http.ResponseWriter, r *http.Request, userID spec.UserIdPathParam) {
-	// TODO: Implement this.
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var userPatch spec.UserPatch
+	err = json.Unmarshal(requestBody, &userPatch)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	domainEditableUser := userPatchToDomainEditableUserPatch(userPatch)
+	domainUser, err := h.service.PatchUser(ctx, userID, domainEditableUser)
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrUserNotFound):
+			notFound(w, errUserNotFound)
+		case errors.Is(err, domain.ErrUserAlreadyExists):
+			conflict(w, errUserAlreadyExists)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	user := userFromDomain(domainUser)
+	responseBody, err := json.Marshal(user)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // DeleteUserByID handles the http request to delete a user by ID.

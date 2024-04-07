@@ -69,6 +69,15 @@ func userPostToDomainEditableUserWithPassword(userPost spec.UserPost) domain.Edi
 	}
 }
 
+// userPatchToDomainEditableUserPatch returns a domain patchable user based on the standardized user patch.
+func userPatchToDomainEditableUserPatch(userPatch spec.UserPatch) domain.EditableUserPatch {
+	return domain.EditableUserPatch{
+		Username:  (*domain.Username)(userPatch.Username),
+		FirstName: (*domain.Name)(userPatch.FirstName),
+		LastName:  (*domain.Name)(userPatch.LastName),
+	}
+}
+
 // userFromDomain returns a standardized user based on the domain model.
 func userFromDomain(user domain.User) spec.User {
 	return spec.User{
