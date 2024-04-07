@@ -15,6 +15,7 @@ import (
 
 const (
 	descriptionFailedCreateUser        = "service: failed to create user"
+	descriptionFailedListUsers         = "service: failed to list users"
 	descriptionFailedGetUserByID       = "service: failed to get user by id"
 	descriptionFailedGetUserByUsername = "service: failed to get user by username"
 	descriptionFailedGetUserSignIn     = "service: failed to get user sign-in"
@@ -69,6 +70,48 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 	}
 
 	return user, nil
+}
+
+// ListUsers returns the users with the specified filter.
+func (s *service) ListUsers(ctx context.Context, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "ListUsers"),
+	}
+
+	if !filter.Limit.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterLimit}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Offset.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOffset}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.Sort != nil && !filter.Sort.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterSort}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Order.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOrder}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.Username != nil && !filter.Username.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterUsername}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.FirstName != nil && !filter.FirstName.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterFirstName}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.LastName != nil && !filter.LastName.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterLastName}, descriptionInvalidFilterValue, logAttrs...)
+	}
+
+	var paginatedUsers domain.PaginatedResponse[domain.User]
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		paginatedUsers, err = s.store.ListUsers(ctx, tx, filter)
+		return err
+	})
+	if err != nil {
+		return domain.PaginatedResponse[domain.User]{}, logAndWrapError(ctx, err, descriptionFailedListUsers, logAttrs...)
+	}
+
+	return paginatedUsers, nil
 }
 
 // GetUserByID returns the user with the specified identifier.

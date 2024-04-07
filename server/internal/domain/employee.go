@@ -12,6 +12,7 @@ var (
 	ErrEmployeeNotFound = errors.New("employee not found") // Returned when an employee is not found.
 )
 
+// TODO: Create method to validate employee role.
 // EmployeeRole defines the role of the employee.
 type EmployeeRole string
 

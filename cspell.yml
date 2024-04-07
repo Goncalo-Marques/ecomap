@@ -20,6 +20,7 @@ ignoreWords:
   - GOPATH
   - gradlew
   - healthcheck
+  - ILIKE
   - isready
   - jackc
   - ldflags

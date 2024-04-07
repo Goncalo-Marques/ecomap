@@ -19,7 +19,16 @@ const (
 	fieldFirstName = "firstName"
 	fieldLastName  = "lastName"
 
+	filterLimit     = "limit"
+	filterOffset    = "offset"
+	filterSort      = "sort"
+	filterOrder     = "order"
+	filterUsername  = "username"
+	filterFirstName = "firstName"
+	filterLastName  = "lastName"
+
 	descriptionInvalidFieldValue       = "service: invalid field value"
+	descriptionInvalidFilterValue      = "service: invalid filter value"
 	descriptionFailedHashPassword      = "service: failed to hash password"
 	descriptionFailedCheckPasswordHash = "service: failed to check password hash"
 	descriptionFailedCreateJWT         = "service: failed to create jwt"
@@ -37,6 +46,7 @@ type AuthenticationService interface {
 // Store defines the store interface.
 type Store interface {
 	CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (domain.User, error)
+	ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error)
 	GetUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
 	GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error)
 	GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
