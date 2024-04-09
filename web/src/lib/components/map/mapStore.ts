@@ -25,32 +25,47 @@ export const map = writable<Map | null>(null);
 const docElement = document.documentElement;
 const style = getComputedStyle(docElement);
 
+/**
+ * Variables gotten from css vars.
+ */
 let cssVars = {
-	text_sm_semibold: style.getPropertyValue('--text-sm-semibold'),
-	indigo_400 : style.getPropertyValue('--indigo-400')
-}
+	text_sm_semibold: style.getPropertyValue("--text-sm-semibold"),
+	indigo_400: style.getPropertyValue("--indigo-400"),
+};
 
+/**
+ * Default style for vector layer.
+ */
 const defaultVectorStyle: VectorStyle = {
 	"stroke-color": "#fff",
 	"fill-color": "#3980a885",
 };
 
+/**
+ * Default style for WebGl point layer.
+ */
 const defaultIconStyle: WebGLStyle = {
 	"icon-src": "/images/logo.svg",
 };
 
+/**
+ * Default style for cluster point layer.
+ */
 const defaultClusterIcon = new Style({
 	image: new Icon({
 		src: "/images/logo.svg",
 	}),
 });
 
+/**
+ * Default style for cluster symbol.
+ */
 const defaultClusterSymbol: Style = new Style({
 	image: new Circle({
 		radius: 20,
 		stroke: new Stroke({
 			color: cssVars.indigo_400,
-			width: 2
+			width: 2,
 		}),
 		fill: new Fill({
 			color: "#fff",
@@ -97,15 +112,14 @@ export function createMap(
 	lat: number,
 	zoom: number,
 	projection: string = "EPSG:3857",
-	layerName: string = "baseLayer",
 ) {
 	const baseLayer = new TileLayer({
 		source: new OSM(),
 		visible: true,
-		zIndex: 0
+		zIndex: 0,
 	});
 
-	baseLayer.set("layer-name", layerName )
+	baseLayer.set("layer-name", "baseLayer");
 
 	map.set(
 		new Map({
@@ -127,10 +141,14 @@ export function createMap(
  * Add's vector layer into map
  *
  * @param url receives geojson data
+ * @param layerName name for layer
+ * @param layerColor color that identifies the layer
+ * @param style style for new layer
  */
 export function addVectorLayer(
 	url: string,
 	layerName: string,
+	layerColor: String,
 	style: VectorStyle = defaultVectorStyle,
 ) {
 	const mapValue = get(map);
@@ -141,12 +159,13 @@ export function addVectorLayer(
 				url: url,
 				format: new GeoJSON(),
 			}),
-			zIndex: mapValue?.getAllLayers().length
+			zIndex: mapValue?.getAllLayers().length,
 		},
 		style,
 	);
 
-	vectorLayer.set("layer-name", layerName )
+	vectorLayer.set("layer-name", layerName);
+	vectorLayer.set("layer-color", layerColor);
 	mapValue?.addLayer(vectorLayer);
 }
 
@@ -154,10 +173,14 @@ export function addVectorLayer(
  * Add's point's vector layer into map
  *
  * @param url receives geojson data
+ * @param layerName name for layer
+ * @param layerColor color that identifies the layer
+ * @param style style for new layer
  */
 export function addPointLayer(
 	url: string,
 	layerName: string,
+	layerColor: String,
 	style: WebGLStyle = defaultIconStyle,
 ) {
 	const mapValue = get(map);
@@ -168,10 +191,11 @@ export function addPointLayer(
 			format: new GeoJSON(),
 		}),
 		style: style,
-		zIndex: mapValue?.getAllLayers().length
+		zIndex: mapValue?.getAllLayers().length,
 	});
 
-	pointsLayer.set("layer-name", layerName )
+	pointsLayer.set("layer-name", layerName);
+	pointsLayer.set("layer-color", layerColor);
 	mapValue?.addLayer(pointsLayer);
 }
 
@@ -179,13 +203,17 @@ export function addPointLayer(
  * Add's clusterLayer into map
  *
  * @param url receives geojson data
+ * @param layerName name for layer
+ * @param layerColor color that identifies the layer
+ * @param clusterStyle style for the cluster nodes
+ * @param iconStyle style for each independent node
  */
 export function addClusterLayer(
 	url: string,
 	layerName: string,
 	layerColor: String,
 	clusterStyle: Style = defaultClusterSymbol,
-	iconStyle: Style = defaultClusterIcon
+	iconStyle: Style = defaultClusterIcon,
 ) {
 	const mapValue = get(map);
 
@@ -204,14 +232,12 @@ export function addClusterLayer(
 
 			clusterStyle.getText()?.setText(size.toString());
 
-
 			return size >= 2 ? clusterStyle : iconStyle;
 		},
 	});
 
-	cluster.set("layer-name", layerName)
-	cluster.set("layer-color", layerColor)
-
+	cluster.set("layer-name", layerName);
+	cluster.set("layer-color", layerColor);
 
 	mapValue?.addLayer(cluster);
 
@@ -221,12 +247,15 @@ export function addClusterLayer(
 				const features: FeatureLike[] = clickedFeatures[0].get("features");
 				if (features.length > 1) {
 					console.log("fetatures: ", features);
-					
-					const extent: Extent = boundingExtent(features.map((r: any)=> r.getGeometry().getCoordinates()),
+
+					const extent: Extent = boundingExtent(
+						features.map((r: any) => r.getGeometry().getCoordinates()),
 					);
-					mapValue.getView().fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
+					mapValue
+						.getView()
+						.fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
 				} else {
-					console.log("APENAS 1: ", features);
+					//Code for single icon clicks
 				}
 			}
 		});
@@ -238,7 +267,9 @@ export function addClusterLayer(
 			if (features[0] !== hoverFeature) {
 				hoverFeature = features[0];
 
-				mapValue.getTargetElement().style.cursor = hoverFeature ? "pointer": "";
+				mapValue.getTargetElement().style.cursor = hoverFeature
+					? "pointer"
+					: "";
 
 				cluster.getSource()?.changed();
 			}

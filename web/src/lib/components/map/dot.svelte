@@ -1,14 +1,12 @@
 <script lang="ts">
-	type Size = "x-small" | "small" | "medium" | "large";
-
 	/**
-	 * Dot height
+	 * Dot's height
 	 * @default "12px"
 	 */
 	export let height: string = "12px";
 
 	/**
-	 * Dot width
+	 * Dot's width
 	 * @default "12px"
 	 */
 	export let width: string = "12px";
