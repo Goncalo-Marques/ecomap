@@ -18,9 +18,12 @@
 		backOfficeBasename,
 		CommonRoutes,
 	} from "./routes/constants/routes";
+	import url from "./lib/utils/url";
 
 	onMount(() => {
-		navigate(CommonRoutes.SIGN_IN, { replace: true });
+		if ($url.pathname === "/") {
+			navigate(CommonRoutes.SIGN_IN, { replace: true });
+		}
 	});
 </script>
 
