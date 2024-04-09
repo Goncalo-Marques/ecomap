@@ -6,13 +6,22 @@ import { CommonRoutes } from "../../../routes/constants/routes";
 
 const ecomapHttpClient = createClient<paths>({
 	baseUrl: "/api",
-	headers: {
-		Authorization: `Bearer ${getToken()}`,
-	},
 	// Custom fetch implementation to handle native fetch exceptions.
 	async fetch(input, init) {
 		try {
-			const response = await fetch(input, init);
+			// Append Authorization header.
+			const headers = new Headers({
+				...init?.headers,
+				Authorization: `Bearer ${getToken()}`,
+			});
+
+			// Build request init with the new headers.
+			const requestInit: RequestInit = {
+				...init,
+				headers,
+			};
+
+			const response = await fetch(input, requestInit);
 
 			switch (response.status) {
 				case 401:
