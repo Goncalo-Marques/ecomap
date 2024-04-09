@@ -6,7 +6,12 @@
 		getColumnsSorting,
 		toggleDirection,
 	} from "./utils";
-	import type { Columns, Pagination, Sorting, onSortingChange } from "./types";
+	import type {
+		Columns,
+		Pagination,
+		Sorting,
+		onSortingChangeFn,
+	} from "./types";
 
 	/**
 	 * The columns of the table.
@@ -17,7 +22,7 @@
 	 * Callback fired when sorting state changes.
 	 * @default null
 	 */
-	export let onSortingChange: onSortingChange<TRow> | null = null;
+	export let onSortingChange: onSortingChangeFn<TRow> | null = null;
 
 	/**
 	 * The pagination configuration for the table.
@@ -208,6 +213,7 @@
 		{@const start = pagination.pageSize * pagination.pageIndex + 1}
 		{@const end = pagination.pageSize * (pagination.pageIndex + 1)}
 		{@const pages = Math.ceil(pagination.total / pagination.pageSize)}
+		{@const pagesArray = Array.from({ length: pages }, (_, idx) => idx)}
 
 		<div class="pagination">
 			<span class="pagination-info">
@@ -227,7 +233,7 @@
 					<Icon name="arrow_back" size="small" />
 				</button>
 
-				{#each Array(pages) as _, pageIndex}
+				{#each pagesArray as pageIndex}
 					<button
 						class="pagination-page"
 						data-index={pageIndex}

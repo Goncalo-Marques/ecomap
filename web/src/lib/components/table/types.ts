@@ -132,7 +132,7 @@ export interface ColumnCommon {
  * @template TRow Type of the table row.
  * @param sorting Updated sorting state.
  */
-export type onSortingChange<TRow extends Row> = (
+export type onSortingChangeFn<TRow extends Row> = (
 	sorting: Sorting<TRow>,
 ) => void;
 
