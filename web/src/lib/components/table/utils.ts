@@ -1,5 +1,4 @@
 import { ROOT_FONT_SIZE } from "../../constants/fontSize";
-import { SortingDirection } from "./constants";
 import type {
 	Column,
 	Columns,
@@ -7,6 +6,7 @@ import type {
 	Row,
 	Sorting,
 	SortingColumns,
+	SortingDirection,
 } from "./types";
 
 /**
@@ -47,7 +47,7 @@ export function getColumnsSorting<TRow extends Row>(
 		if (sorting && field === sorting.field) {
 			columnsSorting[field] = sorting.direction;
 		} else {
-			columnsSorting[field] = SortingDirection.UNSORTED;
+			columnsSorting[field] = undefined;
 		}
 	}
 
@@ -58,20 +58,22 @@ export function getColumnsSorting<TRow extends Row>(
  * Toggles a column sorting direction into its next state.
  *
  * Sorting state transitions:
- * - `SortingDirection.UNSORTED` -> `SortingDirection.ASC`
- * - `SortingDirection.ASC` -> `SortingDirection.DESC`
- * - `SortingDirection.DESC` -> `SortingDirection.ASC`
+ * - `undefined` -> `asc`
+ * - `asc` -> `desc`
+ * - `desc` -> `asc`
  *
  * @param direction Current sorting direction.
  * @returns New sorting direction.
  */
-export function toggleDirection(direction: SortingDirection): SortingDirection {
+export function toggleDirection(
+	direction: SortingDirection | undefined,
+): SortingDirection {
 	let newDirection: SortingDirection;
 
-	if (direction === SortingDirection.ASC) {
-		newDirection = SortingDirection.DESC;
+	if (direction === "asc") {
+		newDirection = "desc";
 	} else {
-		newDirection = SortingDirection.ASC;
+		newDirection = "asc";
 	}
 
 	return newDirection;

@@ -1,6 +1,5 @@
 <script lang="ts" generics="TRow extends Record<string, unknown>">
 	import Icon from "../Icon.svelte";
-	import { SortingDirection } from "./constants";
 	import {
 		getCell,
 		getCellStyle,
@@ -30,7 +29,7 @@
 	 * The rows to display in the table.
 	 * @default []
 	 */
-	export let rows: TRow[] = [];
+	export let rows: TRow[] | Promise<TRow[]> = [];
 
 	/**
 	 * The sorting state of the table.
@@ -41,7 +40,7 @@
 	/**
 	 * Map that contains the sorting state for each column.
 	 * @example
-	 * { id: "asc", name: "unsorted" }
+	 * { id: "asc", name: undefined }
 	 */
 	let columnsSorting = getColumnsSorting(columns, sorting);
 
@@ -52,8 +51,8 @@
 	function handleHeaderCellClick(e: Event) {
 		const headerCell = e.currentTarget as HTMLTableCellElement;
 
-		// Retrieves data-field and data-direction attributes from the header cell element.
-		const { field, direction } = headerCell.dataset;
+		// Retrieves data attributes from the header cell element.
+		const { field, sortable, direction } = headerCell.dataset;
 
 		// Ignore sorting update when column is not a accessor type column.
 		if (!field) {
@@ -61,14 +60,14 @@
 		}
 
 		// Ignore sorting update when column is not sortable.
-		if (!direction) {
+		if (!sortable || sortable === "false") {
 			return;
 		}
 
 		if (
-			direction !== SortingDirection.ASC &&
-			direction !== SortingDirection.DESC &&
-			direction !== SortingDirection.UNSORTED
+			direction !== undefined &&
+			direction !== "asc" &&
+			direction !== "desc"
 		) {
 			throw new Error(
 				`The sorting direction '${direction}' is invalid for the column field '${field}'`,
@@ -147,6 +146,9 @@
 					<th
 						align={column.align}
 						data-field={column.type === "accessor" ? column.field : null}
+						data-sortable={column.type === "accessor"
+							? column.enableSorting
+							: null}
 						data-direction={column.type === "accessor" && column.enableSorting
 							? columnsSorting[column.field]
 							: null}
@@ -156,13 +158,10 @@
 						{column.header}
 						{#if column.type === "accessor" && column.enableSorting}
 							{@const arrowDirection =
-								columnsSorting[column.field] === SortingDirection.ASC
-									? "upward"
-									: "downward"}
-							{@const sortingClass =
-								columnsSorting[column.field] !== SortingDirection.UNSORTED
-									? "sorted"
-									: undefined}
+								columnsSorting[column.field] === "asc" ? "upward" : "downward"}
+							{@const sortingClass = columnsSorting[column.field]
+								? "sorted"
+								: undefined}
 
 							<button class={sortingClass}>
 								<Icon name={`arrow_${arrowDirection}`} size="small" />
@@ -173,43 +172,49 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each rows as row}
-				<tr>
-					{#each columns as column}
-						{@const cell = getCell(column, row)}
+			{#await rows then rows}
+				{#each rows as row}
+					<tr>
+						{#each columns as column}
+							{@const cell = getCell(column, row)}
 
-						<td
-							align={column.align}
-							style={getCellStyle(column)}
-							data-field={column.type === "accessor" ? column.field : null}
-						>
-							{#if typeof cell === "string"}
-								{cell}
-							{:else if cell.slotContent}
-								<svelte:component this={cell.component} {...cell.props}>
-									{cell.slotContent}
-								</svelte:component>
-							{:else}
-								<svelte:component this={cell.component} {...cell.props} />
-							{/if}
-						</td>
-					{/each}
-				</tr>
-			{/each}
+							<td
+								align={column.align}
+								style={getCellStyle(column)}
+								data-field={column.type === "accessor" ? column.field : null}
+							>
+								{#if typeof cell === "string"}
+									{cell}
+								{:else if cell.slotContent}
+									<svelte:component this={cell.component} {...cell.props}>
+										{cell.slotContent}
+									</svelte:component>
+								{:else}
+									<svelte:component this={cell.component} {...cell.props} />
+								{/if}
+							</td>
+						{/each}
+					</tr>
+				{/each}
+			{/await}
 		</tbody>
 	</table>
+	{#await rows}
+		<div role="progressbar" class="loading">
+			<Icon name="progress_activity" size="xx-large" />
+		</div>
+	{/await}
 	{#if pagination}
 		{@const start = pagination.pageSize * pagination.pageIndex + 1}
 		{@const end = pagination.pageSize * (pagination.pageIndex + 1)}
-		{@const pages = Math.ceil(pagination.totalRowsAmount / pagination.pageSize)}
+		{@const pages = Math.ceil(pagination.total / pagination.pageSize)}
 
 		<div class="pagination">
 			<span class="pagination-info">
-				{start > pagination.totalRowsAmount
-					? pagination.totalRowsAmount
-					: start}-{end > pagination.totalRowsAmount
-					? pagination.totalRowsAmount
-					: end} of {pagination.totalRowsAmount}
+				{start > pagination.total ? pagination.total : start}-{end >
+				pagination.total
+					? pagination.total
+					: end} of {pagination.total}
 				{pagination.name}
 			</span>
 
@@ -247,6 +252,7 @@
 
 <style>
 	.table-container {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
@@ -303,6 +309,18 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		text-wrap: nowrap;
+	}
+
+	.loading {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 10;
+		color: var(--green-700);
+	}
+	.loading > :global(.material-symbols-rounded) {
+		animation: var(--animation-spin);
 	}
 
 	.pagination {

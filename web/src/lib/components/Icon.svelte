@@ -1,5 +1,5 @@
 <script lang="ts">
-	type Size = "x-small" | "small" | "medium" | "large";
+	type Size = "x-small" | "small" | "medium" | "large" | "x-large" | "xx-large";
 
 	/**
 	 * The icon name.
@@ -31,5 +31,11 @@
 	}
 	.large {
 		font-size: 2rem;
+	}
+	.x-large {
+		font-size: 2.5rem;
+	}
+	.xx-large {
+		font-size: 3rem;
 	}
 </style>

@@ -1,5 +1,4 @@
 import type { ComponentType } from "svelte";
-import { SortingDirection } from "./constants";
 
 /**
  * Base structure of the table row.
@@ -138,6 +137,11 @@ export type onSortingChange<TRow extends Row> = (
 ) => void;
 
 /**
+ * The available directions of a column sorting state.
+ */
+export type SortingDirection = "asc" | "desc" | undefined;
+
+/**
  * Sorting state.
  * @template TRow Type of the table row.
  */
@@ -176,9 +180,9 @@ export interface Pagination {
 	pageSize: number;
 
 	/**
-	 * The total amount of rows to be displayed in the table.
+	 * The total number of rows in all pages.
 	 */
-	totalRowsAmount: number;
+	total: number;
 
 	/**
 	 * The name for the rows being displayed.
