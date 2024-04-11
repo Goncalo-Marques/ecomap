@@ -3,6 +3,7 @@
 @import "./styles/colors.css";
 @import "./styles/shadows.css";
 @import "./styles/transitions.css";
+@import "./styles/animations.css";
 
 html {
 	font: var(--text-base-regular);
@@ -17,4 +18,14 @@ button {
 	background-color: unset;
 	color: inherit;
 	outline-color: var(--gray-900);
+}
+
+/* Webkit custom scrollbar */
+::-webkit-scrollbar {
+	width: 0.5rem;
+	height: 0.5rem;
+}
+::-webkit-scrollbar-thumb {
+	background-color: var(--gray-300);
+	border-radius: 9999rem;
 }
