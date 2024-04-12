@@ -1,9 +1,11 @@
 import Map from "ol/Map";
 import { writable, get } from "svelte/store";
 import View from "ol/View";
+import SimpleGeometry from "ol/geom/SimpleGeometry";
+import { type Coordinate } from "ol/coordinate";
 import GeoJSON from "ol/format/GeoJSON";
 
-import { Vector as VectorSource, XYZ, Cluster, OSM } from "ol/source";
+import { Vector as VectorSource, Cluster, OSM } from "ol/source";
 import { WebGLTile as TileLayer, Layer } from "ol/layer";
 import { fromLonLat } from "ol/proj";
 
@@ -28,7 +30,7 @@ const style = getComputedStyle(docElement);
 /**
  * Variables gotten from css vars.
  */
-let cssVars = {
+const cssVars = {
 	text_sm_semibold: style.getPropertyValue("--text-sm-semibold"),
 	indigo_400: style.getPropertyValue("--indigo-400"),
 };
@@ -92,7 +94,7 @@ class WebGLLayer extends Layer {
 		this.style = style;
 	}
 
-	createRenderer(): any {
+	createRenderer(): WebGLVectorLayerRenderer {
 		return new WebGLVectorLayerRenderer(this, {
 			style: this.style,
 		});
@@ -149,7 +151,7 @@ export function createMap(
 export function addVectorLayer(
 	url: string,
 	layerName: string,
-	layerColor: String,
+	layerColor: string,
 	style: VectorStyle = defaultVectorStyle,
 ) {
 	const mapValue = get(map);
@@ -181,7 +183,7 @@ export function addVectorLayer(
 export function addPointLayer(
 	url: string,
 	layerName: string,
-	layerColor: String,
+	layerColor: string,
 	style: WebGLStyle = defaultIconStyle,
 ) {
 	const mapValue = get(map);
@@ -212,7 +214,7 @@ export function addPointLayer(
 export function addClusterLayer(
 	url: string,
 	layerName: string,
-	layerColor: String,
+	layerColor: string,
 	clusterStyle: Style = defaultClusterSymbol,
 	iconStyle: Style = defaultClusterIcon,
 ) {
@@ -247,10 +249,27 @@ export function addClusterLayer(
 			if (clickedFeatures.length) {
 				const features: FeatureLike[] = clickedFeatures[0].get("features");
 				if (features.length > 1) {
-					const extent: Extent = boundingExtent(
-						features.map((r: any) => r.getGeometry().getCoordinates()),
-					);
-					mapValue.getView().fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
+					const coordinates: Coordinate[] = [];
+
+					for (const feature of features) {
+						const geom = feature.getGeometry();
+						if (!(geom instanceof SimpleGeometry)) {
+							continue;
+						}
+
+						const coord = geom.getCoordinates();
+						if (!coord) {
+							continue;
+						}
+
+						coordinates.push(coord);
+					}
+
+					const extent: Extent = boundingExtent(coordinates);
+
+					mapValue
+						.getView()
+						.fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
 				} else {
 					//Code for single icon clicks
 				}

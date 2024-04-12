@@ -14,6 +14,7 @@ ignoreWords:
   - constraintlayout
   - deepmap
   - ecomap
+  - EPSG
   - fkey
   - golangci
   - goncalo
@@ -59,6 +60,7 @@ ignorePaths:
   - server/api/swagger/ui
   - server/deployments
   - server/config.yml
+  - web/public
   - web/src/locales
 ignoreRegExpList:
   - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.

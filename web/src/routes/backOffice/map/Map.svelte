@@ -4,12 +4,12 @@
 	import Map from "../../../lib/components/map/Map.svelte";
 
 	onMount(() => {
-		addClusterLayer("/json/contentores.geojson", "Pontos de recolha", "#15803D");
+		addClusterLayer("/json/containers.geojson", "Containers", "#15803D");
 	});
 </script>
 
 <main>
-	<Map layersContainer={true}/>
+	<Map layersContainer={true} />
 </main>
 
 <style>

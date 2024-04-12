@@ -17,7 +17,10 @@
 	export let color: string;
 </script>
 
-<span class="dot" style="--dot-color: {color}; --dot-height: {height}; --dot-width: {width};" />
+<span
+	class="dot"
+	style="--dot-color: {color}; --dot-height: {height}; --dot-width: {width};"
+/>
 
 <style>
 	span {
