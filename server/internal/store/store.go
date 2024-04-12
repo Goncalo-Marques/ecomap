@@ -9,10 +9,19 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/goncalo-marques/ecomap/server/internal/config"
 	"github.com/goncalo-marques/ecomap/server/internal/store/tx"
+)
+
+// Common failure descriptions.
+const (
+	descriptionFailedQuery    = "store: failed to query"
+	descriptionFailedExec     = "store: failed to exec"
+	descriptionFailedScanRow  = "store: failed to scan row"
+	descriptionFailedScanRows = "store: failed to scan rows"
 )
 
 // migrationsURL defines the source url of the migrations.
@@ -57,4 +66,14 @@ func (s *store) NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode p
 // Close closes the database.
 func (s *store) Close() {
 	s.database.Close()
+}
+
+// getConstraintName returns the name of the constraint of the given error. If the error is not of type pgconn.PgError,
+// an empty string is returned.
+func getConstraintName(err error) string {
+	if pqErr, ok := err.(*pgconn.PgError); ok {
+		return pqErr.ConstraintName
+	}
+
+	return ""
 }

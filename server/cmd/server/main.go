@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/goncalo-marques/ecomap/server/internal/authn"
+	"github.com/goncalo-marques/ecomap/server/internal/authz"
 	"github.com/goncalo-marques/ecomap/server/internal/config"
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
 	"github.com/goncalo-marques/ecomap/server/internal/service"
@@ -80,6 +81,9 @@ func main() {
 
 	authnService := authn.New([]byte(jwtSigningKey))
 
+	// Set up authorization service.
+	authzService := authz.New(transporthttp.AuthzRoles, authnService)
+
 	// Set up service.
 	service := service.New(authnService, store)
 
@@ -93,7 +97,7 @@ func main() {
 		addressHTTP = serviceConfig.ServerHTTP.Address
 	}
 
-	handlerHTTP := transporthttp.New(service)
+	handlerHTTP := transporthttp.New(authzService, service)
 
 	serverHTTP := &http.Server{
 		Addr:     addressHTTP,

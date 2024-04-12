@@ -1,43 +1,43 @@
 -- Route employees.
-DROP TABLE public.routes_employees;
-DROP TYPE public.routes_employees_employee_role;
+DROP TABLE routes_employees;
+DROP TYPE routes_employees_employee_role;
 
 -- Route containers.
-DROP TABLE public.routes_containers;
+DROP TABLE routes_containers;
 
 -- Routes.
-DROP TABLE public.routes;
+DROP TABLE routes;
 
 -- Warehouse trucks.
-DROP TABLE public.warehouses_trucks;
+DROP TABLE warehouses_trucks;
 
 -- Warehouses.
-DROP TABLE public.warehouses;
+DROP TABLE warehouses;
 
 -- Trucks.
-DROP TABLE public.trucks;
+DROP TABLE trucks;
 
 -- User container bookmarks.
-DROP TABLE public.users_container_bookmarks;
+DROP TABLE users_container_bookmarks;
 
 -- Container reports.
-DROP TABLE public.containers_reports;
-DROP TYPE public.containers_reports_issue_type;
+DROP TABLE containers_reports;
+DROP TYPE containers_reports_issue_type;
 
 -- Containers.
-DROP TABLE public.containers;
-DROP TYPE public.containers_category;
+DROP TABLE containers;
+DROP TYPE containers_category;
 
 -- Employees.
-DROP TABLE public.employees;
-DROP TYPE public.employees_role;
+DROP TABLE employees;
+DROP TYPE employees_role;
 
 -- Users.
-DROP TABLE public.users;
+DROP TABLE users;
 
 -- Functions.
-DROP FUNCTION public.enforce_lower_case_username();
-DROP FUNCTION public.update_modified_time();
+DROP FUNCTION enforce_lower_case_username();
+DROP FUNCTION update_modified_time();
 
 -- Extensions.
 DROP EXTENSION pgrouting CASCADE;

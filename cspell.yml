@@ -20,6 +20,7 @@ ignoreWords:
   - GOPATH
   - gradlew
   - healthcheck
+  - ILIKE
   - isready
   - jackc
   - ldflags
@@ -29,11 +30,13 @@ ignoreWords:
   - oapitypes
   - openapi
   - Parens
+  - pgconn
   - pgrouting
   - PGUSER
   - pgxpool
   - pkey
   - plpgsql
+  - Português
   - postgis
   - proguard
   - sharedpref
@@ -45,6 +48,7 @@ ignoreWords:
 ignorePaths:
   - "*.svg"
   - .golangci.yml
+  - build.gradle.kts
   - go.mod
   - go.sum
   - gradle
