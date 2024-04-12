@@ -11,23 +11,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION update_modified_time() 
+CREATE FUNCTION update_modified_at() 
 RETURNS TRIGGER AS $$
 BEGIN
-    new.modified_time = CURRENT_TIMESTAMP;
+    new.modified_at = CURRENT_TIMESTAMP;
     RETURN new;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Users.
 CREATE TABLE users (
-    id              uuid        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    username        varchar(50) NOT NULL,
-    password        varchar(60) NOT NULL,
-    first_name      varchar(50) NOT NULL,
-    last_name       varchar(50) NOT NULL,
-    created_time    timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id          uuid        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    username    varchar(50) NOT NULL,
+    password    varchar(60) NOT NULL,
+    first_name  varchar(50) NOT NULL,
+    last_name   varchar(50) NOT NULL,
+    created_at  timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT users_pkey           PRIMARY KEY (id),
     CONSTRAINT users_username_key   UNIQUE (username)
 );
@@ -37,10 +37,10 @@ CREATE TRIGGER users_enforce_lower_case_username
     FOR EACH ROW
     EXECUTE PROCEDURE enforce_lower_case_username();
 
-CREATE TRIGGER users_update_modified_time
+CREATE TRIGGER users_update_modified_at
     BEFORE UPDATE ON users
     FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_time();
+    EXECUTE PROCEDURE update_modified_at();
 
 -- Employees.
 CREATE TYPE employees_role AS ENUM ('waste_operator', 'manager');
@@ -57,8 +57,8 @@ CREATE TABLE employees (
     geom            geometry        NOT NULL,
     schedule_start  time            NOT NULL,
     schedule_end    time            NOT NULL,
-    created_time    timestamp       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT employees_pkey           PRIMARY KEY (id),
     CONSTRAINT employees_username_key   UNIQUE (username)
 );
@@ -68,27 +68,27 @@ CREATE TRIGGER employees_enforce_lower_case_username
     FOR EACH ROW
     EXECUTE PROCEDURE enforce_lower_case_username();
 
-CREATE TRIGGER employees_update_modified_time
+CREATE TRIGGER employees_update_modified_at
     BEFORE UPDATE ON employees
     FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_time();
+    EXECUTE PROCEDURE update_modified_at();
 
 -- Containers.
 CREATE TYPE containers_category AS ENUM ('general', 'paper', 'plastic', 'metal', 'glass', 'organic', 'hazardous');
 
 CREATE TABLE containers (
-    id              uuid                NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    category        containers_category NOT NULL,
-    geom            geometry            NOT NULL,
-    created_time    timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id          uuid                NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    category    containers_category NOT NULL,
+    geom        geometry            NOT NULL,
+    created_at  timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT containers_pkey  PRIMARY KEY (id)
 );
 
-CREATE TRIGGER containers_update_modified_time
+CREATE TRIGGER containers_update_modified_at
     BEFORE UPDATE ON containers
     FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_time();
+    EXECUTE PROCEDURE update_modified_at();
 
 -- Container reports.
 CREATE TYPE containers_reports_issue_type AS ENUM ('full', 'vandalized', 'misplaced', 'non-existent', 'other');
@@ -102,18 +102,18 @@ CREATE TABLE containers_reports (
     issuer_id       uuid                            NOT NULL,
     resolver_id     uuid,
     resolved        boolean                         NOT NULL    DEFAULT FALSE,
-    created_time    timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT containers_reports_pkey              PRIMARY KEY (id),
     CONSTRAINT containers_reports_container_id_fkey FOREIGN KEY (container_id)  REFERENCES containers (id),
     CONSTRAINT containers_reports_issuer_id_fkey    FOREIGN KEY (issuer_id)     REFERENCES users (id),
     CONSTRAINT containers_reports_resolver_id_fkey  FOREIGN KEY (resolver_id)   REFERENCES employees (id)
 );
 
-CREATE TRIGGER containers_reports_update_modified_time
+CREATE TRIGGER containers_reports_update_modified_at
     BEFORE UPDATE ON containers_reports
     FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_time();
+    EXECUTE PROCEDURE update_modified_at();
 
 CREATE INDEX containers_reports_issuer_id_idx ON containers_reports (issuer_id);
 
@@ -121,7 +121,7 @@ CREATE INDEX containers_reports_issuer_id_idx ON containers_reports (issuer_id);
 CREATE TABLE users_container_bookmarks (
     user_id         uuid        NOT NULL,
     container_id    uuid        NOT NULL,
-    created_time    timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT users_container_bookmarks_pkey               PRIMARY KEY (user_id, container_id),
     CONSTRAINT users_container_bookmarks_user_id_fkey       FOREIGN KEY (user_id)               REFERENCES users (id),
     CONSTRAINT users_container_bookmarks_container_id_fkey  FOREIGN KEY (container_id)          REFERENCES containers (id)
@@ -134,38 +134,38 @@ CREATE TABLE trucks (
     model           varchar(50) NOT NULL,
     license_plate   varchar(30) NOT NULL,
     person_capacity integer     NOT NULL,
-    created_time    timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT trucks_pkey                              PRIMARY KEY (id),
     CONSTRAINT trucks_person_capacity_positive_check    CHECK (person_capacity > 0)
 );
 
-CREATE TRIGGER trucks_update_modified_time
+CREATE TRIGGER trucks_update_modified_at
     BEFORE UPDATE ON trucks
     FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_time();
+    EXECUTE PROCEDURE update_modified_at();
 
 -- Warehouses.
 CREATE TABLE warehouses (
     id              uuid        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
     geom            geometry    NOT NULL,
     truck_capacity  integer     NOT NULL,
-    created_time    timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT warehouses_pkey                          PRIMARY KEY (id),
     CONSTRAINT warehouses_truck_capacity_positive_check CHECK (truck_capacity > 0)
 );
 
-CREATE TRIGGER warehouses_update_modified_time
+CREATE TRIGGER warehouses_update_modified_at
     BEFORE UPDATE ON warehouses
     FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_time();
+    EXECUTE PROCEDURE update_modified_at();
 
 -- Warehouse trucks.
 CREATE TABLE warehouses_trucks (
     warehouse_id    uuid        NOT NULL,
     truck_id        uuid        NOT NULL,
-    created_time    timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT warehouses_trucks_pkey               PRIMARY KEY (warehouse_id, truck_id),
     CONSTRAINT warehouses_trucks_warehouse_id_fkey  FOREIGN KEY (warehouse_id)              REFERENCES warehouses (id),
     CONSTRAINT warehouses_trucks_truck_id_fkey      FOREIGN KEY (truck_id)                  REFERENCES trucks (id),
@@ -175,10 +175,11 @@ CREATE TABLE warehouses_trucks (
 -- Routes.
 CREATE TABLE routes (
     id                      uuid        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    name                    varchar(50) NOT NULL,
     truck_id                uuid        NOT NULL,
     departure_warehouse_id  uuid        NOT NULL,
     arrival_warehouse_id    uuid        NOT NULL,
-    created_time            timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at              timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_pkey                          PRIMARY KEY (id),
     CONSTRAINT routes_truck_id_fkey                 FOREIGN KEY (truck_id)                  REFERENCES trucks (id),
     CONSTRAINT routes_departure_warehouse_id_fkey   FOREIGN KEY (departure_warehouse_id)    REFERENCES warehouses (id),
@@ -192,20 +193,20 @@ CREATE TABLE routes_containers (
     emptied         boolean,
     washed          boolean,
     responsible_id  uuid,
-    created_time    timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_time   timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_containers_pkey                   PRIMARY KEY (route_id, container_id),
     CONSTRAINT routes_containers_route_id_fkey          FOREIGN KEY (route_id)                  REFERENCES routes (id),
     CONSTRAINT routes_containers_container_id_fkey      FOREIGN KEY (container_id)              REFERENCES containers (id),
     CONSTRAINT routes_containers_responsible_id_fkey    FOREIGN KEY (responsible_id)            REFERENCES employees (id)
 );
 
-CREATE TRIGGER routes_containers_update_modified_time
+CREATE TRIGGER routes_containers_update_modified_at
     BEFORE UPDATE ON routes_containers
     FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_time();
+    EXECUTE PROCEDURE update_modified_at();
 
-CREATE INDEX routes_containers_created_time_idx ON routes_containers (created_time);
+CREATE INDEX routes_containers_created_at_idx ON routes_containers (created_at);
 
 -- Route employees.
 CREATE TYPE routes_employees_employee_role AS ENUM ('driver', 'collector');
@@ -214,7 +215,7 @@ CREATE TABLE routes_employees (
     route_id        uuid                            NOT NULL,
     employee_id     uuid                            NOT NULL,
     employee_role   routes_employees_employee_role  NOT NULL,
-    created_time    timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_employees_pkey                PRIMARY KEY (route_id, employee_id),
     CONSTRAINT routes_employees_route_id_fkey       FOREIGN KEY (route_id)              REFERENCES routes (id),
     CONSTRAINT routes_employees_employee_id_fkey    FOREIGN KEY (employee_id)           REFERENCES employees (id)

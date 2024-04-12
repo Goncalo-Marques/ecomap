@@ -22,7 +22,7 @@ func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.E
 	row := tx.QueryRow(ctx, `
 		INSERT INTO users (username, password, first_name, last_name)
 		VALUES ($1, $2, $3, $4) 
-		RETURNING id, username, first_name, last_name, created_time, modified_time
+		RETURNING id, username, first_name, last_name, created_at, modified_at
 	`,
 		editableUser.Username,
 		editableUser.Password,
@@ -112,11 +112,11 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFil
 	case domain.UserSortLastName:
 		sqlSort += "last_name"
 	case domain.UserSortCreatedTime:
-		sqlSort += "created_time"
+		sqlSort += "created_at"
 	case domain.UserSortModifiedTime:
-		sqlSort += "modified_time"
+		sqlSort += "modified_at"
 	default:
-		sqlSort += "created_time"
+		sqlSort += "created_at"
 	}
 
 	order := " ASC"
@@ -141,7 +141,7 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFil
 
 	// Get users.
 	rows, err := tx.Query(ctx, `
-		SELECT id, username, first_name, last_name, created_time, modified_time 
+		SELECT id, username, first_name, last_name, created_at, modified_at 
 		FROM users 
 	`+sqlWhere+sqlSort,
 		slices.Concat(argsWhere, argsSort)...,
@@ -165,7 +165,7 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFil
 // GetUserByID executes a query to return the user with the specified identifier.
 func (s *store) GetUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT id, username, first_name, last_name, created_time, modified_time 
+		SELECT id, username, first_name, last_name, created_at, modified_at 
 		FROM users 
 		WHERE id = $1 
 	`,
@@ -187,7 +187,7 @@ func (s *store) GetUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domai
 // GetUserByUsername executes a query to return the user with the specified username.
 func (s *store) GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT id, username, first_name, last_name, created_time, modified_time 
+		SELECT id, username, first_name, last_name, created_at, modified_at 
 		FROM users 
 		WHERE username = $1 
 	`,
@@ -240,7 +240,7 @@ func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editable
 			first_name = coalesce($3, first_name),
 			last_name = coalesce($4, last_name)
 		WHERE id = $1
-		RETURNING id, username, first_name, last_name, created_time, modified_time
+		RETURNING id, username, first_name, last_name, created_at, modified_at
 	`,
 		id,
 		editableUser.Username,
@@ -289,7 +289,7 @@ func (s *store) DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (do
 	row := tx.QueryRow(ctx, `
 		DELETE FROM users
 		WHERE id = $1
-		RETURNING id, username, first_name, last_name, created_time, modified_time
+		RETURNING id, username, first_name, last_name, created_at, modified_at
 	`,
 		id,
 	)
