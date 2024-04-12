@@ -36,20 +36,20 @@ type EditableUserPatch struct {
 // User defines the user structure.
 type User struct {
 	EditableUser
-	ID           uuid.UUID
-	CreatedTime  time.Time
-	ModifiedTime time.Time
+	ID         uuid.UUID
+	CreatedAt  time.Time
+	ModifiedAt time.Time
 }
 
 // UserSort defines the field of the user to sort.
 type UserSort string
 
 const (
-	UserSortUsername     UserSort = "username"
-	UserSortFirstName    UserSort = "firstName"
-	UserSortLastName     UserSort = "lastName"
-	UserSortCreatedTime  UserSort = "createdTime"
-	UserSortModifiedTime UserSort = "modifiedTime"
+	UserSortUsername   UserSort = "username"
+	UserSortFirstName  UserSort = "firstName"
+	UserSortLastName   UserSort = "lastName"
+	UserSortCreatedAt  UserSort = "createdAt"
+	UserSortModifiedAt UserSort = "modifiedAt"
 )
 
 // Field returns the name of the field to sort by.
@@ -63,8 +63,8 @@ func (s UserSort) Valid() bool {
 	case UserSortUsername,
 		UserSortFirstName,
 		UserSortLastName,
-		UserSortCreatedTime,
-		UserSortModifiedTime:
+		UserSortCreatedAt,
+		UserSortModifiedAt:
 		return true
 	default:
 		return false

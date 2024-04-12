@@ -36,7 +36,7 @@ type EditableEmployee struct {
 // Employee defines the employee structure.
 type Employee struct {
 	EditableEmployee
-	ID           uuid.UUID
-	CreatedTime  time.Time
-	ModifiedTime time.Time
+	ID         uuid.UUID
+	CreatedAt  time.Time
+	ModifiedAt time.Time
 }

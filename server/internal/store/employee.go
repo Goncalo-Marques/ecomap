@@ -16,7 +16,7 @@ import (
 // GetEmployeeByID executes a query to return the employee with the specified identifier.
 func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
 	rows, err := tx.Query(ctx, `
-		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_time, modified_time 
+		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_at, modified_at 
 		FROM employees 
 		WHERE id = $1 
 	`,
@@ -42,7 +42,7 @@ func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (d
 // GetEmployeeByUsername executes a query to return the employee with the specified username.
 func (s *store) GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error) {
 	rows, err := tx.Query(ctx, `
-		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_time, modified_time 
+		SELECT id, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom), schedule_start, schedule_end, created_at, modified_at 
 		FROM employees 
 		WHERE username = $1 
 	`,
@@ -109,8 +109,8 @@ func getEmployeesFromRows(rows pgx.Rows) ([]domain.Employee, error) {
 			&employee.Geom,
 			&employee.ScheduleStart,
 			&employee.ScheduleEnd,
-			&employee.CreatedTime,
-			&employee.ModifiedTime,
+			&employee.CreatedAt,
+			&employee.ModifiedAt,
 		)
 		if err != nil {
 			return nil, err

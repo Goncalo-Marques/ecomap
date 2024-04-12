@@ -37,7 +37,7 @@ DROP TABLE users;
 
 -- Functions.
 DROP FUNCTION enforce_lower_case_username();
-DROP FUNCTION update_modified_time();
+DROP FUNCTION update_modified_at();
 
 -- Extensions.
 DROP EXTENSION pgrouting CASCADE;

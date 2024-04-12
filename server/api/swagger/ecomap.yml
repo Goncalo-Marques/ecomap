@@ -719,8 +719,8 @@ components:
         - username
         - firstName
         - lastName
-        - createdTime
-        - modifiedTime
+        - createdAt
+        - modifiedAt
       properties:
         id:
           $ref: "#/components/schemas/UUID"
@@ -730,9 +730,9 @@ components:
           $ref: "#/components/schemas/Name"
         lastName:
           $ref: "#/components/schemas/Name"
-        createdTime:
+        createdAt:
           $ref: "#/components/schemas/DateTime"
-        modifiedTime:
+        modifiedAt:
           $ref: "#/components/schemas/DateTime"
     UsersPaginated:
       allOf:
@@ -784,8 +784,8 @@ components:
         - id
         - category
         - geom
-        - createdTime
-        - modifiedTime
+        - createdAt
+        - modifiedAt
       properties:
         id:
           $ref: "#/components/schemas/UUID"
@@ -793,9 +793,9 @@ components:
           $ref: "#/components/schemas/ContainerCategory"
         geom:
           $ref: "#/components/schemas/GeoJSON"
-        createdTime:
+        createdAt:
           $ref: "#/components/schemas/DateTime"
-        modifiedTime:
+        modifiedAt:
           $ref: "#/components/schemas/DateTime"
     ContainersPaginated:
       allOf:

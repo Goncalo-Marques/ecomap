@@ -40,20 +40,20 @@
 		},
 		{
 			type: "accessor",
-			field: "createdTime",
+			field: "createdAt",
 			header: "Created at",
 			enableSorting: false,
-			cell(createdTime) {
-				return new Date(createdTime).toDateString();
+			cell(createdAt) {
+				return new Date(createdAt).toDateString();
 			},
 		},
 		{
 			type: "accessor",
-			field: "modifiedTime",
+			field: "modifiedAt",
 			header: "Modified at",
 			enableSorting: true,
-			cell(modifiedTime) {
-				return new Date(modifiedTime).toDateString();
+			cell(modifiedAt) {
+				return new Date(modifiedAt).toDateString();
 			},
 		},
 		{
