@@ -111,9 +111,9 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFil
 		sqlSort += "first_name"
 	case domain.UserSortLastName:
 		sqlSort += "last_name"
-	case domain.UserSortCreatedTime:
+	case domain.UserSortCreatedAt:
 		sqlSort += "created_at"
-	case domain.UserSortModifiedTime:
+	case domain.UserSortModifiedAt:
 		sqlSort += "modified_at"
 	default:
 		sqlSort += "created_at"
@@ -314,8 +314,8 @@ func getUserFromRow(row pgx.Row) (domain.User, error) {
 		&user.Username,
 		&user.FirstName,
 		&user.LastName,
-		&user.CreatedTime,
-		&user.ModifiedTime,
+		&user.CreatedAt,
+		&user.ModifiedAt,
 	)
 	if err != nil {
 		return domain.User{}, err

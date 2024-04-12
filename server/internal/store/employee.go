@@ -109,8 +109,8 @@ func getEmployeesFromRows(rows pgx.Rows) ([]domain.Employee, error) {
 			&employee.Geom,
 			&employee.ScheduleStart,
 			&employee.ScheduleEnd,
-			&employee.CreatedTime,
-			&employee.ModifiedTime,
+			&employee.CreatedAt,
+			&employee.ModifiedAt,
 		)
 		if err != nil {
 			return nil, err
