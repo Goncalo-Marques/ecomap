@@ -482,7 +482,7 @@ paths:
       tags:
         - Container
       security:
-        - BearerAuth: [user, waste_operator, manager]
+        - BearerAuth: [manager]
       parameters:
         - $ref: "#/components/parameters/ContainerIdPathParam"
       responses:
