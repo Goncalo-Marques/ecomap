@@ -24,6 +24,12 @@
 	 */
 	export let lon: number = -7;
 
+	/**
+	 * Show/Hide layers container
+	 * @default false
+	 */
+	export let layersContainer: boolean = false;
+
 	const map_id: string = "map_id";
 
 	let layers: Layer[] | undefined;
@@ -45,35 +51,37 @@
 </script>
 
 <div id={map_id} class="map">
-	<section class="layers" >
-		<header>
-			<Icon name="layers" />
-			<h1>Layers</h1>
-		</header>
-		<div class="item-container">
-			{#if layers}
-				{#each layers as layer}
-					{#if layer.get("layer-name") != "baseLayer"}
-						<LayerItem {layer} />
-					{/if}
-				{/each}
-			{/if}
-		</div>
-	</section>
+	{#if layersContainer}
+		<section class="layers">
+			<header>
+				<Icon name="layers" />
+				<h1>Layers</h1>
+			</header>
+			<div class="item-container">
+				{#if layers}
+					{#each layers as layer}
+						{#if layer.get("layer-name") != "baseLayer"}
+							<LayerItem {layer} />
+						{/if}
+					{/each}
+				{/if}
+			</div>
+		</section>
+	{/if}
 </div>
 
-<style> 
+<style>
 	* {
 		box-sizing: border-box;
 	}
 
-	header{
+	header {
 		display: flex;
 		align-items: center;
 		gap: 4px;
 	}
 
-	h1{
+	h1 {
 		font: var(--text-base-semibold);
 	}
 
@@ -84,28 +92,22 @@
 	}
 
 	.layers {
-		min-width: 256px;
-		z-index: 999;
 		position: absolute;
 		background-color: var(--white);
-		border-radius: 4px;
+		min-width: 256px;
 		max-height: 300px;
-
-		bottom: 3em;
-		left: 3em;
+		border-radius: 4px;
 		padding: 10px;
 		overflow: auto;
+		bottom: 3em;
+		left: 3em;
+		z-index: 999;
 	}
 
 	.item-container {
-		margin-top: 12px;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
+		margin-top: 12px;
 	}
-
-	/* .item-container::after,
-	.item-container::before {
-		content: "";
-	} */
 </style>

@@ -12,7 +12,7 @@
 	export let width: string = "12px";
 
 	/**
-	 * Dot color.
+	 * Dot's color.
 	 */
 	export let color: string;
 </script>

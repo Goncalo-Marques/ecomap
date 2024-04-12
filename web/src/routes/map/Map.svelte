@@ -1,18 +1,15 @@
 <script lang="ts">
 	import Map from "../../lib/components/map/Map.svelte";
-	import { onDestroy, onMount } from "svelte";
-	import {
-		map,
-		addClusterLayer,
-		addVectorLayer,
-	} from "../../lib/components/map/mapStore";
+	import { onMount } from "svelte";
+	import { addClusterLayer } from "../../lib/components/map/mapStore";
+
 	onMount(() => {
-		addClusterLayer("http://localhost:8000/contentores.geojson", "Pontos de recolha", "green");
+		addClusterLayer("/json/contentores.geojson", "Pontos de recolha", "#15803D");
 	});
 </script>
 
 <main>
-	<Map /> 
+	<Map layersContainer={true} />
 </main>
 
 <style>

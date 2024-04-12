@@ -1,18 +1,11 @@
 <script lang="ts">
 	import { Layer } from "ol/layer";
-	import { map } from "./mapStore";
 	import Dot from "./dot.svelte";
 	import Switch from "../switch.svelte";
 
 	export let layer: Layer;
 
 	let visible: boolean = true;
-
-	function refreshMap() {
-		$map?.getAllLayers().forEach(obj => {
-			obj.getSource()?.changed();
-		});
-	}
 
 	function toggleVisibility() {
 		visible = !visible;

@@ -1,29 +1,27 @@
 <script lang="ts">
-
 	/**
 	 * Value of toggle, true or false. Can be linked to a variable.
 	 */
-    export let checked: boolean
-    
+	export let checked: boolean = false;
+
 	/**
 	 * Function that will run when clicking on the component.
-	 * 
+	 *
 	 * @default None
 	 */
-	export let onClick = () => {}
+	export let onClick = () => {};
 </script>
 
 <label class="switch">
-    <input type="checkbox" bind:checked={checked} on:click={onClick}/>
-    <span class="slider round"></span>
+	<input type="checkbox" bind:checked on:click={onClick} />
+	<span class="slider round"></span>
 </label>
 
 <style>
-
-.switch { 
+	.switch {
 		box-sizing: border-box;
 		margin-left: auto;
-		
+
 		position: relative;
 		display: inline-block;
 		width: 40px;
@@ -73,10 +71,9 @@
 		-ms-transform: translateX(22px);
 		transform: translateX(22px);
 		background-color: var(--green-800);
-
 	}
 
-	input + .slider::before{
+	input + .slider::before {
 		transform: translateX(4px);
 		background-color: var(--gray-400);
 	}

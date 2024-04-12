@@ -1,5 +1,5 @@
 import Map from "ol/Map";
-import { writable, get, derived } from "svelte/store";
+import { writable, get } from "svelte/store";
 import View from "ol/View";
 import GeoJSON from "ol/format/GeoJSON";
 
@@ -100,7 +100,7 @@ class WebGLLayer extends Layer {
 }
 
 /**
- * Set's map store as a new Map
+ * Set map store as a new Map
  *
  * @param lon Center longitude
  * @param lat Center latitude
@@ -128,6 +128,7 @@ export function createMap(
 				center: fromLonLat([lon, lat]),
 				zoom: zoom,
 				projection: projection,
+				// Locks the map on the iberian peninsula
 				extent: [
 					-2159435.3010021457, 3990778.5878774817, 863857.4518866497,
 					5984975.69547515,
@@ -138,7 +139,7 @@ export function createMap(
 }
 
 /**
- * Add's vector layer into map
+ * Add a vector layer to the map
  *
  * @param url receives geojson data
  * @param layerName name for layer
@@ -170,7 +171,7 @@ export function addVectorLayer(
 }
 
 /**
- * Add's point's vector layer into map
+ * Add a point vector layer into map
  *
  * @param url receives geojson data
  * @param layerName name for layer
@@ -200,7 +201,7 @@ export function addPointLayer(
 }
 
 /**
- * Add's clusterLayer into map
+ * Add a clusterLayer into map
  *
  * @param url receives geojson data
  * @param layerName name for layer
@@ -246,14 +247,10 @@ export function addClusterLayer(
 			if (clickedFeatures.length) {
 				const features: FeatureLike[] = clickedFeatures[0].get("features");
 				if (features.length > 1) {
-					console.log("fetatures: ", features);
-
 					const extent: Extent = boundingExtent(
 						features.map((r: any) => r.getGeometry().getCoordinates()),
 					);
-					mapValue
-						.getView()
-						.fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
+					mapValue.getView().fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
 				} else {
 					//Code for single icon clicks
 				}
