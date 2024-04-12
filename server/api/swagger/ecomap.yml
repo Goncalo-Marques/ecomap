@@ -5,6 +5,7 @@ info:
 tags:
   - name: User
   - name: Employee
+  - name: Container
 servers:
   - url: https://server-7fzc7ivuwa-ew.a.run.app/api
     description: Production server.
@@ -63,17 +64,17 @@ paths:
           in: query
           description: Username to filter by.
           schema:
-            type: string
+            $ref: "#/components/schemas/Username"
         - name: firstName
           in: query
           description: First name to filter by.
           schema:
-            type: string
+            $ref: "#/components/schemas/Name"
         - name: lastName
           in: query
           description: Last name to filter by.
           schema:
-            type: string
+            $ref: "#/components/schemas/Name"
       responses:
         200:
           description: Successful operation.
@@ -377,6 +378,139 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /containers:
+    post:
+      summary: Create a container.
+      operationId: createContainer
+      description: Creates a new container with the specified data.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContainerPost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List containers.
+      operationId: listContainers
+      description: Returns the containers with the specified filter.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [user, waste_operator, manager]
+      parameters:
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+        - $ref: "#/components/parameters/SortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - name: category
+          in: query
+          description: Container category to filter by.
+          schema:
+            $ref: "#/components/schemas/ContainerCategory"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainersPaginated"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /containers/{containerId}:
+    get:
+      summary: Get a container by ID.
+      operationId: getContainerByID
+      description: Returns the container with the specified identifier.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [user, waste_operator, manager]
+      parameters:
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a container by ID.
+      operationId: deleteContainerByID
+      description: Deletes the container with the specified identifier.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -434,6 +568,13 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/UUID"
+    ContainerIdPathParam:
+      name: containerId
+      in: path
+      description: Container identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
 
   schemas:
     Error:
@@ -452,6 +593,9 @@ components:
             - internal_server_error
         message:
           type: string
+    GeoJSON:
+      type: object
+      description: An object in GeoJSON format.
     UUID:
       type: string
       format: uuid
@@ -480,6 +624,17 @@ components:
       minLength: 1
       maxLength: 50
       example: John
+
+    ContainerCategory:
+      type: string
+      enum:
+        - general
+        - paper
+        - plastic
+        - metal
+        - glass
+        - organic
+        - hazardous
 
     SignIn:
       type: object
@@ -591,6 +746,7 @@ components:
               items:
                 $ref: "#/components/schemas/User"
 
+    # TODO: Update this employee structure.
     EditableEmployee:
       type: object
       required:
@@ -611,6 +767,47 @@ components:
           properties:
             id:
               $ref: "#/components/schemas/UUID"
+
+    ContainerPost:
+      type: object
+      required:
+        - category
+        - geom
+      properties:
+        category:
+          $ref: "#/components/schemas/ContainerCategory"
+        geom:
+          $ref: "#/components/schemas/GeoJSON"
+    Container:
+      type: object
+      required:
+        - id
+        - category
+        - geom
+        - createdTime
+        - modifiedTime
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        category:
+          $ref: "#/components/schemas/ContainerCategory"
+        geom:
+          $ref: "#/components/schemas/GeoJSON"
+        createdTime:
+          $ref: "#/components/schemas/DateTime"
+        modifiedTime:
+          $ref: "#/components/schemas/DateTime"
+    ContainersPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - containers
+          properties:
+            containers:
+              type: array
+              items:
+                $ref: "#/components/schemas/Container"
 
   responses:
     Unauthorized:
