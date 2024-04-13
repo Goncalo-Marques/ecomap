@@ -87,11 +87,11 @@ func (s *service) ListUsers(ctx context.Context, filter domain.UsersFilter) (dom
 	if !filter.Offset.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOffset}, descriptionInvalidFilterValue, logAttrs...)
 	}
-	if filter.Sort != nil && !filter.Sort.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterSort}, descriptionInvalidFilterValue, logAttrs...)
-	}
 	if !filter.Order.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOrder}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.Sort != nil && !filter.Sort.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}
 
 	var paginatedUsers domain.PaginatedResponse[domain.User]

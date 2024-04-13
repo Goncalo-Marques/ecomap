@@ -79,8 +79,8 @@ func (l PaginationLimit) Valid() bool {
 type PaginationOffset int
 
 // Valid returns true if the pagination offset is valid, false otherwise.
-func (l PaginationOffset) Valid() bool {
-	return l >= paginationOffsetMinValue
+func (o PaginationOffset) Valid() bool {
+	return o >= paginationOffsetMinValue
 }
 
 // Order defines the order to sort by.
@@ -113,8 +113,8 @@ type Sort[T any] interface {
 type PaginatedRequest[SortField any] struct {
 	Limit  PaginationLimit  // Amount of resources to get for the provided filter.
 	Offset PaginationOffset // Amount of resources to skip for the provided filter.
-	Sort   Sort[SortField]  // Field to sort by.
 	Order  Order            // Order to sort by.
+	Sort   Sort[SortField]  // Field to sort by.
 }
 
 // PaginatedResponse defines the paginated response structure.

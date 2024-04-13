@@ -61,8 +61,8 @@ func paginatedRequestToDomain[T any](limit *spec.LimitQueryParam, offset *spec.O
 	return domain.PaginatedRequest[T]{
 		Limit:  limitToDomain(limit),
 		Offset: offsetToDomain(offset),
-		Sort:   sort,
 		Order:  orderToDomain(order),
+		Sort:   sort,
 	}
 }
 

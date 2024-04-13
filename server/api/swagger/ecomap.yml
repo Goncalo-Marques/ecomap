@@ -58,8 +58,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/LimitQueryParam"
         - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/SortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/UserSortQueryParam"
         - name: username
           in: query
           description: Username to filter by.
@@ -419,8 +419,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/LimitQueryParam"
         - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/SortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/ContainerSortQueryParam"
         - name: category
           in: query
           description: Container category to filter by.
@@ -536,13 +536,6 @@ components:
         type: integer
         minimum: 0
         default: 0
-    SortQueryParam:
-      name: sort
-      in: query
-      description: Name of the field to sort by.
-      schema:
-        type: string
-        example: username
     OrderQueryParam:
       name: order
       in: query
@@ -553,6 +546,28 @@ components:
           - asc
           - desc
         default: asc
+    UserSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the user field to sort by.
+      schema:
+        type: string
+        enum:
+          - username
+          - firstName
+          - lastName
+          - createdAt
+          - modifiedAt
+    ContainerSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the container field to sort by.
+      schema:
+        type: string
+        enum:
+          - category
+          - createdAt
+          - modifiedAt
 
     UserIdPathParam:
       name: userId
@@ -596,6 +611,14 @@ components:
     GeoJSON:
       type: object
       description: An object in GeoJSON format.
+      example: |
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [125.6, 10.1]
+          }
+        }
     UUID:
       type: string
       format: uuid
