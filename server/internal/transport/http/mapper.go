@@ -95,7 +95,7 @@ func userPatchToDomainEditableUserPatch(userPatch spec.UserPatch) domain.Editabl
 	}
 }
 
-// listUsersParamsToDomainUsersPaginatedFilter returns a domain paginated users filter based on the standardized list users parameters.
+// listUsersParamsToDomainUsersPaginatedFilter returns a domain users paginated filter based on the standardized list users parameters.
 func listUsersParamsToDomainUsersPaginatedFilter(params spec.ListUsersParams) domain.UsersPaginatedFilter {
 	var domainSort domain.PaginationSort[domain.UserPaginatedSort]
 	if params.Sort != nil {
