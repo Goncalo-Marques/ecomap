@@ -558,6 +558,7 @@ components:
           - lastName
           - createdAt
           - modifiedAt
+        default: createdAt
     ContainerSortQueryParam:
       name: sort
       in: query
@@ -568,6 +569,7 @@ components:
           - category
           - createdAt
           - modifiedAt
+        default: createdAt
 
     UserIdPathParam:
       name: userId
