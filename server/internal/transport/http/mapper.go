@@ -148,16 +148,14 @@ func usersPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.
 // employeeFromDomain returns a standardized employee based on the domain model.
 func employeeFromDomain(employee domain.Employee) spec.Employee {
 	return spec.Employee{
-		Id:          employee.ID,
-		Username:    string(employee.Username),
-		FirstName:   string(employee.FirstName),
-		LastName:    string(employee.LastName),
-		Role:        spec.EmployeeRole(employee.Role),
-		DateOfBirth: dateFromTime(employee.DateOfBirth),
-		PhoneNumber: employee.PhoneNumber,
-		Geom: map[string]interface{}{ // TODO: update this
-			"": employee.Geom,
-		},
+		Id:            employee.ID,
+		Username:      string(employee.Username),
+		FirstName:     string(employee.FirstName),
+		LastName:      string(employee.LastName),
+		Role:          spec.EmployeeRole(employee.Role),
+		DateOfBirth:   dateFromTime(employee.DateOfBirth),
+		PhoneNumber:   employee.PhoneNumber,
+		Geom:          employee.Geom,
 		ScheduleStart: timeFromTime(employee.ScheduleStart),
 		ScheduleEnd:   timeFromTime(employee.ScheduleEnd),
 		CreatedAt:     employee.CreatedAt,

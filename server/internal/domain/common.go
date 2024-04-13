@@ -47,6 +47,9 @@ func (n Name) Valid() bool {
 // Password defines the password type.
 type Password string
 
+// GeoJSON defines the GeoJSON format type.
+type GeoJSON map[string]interface{}
+
 // SignIn defines the sign-in structure.
 type SignIn struct {
 	Username Username
