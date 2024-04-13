@@ -307,38 +307,106 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
-  /employees/signin:
+  /employees:
     post:
-      summary: Sign in an employee.
-      operationId: signInEmployee
-      description: Returns a JSON Web Token for the specified username and password.
+      summary: Create an employee.
+      operationId: createEmployee
+      description: Creates a new employee with the specified data.
       tags:
         - Employee
+      security:
+        - BearerAuth: [manager]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SignIn"
+              $ref: "#/components/schemas/EmployeePost"
       responses:
-        200:
+        201:
           description: Successful operation.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/JWT"
+                $ref: "#/components/schemas/Employee"
         400:
           description: Invalid request body.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        401:
-          description: Incorrect credentials.
+        409:
+          description: Username already exists.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List employees.
+      operationId: listEmployees
+      description: Returns the employee with the specified filter.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/EmployeeSortQueryParam"
+        - name: username
+          in: query
+          description: Username to filter by.
+          schema:
+            $ref: "#/components/schemas/Username"
+        - name: firstName
+          in: query
+          description: First name to filter by.
+          schema:
+            $ref: "#/components/schemas/Name"
+        - name: lastName
+          in: query
+          description: Last name to filter by.
+          schema:
+            $ref: "#/components/schemas/Name"
+        - name: role
+          in: query
+          description: Employee role to filter by.
+          schema:
+            $ref: "#/components/schemas/EmployeeRole"
+        - name: dateOfBirth
+          in: query
+          description: Date of birth to filter by.
+          schema:
+            $ref: "#/components/schemas/Date"
+        - name: phoneNumber
+          in: query
+          description: Phone number to filter by.
+          schema:
+            $ref: "#/components/schemas/PhoneNumber"
+        - name: scheduleStart
+          in: query
+          description: Start schedule to filter by.
+          schema:
+            $ref: "#/components/schemas/Time"
+        - name: scheduleEnd
+          in: query
+          description: End schedule to filter by.
+          schema:
+            $ref: "#/components/schemas/Time"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeesPaginated"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
         500:
           $ref: "#/components/responses/InternalServerError"
   /employees/{employeeId}:
@@ -371,6 +439,188 @@ paths:
           $ref: "#/components/responses/Forbidden"
         404:
           description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify an employee by ID.
+      operationId: patchEmployeeByID
+      description: Modifies the employee with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [waste_operator, manager]
+      parameters:
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeePatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        400:
+          description: Invalid employee ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Username already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete an employee by ID.
+      operationId: deleteEmployeeByID
+      description: Deletes the employee with the specified identifier.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [waste_operator, manager]
+      parameters:
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        400:
+          description: Invalid employee ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /employees/password:
+    put:
+      summary: Update an employee password.
+      operationId: updateEmployeePassword
+      description: Updates the password of the employee with the specified username.
+      tags:
+        - Employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Incorrect credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /employees/password-reset:
+    put:
+      summary: Reset an employee password.
+      operationId: resetEmployeePassword
+      description: Resets the password of the employee with the specified username.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordReset"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /employees/signin:
+    post:
+      summary: Sign in an employee.
+      operationId: signInEmployee
+      description: Returns a JSON Web Token for the specified username and password.
+      tags:
+        - Employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignIn"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWT"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Incorrect credentials.
           content:
             application/json:
               schema:
@@ -559,6 +809,23 @@ components:
           - createdAt
           - modifiedAt
         default: createdAt
+    EmployeeSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the employee field to sort by.
+      schema:
+        type: string
+        enum:
+          - username
+          - firstName
+          - lastName
+          - role
+          - dateOfBirth
+          - scheduleStart
+          - scheduleEnd
+          - createdAt
+          - modifiedAt
+        default: createdAt
     ContainerSortQueryParam:
       name: sort
       in: query
@@ -629,6 +896,10 @@ components:
       type: string
       format: date
       example: "2017-07-21"
+    Time:
+      type: string
+      format: time
+      example: "17:32:28"
     DateTime:
       type: string
       format: date-time
@@ -640,6 +911,7 @@ components:
       example: john-doe
     Password:
       type: string
+      format: password
       description: In addition to the length restrictions, the password should contain at least one regular character, one special character, and one number.
       minLength: 14
       maxLength: 72
@@ -649,7 +921,16 @@ components:
       minLength: 1
       maxLength: 50
       example: John
+    PhoneNumber:
+      type: string
+      maxLength: 20
+      example: +351 912 345 678
 
+    EmployeeRole:
+      type: string
+      enum:
+        - wasteOperator
+        - manager
     ContainerCategory:
       type: string
       enum:
@@ -771,27 +1052,117 @@ components:
               items:
                 $ref: "#/components/schemas/User"
 
-    # TODO: Update this employee structure.
-    EditableEmployee:
+    EmployeePost:
       type: object
       required:
-        - name
+        - username
+        - password
+        - firstName
+        - lastName
+        - role
         - dateOfBirth
+        - phoneNumber
+        - geom
+        - scheduleStart
+        - scheduleEnd
       properties:
-        name:
-          type: string
-          example: "John Doe"
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        role:
+          $ref: "#/components/schemas/EmployeeRole"
         dateOfBirth:
           $ref: "#/components/schemas/Date"
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        geom:
+          $ref: "#/components/schemas/GeoJSON"
+        scheduleStart:
+          $ref: "#/components/schemas/Time"
+        scheduleEnd:
+          $ref: "#/components/schemas/Time"
+    EmployeePatch:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        role:
+          $ref: "#/components/schemas/EmployeeRole"
+        dateOfBirth:
+          $ref: "#/components/schemas/Date"
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        geom:
+          $ref: "#/components/schemas/GeoJSON"
+        scheduleStart:
+          $ref: "#/components/schemas/Time"
+        scheduleEnd:
+          $ref: "#/components/schemas/Time"
     Employee:
+      type: object
+      required:
+        - id
+        - username
+        - password
+        - firstName
+        - lastName
+        - role
+        - dateOfBirth
+        - phoneNumber
+        - geom
+        - scheduleStart
+        - scheduleEnd
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        role:
+          $ref: "#/components/schemas/EmployeeRole"
+        dateOfBirth:
+          $ref: "#/components/schemas/Date"
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        geom:
+          $ref: "#/components/schemas/GeoJSON"
+        scheduleStart:
+          $ref: "#/components/schemas/Time"
+        scheduleEnd:
+          $ref: "#/components/schemas/Time"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    EmployeesPaginated:
       allOf:
-        - $ref: "#/components/schemas/EditableEmployee"
+        - $ref: "#/components/schemas/PaginatedResponse"
         - type: object
           required:
-            - id
+            - employees
           properties:
-            id:
-              $ref: "#/components/schemas/UUID"
+            employees:
+              type: array
+              items:
+                $ref: "#/components/schemas/Employee"
 
     ContainerPost:
       type: object
