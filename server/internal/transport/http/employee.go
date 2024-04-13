@@ -15,6 +15,16 @@ const (
 	errEmployeeNotFound = "employee not found"
 )
 
+// CreateEmployee handles the http request to create an employee.
+func (h *handler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
+// ListEmployees handles the http request to list employees.
+func (h *handler) ListEmployees(w http.ResponseWriter, r *http.Request, params spec.ListEmployeesParams) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
 // GetEmployeeByID handles the http request to get an employee by id.
 func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdPathParam) {
 	ctx := r.Context()
@@ -40,6 +50,26 @@ func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employ
 	}
 
 	writeResponseJSON(w, http.StatusOK, responseBody)
+}
+
+// PatchEmployeeByID handles the http request to modify an employee by ID.
+func (h *handler) PatchEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdPathParam) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
+// DeleteEmployeeByID handles the http request to delete an employee by ID.
+func (h *handler) DeleteEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdPathParam) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
+// UpdateEmployeePassword handles the http request to update an employee password.
+func (h *handler) UpdateEmployeePassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
+// ResetEmployeePassword handles the http request to reset an employee password.
+func (h *handler) ResetEmployeePassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
 }
 
 // SignInEmployee handles the http request to sign in an employee.
