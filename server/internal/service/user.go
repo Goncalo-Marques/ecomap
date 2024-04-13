@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -34,6 +35,7 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 	}
 
 	editableUser.Username = domain.Username(replaceSpacesWithHyphen(string(editableUser.Username)))
+	editableUser.Username = domain.Username(strings.ToLower(string(editableUser.Username)))
 	editableUser.FirstName = domain.Name(replaceSpacesWithHyphen(string(editableUser.FirstName)))
 	editableUser.LastName = domain.Name(replaceSpacesWithHyphen(string(editableUser.LastName)))
 
@@ -143,6 +145,7 @@ func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser doma
 
 	if editableUser.Username != nil {
 		username := domain.Username(replaceSpacesWithHyphen(string(*editableUser.Username)))
+		username = domain.Username(strings.ToLower(string(username)))
 		editableUser.Username = &username
 	}
 	if editableUser.FirstName != nil {
@@ -190,6 +193,8 @@ func (s *service) UpdateUserPassword(ctx context.Context, username domain.Userna
 		slog.String(logging.ServiceMethod, "UpdateUserPassword"),
 		slog.String(logging.UserUsername, string(username)),
 	}
+
+	username = domain.Username(strings.ToLower(string(username)))
 
 	if !s.authnService.ValidPassword([]byte(newPassword)) {
 		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
@@ -250,6 +255,8 @@ func (s *service) ResetUserPassword(ctx context.Context, username domain.Usernam
 		slog.String(logging.UserUsername, string(username)),
 	}
 
+	username = domain.Username(strings.ToLower(string(username)))
+
 	if !s.authnService.ValidPassword([]byte(newPassword)) {
 		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
 	}
@@ -309,6 +316,8 @@ func (s *service) SignInUser(ctx context.Context, username domain.Username, pass
 		slog.String(logging.ServiceMethod, "SignInUser"),
 		slog.String(logging.UserUsername, string(username)),
 	}
+
+	username = domain.Username(strings.ToLower(string(username)))
 
 	var signIn domain.SignIn
 	var err error
