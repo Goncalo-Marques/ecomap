@@ -78,7 +78,7 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 }
 
 // ListUsers returns the users with the specified filter.
-func (s *service) ListUsers(ctx context.Context, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error) {
+func (s *service) ListUsers(ctx context.Context, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "ListUsers"),
 	}

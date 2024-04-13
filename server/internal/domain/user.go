@@ -41,39 +41,39 @@ type User struct {
 	ModifiedAt time.Time
 }
 
-// UserSort defines the field of the user to sort.
-type UserSort string
+// UserPaginatedSort defines the field of the user to sort.
+type UserPaginatedSort string
 
 const (
-	UserSortUsername   UserSort = "username"
-	UserSortFirstName  UserSort = "firstName"
-	UserSortLastName   UserSort = "lastName"
-	UserSortCreatedAt  UserSort = "createdAt"
-	UserSortModifiedAt UserSort = "modifiedAt"
+	UserPaginatedSortUsername   UserPaginatedSort = "username"
+	UserPaginatedSortFirstName  UserPaginatedSort = "firstName"
+	UserPaginatedSortLastName   UserPaginatedSort = "lastName"
+	UserPaginatedSortCreatedAt  UserPaginatedSort = "createdAt"
+	UserPaginatedSortModifiedAt UserPaginatedSort = "modifiedAt"
 )
 
 // Field returns the name of the field to sort by.
-func (s UserSort) Field() UserSort {
+func (s UserPaginatedSort) Field() UserPaginatedSort {
 	return s
 }
 
 // Valid returns true if the field is valid, false otherwise.
-func (s UserSort) Valid() bool {
+func (s UserPaginatedSort) Valid() bool {
 	switch s {
-	case UserSortUsername,
-		UserSortFirstName,
-		UserSortLastName,
-		UserSortCreatedAt,
-		UserSortModifiedAt:
+	case UserPaginatedSortUsername,
+		UserPaginatedSortFirstName,
+		UserPaginatedSortLastName,
+		UserPaginatedSortCreatedAt,
+		UserPaginatedSortModifiedAt:
 		return true
 	default:
 		return false
 	}
 }
 
-// UsersFilter defines the users filter structure.
-type UsersFilter struct {
-	PaginatedRequest[UserSort]
+// UsersPaginatedFilter defines the users filter structure.
+type UsersPaginatedFilter struct {
+	PaginatedRequest[UserPaginatedSort]
 	Username  *Username
 	FirstName *Name
 	LastName  *Name

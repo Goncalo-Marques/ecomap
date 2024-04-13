@@ -43,7 +43,7 @@ func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.E
 }
 
 // ListUsers executes a query to return the users for the specified filter.
-func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error) {
+func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error) {
 	filterFields := make([]string, 0, 3)
 	argsWhere := make([]any, 0, 3)
 
@@ -98,29 +98,29 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFil
 	argsSort := make([]any, 0, 2)
 
 	// Append the field to sort, if provided.
-	var sortField domain.UserSort
+	var sortField domain.UserPaginatedSort
 	if filter.Sort != nil {
 		sortField = filter.Sort.Field()
 	}
 
 	sqlSort = " ORDER BY "
 	switch sortField {
-	case domain.UserSortUsername:
+	case domain.UserPaginatedSortUsername:
 		sqlSort += "username"
-	case domain.UserSortFirstName:
+	case domain.UserPaginatedSortFirstName:
 		sqlSort += "first_name"
-	case domain.UserSortLastName:
+	case domain.UserPaginatedSortLastName:
 		sqlSort += "last_name"
-	case domain.UserSortCreatedAt:
+	case domain.UserPaginatedSortCreatedAt:
 		sqlSort += "created_at"
-	case domain.UserSortModifiedAt:
+	case domain.UserPaginatedSortModifiedAt:
 		sqlSort += "modified_at"
 	default:
 		sqlSort += "created_at"
 	}
 
 	order := " ASC"
-	if filter.Order == domain.OrderDesc {
+	if filter.Order == domain.PaginationOrderDesc {
 		order = " DESC"
 	}
 	sqlSort += order

@@ -49,7 +49,7 @@ type AuthorizationService interface {
 // Service defines the service interface.
 type Service interface {
 	CreateUser(ctx context.Context, editableUser domain.EditableUserWithPassword) (domain.User, error)
-	ListUsers(ctx context.Context, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error)
+	ListUsers(ctx context.Context, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (domain.User, error)
 	PatchUser(ctx context.Context, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error)
 	UpdateUserPassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error
