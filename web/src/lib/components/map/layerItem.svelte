@@ -4,7 +4,7 @@
 	import Switch from "../switch.svelte";
 
 	/**
-	 * Object layer reference to this layerItem 
+	 * Object layer reference to this layerItem
 	 */
 	export let layer: Layer;
 
