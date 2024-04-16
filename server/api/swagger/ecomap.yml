@@ -82,6 +82,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UsersPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         401:
           $ref: "#/components/responses/Unauthorized"
         403:
@@ -403,6 +409,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EmployeesPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         401:
           $ref: "#/components/responses/Unauthorized"
         403:
@@ -683,6 +695,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContainersPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         401:
           $ref: "#/components/responses/Unauthorized"
         403:
