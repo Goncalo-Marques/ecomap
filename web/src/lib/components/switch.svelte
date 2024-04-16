@@ -30,8 +30,6 @@
 
 	.switch input {
 		opacity: 0;
-		width: 0;
-		height: 0;
 	}
 
 	.slider {
@@ -41,8 +39,6 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background-color: var(--white);
-		-webkit-transition: 0.2s;
 		transition: 0.2s;
 	}
 
@@ -52,8 +48,6 @@
 		height: 12px;
 		width: 12px;
 		bottom: 4px;
-
-		-webkit-transition: 0.2s;
 		transition: 0.2s;
 	}
 
@@ -67,8 +61,6 @@
 	}
 
 	input:checked + .slider:before {
-		-webkit-transform: translateX(22px);
-		-ms-transform: translateX(22px);
 		transform: translateX(22px);
 		background-color: var(--green-800);
 	}
@@ -82,7 +74,6 @@
 		outline: 1px solid var(--gray-400);
 	}
 
-	/* Rounded sliders */
 	.slider.round {
 		border-radius: 12px;
 	}

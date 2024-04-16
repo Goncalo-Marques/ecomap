@@ -5,6 +5,7 @@
 	import type { Layer } from "ol/layer";
 	import LayerItem from "./layerItem.svelte";
 	import Icon from "../Icon.svelte";
+	import { t } from "../../utils/i8n";
 
 	/**
 	 * Zoom value for map view
@@ -51,20 +52,18 @@
 </script>
 
 <div id={map_id} class="map">
-	{#if layersContainer}
+	{#if layersContainer && layers}
 		<section class="layers">
 			<header>
 				<Icon name="layers" />
-				<h1>Layers</h1>
+				<h1>{$t("map.layers")}</h1>
 			</header>
 			<div class="item-container">
-				{#if layers}
-					{#each layers as layer}
-						{#if layer.get("layer-name") != "baseLayer"}
-							<LayerItem {layer} />
-						{/if}
-					{/each}
-				{/if}
+				{#each layers as layer}
+					{#if layer.get("layer-name") != "baseLayer"}
+						<LayerItem {layer} />
+					{/if}
+				{/each}
 			</div>
 		</section>
 	{/if}

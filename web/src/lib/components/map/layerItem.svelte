@@ -3,10 +3,19 @@
 	import Dot from "./dot.svelte";
 	import Switch from "../switch.svelte";
 
+	/**
+	 * Object layer reference to this layerItem 
+	 */
 	export let layer: Layer;
 
+	/**
+	 * Switch value
+	 */
 	let visible: boolean = true;
 
+	/**
+	 * Changes layer visibility based on @visible value
+	 */
 	function toggleVisibility() {
 		visible = !visible;
 		layer.setVisible(visible);
