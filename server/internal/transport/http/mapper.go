@@ -111,12 +111,12 @@ func listUsersParamsToDomainUsersFilter(params spec.ListUsersParams) domain.User
 // userFromDomain returns a standardized user based on the domain model.
 func userFromDomain(user domain.User) spec.User {
 	return spec.User{
-		Id:           user.ID,
-		Username:     string(user.Username),
-		FirstName:    string(user.FirstName),
-		LastName:     string(user.LastName),
-		CreatedTime:  user.CreatedTime,
-		ModifiedTime: user.ModifiedTime,
+		Id:         user.ID,
+		Username:   string(user.Username),
+		FirstName:  string(user.FirstName),
+		LastName:   string(user.LastName),
+		CreatedAt:  user.CreatedAt,
+		ModifiedAt: user.ModifiedAt,
 	}
 }
 
