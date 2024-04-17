@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Layer } from "ol/layer";
-	import Dot from "./dot.svelte";
-	import Switch from "../switch.svelte";
+	import Dot from "./Dot.svelte";
+	import Switch from "../Switch.svelte";
 
 	/**
 	 * Object layer reference to this layerItem
@@ -39,18 +39,14 @@
 </div>
 
 <style>
-	* {
-		box-sizing: border-box;
-	}
-
 	h2 {
 		font: var(--text-sm-regular);
 	}
 
 	.layer-item {
 		display: flex;
-		gap: 8px;
-		height: 24px;
+		gap: 0.5rem;
+		height: 1.5rem;
 		align-items: center;
 	}
 </style>

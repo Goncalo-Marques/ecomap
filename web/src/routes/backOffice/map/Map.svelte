@@ -1,15 +1,21 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { addClusterLayer } from "../../../lib/components/map/mapStore";
 	import Map from "../../../lib/components/map/Map.svelte";
+	import type { MapHelper } from "../../../lib/components/map/mapUtils";
+
+	let mapHelper: MapHelper;
 
 	onMount(() => {
-		addClusterLayer("/json/containers.geojson", "Containers", "#15803D");
+		mapHelper.addClusterLayer(
+			"/json/containers.geojson",
+			"Containers",
+			"#15803D",
+		);
 	});
 </script>
 
 <main>
-	<Map layersContainer={true} />
+	<Map bind:mapHelper layersContainer={true} />
 </main>
 
 <style>

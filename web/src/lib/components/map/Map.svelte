@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { map, createMap } from "./mapStore";
-	import { onDestroy, onMount } from "svelte";
+	import { MapHelper, createMap } from "./mapUtils";
+	import { onMount } from "svelte";
 	import {} from "ol/ol.css";
 	import type { Layer } from "ol/layer";
-	import LayerItem from "./layerItem.svelte";
+	import LayerItem from "./LayerItem.svelte";
 	import Icon from "../Icon.svelte";
 	import { t } from "../../utils/i8n";
 
@@ -31,23 +31,23 @@
 	 */
 	export let layersContainer: boolean = false;
 
+	/**
+	 * MapHelper Object, contains OpenLayers Map object and helper methods
+	 */
+	export let mapHelper: MapHelper;
+
 	const map_id: string = "map_id";
 
 	let layers: Layer[] | undefined;
 
-	// Mount map into div
 	onMount(() => {
-		createMap(lon, lat, zoom);
+		mapHelper = createMap(lon, lat, zoom);
 
-		$map?.setTarget(map_id);
+		mapHelper.map.setTarget(map_id);
 
-		$map?.getLayers().on("add", () => {
-			layers = $map?.getAllLayers();
+		mapHelper.map.getLayers().on("add", () => {
+			layers = mapHelper.map.getAllLayers();
 		});
-	});
-
-	onDestroy(() => {
-		map.set(null);
 	});
 </script>
 
@@ -70,14 +70,10 @@
 </div>
 
 <style>
-	* {
-		box-sizing: border-box;
-	}
-
 	header {
 		display: flex;
 		align-items: center;
-		gap: 4px;
+		gap: 0.25rem;
 	}
 
 	h1 {
@@ -93,20 +89,20 @@
 	.layers {
 		position: absolute;
 		background-color: var(--white);
-		min-width: 256px;
-		max-height: 300px;
+		min-width: 16rem;
+		max-height: 37.5rem;
 		border-radius: 4px;
-		padding: 10px;
+		padding: 0.625rem;
 		overflow: auto;
-		bottom: 3em;
-		left: 3em;
+		bottom: 3rem;
+		left: 3rem;
 		z-index: 999;
 	}
 
 	.item-container {
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
-		margin-top: 12px;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
 	}
 </style>

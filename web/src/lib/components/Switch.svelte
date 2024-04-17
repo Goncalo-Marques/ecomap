@@ -19,13 +19,12 @@
 
 <style>
 	.switch {
-		box-sizing: border-box;
 		margin-left: auto;
 
 		position: relative;
 		display: inline-block;
-		width: 40px;
-		height: 20px;
+		width: 2.5rem;
+		height: 1.25rem;
 	}
 
 	.switch input {
@@ -45,9 +44,9 @@
 	.slider:before {
 		position: absolute;
 		content: "";
-		height: 12px;
-		width: 12px;
-		bottom: 4px;
+		height: 0.75rem;
+		width: 0.75rem;
+		bottom: 0.25rem;
 		transition: 0.2s;
 	}
 
@@ -61,12 +60,12 @@
 	}
 
 	input:checked + .slider:before {
-		transform: translateX(22px);
+		transform: translateX(1.375rem);
 		background-color: var(--green-800);
 	}
 
 	input + .slider::before {
-		transform: translateX(4px);
+		transform: translateX(0.25rem);
 		background-color: var(--gray-400);
 	}
 
