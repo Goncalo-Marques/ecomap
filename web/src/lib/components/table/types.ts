@@ -6,6 +6,11 @@ import type { ComponentType } from "svelte";
 export type Row = Record<string, unknown>;
 
 /**
+ * Base structure of a sortable field.
+ */
+export type SortableField = string;
+
+/**
  * Table columns.
  * @template TRow Type of the table row.
  */
@@ -129,11 +134,11 @@ export interface ColumnCommon {
 
 /**
  * Callback fired when sorting state changes.
- * @template TRow Type of the table row.
+ * @template TSortableFields Type of the sortable fields.
  * @param sorting Updated sorting state.
  */
-export type onSortingChangeFn<TRow extends Row> = (
-	sorting: Sorting<TRow>,
+export type onSortingChangeFn<TSortableFields extends SortableField> = (
+	sorting: Sorting<TSortableFields>,
 ) => void;
 
 /**
@@ -143,13 +148,13 @@ export type SortingDirection = "asc" | "desc" | undefined;
 
 /**
  * Sorting state.
- * @template TRow Type of the table row.
+ * @template TSortableFields Type of the sortable fields.
  */
-export interface Sorting<TRow extends Row> {
+export interface Sorting<TSortableFields extends SortableField> {
 	/**
 	 * The name of the row field with the sorting.
 	 */
-	field: keyof TRow;
+	field: TSortableFields;
 
 	/**
 	 * The direction of the sort of the field.
