@@ -352,7 +352,7 @@ paths:
     get:
       summary: List employees.
       operationId: listEmployees
-      description: Returns the employee with the specified filter.
+      description: Returns the employees with the specified filter.
       tags:
         - Employee
       security:
