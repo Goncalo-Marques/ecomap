@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -51,6 +52,8 @@ func (s *service) SignInEmployee(ctx context.Context, username domain.Username, 
 		slog.String(logging.ServiceMethod, "SignInEmployee"),
 		slog.String(logging.EmployeeUsername, string(username)),
 	}
+
+	username = domain.Username(strings.ToLower(string(username)))
 
 	var signIn domain.SignIn
 	var err error

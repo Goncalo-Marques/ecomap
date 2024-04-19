@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -34,6 +35,7 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 	}
 
 	editableUser.Username = domain.Username(replaceSpacesWithHyphen(string(editableUser.Username)))
+	editableUser.Username = domain.Username(strings.ToLower(string(editableUser.Username)))
 	editableUser.FirstName = domain.Name(replaceSpacesWithHyphen(string(editableUser.FirstName)))
 	editableUser.LastName = domain.Name(replaceSpacesWithHyphen(string(editableUser.LastName)))
 
@@ -76,7 +78,7 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 }
 
 // ListUsers returns the users with the specified filter.
-func (s *service) ListUsers(ctx context.Context, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error) {
+func (s *service) ListUsers(ctx context.Context, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "ListUsers"),
 	}
@@ -87,11 +89,11 @@ func (s *service) ListUsers(ctx context.Context, filter domain.UsersFilter) (dom
 	if !filter.Offset.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOffset}, descriptionInvalidFilterValue, logAttrs...)
 	}
-	if filter.Sort != nil && !filter.Sort.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterSort}, descriptionInvalidFilterValue, logAttrs...)
-	}
 	if !filter.Order.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOrder}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.Sort != nil && !filter.Sort.Valid() {
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}
 
 	var paginatedUsers domain.PaginatedResponse[domain.User]
@@ -143,6 +145,7 @@ func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser doma
 
 	if editableUser.Username != nil {
 		username := domain.Username(replaceSpacesWithHyphen(string(*editableUser.Username)))
+		username = domain.Username(strings.ToLower(string(username)))
 		editableUser.Username = &username
 	}
 	if editableUser.FirstName != nil {
@@ -190,6 +193,8 @@ func (s *service) UpdateUserPassword(ctx context.Context, username domain.Userna
 		slog.String(logging.ServiceMethod, "UpdateUserPassword"),
 		slog.String(logging.UserUsername, string(username)),
 	}
+
+	username = domain.Username(strings.ToLower(string(username)))
 
 	if !s.authnService.ValidPassword([]byte(newPassword)) {
 		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
@@ -250,6 +255,8 @@ func (s *service) ResetUserPassword(ctx context.Context, username domain.Usernam
 		slog.String(logging.UserUsername, string(username)),
 	}
 
+	username = domain.Username(strings.ToLower(string(username)))
+
 	if !s.authnService.ValidPassword([]byte(newPassword)) {
 		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
 	}
@@ -309,6 +316,8 @@ func (s *service) SignInUser(ctx context.Context, username domain.Username, pass
 		slog.String(logging.ServiceMethod, "SignInUser"),
 		slog.String(logging.UserUsername, string(username)),
 	}
+
+	username = domain.Username(strings.ToLower(string(username)))
 
 	var signIn domain.SignIn
 	var err error

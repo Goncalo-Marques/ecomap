@@ -44,7 +44,7 @@ type AuthenticationService interface {
 // Store defines the store interface.
 type Store interface {
 	CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (domain.User, error)
-	ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersFilter) (domain.PaginatedResponse[domain.User], error)
+	ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error)
 	GetUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
 	GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error)
 	GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)

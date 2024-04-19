@@ -13,13 +13,20 @@ const (
 	paginationLimitDefaultValue  = 100
 	paginationOffsetDefaultValue = 0
 	orderDefaultValue            = spec.OrderQueryParamAsc
+
+	timeFormatTimeOnly = "15:04:05"
 )
 
 // dateFromTime returns a standardized date based on the time model.
 func dateFromTime(time time.Time) oapitypes.Date {
 	return oapitypes.Date{
-		Time: time,
+		Time: time.UTC(),
 	}
+}
+
+// timeFromTime returns a standardized time based on the time model.
+func timeFromTime(time time.Time) string {
+	return time.UTC().Format(timeFormatTimeOnly)
 }
 
 // jwtFromJWTToken returns a standardized JWT based on the JWT token.
@@ -48,21 +55,21 @@ func offsetToDomain(offset *spec.OffsetQueryParam) domain.PaginationOffset {
 }
 
 // orderToDomain returns a domain order based on the standardized query parameter model.
-func orderToDomain(order *spec.OrderQueryParam) domain.Order {
+func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
 	if order == nil {
-		return domain.Order(orderDefaultValue)
+		return domain.PaginationOrder(orderDefaultValue)
 	}
 
-	return domain.Order(*order)
+	return domain.PaginationOrder(*order)
 }
 
 // paginatedRequestToDomain returns a domain paginated request based on the standardized query parameter models.
-func paginatedRequestToDomain[T any](limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam, order *spec.OrderQueryParam, sort domain.Sort[T]) domain.PaginatedRequest[T] {
+func paginatedRequestToDomain[T any](limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam, order *spec.OrderQueryParam, sort domain.PaginationSort[T]) domain.PaginatedRequest[T] {
 	return domain.PaginatedRequest[T]{
 		Limit:  limitToDomain(limit),
 		Offset: offsetToDomain(offset),
-		Sort:   sort,
 		Order:  orderToDomain(order),
+		Sort:   sort,
 	}
 }
 
@@ -88,14 +95,14 @@ func userPatchToDomainEditableUserPatch(userPatch spec.UserPatch) domain.Editabl
 	}
 }
 
-// listUsersParamsToDomainUsersFilter returns a domain users filter based on the standardized list users parameters.
-func listUsersParamsToDomainUsersFilter(params spec.ListUsersParams) domain.UsersFilter {
-	var domainSort domain.Sort[domain.UserSort]
+// listUsersParamsToDomainUsersPaginatedFilter returns a domain users paginated filter based on the standardized list users parameters.
+func listUsersParamsToDomainUsersPaginatedFilter(params spec.ListUsersParams) domain.UsersPaginatedFilter {
+	var domainSort domain.PaginationSort[domain.UserPaginatedSort]
 	if params.Sort != nil {
-		domainSort = domain.UserSort(*params.Sort)
+		domainSort = domain.UserPaginatedSort(*params.Sort)
 	}
 
-	return domain.UsersFilter{
+	return domain.UsersPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
 			params.Limit,
 			params.Offset,
@@ -141,8 +148,17 @@ func usersPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.
 // employeeFromDomain returns a standardized employee based on the domain model.
 func employeeFromDomain(employee domain.Employee) spec.Employee {
 	return spec.Employee{
-		Id:          employee.ID,
-		Name:        string(employee.FirstName),
-		DateOfBirth: dateFromTime(employee.DateOfBirth),
+		Id:            employee.ID,
+		Username:      string(employee.Username),
+		FirstName:     string(employee.FirstName),
+		LastName:      string(employee.LastName),
+		Role:          spec.EmployeeRole(employee.Role),
+		DateOfBirth:   dateFromTime(employee.DateOfBirth),
+		PhoneNumber:   employee.PhoneNumber,
+		Geom:          employee.Geom,
+		ScheduleStart: timeFromTime(employee.ScheduleStart),
+		ScheduleEnd:   timeFromTime(employee.ScheduleEnd),
+		CreatedAt:     employee.CreatedAt,
+		ModifiedAt:    employee.ModifiedAt,
 	}
 }
