@@ -66,7 +66,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.ListUsersParams) {
 	ctx := r.Context()
 
-	domainUsersFilter := listUsersParamsToDomainUsersFilter(params)
+	domainUsersFilter := listUsersParamsToDomainUsersPaginatedFilter(params)
 	domainPaginatedUsers, err := h.service.ListUsers(ctx, domainUsersFilter)
 	if err != nil {
 		var domainErrFilterValueInvalid *domain.ErrFilterValueInvalid

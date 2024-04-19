@@ -23,12 +23,13 @@ const (
 
 // EditableEmployee defines the editable employee structure.
 type EditableEmployee struct {
+	Username      Username
 	FirstName     Name
 	LastName      Name
 	Role          EmployeeRole
 	DateOfBirth   time.Time
 	PhoneNumber   string
-	Geom          string // Defined in the GeoJSON format.
+	Geom          GeoJSON
 	ScheduleStart time.Time
 	ScheduleEnd   time.Time
 }

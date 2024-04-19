@@ -4,7 +4,7 @@ BUILD_GIT_HASH = $(shell git describe --always --dirty)
 BUILD_TIMESTAMP = $(shell TZ="GMT" LC_TIME="en_US.utf8" date)
 
 LINTER_VERSION=v1.56.2
-OAPI_CODEGEN_VERSION=dd08298 # TODO: keep an eye on the new version that uses go1.22
+OAPI_CODEGEN_VERSION=80f0b97 # TODO: keep an eye on the new version that uses go1.22
 
 API_SWAGGER_SPEC_FILE=api/swagger/ecomap.yml
 API_SWAGGER_GEN_DIR=api/ecomap
