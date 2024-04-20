@@ -25,7 +25,7 @@ const docElement = document.documentElement;
 const style = getComputedStyle(docElement);
 
 /**
- * Variables gotten from css vars.
+ * Variables retrieved from css vars.
  */
 const cssVars = {
 	text_sm_semibold: style.getPropertyValue("--text-sm-semibold"),
@@ -71,7 +71,6 @@ const defaultClusterSymbol: Style = new Style({
 		}),
 	}),
 	text: new Text({
-		text: "",
 		font: cssVars.text_sm_semibold,
 		textAlign: "center",
 		fill: new Fill({
@@ -81,7 +80,17 @@ const defaultClusterSymbol: Style = new Style({
 });
 
 /**
- * Custom vector layer
+ * Property for layer name.
+ */
+const nameReference = "layer-name";
+
+/**
+ * Property for layer color.
+ */
+const colorReference = "layer-color";
+
+/**
+ * WebGl Vector layer for Open Layers.
  */
 class WebGLLayer extends Layer {
 	private style: VectorStyle;
@@ -99,15 +108,22 @@ class WebGLLayer extends Layer {
 }
 
 export class MapHelper {
-	public constructor(public map: Map) {}
+	public constructor(private readonly map: Map) {}
 
 	/**
-	 * Add a vector layer to the map
+	 * @returns OpenLayers Map.
+	 */
+	public getMap() {
+		return this.map;
+	}
+
+	/**
+	 * Add a vector layer to the map.
 	 *
-	 * @param url receives geojson data
-	 * @param layerName name for layer
-	 * @param layerColor color that identifies the layer
-	 * @param style style for new layer
+	 * @param url Receives geojson data.
+	 * @param layerName Name for layer.
+	 * @param layerColor Color that identifies the layer.
+	 * @param style Style for new layer.
 	 */
 	public addVectorLayer(
 		url: string,
@@ -126,18 +142,18 @@ export class MapHelper {
 			style,
 		);
 
-		vectorLayer.set("layer-name", layerName);
-		vectorLayer.set("layer-color", layerColor);
+		vectorLayer.set(nameReference, layerName);
+		vectorLayer.set(colorReference, layerColor);
 		this.map.addLayer(vectorLayer);
 	}
 
 	/**
-	 * Add a point vector layer into map
+	 * Add a point vector layer into map.
 	 *
-	 * @param url receives geojson data
-	 * @param layerName name for layer
-	 * @param layerColor color that identifies the layer
-	 * @param style style for new layer
+	 * @param url Receives geojson data.
+	 * @param layerName Name for layer.
+	 * @param layerColor Color that identifies the layer.
+	 * @param style Style for new layer.
 	 */
 	public addPointLayer(
 		url: string,
@@ -154,19 +170,19 @@ export class MapHelper {
 			zIndex: this.map.getAllLayers().length,
 		});
 
-		pointsLayer.set("layer-name", layerName);
-		pointsLayer.set("layer-color", layerColor);
+		pointsLayer.set(nameReference, layerName);
+		pointsLayer.set(colorReference, layerColor);
 		this.map.addLayer(pointsLayer);
 	}
 
 	/**
-	 * Add a clusterLayer into map
+	 * Add a clusterLayer into map.
 	 *
-	 * @param url receives geojson data
-	 * @param layerName name for layer
-	 * @param layerColor color that identifies the layer
-	 * @param clusterStyle style for the cluster nodes
-	 * @param iconStyle style for each independent node
+	 * @param url Receives geojson data.
+	 * @param layerName Name for layer.
+	 * @param layerColor Color that identifies the layer.
+	 * @param clusterStyle Style for the cluster nodes.
+	 * @param iconStyle Style for each independent node.
 	 */
 	public addClusterLayer(
 		url: string,
@@ -194,8 +210,8 @@ export class MapHelper {
 			},
 		});
 
-		cluster.set("layer-name", layerName);
-		cluster.set("layer-color", layerColor);
+		cluster.set(nameReference, layerName);
+		cluster.set(colorReference, layerColor);
 
 		this.map.addLayer(cluster);
 
@@ -248,41 +264,39 @@ export class MapHelper {
 }
 
 /**
- * Set map store as a new Map
+ * Set map store as a new Map.
  *
- * @param lon Center longitude
- * @param lat Center latitude
- * @param zoom Default zoom
- * @param projection Projection used, ex: EPSG:3857
- * @returns MapHelper Class
+ * @param lon Center longitude.
+ * @param lat Center latitude.
+ * @param zoom Default zoom.
+ * @param projection Projection used, ex: EPSG:3857.
+ * @returns MapHelper Class.
  */
 export function createMap(
 	lon: number,
 	lat: number,
 	zoom: number,
 	projection: string = "EPSG:3857",
-): MapHelper {
+): Map {
 	const baseLayer = new TileLayer({
 		source: new OSM(),
 		visible: true,
 		zIndex: 0,
 	});
 
-	baseLayer.set("layer-name", "baseLayer");
+	baseLayer.set(nameReference, "baseLayer");
 
-	return new MapHelper(
-		new Map({
-			layers: [baseLayer],
-			view: new View({
-				center: fromLonLat([lon, lat]),
-				zoom: zoom,
-				projection: projection,
-				// Locks the map on the iberian peninsula
-				extent: [
-					-2159435.3010021457, 3990778.5878774817, 863857.4518866497,
-					5984975.69547515,
-				],
-			}),
+	return new Map({
+		layers: [baseLayer],
+		view: new View({
+			center: fromLonLat([lon, lat]),
+			zoom: zoom,
+			projection: projection,
+			// Locks the map on the iberian peninsula
+			extent: [
+				-2159435.3010021457, 3990778.5878774817, 863857.4518866497,
+				5984975.69547515,
+			],
 		}),
-	);
+	});
 }

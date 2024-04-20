@@ -1,20 +1,22 @@
 <script lang="ts">
+	import type { MouseEventHandler } from "svelte/elements";
+
 	/**
-	 * Value of toggle, true or false. Can be linked to a variable.
+	 * Indicates if switch is checked.
 	 */
 	export let checked: boolean = false;
 
 	/**
-	 * Function that will run when clicking on the component.
+	 * Callback fired when clicking the component.
 	 *
-	 * @default None
+	 * @default null
 	 */
-	export let onClick = () => {};
+	export let onClick: MouseEventHandler<HTMLInputElement> | null = null;
 </script>
 
 <label class="switch">
 	<input type="checkbox" bind:checked on:click={onClick} />
-	<span class="slider round"></span>
+	<span class="slider round" />
 </label>
 
 <style>
@@ -74,7 +76,7 @@
 	}
 
 	.slider.round {
-		border-radius: 12px;
+		border-radius: 0.75rem;
 	}
 
 	.slider.round:before {

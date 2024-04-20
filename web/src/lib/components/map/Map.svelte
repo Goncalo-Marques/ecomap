@@ -8,46 +8,52 @@
 	import { t } from "../../utils/i8n";
 
 	/**
-	 * Zoom value for map view
+	 * Zoom value for map view.
 	 * @default 6.5
 	 */
 	export let zoom: number = 6.5;
 
 	/**
-	 * Center latitude of map
+	 * Center latitude of map.
 	 * @default 40
 	 */
 	export let lat: number = 40;
 
 	/**
-	 * Center longitude of map
+	 * Center longitude of map.
 	 * @default -7
 	 */
 	export let lon: number = -7;
 
 	/**
-	 * Show/Hide layers container
+	 * Show/Hide layers container.
 	 * @default false
 	 */
 	export let layersContainer: boolean = false;
 
 	/**
-	 * MapHelper Object, contains OpenLayers Map object and helper methods
+	 * MapHelper Object, contains OpenLayers Map object and helper methods.
 	 */
 	export let mapHelper: MapHelper;
 
-	const map_id: string = "map_id";
+	/**
+	 * Property for base map Layer.
+	 */
+	const layerReference = "baseLayer";
 
-	let layers: Layer[] | undefined;
+	export const map_id: string = "map_id";
+
+	let layers: Layer[] | undefined = [];
 
 	onMount(() => {
-		mapHelper = createMap(lon, lat, zoom);
+		const newMap = createMap(lon, lat, zoom);
 
-		mapHelper.map.setTarget(map_id);
-
-		mapHelper.map.getLayers().on("add", () => {
-			layers = mapHelper.map.getAllLayers();
+		newMap.setTarget(map_id);
+		newMap.getLayers().on("add", () => {
+			layers = newMap.getAllLayers();
 		});
+
+		mapHelper = new MapHelper(newMap);
 	});
 </script>
 
@@ -60,7 +66,7 @@
 			</header>
 			<div class="item-container">
 				{#each layers as layer}
-					{#if layer.get("layer-name") != "baseLayer"}
+					{#if layer.get("layer-name") != layerReference}
 						<LayerItem {layer} />
 					{/if}
 				{/each}
@@ -91,7 +97,7 @@
 		background-color: var(--white);
 		min-width: 16rem;
 		max-height: 37.5rem;
-		border-radius: 4px;
+		border-radius: 0.25rem;
 		padding: 0.625rem;
 		overflow: auto;
 		bottom: 3rem;

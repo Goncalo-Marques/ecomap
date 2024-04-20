@@ -4,17 +4,30 @@
 	import Switch from "../Switch.svelte";
 
 	/**
-	 * Object layer reference to this layerItem
+	 * Layer reference.
 	 */
 	export let layer: Layer;
 
 	/**
-	 * Switch value
+	 * Indicates if layers is visible.
+	 *
+	 * @default true
 	 */
 	let visible: boolean = true;
 
 	/**
-	 * Changes layer visibility based on @visible value
+	 * Property for layer color.
+	 *
+	 */
+	const colorReference = "layer-color";
+
+	/**
+	 * Property for layer name.
+	 */
+	const nameReference = "layer-name";
+
+	/**
+	 * Changes layer visibility based on {@link visible} value.
 	 */
 	function toggleVisibility() {
 		visible = !visible;
@@ -23,16 +36,14 @@
 </script>
 
 <div class="layer-item">
-	{#if layer.get("layer-color")}
-		<Dot color={layer.get("layer-color")} />
+	{#if layer.get(colorReference)}
+		<Dot color={layer.get(colorReference)} size="x-small" />
 	{:else}
-		<Dot color={"white"} />
+		<Dot color={"white"} size="x-small" />
 	{/if}
 
-	{#if layer.get("layer-name")}
-		<h2>{layer.get("layer-name")}</h2>
-	{:else}
-		<h2>#UNDEFINED</h2>
+	{#if layer.get(nameReference)}
+		<h2>{layer.get(nameReference)}</h2>
 	{/if}
 
 	<Switch checked={visible} onClick={toggleVisibility} />
