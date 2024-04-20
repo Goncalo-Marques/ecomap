@@ -8,18 +8,19 @@ import { Vector as VectorSource, Cluster, OSM } from "ol/source";
 import { WebGLTile as TileLayer, Layer } from "ol/layer";
 import { fromLonLat } from "ol/proj";
 
-import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer.js";
-import WebGLPointsLayer from "ol/layer/WebGLPoints.js";
+import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer";
+import WebGLPointsLayer from "ol/layer/WebGLPoints";
 
 import { boundingExtent, type Extent } from "ol/extent";
 
-import { Circle, Fill, Icon, Stroke, Style, Text } from "ol/style.js";
-import { Vector as VectorLayer } from "ol/layer.js";
+import { Circle, Fill, Icon, Stroke, Style, Text } from "ol/style";
+import { Vector as VectorLayer } from "ol/layer";
 
 import type { FeatureLike } from "ol/Feature";
 import type { Options as OptionsLayer } from "ol/layer/Layer";
 import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
 import type { WebGLStyle } from "ol/style/webgl";
+import { mapLayerName, colorLayerKey, nameLayerKey } from "../../constants/map";
 
 const docElement = document.documentElement;
 const style = getComputedStyle(docElement);
@@ -80,21 +81,6 @@ const defaultClusterSymbol: Style = new Style({
 });
 
 /**
- * Property for layer name.
- */
-export const nameLayerReference = "layer-name";
-
-/**
- * Property for layer color.
- */
-export const colorLayerReference = "layer-color";
-
-/**
- * Property for base map Layer.
- */
-export const baseLayerReference = "baseLayer";
-
-/**
  * WebGl Vector layer for Open Layers.
  */
 class WebGLLayer extends Layer {
@@ -114,13 +100,6 @@ class WebGLLayer extends Layer {
 
 export class MapHelper {
 	public constructor(private readonly map: Map) {}
-
-	/**
-	 * @returns OpenLayers Map.
-	 */
-	public getMap() {
-		return this.map;
-	}
 
 	/**
 	 * Add a vector layer to the map.
@@ -147,8 +126,8 @@ export class MapHelper {
 			style,
 		);
 
-		vectorLayer.set(nameLayerReference, layerName);
-		vectorLayer.set(colorLayerReference, layerColor);
+		vectorLayer.set(nameLayerKey, layerName);
+		vectorLayer.set(colorLayerKey, layerColor);
 		this.map.addLayer(vectorLayer);
 	}
 
@@ -175,8 +154,8 @@ export class MapHelper {
 			zIndex: this.map.getAllLayers().length,
 		});
 
-		pointsLayer.set(nameLayerReference, layerName);
-		pointsLayer.set(colorLayerReference, layerColor);
+		pointsLayer.set(nameLayerKey, layerName);
+		pointsLayer.set(colorLayerKey, layerColor);
 		this.map.addLayer(pointsLayer);
 	}
 
@@ -215,8 +194,8 @@ export class MapHelper {
 			},
 		});
 
-		cluster.set(nameLayerReference, layerName);
-		cluster.set(colorLayerReference, layerColor);
+		cluster.set(nameLayerKey, layerName);
+		cluster.set(colorLayerKey, layerColor);
 
 		this.map.addLayer(cluster);
 
@@ -269,7 +248,7 @@ export class MapHelper {
 }
 
 /**
- * Creates a new Open layers map.
+ * Creates a new Open Layers map.
  *
  * @param lon Center longitude.
  * @param lat Center latitude.
@@ -289,7 +268,7 @@ export function createMap(
 		zIndex: 0,
 	});
 
-	baseLayer.set(nameLayerReference, "baseLayer");
+	baseLayer.set(nameLayerKey, mapLayerName);
 
 	return new Map({
 		layers: [baseLayer],

@@ -2,7 +2,7 @@
 	import { Layer } from "ol/layer";
 	import Dot from "./Dot.svelte";
 	import Switch from "../Switch.svelte";
-	import { colorLayerReference, nameLayerReference } from "./mapUtils";
+	import { colorLayerKey, nameLayerKey } from "../../constants/map";
 
 	/**
 	 * Layer reference.
@@ -26,14 +26,14 @@
 </script>
 
 <div class="layer-item">
-	{#if layer.get(colorLayerReference)}
-		<Dot color={layer.get(colorLayerReference)} size="x-small" />
+	{#if layer.get(colorLayerKey)}
+		<Dot color={layer.get(colorLayerKey)} size="x-small" />
 	{:else}
 		<Dot color="white" size="x-small" />
 	{/if}
 
-	{#if layer.get(nameLayerReference)}
-		<h2>{layer.get(nameLayerReference)}</h2>
+	{#if layer.get(nameLayerKey)}
+		<h2>{layer.get(nameLayerKey)}</h2>
 	{/if}
 
 	<Switch checked={visible} onClick={toggleVisibility} />
