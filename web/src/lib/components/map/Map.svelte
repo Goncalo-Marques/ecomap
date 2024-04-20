@@ -50,9 +50,9 @@
 	export let mapId: string = "map_id";
 
 	/**
-	 * Map Layers.
+	 * Map layers.
 	 */
-	let layers: Layer[];
+	let layers: Layer[] = [];
 
 	onMount(() => {
 		map = createMap(lon, lat, zoom);
@@ -65,7 +65,7 @@
 </script>
 
 <div id={mapId} class="map">
-	{#if showLayers && layers}
+	{#if showLayers && layers.length}
 		<section class="layers">
 			<header>
 				<Icon name="layers" />

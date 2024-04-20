@@ -18,7 +18,7 @@
 </script>
 
 <main>
-	<Map bind:map showLayers={true} />
+	<Map bind:map showLayers />
 </main>
 
 <style>
