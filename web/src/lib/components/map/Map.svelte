@@ -39,7 +39,7 @@
 	export let map: Map;
 
 	/**
-	 * Map container id.
+	 * Map container ID.
 	 *
 	 * @default "map_id"
 	 */
