@@ -1,4 +1,7 @@
-<script lang="ts" generics="TRow extends Record<string, unknown>">
+<script
+	lang="ts"
+	generics="TRow extends Record<string, unknown>, TSortableFields extends string"
+>
 	import Icon from "../Icon.svelte";
 	import {
 		getCell,
@@ -22,7 +25,7 @@
 	 * Callback fired when sorting state changes.
 	 * @default null
 	 */
-	export let onSortingChange: onSortingChangeFn<TRow> | null = null;
+	export let onSortingChange: onSortingChangeFn<TSortableFields> | null = null;
 
 	/**
 	 * The pagination configuration for the table.
@@ -40,7 +43,7 @@
 	 * The sorting state of the table.
 	 * @default null
 	 */
-	export let sorting: Sorting<TRow> | null = null;
+	export let sorting: Sorting<TSortableFields> | null = null;
 
 	/**
 	 * Map that contains the sorting state for each column.
@@ -79,8 +82,8 @@
 			);
 		}
 
-		const updatedSorting: Sorting<TRow> = {
-			field,
+		const updatedSorting: Sorting<TSortableFields> = {
+			field: field as TSortableFields,
 			direction: toggleDirection(direction),
 		};
 

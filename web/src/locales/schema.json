@@ -63,6 +63,9 @@
 		},
 		"forbidden.description": {
 			"type": "string"
+		},
+		"map.layers": {
+			"type": "string"
 		}
 	}
 }

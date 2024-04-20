@@ -7,6 +7,7 @@ import type {
 	Sorting,
 	SortingColumns,
 	SortingDirection,
+	SortableField,
 } from "./types";
 
 /**
@@ -32,13 +33,17 @@ export function getColumnsFields<TRow extends Row>(
 /**
  * Retrieves a map with the sorting state for each table column.
  * @template TRow Type of the table row.
+ * @template TSortableFields Type of the sortable fields.
  * @param columns Table columns.
  * @param sorting Current sorting state.
  * @returns Map with the sorting state for each table column.
  */
-export function getColumnsSorting<TRow extends Row>(
+export function getColumnsSorting<
+	TRow extends Row,
+	TSortableFields extends SortableField,
+>(
 	columns: Columns<TRow>,
-	sorting: Sorting<TRow> | null,
+	sorting: Sorting<TSortableFields> | null,
 ): SortingColumns<TRow> {
 	const fields = getColumnsFields(columns);
 	const columnsSorting = {} as SortingColumns<TRow>;
