@@ -11,27 +11,31 @@
 
 	/**
 	 * Zoom value for map view.
+	 *
 	 * @default 6.5
 	 */
 	export let zoom: number = 6.5;
 
 	/**
 	 * Center latitude of map.
+	 *
 	 * @default 40
 	 */
 	export let lat: number = 40;
 
 	/**
 	 * Center longitude of map.
+	 *
 	 * @default -7
 	 */
 	export let lon: number = -7;
 
 	/**
-	 * Show/Hide layers container.
+	 * Indicates whether layers are displayed.
+	 *
 	 * @default false
 	 */
-	export let layersContainer: boolean = false;
+	export let showLayers: boolean = false;
 
 	/**
 	 * Open Layers map.
@@ -45,7 +49,10 @@
 	 */
 	export let mapId: string = "map_id";
 
-	let layers: Layer[] | undefined = [];
+	/**
+	 * Map Layers.
+	 */
+	let layers: Layer[];
 
 	onMount(() => {
 		map = createMap(lon, lat, zoom);
@@ -58,7 +65,7 @@
 </script>
 
 <div id={mapId} class="map">
-	{#if layersContainer && layers}
+	{#if showLayers && layers}
 		<section class="layers">
 			<header>
 				<Icon name="layers" />
