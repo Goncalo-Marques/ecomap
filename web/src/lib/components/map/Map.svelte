@@ -1,11 +1,16 @@
 <script lang="ts">
-	import { MapHelper, createMap } from "./mapUtils";
+	import {
+		baseLayerReference,
+		createMap,
+		nameLayerReference,
+	} from "./mapUtils";
 	import { onMount } from "svelte";
 	import {} from "ol/ol.css";
 	import type { Layer } from "ol/layer";
 	import LayerItem from "./LayerItem.svelte";
 	import Icon from "../Icon.svelte";
 	import { t } from "../../utils/i8n";
+	import Map from "ol/Map";
 
 	/**
 	 * Zoom value for map view.
@@ -32,28 +37,26 @@
 	export let layersContainer: boolean = false;
 
 	/**
-	 * MapHelper Object, contains OpenLayers Map object and helper methods.
+	 * Openlayers map object.
 	 */
-	export let mapHelper: MapHelper;
+	export let map: Map;
 
 	/**
-	 * Property for base map Layer.
+	 * Map container id.
+	 *
+	 * @default map_id
 	 */
-	const layerReference = "baseLayer";
-
-	export const map_id: string = "map_id";
+	export let map_id: string = "map_id";
 
 	let layers: Layer[] | undefined = [];
 
 	onMount(() => {
-		const newMap = createMap(lon, lat, zoom);
+		map = createMap(lon, lat, zoom);
 
-		newMap.setTarget(map_id);
-		newMap.getLayers().on("add", () => {
-			layers = newMap.getAllLayers();
+		map.setTarget(map_id);
+		map.getLayers().on("add", () => {
+			layers = map.getAllLayers();
 		});
-
-		mapHelper = new MapHelper(newMap);
 	});
 </script>
 
@@ -66,7 +69,7 @@
 			</header>
 			<div class="item-container">
 				{#each layers as layer}
-					{#if layer.get("layer-name") != layerReference}
+					{#if layer.get(nameLayerReference) != baseLayerReference}
 						<LayerItem {layer} />
 					{/if}
 				{/each}

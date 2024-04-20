@@ -82,12 +82,17 @@ const defaultClusterSymbol: Style = new Style({
 /**
  * Property for layer name.
  */
-const nameReference = "layer-name";
+export const nameLayerReference = "layer-name";
 
 /**
  * Property for layer color.
  */
-const colorReference = "layer-color";
+export const colorLayerReference = "layer-color";
+
+/**
+ * Property for base map Layer.
+ */
+export const baseLayerReference = "baseLayer";
 
 /**
  * WebGl Vector layer for Open Layers.
@@ -142,8 +147,8 @@ export class MapHelper {
 			style,
 		);
 
-		vectorLayer.set(nameReference, layerName);
-		vectorLayer.set(colorReference, layerColor);
+		vectorLayer.set(nameLayerReference, layerName);
+		vectorLayer.set(colorLayerReference, layerColor);
 		this.map.addLayer(vectorLayer);
 	}
 
@@ -170,8 +175,8 @@ export class MapHelper {
 			zIndex: this.map.getAllLayers().length,
 		});
 
-		pointsLayer.set(nameReference, layerName);
-		pointsLayer.set(colorReference, layerColor);
+		pointsLayer.set(nameLayerReference, layerName);
+		pointsLayer.set(colorLayerReference, layerColor);
 		this.map.addLayer(pointsLayer);
 	}
 
@@ -210,8 +215,8 @@ export class MapHelper {
 			},
 		});
 
-		cluster.set(nameReference, layerName);
-		cluster.set(colorReference, layerColor);
+		cluster.set(nameLayerReference, layerName);
+		cluster.set(colorLayerReference, layerColor);
 
 		this.map.addLayer(cluster);
 
@@ -264,13 +269,13 @@ export class MapHelper {
 }
 
 /**
- * Set map store as a new Map.
+ * Creates a new Open layers map.
  *
  * @param lon Center longitude.
  * @param lat Center latitude.
  * @param zoom Default zoom.
  * @param projection Projection used, ex: EPSG:3857.
- * @returns MapHelper Class.
+ * @returns Map.
  */
 export function createMap(
 	lon: number,
@@ -284,7 +289,7 @@ export function createMap(
 		zIndex: 0,
 	});
 
-	baseLayer.set(nameReference, "baseLayer");
+	baseLayer.set(nameLayerReference, "baseLayer");
 
 	return new Map({
 		layers: [baseLayer],
