@@ -18,6 +18,7 @@ const (
 // Common fault descriptions.
 const (
 	descriptionFailedToMarshalResponseBody = "http: failed to marshal response body"
+	descriptionFailedToMapResponseBody     = "http: failed to map response body"
 )
 
 // badRequest writes an error response and sets the header with the bad request status code.

@@ -41,7 +41,13 @@ func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employ
 		return
 	}
 
-	employee := employeeFromDomain(domainEmployee)
+	employee, err := employeeFromDomain(domainEmployee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
 	responseBody, err := json.Marshal(employee)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
