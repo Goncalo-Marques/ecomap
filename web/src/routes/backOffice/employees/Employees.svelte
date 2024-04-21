@@ -8,13 +8,16 @@
 	import type { components } from "../../../../api/ecomap/http";
 
 	type User = components["schemas"]["User"];
+	type UserSortableFields = NonNullable<
+		components["parameters"]["UserSortQueryParam"]
+	>;
 
 	let usersPromise: Promise<User[]>;
 	let usersAmount = 0;
 
 	const pageSize = 1;
 
-	let sorting: Sorting<User> = {
+	let sorting: Sorting<UserSortableFields> = {
 		field: "firstName",
 		direction: "asc",
 	};
@@ -79,7 +82,7 @@
 	async function fetchUsers(
 		pageIndex: number,
 		pageSize: number,
-		sorting: Sorting<User>,
+		sorting: Sorting<UserSortableFields>,
 	): Promise<User[]> {
 		const res = await ecomapHttpClient.GET("/users", {
 			params: {
@@ -101,7 +104,7 @@
 		return res.data.users;
 	}
 
-	function handleSortingChange(newSorting: Sorting<User>) {
+	function handleSortingChange(newSorting: Sorting<UserSortableFields>) {
 		usersPromise = fetchUsers(pageIndex, pageSize, newSorting);
 		sorting = newSorting;
 	}

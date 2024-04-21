@@ -20,5 +20,6 @@
 	"notFound.title": "Página não encontrada",
 	"notFound.description": "A página que procura não existe.",
 	"forbidden.title": "Acesso proibido",
-	"forbidden.description": "Não tem autorização para aceder a esta página."
+	"forbidden.description": "Não tem autorização para aceder a esta página.",
+	"map.layers": "Camadas"
 }
