@@ -175,18 +175,3 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 
 	return employee, nil
 }
-
-// getEmployeesFromRows returns the employees by scanning the given rows.
-func getEmployeesFromRows(rows pgx.Rows) ([]domain.Employee, error) {
-	var employees []domain.Employee
-	for rows.Next() {
-		employee, err := getEmployeeFromRow(rows)
-		if err != nil {
-			return nil, err
-		}
-
-		employees = append(employees, employee)
-	}
-
-	return employees, nil
-}
