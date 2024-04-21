@@ -18,6 +18,11 @@ const (
 	timeFormatTimeOnly = "15:04:05"
 )
 
+var (
+	errGeoJSONFeatureTypeUnexpected  = errors.New("unexpected geojson feature type")
+	errGeoJSONGeometryTypeUnexpected = errors.New("unexpected geojson geometry type")
+)
+
 // dateFromTime returns a standardized date based on the time model.
 func dateFromTime(time time.Time) oapitypes.Date {
 	return oapitypes.Date{
@@ -116,87 +121,28 @@ func listUsersParamsToDomainUsersPaginatedFilter(params spec.ListUsersParams) do
 	}
 }
 
-// geoJSONFeatureFromDomain returns standardized GeoJSON feature based on the domain model.
-func geoJSONFeatureFromDomain(geoJSONFeature domain.GeoJSONFeature) (spec.GeoJSONFeature, error) {
-	specGeoJSONFeature := spec.GeoJSONFeature{
+// geoJSONFeaturePointFromDomain returns standardized GeoJSON feature point based on the domain model.
+func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeaturePoint, error) {
+	geoJSONFeature, ok := geoJSON.(domain.GeoJSONFeature)
+	if !ok {
+		return spec.GeoJSONFeaturePoint{}, errGeoJSONFeatureTypeUnexpected
+	}
+
+	geoJSONGeometry, ok := geoJSONFeature.Geometry.(domain.GeoJSONGeometryPoint)
+	if !ok {
+		return spec.GeoJSONFeaturePoint{}, errGeoJSONGeometryTypeUnexpected
+	}
+
+	return spec.GeoJSONFeaturePoint{
 		Type: spec.Feature,
+		Geometry: spec.GeoJSONGeometryPoint{
+			Type:        spec.Point,
+			Coordinates: geoJSONGeometry.Coordinates[:],
+		},
 		Properties: spec.GeoJSONFeatureProperties{
 			WayOsmId: geoJSONFeature.Properties.WayOSM(),
 		},
-	}
-	var err error
-
-	switch geometry := geoJSONFeature.Geometry.(type) {
-	case domain.GeoJSONGeometryPoint:
-		err = specGeoJSONFeature.Geometry.FromGeoJSONGeometryPoint(spec.GeoJSONGeometryPoint{
-			Type:        spec.Point,
-			Coordinates: geometry.Coordinates[:],
-		})
-		if err != nil {
-			return spec.GeoJSONFeature{}, err
-		}
-
-	case domain.GeoJSONGeometryLineString:
-		coordinates := make([][]float64, len(geometry.Coordinates))
-		for i, c := range geometry.Coordinates {
-			coordinates[i] = c[:]
-		}
-
-		err = specGeoJSONFeature.Geometry.FromGeoJSONGeometryLineString(spec.GeoJSONGeometryLineString{
-			Type:        spec.LineString,
-			Coordinates: coordinates,
-		})
-		if err != nil {
-			return spec.GeoJSONFeature{}, err
-		}
-
-	default:
-		return spec.GeoJSONFeature{}, errors.New("unexpected geojson geometry type")
-	}
-
-	return specGeoJSONFeature, nil
-}
-
-// geoJSONFromDomain returns standardized GeoJSON based on the domain model.
-func geoJSONFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSON, error) {
-	var specGeoJSON spec.GeoJSON
-	var err error
-
-	switch feature := geoJSON.(type) {
-	case domain.GeoJSONFeature:
-		specFeature, err := geoJSONFeatureFromDomain(feature)
-		if err != nil {
-			return spec.GeoJSON{}, err
-		}
-
-		err = specGeoJSON.FromGeoJSONFeature(specFeature)
-		if err != nil {
-			return spec.GeoJSON{}, err
-		}
-
-	case domain.GeoJSONFeatureCollection:
-		specFeatureCollection := spec.GeoJSONFeatureCollection{
-			Type:     spec.FeatureCollection,
-			Features: make([]spec.GeoJSONFeature, len(feature.Features)),
-		}
-
-		for i, f := range feature.Features {
-			specFeatureCollection.Features[i], err = geoJSONFeatureFromDomain(f)
-			if err != nil {
-				return spec.GeoJSON{}, err
-			}
-		}
-
-		err = specGeoJSON.FromGeoJSONFeatureCollection(specFeatureCollection)
-		if err != nil {
-			return spec.GeoJSON{}, err
-		}
-
-	default:
-		return spec.GeoJSON{}, errors.New("unexpected geojson feature type")
-	}
-
-	return specGeoJSON, nil
+	}, nil
 }
 
 // userFromDomain returns a standardized user based on the domain model.
@@ -231,7 +177,7 @@ func usersPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.
 
 // employeeFromDomain returns a standardized employee based on the domain model.
 func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
-	geoJSON, err := geoJSONFromDomain(employee.GeoJSON)
+	geoJSON, err := geoJSONFeaturePointFromDomain(employee.GeoJSON)
 	if err != nil {
 		return spec.Employee{}, err
 	}

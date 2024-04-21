@@ -951,26 +951,6 @@ components:
           items:
             type: number
             format: double
-    GeoJSONGeometryLineString:
-      type: object
-      description: Geometry line string.
-      required:
-        - type
-        - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-            - LineString
-        coordinates:
-          type: array
-          items:
-            type: array
-            maxItems: 2
-            minItems: 2
-            items:
-              type: number
-              format: double
     GeoJSONFeatureProperties:
       type: object
       description: GeoJSON feature properties.
@@ -978,9 +958,10 @@ components:
         wayOsmId:
           type: integer
           description: Identifier of the OpenStreetMap way.
-    GeoJSONFeature:
+          readOnly: true
+    GeoJSONFeaturePoint:
       type: object
-      description: GeoJSON feature.
+      description: GeoJSON feature with geometry point.
       required:
         - type
         - geometry
@@ -991,32 +972,9 @@ components:
           enum:
             - Feature
         geometry:
-          oneOf:
-            - $ref: "#/components/schemas/GeoJSONGeometryPoint"
-            - $ref: "#/components/schemas/GeoJSONGeometryLineString"
+          $ref: "#/components/schemas/GeoJSONGeometryPoint"
         properties:
           $ref: "#/components/schemas/GeoJSONFeatureProperties"
-    GeoJSONFeatureCollection:
-      type: object
-      description: GeoJSON feature collection.
-      required:
-        - type
-        - features
-      properties:
-        type:
-          type: string
-          enum:
-            - FeatureCollection
-        features:
-          type: array
-          items:
-            $ref: "#/components/schemas/GeoJSONFeature"
-    GeoJSON:
-      type: object
-      description: Object in GeoJSON format.
-      oneOf:
-        - $ref: "#/components/schemas/GeoJSONFeature"
-        - $ref: "#/components/schemas/GeoJSONFeatureCollection"
 
     EmployeeRole:
       type: string
@@ -1173,7 +1131,7 @@ components:
         phoneNumber:
           $ref: "#/components/schemas/PhoneNumber"
         geoJSON:
-          $ref: "#/components/schemas/GeoJSON"
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
         scheduleStart:
           $ref: "#/components/schemas/Time"
         scheduleEnd:
@@ -1196,7 +1154,7 @@ components:
         phoneNumber:
           $ref: "#/components/schemas/PhoneNumber"
         geoJSON:
-          $ref: "#/components/schemas/GeoJSON"
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
         scheduleStart:
           $ref: "#/components/schemas/Time"
         scheduleEnd:
@@ -1232,7 +1190,7 @@ components:
         phoneNumber:
           $ref: "#/components/schemas/PhoneNumber"
         geoJSON:
-          $ref: "#/components/schemas/GeoJSON"
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
         scheduleStart:
           $ref: "#/components/schemas/Time"
         scheduleEnd:
@@ -1262,7 +1220,7 @@ components:
         category:
           $ref: "#/components/schemas/ContainerCategory"
         geoJSON:
-          $ref: "#/components/schemas/GeoJSON"
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
     Container:
       type: object
       required:
@@ -1277,7 +1235,7 @@ components:
         category:
           $ref: "#/components/schemas/ContainerCategory"
         geoJSON:
-          $ref: "#/components/schemas/GeoJSON"
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
         createdAt:
           $ref: "#/components/schemas/DateTime"
         modifiedAt:
