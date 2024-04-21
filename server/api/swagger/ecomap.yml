@@ -895,17 +895,6 @@ components:
             - internal_server_error
         message:
           type: string
-    GeoJSON:
-      type: object
-      description: An object in GeoJSON format.
-      example: |
-        {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [125.6, 10.1]
-          }
-        }
     UUID:
       type: string
       format: uuid
@@ -943,6 +932,91 @@ components:
       type: string
       maxLength: 20
       example: +351 912 345 678
+
+    GeoJSONGeometryPoint:
+      type: object
+      description: Geometry point.
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Point
+        coordinates:
+          type: array
+          maxItems: 2
+          minItems: 2
+          items:
+            type: number
+            format: double
+    GeoJSONGeometryLineString:
+      type: object
+      description: Geometry line string.
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - LineString
+        coordinates:
+          type: array
+          items:
+            type: array
+            maxItems: 2
+            minItems: 2
+            items:
+              type: number
+              format: double
+    GeoJSONFeatureProperties:
+      type: object
+      description: GeoJSON feature properties.
+      properties:
+        wayOsmId:
+          type: integer
+          description: Identifier of the OpenStreetMap way.
+    GeoJSONFeature:
+      type: object
+      description: GeoJSON feature.
+      required:
+        - type
+        - geometry
+        - properties
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          oneOf:
+            - $ref: "#/components/schemas/GeoJSONGeometryPoint"
+            - $ref: "#/components/schemas/GeoJSONGeometryLineString"
+        properties:
+          $ref: "#/components/schemas/GeoJSONFeatureProperties"
+    GeoJSONFeatureCollection:
+      type: object
+      description: GeoJSON feature collection.
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoJSONFeature"
+    GeoJSON:
+      type: object
+      description: Object in GeoJSON format.
+      oneOf:
+        - $ref: "#/components/schemas/GeoJSONFeature"
+        - $ref: "#/components/schemas/GeoJSONFeatureCollection"
 
     EmployeeRole:
       type: string
@@ -1080,7 +1154,7 @@ components:
         - role
         - dateOfBirth
         - phoneNumber
-        - geom
+        - geoJSON
         - scheduleStart
         - scheduleEnd
       properties:
@@ -1098,7 +1172,7 @@ components:
           $ref: "#/components/schemas/Date"
         phoneNumber:
           $ref: "#/components/schemas/PhoneNumber"
-        geom:
+        geoJSON:
           $ref: "#/components/schemas/GeoJSON"
         scheduleStart:
           $ref: "#/components/schemas/Time"
@@ -1121,7 +1195,7 @@ components:
           $ref: "#/components/schemas/Date"
         phoneNumber:
           $ref: "#/components/schemas/PhoneNumber"
-        geom:
+        geoJSON:
           $ref: "#/components/schemas/GeoJSON"
         scheduleStart:
           $ref: "#/components/schemas/Time"
@@ -1137,7 +1211,7 @@ components:
         - role
         - dateOfBirth
         - phoneNumber
-        - geom
+        - geoJSON
         - scheduleStart
         - scheduleEnd
         - createdAt
@@ -1157,7 +1231,7 @@ components:
           $ref: "#/components/schemas/Date"
         phoneNumber:
           $ref: "#/components/schemas/PhoneNumber"
-        geom:
+        geoJSON:
           $ref: "#/components/schemas/GeoJSON"
         scheduleStart:
           $ref: "#/components/schemas/Time"
@@ -1183,18 +1257,18 @@ components:
       type: object
       required:
         - category
-        - geom
+        - geoJSON
       properties:
         category:
           $ref: "#/components/schemas/ContainerCategory"
-        geom:
+        geoJSON:
           $ref: "#/components/schemas/GeoJSON"
     Container:
       type: object
       required:
         - id
         - category
-        - geom
+        - geoJSON
         - createdAt
         - modifiedAt
       properties:
@@ -1202,7 +1276,7 @@ components:
           $ref: "#/components/schemas/UUID"
         category:
           $ref: "#/components/schemas/ContainerCategory"
-        geom:
+        geoJSON:
           $ref: "#/components/schemas/GeoJSON"
         createdAt:
           $ref: "#/components/schemas/DateTime"
