@@ -37,6 +37,7 @@ ignoreWords:
   - pgxpool
   - pkey
   - plpgsql
+  - psql
   - Português
   - postgis
   - proguard
@@ -58,6 +59,7 @@ ignorePaths:
   - gradlew.bat
   - proguard-rules.pro
   - server/api/swagger/ui
+  - server/database/scripts
   - server/deployments
   - server/config.yml
   - web/public
