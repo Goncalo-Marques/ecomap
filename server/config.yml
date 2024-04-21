@@ -2,4 +2,4 @@ database:
   url: postgres://postgres:postgres@database:5432/ecomap?sslmode=disable
   migrations:
     apply: true
-    version: 1
+    version: 3
