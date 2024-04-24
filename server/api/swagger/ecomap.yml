@@ -938,7 +938,7 @@ components:
 
     GeoJSONGeometryPoint:
       type: object
-      description: Geometry point.
+      description: Geometry point using the EPSG:4326 coordinate system.
       required:
         - type
         - coordinates
