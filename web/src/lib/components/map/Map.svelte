@@ -1,58 +1,71 @@
 <script lang="ts">
-	import { MapHelper, createMap } from "./mapUtils";
+	import { createMap } from "./mapUtils";
 	import { onMount } from "svelte";
-	import {} from "ol/ol.css";
+	import "ol/ol.css";
 	import type { Layer } from "ol/layer";
 	import LayerItem from "./LayerItem.svelte";
 	import Icon from "../Icon.svelte";
 	import { t } from "../../utils/i8n";
+	import Map from "ol/Map";
+	import { mapLayerName, nameLayerKey } from "../../constants/map";
 
 	/**
-	 * Zoom value for map view
+	 * Zoom value for map view.
+	 *
 	 * @default 6.5
 	 */
 	export let zoom: number = 6.5;
 
 	/**
-	 * Center latitude of map
+	 * Center latitude of map.
+	 *
 	 * @default 40
 	 */
 	export let lat: number = 40;
 
 	/**
-	 * Center longitude of map
+	 * Center longitude of map.
+	 *
 	 * @default -7
 	 */
 	export let lon: number = -7;
 
 	/**
-	 * Show/Hide layers container
+	 * Indicates whether layers are displayed.
+	 *
 	 * @default false
 	 */
-	export let layersContainer: boolean = false;
+	export let showLayers: boolean = false;
 
 	/**
-	 * MapHelper Object, contains OpenLayers Map object and helper methods
+	 * Open Layers map.
 	 */
-	export let mapHelper: MapHelper;
+	export let map: Map;
 
-	const map_id: string = "map_id";
+	/**
+	 * Map container ID.
+	 *
+	 * @default "map_id"
+	 */
+	export let mapId: string = "map_id";
 
-	let layers: Layer[] | undefined;
+	/**
+	 * Map layers.
+	 */
+	let layers: Layer[] = [];
 
 	onMount(() => {
-		mapHelper = createMap(lon, lat, zoom);
+		map = createMap(lon, lat, zoom);
 
-		mapHelper.map.setTarget(map_id);
-
-		mapHelper.map.getLayers().on("add", () => {
-			layers = mapHelper.map.getAllLayers();
+		map.setTarget(mapId);
+		map.getLayers().on("add", () => {
+			layers = map.getAllLayers();
 		});
 	});
 </script>
 
-<div id={map_id} class="map">
-	{#if layersContainer && layers}
+<div id={mapId} class="map">
+	{#if showLayers && layers.length}
 		<section class="layers">
 			<header>
 				<Icon name="layers" />
@@ -60,7 +73,7 @@
 			</header>
 			<div class="item-container">
 				{#each layers as layer}
-					{#if layer.get("layer-name") != "baseLayer"}
+					{#if layer.get(nameLayerKey) != mapLayerName}
 						<LayerItem {layer} />
 					{/if}
 				{/each}
@@ -91,7 +104,7 @@
 		background-color: var(--white);
 		min-width: 16rem;
 		max-height: 37.5rem;
-		border-radius: 4px;
+		border-radius: 0.25rem;
 		padding: 0.625rem;
 		overflow: auto;
 		bottom: 3rem;

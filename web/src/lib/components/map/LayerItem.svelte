@@ -2,19 +2,22 @@
 	import { Layer } from "ol/layer";
 	import Dot from "./Dot.svelte";
 	import Switch from "../Switch.svelte";
+	import { colorLayerKey, nameLayerKey } from "../../constants/map";
 
 	/**
-	 * Object layer reference to this layerItem
+	 * Layer reference.
 	 */
 	export let layer: Layer;
 
 	/**
-	 * Switch value
+	 * Indicates if layers is visible.
+	 *
+	 * @default true
 	 */
 	let visible: boolean = true;
 
 	/**
-	 * Changes layer visibility based on @visible value
+	 * Changes layer visibility based on {@link visible} value.
 	 */
 	function toggleVisibility() {
 		visible = !visible;
@@ -23,16 +26,14 @@
 </script>
 
 <div class="layer-item">
-	{#if layer.get("layer-color")}
-		<Dot color={layer.get("layer-color")} />
+	{#if layer.get(colorLayerKey)}
+		<Dot color={layer.get(colorLayerKey)} size="x-small" />
 	{:else}
-		<Dot color={"white"} />
+		<Dot color="white" size="x-small" />
 	{/if}
 
-	{#if layer.get("layer-name")}
-		<h2>{layer.get("layer-name")}</h2>
-	{:else}
-		<h2>#UNDEFINED</h2>
+	{#if layer.get(nameLayerKey)}
+		<h2>{layer.get(nameLayerKey)}</h2>
 	{/if}
 
 	<Switch checked={visible} onClick={toggleVisibility} />

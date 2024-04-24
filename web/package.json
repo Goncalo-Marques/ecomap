@@ -65,6 +65,7 @@
 		]
 	},
 	"dependencies": {
+		"ol": "^9.1.0",
 		"openapi-fetch": "^0.9.3"
 	},
 	"devDependencies": {
@@ -74,7 +75,6 @@
 		"@typescript-eslint/parser": "^7.1.0",
 		"eslint": "^8.57.0",
 		"eslint-plugin-svelte": "^2.36.0",
-		"ol": "^9.1.0",
 		"openapi-typescript": "^6.7.5",
 		"prettier": "^3.2.5",
 		"prettier-plugin-svelte": "^3.2.2",
