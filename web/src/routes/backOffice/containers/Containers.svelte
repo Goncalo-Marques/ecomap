@@ -1,5 +1,35 @@
 <script lang="ts">
+	import { onDestroy, onMount } from "svelte";
 	import { t } from "../../../lib/utils/i8n";
+	import Card from "../components/Card.svelte";
+	import ContainersTable from "./list/ContainersTable.svelte";
+	import containersStore, { initialFilters } from "./list/containersStore";
+
+	onMount(() => {
+		containersStore.fetchData();
+	});
+
+	onDestroy(() => {
+		// Reset containers filters to its initial state when component is destroyed.
+		containersStore.filters.set(initialFilters);
+	});
 </script>
 
-<main>{$t("sidebar.containers")}</main>
+<Card class="card">
+	<h1>{$t("sidebar.containers")}</h1>
+	<ContainersTable />
+</Card>
+
+<style>
+	:global(.card) {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 2.5rem;
+		margin: 2.5rem;
+	}
+
+	h1 {
+		font: var(--text-2xl-semibold);
+	}
+</style>

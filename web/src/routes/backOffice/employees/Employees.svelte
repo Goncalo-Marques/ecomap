@@ -1,6 +1,6 @@
 <!-- TODO: Replace the current page with the actual employee data -->
 <script lang="ts">
-	import type { ComponentProps } from "svelte";
+	import { onMount, type ComponentProps } from "svelte";
 	import Button from "../../../lib/components/Button.svelte";
 	import Table from "../../../lib/components/table/Table.svelte";
 	import type { Columns, Sorting } from "../../../lib/components/table/types";
@@ -12,8 +12,10 @@
 		components["parameters"]["UserSortQueryParam"]
 	>;
 
-	let usersPromise: Promise<User[]>;
+	let users: User[];
 	let usersAmount = 0;
+
+	let loading = false;
 
 	const pageSize = 1;
 
@@ -83,7 +85,9 @@
 		pageIndex: number,
 		pageSize: number,
 		sorting: Sorting<UserSortableFields>,
-	): Promise<User[]> {
+	) {
+		loading = true;
+
 		const res = await ecomapHttpClient.GET("/users", {
 			params: {
 				query: {
@@ -95,33 +99,39 @@
 			},
 		});
 
+		loading = false;
+
 		if (res.error) {
 			usersAmount = 0;
-			return [];
+			users = [];
+			return;
 		}
 
 		usersAmount = res.data.total;
-		return res.data.users;
+		users = res.data.users;
 	}
 
 	function handleSortingChange(newSorting: Sorting<UserSortableFields>) {
-		usersPromise = fetchUsers(pageIndex, pageSize, newSorting);
+		fetchUsers(pageIndex, pageSize, newSorting);
 		sorting = newSorting;
 	}
 
 	async function handlePageChange(newPageIndex: number) {
-		usersPromise = fetchUsers(newPageIndex, pageSize, sorting);
+		fetchUsers(newPageIndex, pageSize, sorting);
 		pageIndex = newPageIndex;
 	}
 
-	usersPromise = fetchUsers(pageIndex, pageSize, sorting);
+	onMount(() => {
+		fetchUsers(pageIndex, pageSize, sorting);
+	});
 </script>
 
 <main>
 	<Table
 		{columns}
 		{sorting}
-		rows={usersPromise}
+		{loading}
+		rows={users}
 		pagination={{
 			name: "users",
 			pageIndex,

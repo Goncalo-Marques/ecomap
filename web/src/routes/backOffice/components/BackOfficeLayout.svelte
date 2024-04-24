@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { navigate } from "svelte-routing";
-	import url from "../../../lib/utils/url";
+	import url from "../../../lib/stores/url";
 	import { BackOfficeRoutes, backOfficeBasename } from "../../constants/routes";
 	import SideBar from "./sidebar/SideBar.svelte";
 	import TopBar from "./topbar/TopBar.svelte";

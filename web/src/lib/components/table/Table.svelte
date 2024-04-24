@@ -2,6 +2,8 @@
 	lang="ts"
 	generics="TRow extends Record<string, unknown>, TSortableFields extends string"
 >
+	import { t } from "../../utils/i8n";
+
 	import Icon from "../Icon.svelte";
 	import {
 		getCell,
@@ -37,7 +39,13 @@
 	 * The rows to display in the table.
 	 * @default []
 	 */
-	export let rows: TRow[] | Promise<TRow[]> = [];
+	export let rows: TRow[] = [];
+
+	/**
+	 * Indicates if table is loading in data.
+	 * @default false
+	 */
+	export let loading: boolean = false;
 
 	/**
 	 * The sorting state of the table.
@@ -180,38 +188,36 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#await rows then rows}
-				{#each rows as row}
-					<tr>
-						{#each columns as column}
-							{@const cell = getCell(column, row)}
+			{#each rows as row}
+				<tr>
+					{#each columns as column}
+						{@const cell = getCell(column, row)}
 
-							<td
-								align={column.align}
-								style={getCellStyle(column)}
-								data-field={column.type === "accessor" ? column.field : null}
-							>
-								{#if typeof cell === "string"}
-									{cell}
-								{:else if cell.slotContent}
-									<svelte:component this={cell.component} {...cell.props}>
-										{cell.slotContent}
-									</svelte:component>
-								{:else}
-									<svelte:component this={cell.component} {...cell.props} />
-								{/if}
-							</td>
-						{/each}
-					</tr>
-				{/each}
-			{/await}
+						<td
+							align={column.align}
+							style={getCellStyle(column)}
+							data-field={column.type === "accessor" ? column.field : null}
+						>
+							{#if typeof cell === "string"}
+								{cell}
+							{:else if cell.slotContent}
+								<svelte:component this={cell.component} {...cell.props}>
+									{cell.slotContent}
+								</svelte:component>
+							{:else}
+								<svelte:component this={cell.component} {...cell.props} />
+							{/if}
+						</td>
+					{/each}
+				</tr>
+			{/each}
 		</tbody>
 	</table>
-	{#await rows}
+	{#if loading}
 		<div role="progressbar" class="loading">
 			<Icon name="progress_activity" size="xx-large" />
 		</div>
-	{/await}
+	{/if}
 	{#if pagination}
 		{@const start = pagination.pageSize * pagination.pageIndex + 1}
 		{@const end = pagination.pageSize * (pagination.pageIndex + 1)}
@@ -223,7 +229,9 @@
 				{start > pagination.total ? pagination.total : start}-{end >
 				pagination.total
 					? pagination.total
-					: end} of {pagination.total}
+					: end}
+				{$t("pagination.of")}
+				{pagination.total}
 				{pagination.name}
 			</span>
 

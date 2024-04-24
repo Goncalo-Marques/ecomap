@@ -57,13 +57,13 @@
 	export let label: string | null = null;
 </script>
 
-<label>
+<label class={className}>
 	{#if label}
 		{label}
 	{/if}
 	<input
 		{autocomplete}
-		class={`${error ? "error" : ""} ${className}`}
+		class={error ? "error" : ""}
 		{id}
 		{name}
 		{placeholder}

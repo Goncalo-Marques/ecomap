@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Link } from "svelte-routing";
 	import Icon from "../../../../lib/components/Icon.svelte";
-	import url from "../../../../lib/utils/url";
+	import url from "../../../../lib/stores/url";
 	import { t } from "../../../../lib/utils/i8n";
 	import { BackOfficeRoutes } from "../../../constants/routes";
 	import LocaleSelect from "./LocaleSelect.svelte";
