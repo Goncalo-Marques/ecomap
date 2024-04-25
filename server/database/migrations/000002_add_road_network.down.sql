@@ -8,3 +8,6 @@ DROP TABLE road_network_vertex;
 
 -- Road network.
 DROP TABLE road_network;
+
+-- Extension.
+DROP EXTENSION pg_trgm;

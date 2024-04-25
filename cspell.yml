@@ -52,6 +52,7 @@ ignoreWords:
   - temurin
   - testcontainers
   - transporthttp
+  - trgm
 ignorePaths:
   - "*.svg"
   - .golangci.yml
