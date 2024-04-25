@@ -11,36 +11,35 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
-// GetWayOSMByGeoJSON executes a query to return the identifier of the OpenStreetMap way that is closest to the given
-// geometry in the road network.
-func (s *store) GetWayOSMByGeoJSON(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (*int, error) {
+// GetRoadIDByGeometry executes a query to return the identifier of the road that is closest to the given geometry in
+// the road network.
+func (s *store) GetRoadIDByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (int, error) {
 	geoJSON, err := json.Marshal(geometry)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
+		return 0, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
 
 	row := tx.QueryRow(ctx, `
-		SELECT b.osm_id
+		SELECT rn.id
 		FROM pgr_findCloseEdges(
 			$$SELECT id, geom_way as geom FROM road_network$$,
 			ST_GeomFromGeoJSON($1),
 			0.5
 		) AS ce
-		INNER JOIN road_network AS rn 
-			ON ce.edge_id = rn.id
+		INNER JOIN road_network AS rn ON ce.edge_id = rn.id
 	`,
 		string(geoJSON),
 	)
 
-	var wayOSM *int
-	err = row.Scan(&wayOSM)
+	var id int
+	err = row.Scan(&id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, nil
+			return 0, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrRoadNotFound)
 		}
 
-		return nil, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+		return 0, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
 	}
 
-	return wayOSM, nil
+	return id, nil
 }

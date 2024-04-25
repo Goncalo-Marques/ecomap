@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	geoJSONFeaturePropertyWayOSM = "wayOsmId"
+	geoJSONFeaturePropertyWayName          = "wayName"
+	geoJSONFeaturePropertyMunicipalityName = "municipalityName"
 )
 
 // GeoJSONGeometry defines the GeoJSON feature interface.
@@ -61,32 +62,60 @@ func (g GeoJSONGeometryLineString) MarshalJSON() ([]byte, error) {
 // GeoJSONFeatureProperties defines the GeoJSON feature properties.
 type GeoJSONFeatureProperties map[string]any
 
-// WayOSM returns the identifier of the OpenStreetMap way.
-func (p GeoJSONFeatureProperties) WayOSM() *int {
+// WayName returns the name of the closest way to the geometry.
+func (p GeoJSONFeatureProperties) WayName() *string {
 	if p == nil {
 		return nil
 	}
 
-	value, ok := p[geoJSONFeaturePropertyWayOSM]
+	value, ok := p[geoJSONFeaturePropertyWayName]
 	if !ok {
 		return nil
 	}
 
-	valueInt, ok := value.(int)
+	valueString, ok := value.(string)
 	if !ok {
 		return nil
 	}
 
-	return &valueInt
+	return &valueString
 }
 
-// SetWayOSM sets the identifier of the OpenStreetMap way.
-func (p GeoJSONFeatureProperties) SetWayOSM(id int) {
+// SetWayName sets the name of the closest way to the geometry.
+func (p GeoJSONFeatureProperties) SetWayName(name string) {
 	if p == nil {
 		return
 	}
 
-	p[geoJSONFeaturePropertyWayOSM] = id
+	p[geoJSONFeaturePropertyWayName] = name
+}
+
+// MunicipalityName returns the name of the municipality containing the geometry.
+func (p GeoJSONFeatureProperties) MunicipalityName() *string {
+	if p == nil {
+		return nil
+	}
+
+	value, ok := p[geoJSONFeaturePropertyMunicipalityName]
+	if !ok {
+		return nil
+	}
+
+	valueString, ok := value.(string)
+	if !ok {
+		return nil
+	}
+
+	return &valueString
+}
+
+// SetMunicipalityName sets the name of the municipality containing the geometry.
+func (p GeoJSONFeatureProperties) SetMunicipalityName(name string) {
+	if p == nil {
+		return
+	}
+
+	p[geoJSONFeaturePropertyMunicipalityName] = name
 }
 
 // GeoJSONFeature defines the GeoJSON feature structure.

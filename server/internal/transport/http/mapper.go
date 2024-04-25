@@ -140,7 +140,8 @@ func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeatureP
 			Coordinates: geoJSONGeometry.Coordinates[:],
 		},
 		Properties: spec.GeoJSONFeatureProperties{
-			WayOsmId: geoJSONFeature.Properties.WayOSM(),
+			WayName:          geoJSONFeature.Properties.WayName(),
+			MunicipalityName: geoJSONFeature.Properties.MunicipalityName(),
 		},
 	}, nil
 }
@@ -190,7 +191,7 @@ func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
 		Role:          spec.EmployeeRole(employee.Role),
 		DateOfBirth:   dateFromTime(employee.DateOfBirth),
 		PhoneNumber:   employee.PhoneNumber,
-		GeoJSON:       geoJSON,
+		GeoJson:       geoJSON,
 		ScheduleStart: timeFromTime(employee.ScheduleStart),
 		ScheduleEnd:   timeFromTime(employee.ScheduleEnd),
 		CreatedAt:     employee.CreatedAt,

@@ -16,7 +16,9 @@ const (
 
 // Common errors.
 var (
-	ErrCredentialsIncorrect = errors.New("incorrect credentials") // Returned when a username is not found or the password is incorrect.
+	ErrCredentialsIncorrect = errors.New("incorrect credentials")  // Returned when a username is not found or the password is incorrect.
+	ErrRoadNotFound         = errors.New("road not found")         // Returned when a road is not found.
+	ErrMunicipalityNotFound = errors.New("municipality not found") // Returned when a municipality is not found.
 )
 
 // Returned when a field contains an invalid value.
