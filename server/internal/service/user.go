@@ -313,12 +313,12 @@ func (s *service) DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		err = s.store.DeleteUserByID(ctx, tx, id)
+		user, err = s.store.GetUserByID(ctx, tx, id)
 		if err != nil {
 			return err
 		}
 
-		user, err = s.store.GetUserByID(ctx, tx, id)
+		err = s.store.DeleteUserByID(ctx, tx, id)
 		if err != nil {
 			return err
 		}
