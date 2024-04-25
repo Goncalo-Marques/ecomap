@@ -68,8 +68,8 @@ func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (d
 	row := tx.QueryRow(ctx, `
 		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, ST_AsGeoJSON(e.geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
 		FROM employees AS e
-		INNER JOIN road_network AS rn ON e.road_id = rn.id
-		INNER JOIN municipalities AS m ON e.municipality_id = m.id
+		LEFT JOIN road_network AS rn ON e.road_id = rn.id
+		LEFT JOIN municipalities AS m ON e.municipality_id = m.id
 		WHERE e.id = $1 
 	`,
 		id,
@@ -92,8 +92,8 @@ func (s *store) GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username d
 	row := tx.QueryRow(ctx, `
 		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, ST_AsGeoJSON(e.geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
 		FROM employees AS e
-		INNER JOIN road_network AS rn ON e.road_id = rn.id
-		INNER JOIN municipalities AS m ON e.municipality_id = m.id
+		LEFT JOIN road_network AS rn ON e.road_id = rn.id
+		LEFT JOIN municipalities AS m ON e.municipality_id = m.id
 		WHERE e.username = $1 
 	`,
 		username,
