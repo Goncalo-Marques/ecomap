@@ -66,7 +66,7 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 // GetEmployeeByID executes a query to return the employee with the specified identifier.
 func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, e.ST_AsGeoJSON(geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
+		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, ST_AsGeoJSON(e.geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
 		FROM employees AS e
 		INNER JOIN road_network AS rn ON e.road_id = rn.id
 		INNER JOIN municipalities AS m ON e.municipality_id = m.id
@@ -90,7 +90,7 @@ func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (d
 // GetEmployeeByUsername executes a query to return the employee with the specified username.
 func (s *store) GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, e.ST_AsGeoJSON(geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
+		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, ST_AsGeoJSON(e.geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
 		FROM employees AS e
 		INNER JOIN road_network AS rn ON e.road_id = rn.id
 		INNER JOIN municipalities AS m ON e.municipality_id = m.id
