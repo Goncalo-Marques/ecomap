@@ -32,7 +32,7 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 
 	row := tx.QueryRow(ctx, `
 		INSERT INTO employees (username, password, first_name, last_name, role, date_of_birth, phone_number, geom, road_id, municipality_id, schedule_start, schedule_end)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, ST_GeomFromGeoJSON($8), $9, $10, $11, $12, $13) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7, ST_GeomFromGeoJSON($8), $9, $10, $11, $12) 
 		RETURNING id
 	`,
 		editableEmployee.Username,
