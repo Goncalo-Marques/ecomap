@@ -11,31 +11,41 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
-// GetMunicipalityIDByGeometry executes a query to return the identifier of the municipality that is closest to the
-// given geometry.
-func (s *store) GetMunicipalityIDByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (int, error) {
+// GetMunicipalityByGeometry executes a query to return the municipality that is closest to the given geometry.
+func (s *store) GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error) {
 	geoJSON, err := json.Marshal(geometry)
 	if err != nil {
-		return 0, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
+		return domain.Municipality{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
 
 	row := tx.QueryRow(ctx, `
-		SELECT id
+		SELECT id, fid, name, district, nutsiii, nutsii, nutsi, area_ha, perimeter_km
 		FROM municipalities
 		WHERE ST_Within(ST_GeomFromGeoJSON($1), geom)
 	`,
 		string(geoJSON),
 	)
 
-	var id int
-	err = row.Scan(&id)
+	var municipality domain.Municipality
+
+	err = row.Scan(
+		&municipality.ID,
+		&municipality.FeatureID,
+		&municipality.Name,
+		&municipality.District,
+		&municipality.NUTS3,
+		&municipality.NUTS2,
+		&municipality.NUTS1,
+		&municipality.Area,
+		&municipality.Perimeter,
+	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return 0, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrMunicipalityNotFound)
+			return domain.Municipality{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrMunicipalityNotFound)
 		}
 
-		return 0, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+		return domain.Municipality{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
 	}
 
-	return id, nil
+	return municipality, nil
 }
