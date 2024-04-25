@@ -47,6 +47,9 @@ func notFound(w http.ResponseWriter, message string) {
 }
 
 // conflict writes an error response and sets the header with the conflict status code.
+// TODO: remove this when unnecessary
+//
+//nolint:unparam
 func conflict(w http.ResponseWriter, message string) {
 	_ = fault(w, http.StatusConflict, spec.ErrorCodeConflict, &message)
 }
