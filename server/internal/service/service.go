@@ -43,14 +43,14 @@ type AuthenticationService interface {
 
 // Store defines the store interface.
 type Store interface {
-	CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (domain.User, error)
+	CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (uuid.UUID, error)
 	ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error)
 	GetUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
 	GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error)
 	GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
-	PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error)
+	PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) error
 	UpdateUserPassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
-	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
+	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error)
