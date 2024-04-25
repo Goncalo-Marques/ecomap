@@ -46,19 +46,19 @@ CREATE TRIGGER users_update_modified_at
 CREATE TYPE employees_role AS ENUM ('waste_operator', 'manager');
 
 CREATE TABLE employees (
-    id              uuid            NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    username        varchar(50)     NOT NULL,
-    password        varchar(60)     NOT NULL,
-    first_name      varchar(50)     NOT NULL,
-    last_name       varchar(50)     NOT NULL,
-    role            employees_role  NOT NULL,
-    date_of_birth   date            NOT NULL,
-    phone_number    varchar(20)     NOT NULL,
-    geom            geometry        NOT NULL,
-    schedule_start  time            NOT NULL,
-    schedule_end    time            NOT NULL,
-    created_at      timestamp       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_at     timestamp       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id              uuid                    NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    username        varchar(50)             NOT NULL,
+    password        varchar(60)             NOT NULL,
+    first_name      varchar(50)             NOT NULL,
+    last_name       varchar(50)             NOT NULL,
+    role            employees_role          NOT NULL,
+    date_of_birth   date                    NOT NULL,
+    phone_number    varchar(20)             NOT NULL,
+    geom            geometry('POINT', 4326) NOT NULL,
+    schedule_start  time                    NOT NULL,
+    schedule_end    time                    NOT NULL,
+    created_at      timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT employees_pkey           PRIMARY KEY (id),
     CONSTRAINT employees_username_key   UNIQUE (username)
 );
@@ -77,11 +77,11 @@ CREATE TRIGGER employees_update_modified_at
 CREATE TYPE containers_category AS ENUM ('general', 'paper', 'plastic', 'metal', 'glass', 'organic', 'hazardous');
 
 CREATE TABLE containers (
-    id          uuid                NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    category    containers_category NOT NULL,
-    geom        geometry            NOT NULL,
-    created_at  timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_at timestamp           NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id          uuid                    NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    category    containers_category     NOT NULL,
+    geom        geometry('POINT', 4326) NOT NULL,
+    created_at  timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT containers_pkey  PRIMARY KEY (id)
 );
 
@@ -147,11 +147,11 @@ CREATE TRIGGER trucks_update_modified_at
 
 -- Warehouses.
 CREATE TABLE warehouses (
-    id              uuid        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    geom            geometry    NOT NULL,
-    truck_capacity  integer     NOT NULL,
-    created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_at     timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id              uuid                    NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    geom            geometry('POINT', 4326) NOT NULL,
+    truck_capacity  integer                 NOT NULL,
+    created_at      timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT warehouses_pkey                          PRIMARY KEY (id),
     CONSTRAINT warehouses_truck_capacity_positive_check CHECK (truck_capacity > 0)
 );
