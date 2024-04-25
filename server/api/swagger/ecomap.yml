@@ -1153,8 +1153,6 @@ components:
           $ref: "#/components/schemas/Name"
         lastName:
           $ref: "#/components/schemas/Name"
-        role:
-          $ref: "#/components/schemas/EmployeeRole"
         dateOfBirth:
           $ref: "#/components/schemas/Date"
         phoneNumber:
