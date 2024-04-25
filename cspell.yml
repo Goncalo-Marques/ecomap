@@ -53,6 +53,7 @@ ignoreWords:
   - temurin
   - testcontainers
   - transporthttp
+  - trgm
   - unparam
 ignorePaths:
   - "*.svg"
