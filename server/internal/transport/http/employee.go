@@ -195,12 +195,20 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
 	}
 
+	var role domain.EmployeeRole
+	switch employeePost.Role {
+	case spec.WasteOperator:
+		role = domain.EmployeeRoleWasteOperator
+	case spec.Manager:
+		role = domain.EmployeeRoleManager
+	}
+
 	return domain.EditableEmployeeWithPassword{
 		EditableEmployee: domain.EditableEmployee{
 			Username:    domain.Username(employeePost.Username),
 			FirstName:   domain.Name(employeePost.FirstName),
 			LastName:    domain.Name(employeePost.LastName),
-			Role:        domain.EmployeeRole(employeePost.Role),
+			Role:        role,
 			DateOfBirth: employeePost.DateOfBirth.Time,
 			PhoneNumber: domain.PhoneNumber(employeePost.PhoneNumber),
 			GeoJSON: domain.GeoJSONFeature{
