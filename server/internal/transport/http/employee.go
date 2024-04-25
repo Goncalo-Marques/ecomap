@@ -185,14 +185,6 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
 	}
 
-	geoJSONProperties := make(domain.GeoJSONFeatureProperties)
-	if employeePost.GeoJson.Properties.WayName != nil {
-		geoJSONProperties.SetWayName(*employeePost.GeoJson.Properties.WayName)
-	}
-	if employeePost.GeoJson.Properties.MunicipalityName != nil {
-		geoJSONProperties.SetMunicipalityName(*employeePost.GeoJson.Properties.MunicipalityName)
-	}
-
 	ScheduleStart, err := timeStringToTime(employeePost.ScheduleStart)
 	if err != nil {
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleStart}
@@ -215,7 +207,6 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 				Geometry: domain.GeoJSONGeometryPoint{
 					Coordinates: [2]float64(employeePost.GeoJson.Geometry.Coordinates),
 				},
-				Properties: geoJSONProperties,
 			},
 			ScheduleStart: ScheduleStart,
 			ScheduleEnd:   ScheduleEnd,
