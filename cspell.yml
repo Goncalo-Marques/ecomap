@@ -8,6 +8,7 @@ ignoreWords:
   - appcompat
   - Avenir
   - buildx
+  - clazz
   - cloudrun
   - codegen
   - Compat
@@ -26,7 +27,11 @@ ignoreWords:
   - jackc
   - ldflags
   - libboost
+  - LINESTRING
   - mipmap
+  - nutsi
+  - nutsii
+  - nutsiii
   - oapi
   - oapitypes
   - openapi
