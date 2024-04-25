@@ -12,9 +12,9 @@ ALTER TABLE road_network ADD CONSTRAINT road_network_pkey PRIMARY KEY(id);
 CREATE INDEX road_network_source_idx ON road_network(source);
 CREATE INDEX road_network_target_idx ON road_network(target);
 CREATE INDEX road_network_osm_source_id_idx ON road_network(osm_source_id);
-CREATE INDEX road_network_geom_way_idx ON road_network USING GIST (geom_way);
+CREATE INDEX road_network_geom_way_idx ON road_network USING gist (geom_way);
 CREATE INDEX road_network_osm_target_id_idx ON road_network(osm_target_id);
-CREATE INDEX road_network_osm_name_idx ON road_network USING GIN (osm_name gin_trgm_ops);
+CREATE INDEX road_network_osm_name_idx ON road_network USING gin (osm_name gin_trgm_ops);
 
 -- Road network vertex.
 CREATE TABLE road_network_vertex(id integer, clazz integer, osm_id bigint, osm_name character varying, ref_count integer, restrictions character varying);
@@ -22,7 +22,7 @@ SELECT AddGeometryColumn('road_network_vertex', 'geom_vertex', 4326, 'POINT', 2)
 
 ALTER TABLE road_network_vertex ADD CONSTRAINT road_network_vertex_pkey PRIMARY KEY(id);
 CREATE INDEX road_network_vertex_osm_id_idx ON road_network_vertex(osm_id);
-CREATE INDEX road_network_vertex_geom_vertex_idx ON road_network_vertex USING GIST (geom_vertex);
+CREATE INDEX road_network_vertex_geom_vertex_idx ON road_network_vertex USING gist (geom_vertex);
 
 -- Road network foreign keys.
 ALTER TABLE employees ADD road_id integer;

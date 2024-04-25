@@ -17,7 +17,7 @@ CREATE TABLE municipalities (
 );
 
 CREATE INDEX municipalities_geom_idx ON municipalities USING gist (geom);
-CREATE INDEX municipalities_name_idx ON municipalities USING GIN (name gin_trgm_ops);
+CREATE INDEX municipalities_name_idx ON municipalities USING gin (name gin_trgm_ops);
 
 -- Municipalities foreign keys.
 ALTER TABLE employees ADD municipality_id integer;
