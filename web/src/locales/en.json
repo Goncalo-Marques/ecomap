@@ -1,7 +1,13 @@
 {
 	"$schema": "./schema.json",
 	"pagination.of": "of",
+	"createdAt": "Created at",
+	"modifiedAt": "Modified at",
+	"generalInfo": "General info",
+	"additionalInfo": "Additional info",
 	"containers.title": "Containers",
+	"containers.notFound.title": "Container not found",
+	"containers.notFound.description": "The container you are looking for does not exist.",
 	"containers.category": "Category",
 	"containers.location": "Location",
 	"containers.category.general": "General",

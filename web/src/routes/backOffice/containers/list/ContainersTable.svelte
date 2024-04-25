@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { ComponentProps } from "svelte";
 	import type {
 		Container,
 		ContainerSortableFields,
@@ -12,6 +13,7 @@
 	import { MISSING_VALUE_SYMBOL } from "../../../../lib/constants/symbols";
 	import { t } from "../../../../lib/utils/i8n";
 	import containersStore from "./containersStore";
+	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
 
 	const { loading, data, filters } = containersStore;
 
@@ -33,6 +35,22 @@
 			cell() {
 				// TODO: Display address of the container.
 				return MISSING_VALUE_SYMBOL;
+			},
+		},
+		{
+			type: "display",
+			header: "",
+			align: "center",
+			size: 120,
+			cell(row) {
+				const props: ComponentProps<TableDetailsAction> = {
+					id: row.id,
+				};
+
+				return {
+					component: TableDetailsAction,
+					props,
+				};
 			},
 		},
 	];
