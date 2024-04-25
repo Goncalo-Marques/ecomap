@@ -62,8 +62,17 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 	var user domain.User
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		user, err = s.store.CreateUser(ctx, tx, editableUser)
-		return err
+		id, err := s.store.CreateUser(ctx, tx, editableUser)
+		if err != nil {
+			return err
+		}
+
+		user, err = s.store.GetUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 	if err != nil {
 		switch {
@@ -171,8 +180,17 @@ func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser doma
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		user, err = s.store.PatchUser(ctx, tx, id, editableUser)
-		return err
+		err = s.store.PatchUser(ctx, tx, id, editableUser)
+		if err != nil {
+			return err
+		}
+
+		user, err = s.store.GetUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 	if err != nil {
 		switch {
@@ -295,8 +313,17 @@ func (s *service) DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		user, err = s.store.DeleteUserByID(ctx, tx, id)
-		return err
+		err = s.store.DeleteUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		user, err = s.store.GetUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 	if err != nil {
 		switch {

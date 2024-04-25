@@ -18,11 +18,11 @@ const (
 )
 
 // CreateUser executes a query to create a user with the specified data.
-func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (domain.User, error) {
+func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (uuid.UUID, error) {
 	row := tx.QueryRow(ctx, `
 		INSERT INTO users (username, password, first_name, last_name)
 		VALUES ($1, $2, $3, $4) 
-		RETURNING id, username, first_name, last_name, created_at, modified_at
+		RETURNING id
 	`,
 		editableUser.Username,
 		editableUser.Password,
@@ -30,16 +30,18 @@ func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.E
 		editableUser.LastName,
 	)
 
-	user, err := getUserFromRow(row)
+	var id uuid.UUID
+
+	err := row.Scan(&id)
 	if err != nil {
 		if getConstraintName(err) == constraintUsersUsernameKey {
-			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserAlreadyExists)
+			return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserAlreadyExists)
 		}
 
-		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
 	}
 
-	return user, nil
+	return id, nil
 }
 
 // ListUsers executes a query to return the users for the specified filter.
@@ -233,34 +235,32 @@ func (s *store) GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Us
 }
 
 // PatchUser executes a query to patch a user with the specified identifier and data.
-func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error) {
-	row := tx.QueryRow(ctx, `
+func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) error {
+	commandTag, err := tx.Exec(ctx, `
 		UPDATE users SET
 			username = coalesce($2, username),
 			first_name = coalesce($3, first_name),
 			last_name = coalesce($4, last_name)
 		WHERE id = $1
-		RETURNING id, username, first_name, last_name, created_at, modified_at
 	`,
 		id,
 		editableUser.Username,
 		editableUser.FirstName,
 		editableUser.LastName,
 	)
-
-	user, err := getUserFromRow(row)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserNotFound)
-		}
 		if getConstraintName(err) == constraintUsersUsernameKey {
-			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserAlreadyExists)
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserAlreadyExists)
 		}
 
-		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
 	}
 
-	return user, nil
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserNotFound)
+	}
+
+	return nil
 }
 
 // UpdateUserPassword executes a query to update the password of the user with the specified username.
@@ -285,25 +285,22 @@ func (s *store) UpdateUserPassword(ctx context.Context, tx pgx.Tx, username doma
 }
 
 // DeleteUserByID executes a query to delete the user with the specified identifier.
-func (s *store) DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error) {
-	row := tx.QueryRow(ctx, `
+func (s *store) DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error {
+	commandTag, err := tx.Exec(ctx, `
 		DELETE FROM users
 		WHERE id = $1
-		RETURNING id, username, first_name, last_name, created_at, modified_at
 	`,
 		id,
 	)
-
-	user, err := getUserFromRow(row)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserNotFound)
-		}
-
-		return domain.User{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
 	}
 
-	return user, nil
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserNotFound)
+	}
+
+	return nil
 }
 
 // getUserFromRow returns the user by scanning the given row.
