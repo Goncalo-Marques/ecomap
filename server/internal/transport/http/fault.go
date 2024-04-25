@@ -9,10 +9,15 @@ import (
 
 // Common fault messages.
 const (
-	errRequestBodyInvalid   = "invalid request body"
-	errFieldValueInvalid    = "invalid field value"
-	errFilterValueInvalid   = "invalid filter value"
-	errCredentialsIncorrect = "incorrect credentials"
+	errAuthorizationHeaderInvalid = "invalid authorization header"
+	errJWTInvalid                 = "invalid jwt"
+	errRolesInvalid               = "invalid subject roles"
+	errAuthorizationInvalid       = "unauthorized subject"
+	errParamInvalidFormat         = "invalid parameter format"
+	errRequestBodyInvalid         = "invalid request body"
+	errFieldValueInvalid          = "invalid field value"
+	errFilterValueInvalid         = "invalid filter value"
+	errCredentialsIncorrect       = "incorrect credentials"
 )
 
 // Common fault descriptions.

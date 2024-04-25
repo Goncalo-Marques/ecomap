@@ -1,5 +1,5 @@
 database:
-  url: postgres://postgres:postgres@localhost:5432/ecomap?sslmode=disable
+  url: postgres://postgres:postgres@database:5432/ecomap?sslmode=disable
   migrations:
     apply: true
     version: 3

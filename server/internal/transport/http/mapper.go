@@ -30,9 +30,14 @@ func dateFromTime(time time.Time) oapitypes.Date {
 	}
 }
 
-// timeFromTime returns a standardized time based on the time model.
-func timeFromTime(time time.Time) string {
+// timeStringFromTime returns a standardized time based on the time model.
+func timeStringFromTime(time time.Time) string {
 	return time.UTC().Format(timeFormatTimeOnly)
+}
+
+// timeStringToTime returns a time structure based on the standardized time model.
+func timeStringToTime(timeString string) (time.Time, error) {
+	return time.Parse(timeFormatTimeOnly, timeString)
 }
 
 // jwtFromJWTToken returns a standardized JWT based on the JWT token.
@@ -79,48 +84,6 @@ func paginatedRequestToDomain[T any](limit *spec.LimitQueryParam, offset *spec.O
 	}
 }
 
-// userPostToDomainEditableUserWithPassword returns a domain editable user with password based on the standardized user
-// post.
-func userPostToDomainEditableUserWithPassword(userPost spec.UserPost) domain.EditableUserWithPassword {
-	return domain.EditableUserWithPassword{
-		EditableUser: domain.EditableUser{
-			Username:  domain.Username(userPost.Username),
-			FirstName: domain.Name(userPost.FirstName),
-			LastName:  domain.Name(userPost.LastName),
-		},
-		Password: domain.Password(userPost.Password),
-	}
-}
-
-// userPatchToDomainEditableUserPatch returns a domain patchable user based on the standardized user patch.
-func userPatchToDomainEditableUserPatch(userPatch spec.UserPatch) domain.EditableUserPatch {
-	return domain.EditableUserPatch{
-		Username:  (*domain.Username)(userPatch.Username),
-		FirstName: (*domain.Name)(userPatch.FirstName),
-		LastName:  (*domain.Name)(userPatch.LastName),
-	}
-}
-
-// listUsersParamsToDomainUsersPaginatedFilter returns a domain users paginated filter based on the standardized list users parameters.
-func listUsersParamsToDomainUsersPaginatedFilter(params spec.ListUsersParams) domain.UsersPaginatedFilter {
-	var domainSort domain.PaginationSort[domain.UserPaginatedSort]
-	if params.Sort != nil {
-		domainSort = domain.UserPaginatedSort(*params.Sort)
-	}
-
-	return domain.UsersPaginatedFilter{
-		PaginatedRequest: paginatedRequestToDomain(
-			params.Limit,
-			params.Offset,
-			(*spec.OrderQueryParam)(params.Order),
-			domainSort,
-		),
-		Username:  (*domain.Username)(params.Username),
-		FirstName: (*domain.Name)(params.FirstName),
-		LastName:  (*domain.Name)(params.LastName),
-	}
-}
-
 // geoJSONFeaturePointFromDomain returns standardized GeoJSON feature point based on the domain model.
 func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeaturePoint, error) {
 	geoJSONFeature, ok := geoJSON.(domain.GeoJSONFeature)
@@ -143,58 +106,5 @@ func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeatureP
 			WayName:          geoJSONFeature.Properties.WayName(),
 			MunicipalityName: geoJSONFeature.Properties.MunicipalityName(),
 		},
-	}, nil
-}
-
-// userFromDomain returns a standardized user based on the domain model.
-func userFromDomain(user domain.User) spec.User {
-	return spec.User{
-		Id:         user.ID,
-		Username:   string(user.Username),
-		FirstName:  string(user.FirstName),
-		LastName:   string(user.LastName),
-		CreatedAt:  user.CreatedAt,
-		ModifiedAt: user.ModifiedAt,
-	}
-}
-
-// usersFromDomain returns standardized users based on the domain model.
-func usersFromDomain(users []domain.User) []spec.User {
-	specUsers := make([]spec.User, len(users))
-	for i, user := range users {
-		specUsers[i] = userFromDomain(user)
-	}
-
-	return specUsers
-}
-
-// usersPaginatedFromDomain returns a standardized users paginated response based on the domain model.
-func usersPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.User]) spec.UsersPaginated {
-	return spec.UsersPaginated{
-		Total: paginatedResponse.Total,
-		Users: usersFromDomain(paginatedResponse.Results),
-	}
-}
-
-// employeeFromDomain returns a standardized employee based on the domain model.
-func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
-	geoJSON, err := geoJSONFeaturePointFromDomain(employee.GeoJSON)
-	if err != nil {
-		return spec.Employee{}, err
-	}
-
-	return spec.Employee{
-		Id:            employee.ID,
-		Username:      string(employee.Username),
-		FirstName:     string(employee.FirstName),
-		LastName:      string(employee.LastName),
-		Role:          spec.EmployeeRole(employee.Role),
-		DateOfBirth:   dateFromTime(employee.DateOfBirth),
-		PhoneNumber:   employee.PhoneNumber,
-		GeoJson:       geoJSON,
-		ScheduleStart: timeFromTime(employee.ScheduleStart),
-		ScheduleEnd:   timeFromTime(employee.ScheduleEnd),
-		CreatedAt:     employee.CreatedAt,
-		ModifiedAt:    employee.ModifiedAt,
 	}, nil
 }

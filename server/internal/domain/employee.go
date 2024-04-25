@@ -22,6 +22,17 @@ const (
 	EmployeeRoleManager       EmployeeRole = "manager"
 )
 
+// Valid returns true if the role is valid, false otherwise.
+func (r EmployeeRole) Valid() bool {
+	switch r {
+	case EmployeeRoleWasteOperator,
+		EmployeeRoleManager:
+		return true
+	default:
+		return false
+	}
+}
+
 // EditableEmployee defines the editable employee structure.
 type EditableEmployee struct {
 	Username      Username
@@ -29,7 +40,7 @@ type EditableEmployee struct {
 	LastName      Name
 	Role          EmployeeRole
 	DateOfBirth   time.Time
-	PhoneNumber   string
+	PhoneNumber   PhoneNumber
 	GeoJSON       GeoJSON
 	ScheduleStart time.Time
 	ScheduleEnd   time.Time

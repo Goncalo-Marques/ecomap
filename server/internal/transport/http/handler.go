@@ -33,12 +33,6 @@ const (
 const (
 	requestHeaderKeyAccept       = "Accept"
 	requestHeaderValueAcceptHTML = "text/html"
-
-	errAuthorizationHeaderInvalid = "invalid authorization header"
-	errJWTInvalid                 = "invalid jwt"
-	errRolesInvalid               = "invalid subject roles"
-	errAuthorizationInvalid       = "unauthorized subject"
-	errParamInvalidFormat         = "invalid parameter format"
 )
 
 // AuthorizationService defines the authorization service interface.
@@ -57,6 +51,7 @@ type Service interface {
 	DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User, error)
 	SignInUser(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 
+	CreateEmployee(ctx context.Context, editableEmployee domain.EditableEmployeeWithPassword) (domain.Employee, error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 	SignInEmployee(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 }

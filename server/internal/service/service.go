@@ -14,17 +14,6 @@ import (
 )
 
 const (
-	fieldUsername    = "username"
-	fieldPassword    = "password"
-	fieldNewPassword = "newPassword"
-	fieldFirstName   = "firstName"
-	fieldLastName    = "lastName"
-
-	filterLimit  = "limit"
-	filterOffset = "offset"
-	filterSort   = "sort"
-	filterOrder  = "order"
-
 	descriptionInvalidFieldValue       = "service: invalid field value"
 	descriptionInvalidFilterValue      = "service: invalid filter value"
 	descriptionFailedHashPassword      = "service: failed to hash password"
@@ -52,9 +41,13 @@ type Store interface {
 	UpdateUserPassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
 	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
+	CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error)
 	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
+
+	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 
 	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)
 }
@@ -130,4 +123,9 @@ func logAndWrapError(ctx context.Context, err error, description string, logAttr
 // replaceSpacesWithHyphen returns s with no extra spaces and separates it with a hyphen.
 func replaceSpacesWithHyphen(s string) string {
 	return strings.Join(strings.Fields(s), "-")
+}
+
+// removeExtraSpaces returns s with no extra spaces.
+func removeExtraSpaces(s string) string {
+	return strings.Join(strings.Fields(s), " ")
 }

@@ -17,31 +17,23 @@ const (
 )
 
 // CreateEmployee executes a query to create an employee with the specified data.
-func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword) (domain.Employee, error) {
-	var feature domain.GeoJSONFeature
-	if f, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-		feature = f
-	}
-
+func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error) {
 	var geometry domain.GeoJSONGeometryPoint
-	if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-		geometry = g
+	if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
+		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
+			geometry = g
+		}
 	}
 
 	geoJSON, err := json.Marshal(geometry)
 	if err != nil {
-		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
-	}
-
-	wayOSM, err := s.GetWayOSMByGeoJSON(ctx, tx, geometry)
-	if err != nil {
-		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedGetWayOSM, err)
+		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
 
 	row := tx.QueryRow(ctx, `
-		INSERT INTO employees (username, password, first_name, last_name, role, date_of_birth, phone_number, geom, way_osm_id, schedule_start, schedule_end)
+		INSERT INTO employees (username, password, first_name, last_name, role, date_of_birth, phone_number, geom, road_id, municipality_id, schedule_start, schedule_end)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, ST_GeomFromGeoJSON($8), $9, $10, $11, $12, $13) 
-		RETURNING id, username, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom)::jsonb, way_osm_id, schedule_start, schedule_end, created_at, modified_at 
+		RETURNING id
 	`,
 		editableEmployee.Username,
 		editableEmployee.Password,
@@ -51,29 +43,34 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 		editableEmployee.DateOfBirth,
 		editableEmployee.PhoneNumber,
 		geoJSON,
-		wayOSM,
+		roadID,
+		municipalityID,
 		editableEmployee.ScheduleStart,
 		editableEmployee.ScheduleEnd,
 	)
 
-	employee, err := getEmployeeFromRow(row)
+	var id uuid.UUID
+
+	err = row.Scan(&id)
 	if err != nil {
 		if getConstraintName(err) == constraintEmployeesUsernameKey {
-			return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrEmployeeAlreadyExists)
+			return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrEmployeeAlreadyExists)
 		}
 
-		return domain.Employee{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
 	}
 
-	return employee, nil
+	return id, nil
 }
 
 // GetEmployeeByID executes a query to return the employee with the specified identifier.
 func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT id, username, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom)::jsonb, way_osm_id, schedule_start, schedule_end, created_at, modified_at 
-		FROM employees 
-		WHERE id = $1 
+		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, e.ST_AsGeoJSON(geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
+		FROM employees AS e
+		INNER JOIN road_network AS rn ON e.road_id = rn.id
+		INNER JOIN municipalities AS m ON e.municipality_id = m.id
+		WHERE e.id = $1 
 	`,
 		id,
 	)
@@ -93,9 +90,11 @@ func (s *store) GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (d
 // GetEmployeeByUsername executes a query to return the employee with the specified username.
 func (s *store) GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT id, username, first_name, last_name, role, date_of_birth, phone_number, ST_AsGeoJSON(geom)::jsonb, way_osm_id, schedule_start, schedule_end, created_at, modified_at 
-		FROM employees 
-		WHERE username = $1 
+		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, e.ST_AsGeoJSON(geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
+		FROM employees AS e
+		INNER JOIN road_network AS rn ON e.road_id = rn.id
+		INNER JOIN municipalities AS m ON e.municipality_id = m.id
+		WHERE e.username = $1 
 	`,
 		username,
 	)
@@ -142,7 +141,8 @@ func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domai
 func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	var employee domain.Employee
 	var geoJSONPoint domain.GeoJSONGeometryPoint
-	var wayOSM *int
+	var wayName *string
+	var municipalityName *string
 
 	err := row.Scan(
 		&employee.ID,
@@ -153,7 +153,8 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 		&employee.DateOfBirth,
 		&employee.PhoneNumber,
 		&geoJSONPoint,
-		&wayOSM,
+		&wayName,
+		&municipalityName,
 		&employee.ScheduleStart,
 		&employee.ScheduleEnd,
 		&employee.CreatedAt,
@@ -164,8 +165,11 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	}
 
 	geoJSONProperties := make(domain.GeoJSONFeatureProperties)
-	if wayOSM != nil {
-		geoJSONProperties.SetWayOSM(*wayOSM)
+	if wayName != nil {
+		geoJSONProperties.SetWayName(*wayName)
+	}
+	if municipalityName != nil {
+		geoJSONProperties.SetMunicipalityName(*municipalityName)
 	}
 
 	employee.GeoJSON = domain.GeoJSONFeature{

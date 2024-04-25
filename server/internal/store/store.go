@@ -23,7 +23,6 @@ const (
 	descriptionFailedScanRow        = "store: failed to scan row"
 	descriptionFailedScanRows       = "store: failed to scan rows"
 	descriptionFailedMarshalGeoJSON = "store: failed to marshal geojson"
-	descriptionFailedGetWayOSM      = "store: failed to get way osm id"
 )
 
 // migrationsURL defines the source url of the migrations.
