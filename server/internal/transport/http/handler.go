@@ -55,6 +55,7 @@ type Service interface {
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 	PatchEmployee(ctx context.Context, id uuid.UUID, editableEmployee domain.EditableEmployeePatch) (domain.Employee, error)
 	UpdateEmployeePassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error
+	ResetEmployeePassword(ctx context.Context, username domain.Username, newPassword domain.Password) error
 	DeleteEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 	SignInEmployee(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 }

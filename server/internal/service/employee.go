@@ -317,6 +317,42 @@ func (s *service) UpdateEmployeePassword(ctx context.Context, username domain.Us
 	return nil
 }
 
+// ResetEmployeePassword resets the password of the employee with the specified username.
+func (s *service) ResetEmployeePassword(ctx context.Context, username domain.Username, newPassword domain.Password) error {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "ResetEmployeePassword"),
+		slog.String(logging.EmployeeUsername, string(username)),
+	}
+
+	username = domain.Username(strings.ToLower(string(username)))
+
+	if !s.authnService.ValidPassword([]byte(newPassword)) {
+		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
+	}
+
+	hashedPassword, err := s.authnService.HashPassword([]byte(newPassword))
+	if err != nil {
+		return logAndWrapError(ctx, err, descriptionFailedHashPassword, logAttrs...)
+	}
+
+	newPassword = domain.Password(hashedPassword)
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		err = s.store.UpdateEmployeePassword(ctx, tx, username, newPassword)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrEmployeeNotFound):
+			return logInfoAndWrapError(ctx, err, descriptionFailedUpdateEmployeePassword, logAttrs...)
+		default:
+			return logAndWrapError(ctx, err, descriptionFailedUpdateEmployeePassword, logAttrs...)
+		}
+	}
+
+	return nil
+}
+
 // DeleteEmployeeByID deletes the employee with the specified identifier.
 func (s *service) DeleteEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error) {
 	logAttrs := []any{
