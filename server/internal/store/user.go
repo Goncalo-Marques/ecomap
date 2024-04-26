@@ -68,7 +68,12 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPag
 			filterFields[i] = field + " ILIKE '%%' || $%d || '%%'"
 		}
 
-		sqlWhere = " WHERE " + strings.Join(filterFields, " AND ")
+		logicalOperator := " AND "
+		if filter.LogicalOperator == domain.PaginationLogicalOperatorOr {
+			logicalOperator = " OR "
+		}
+
+		sqlWhere = " WHERE " + strings.Join(filterFields, logicalOperator)
 	}
 
 	// Format the where sql parameters.

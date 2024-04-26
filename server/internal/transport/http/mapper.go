@@ -11,9 +11,10 @@ import (
 )
 
 const (
+	logicalOperatorDefaultValue  = spec.LogicalOperatorQueryParamAnd
+	orderDefaultValue            = spec.OrderQueryParamAsc
 	paginationLimitDefaultValue  = 100
 	paginationOffsetDefaultValue = 0
-	orderDefaultValue            = spec.OrderQueryParamAsc
 
 	timeFormatTimeOnly = "15:04:05"
 )
@@ -47,6 +48,24 @@ func jwtFromJWTToken(token string) spec.JWT {
 	}
 }
 
+// logicalOperatorToDomain returns a domain logical operator based on the standardized query parameter model.
+func logicalOperatorToDomain(logicalOperator *spec.LogicalOperatorQueryParam) domain.PaginationLogicalOperator {
+	if logicalOperator == nil {
+		return domain.PaginationLogicalOperator(logicalOperatorDefaultValue)
+	}
+
+	return domain.PaginationLogicalOperator(*logicalOperator)
+}
+
+// orderToDomain returns a domain order based on the standardized query parameter model.
+func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
+	if order == nil {
+		return domain.PaginationOrder(orderDefaultValue)
+	}
+
+	return domain.PaginationOrder(*order)
+}
+
 // limitToDomain returns a domain pagination limit based on the standardized query parameter model.
 func limitToDomain(limit *spec.LimitQueryParam) domain.PaginationLimit {
 	if limit == nil {
@@ -65,22 +84,14 @@ func offsetToDomain(offset *spec.OffsetQueryParam) domain.PaginationOffset {
 	return domain.PaginationOffset(*offset)
 }
 
-// orderToDomain returns a domain order based on the standardized query parameter model.
-func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
-	if order == nil {
-		return domain.PaginationOrder(orderDefaultValue)
-	}
-
-	return domain.PaginationOrder(*order)
-}
-
 // paginatedRequestToDomain returns a domain paginated request based on the standardized query parameter models.
-func paginatedRequestToDomain[T any](limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam, order *spec.OrderQueryParam, sort domain.PaginationSort[T]) domain.PaginatedRequest[T] {
+func paginatedRequestToDomain[T any](logicalOperator *spec.LogicalOperatorQueryParam, sort domain.PaginationSort[T], order *spec.OrderQueryParam, limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam) domain.PaginatedRequest[T] {
 	return domain.PaginatedRequest[T]{
-		Limit:  limitToDomain(limit),
-		Offset: offsetToDomain(offset),
-		Order:  orderToDomain(order),
-		Sort:   sort,
+		LogicalOperator: logicalOperatorToDomain(logicalOperator),
+		Sort:            sort,
+		Order:           orderToDomain(order),
+		Limit:           limitToDomain(limit),
+		Offset:          offsetToDomain(offset),
 	}
 }
 

@@ -59,10 +59,6 @@ paths:
       security:
         - BearerAuth: [manager]
       parameters:
-        - $ref: "#/components/parameters/LimitQueryParam"
-        - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/OrderQueryParam"
-        - $ref: "#/components/parameters/UserSortQueryParam"
         - name: username
           in: query
           description: Username to filter by.
@@ -78,6 +74,11 @@ paths:
           description: Last name to filter by.
           schema:
             $ref: "#/components/schemas/Name"
+        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/UserSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
       responses:
         200:
           description: Successful operation.
@@ -361,10 +362,6 @@ paths:
       security:
         - BearerAuth: [manager]
       parameters:
-        - $ref: "#/components/parameters/LimitQueryParam"
-        - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/OrderQueryParam"
-        - $ref: "#/components/parameters/EmployeeSortQueryParam"
         - name: username
           in: query
           description: Username to filter by.
@@ -405,6 +402,21 @@ paths:
           description: End schedule to filter by.
           schema:
             $ref: "#/components/schemas/Time"
+        - name: wayName
+          in: query
+          description: Way name to filter by.
+          schema:
+            type: string
+        - name: municipalityName
+          in: query
+          description: Municipality name to filter by.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/EmployeeSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
       responses:
         200:
           description: Successful operation.
@@ -682,15 +694,26 @@ paths:
       security:
         - BearerAuth: [user, waste_operator, manager]
       parameters:
-        - $ref: "#/components/parameters/LimitQueryParam"
-        - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/OrderQueryParam"
-        - $ref: "#/components/parameters/ContainerSortQueryParam"
         - name: category
           in: query
           description: Container category to filter by.
           schema:
             $ref: "#/components/schemas/ContainerCategory"
+        - name: wayName
+          in: query
+          description: Way name to filter by.
+          schema:
+            type: string
+        - name: municipalityName
+          in: query
+          description: Municipality name to filter by.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/ContainerSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
       responses:
         200:
           description: Successful operation.
@@ -790,6 +813,16 @@ components:
       bearerFormat: JWT
 
   parameters:
+    LogicalOperatorQueryParam:
+      name: logicalOperator
+      in: query
+      description: Logical operator used for the provided filter.
+      schema:
+        type: string
+        enum:
+          - and
+          - or
+        default: and
     LimitQueryParam:
       name: limit
       in: query
