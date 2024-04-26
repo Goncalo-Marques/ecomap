@@ -188,7 +188,35 @@ func (h *handler) PatchEmployeeByID(w http.ResponseWriter, r *http.Request, empl
 
 // DeleteEmployeeByID handles the http request to delete an employee by ID.
 func (h *handler) DeleteEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdPathParam) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	domainEmployee, err := h.service.DeleteEmployeeByID(ctx, employeeID)
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrEmployeeNotFound):
+			notFound(w, errEmployeeNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	employee, err := employeeFromDomain(domainEmployee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(employee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // UpdateEmployeePassword handles the http request to update an employee password.

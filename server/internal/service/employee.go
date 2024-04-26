@@ -20,6 +20,7 @@ const (
 	descriptionFailedGetEmployeeByUsername = "service: failed to get employee by username"
 	descriptionFailedGetEmployeeSignIn     = "service: failed to get employee sign-in"
 	descriptionFailedPatchEmployee         = "service: failed to patch employee"
+	descriptionFailedDeleteEmployeeByID    = "service: failed to delete employee by id"
 )
 
 // CreateEmployee creates a new employee with the specified data.
@@ -248,6 +249,41 @@ func (s *service) PatchEmployee(ctx context.Context, id uuid.UUID, editableEmplo
 			return domain.Employee{}, logInfoAndWrapError(ctx, err, descriptionFailedPatchEmployee, logAttrs...)
 		default:
 			return domain.Employee{}, logAndWrapError(ctx, err, descriptionFailedPatchEmployee, logAttrs...)
+		}
+	}
+
+	return employee, nil
+}
+
+// DeleteEmployeeByID deletes the employee with the specified identifier.
+func (s *service) DeleteEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "DeleteEmployeeByID"),
+		slog.String(logging.EmployeeID, id.String()),
+	}
+
+	var employee domain.Employee
+	var err error
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		employee, err = s.store.GetEmployeeByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		err = s.store.DeleteEmployeeByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrEmployeeNotFound):
+			return domain.Employee{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteEmployeeByID, logAttrs...)
+		default:
+			return domain.Employee{}, logAndWrapError(ctx, err, descriptionFailedDeleteEmployeeByID, logAttrs...)
 		}
 	}
 
