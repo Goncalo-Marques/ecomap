@@ -203,6 +203,25 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 	return nil
 }
 
+// DeleteEmployeeByID executes a query to delete the employee with the specified identifier.
+func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error {
+	commandTag, err := tx.Exec(ctx, `
+		DELETE FROM employees
+		WHERE id = $1
+	`,
+		id,
+	)
+	if err != nil {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeNotFound)
+	}
+
+	return nil
+}
+
 // getEmployeeFromRow returns the employee by scanning the given row.
 func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	var employee domain.Employee
