@@ -17,8 +17,8 @@ var (
 type EmployeeRole string
 
 const (
-	EmployeeRoleWasteOperator EmployeeRole = "waste_operator"
-	EmployeeRoleManager       EmployeeRole = "manager"
+	EmployeeRoleWasteOperator EmployeeRole = "WasteOperator"
+	EmployeeRoleManager       EmployeeRole = "Manager"
 )
 
 // Valid returns true if the role is valid, false otherwise.

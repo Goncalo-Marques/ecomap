@@ -40,7 +40,7 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 		editableEmployee.Password,
 		editableEmployee.FirstName,
 		editableEmployee.LastName,
-		editableEmployee.Role,
+		employeeRoleFromDomain(editableEmployee.Role),
 		editableEmployee.DateOfBirth,
 		editableEmployee.PhoneNumber,
 		geoJSON,
@@ -83,16 +83,8 @@ func (s *store) ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.Empl
 		argsWhere = append(argsWhere, *filter.LastName)
 	}
 	if filter.Role != nil {
-		role := string(*filter.Role)
-		switch *filter.Role {
-		case domain.EmployeeRoleWasteOperator:
-			role = "waste_operator"
-		case domain.EmployeeRoleManager:
-			role = "manager"
-		}
-
 		filterFields = append(filterFields, "e.role::text")
-		argsWhere = append(argsWhere, role)
+		argsWhere = append(argsWhere, employeeRoleFromDomain(*filter.Role))
 	}
 	if filter.DateOfBirth != nil {
 		filterFields = append(filterFields, "e.date_of_birth::text")
@@ -407,9 +399,34 @@ func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID)
 	return nil
 }
 
+// employeeRoleToDomain returns a domain employee role based on the store model.
+func employeeRoleToDomain(role string) domain.EmployeeRole {
+	switch role {
+	case "waste_operator":
+		return domain.EmployeeRoleWasteOperator
+	case "manager":
+		return domain.EmployeeRoleManager
+	default:
+		return domain.EmployeeRole(role)
+	}
+}
+
+// employeeRoleFromDomain returns a store employee role based on the domain model.
+func employeeRoleFromDomain(role domain.EmployeeRole) string {
+	switch role {
+	case domain.EmployeeRoleWasteOperator:
+		return "waste_operator"
+	case domain.EmployeeRoleManager:
+		return "manager"
+	default:
+		return string(role)
+	}
+}
+
 // getEmployeeFromRow returns the employee by scanning the given row.
 func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	var employee domain.Employee
+	var role string
 	var geoJSONPoint domain.GeoJSONGeometryPoint
 	var wayName *string
 	var municipalityName *string
@@ -419,7 +436,7 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 		&employee.Username,
 		&employee.FirstName,
 		&employee.LastName,
-		&employee.Role,
+		&role,
 		&employee.DateOfBirth,
 		&employee.PhoneNumber,
 		&geoJSONPoint,
@@ -433,6 +450,8 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	if err != nil {
 		return domain.Employee{}, err
 	}
+
+	employee.Role = employeeRoleToDomain(role)
 
 	geoJSONProperties := make(domain.GeoJSONFeatureProperties)
 	if wayName != nil {

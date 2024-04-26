@@ -362,6 +362,30 @@ func (h *handler) SignInEmployee(w http.ResponseWriter, r *http.Request) {
 	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
+// employeeRoleToDomain returns a domain employee role based on the standardized model.
+func employeeRoleToDomain(role spec.EmployeeRole) domain.EmployeeRole {
+	switch role {
+	case spec.WasteOperator:
+		return domain.EmployeeRoleWasteOperator
+	case spec.Manager:
+		return domain.EmployeeRoleManager
+	default:
+		return domain.EmployeeRole(role)
+	}
+}
+
+// employeeRoleFromDomain returns a standardized employee role based on the domain model.
+func employeeRoleFromDomain(role domain.EmployeeRole) spec.EmployeeRole {
+	switch role {
+	case domain.EmployeeRoleWasteOperator:
+		return spec.WasteOperator
+	case domain.EmployeeRoleManager:
+		return spec.Manager
+	default:
+		return spec.EmployeeRole(role)
+	}
+}
+
 // employeePostToDomain returns a domain editable employee with password based on the standardized employee post.
 func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmployeeWithPassword, error) {
 	if len(employeePost.GeoJson.Geometry.Coordinates) != 2 {
@@ -378,20 +402,12 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
 	}
 
-	var role domain.EmployeeRole
-	switch employeePost.Role {
-	case spec.WasteOperator:
-		role = domain.EmployeeRoleWasteOperator
-	case spec.Manager:
-		role = domain.EmployeeRoleManager
-	}
-
 	return domain.EditableEmployeeWithPassword{
 		EditableEmployee: domain.EditableEmployee{
 			Username:    domain.Username(employeePost.Username),
 			FirstName:   domain.Name(employeePost.FirstName),
 			LastName:    domain.Name(employeePost.LastName),
-			Role:        role,
+			Role:        employeeRoleToDomain(employeePost.Role),
 			DateOfBirth: employeePost.DateOfBirth.Time,
 			PhoneNumber: domain.PhoneNumber(employeePost.PhoneNumber),
 			GeoJSON: domain.GeoJSONFeature{
@@ -467,15 +483,7 @@ func listEmployeesParamsToDomain(params spec.ListEmployeesParams) domain.Employe
 
 	var domainRole *domain.EmployeeRole
 	if params.Role != nil {
-		role := domain.EmployeeRole(*params.Role)
-
-		switch *params.Role {
-		case spec.WasteOperator:
-			role = domain.EmployeeRoleWasteOperator
-		case spec.Manager:
-			role = domain.EmployeeRoleManager
-		}
-
+		role := employeeRoleToDomain(*params.Role)
 		domainRole = &role
 	}
 
@@ -518,7 +526,7 @@ func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
 		Username:      string(employee.Username),
 		FirstName:     string(employee.FirstName),
 		LastName:      string(employee.LastName),
-		Role:          spec.EmployeeRole(employee.Role),
+		Role:          employeeRoleFromDomain(employee.Role),
 		DateOfBirth:   dateFromTime(employee.DateOfBirth),
 		PhoneNumber:   string(employee.PhoneNumber),
 		GeoJson:       geoJSON,
