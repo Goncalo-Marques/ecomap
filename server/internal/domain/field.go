@@ -13,8 +13,9 @@ const (
 	FieldScheduleStart = "scheduleStart"
 	FieldScheduleEnd   = "scheduleEnd"
 
-	FieldFilterLimit  = "limit"
-	FieldFilterOffset = "offset"
-	FieldFilterSort   = "sort"
-	FieldFilterOrder  = "order"
+	FieldFilterLogicalOperator = "logicalOperator"
+	FieldFilterSort            = "sort"
+	FieldFilterOrder           = "order"
+	FieldFilterLimit           = "limit"
+	FieldFilterOffset          = "offset"
 )

@@ -45,11 +45,11 @@ type User struct {
 type UserPaginatedSort string
 
 const (
-	UserPaginatedSortUsername   UserPaginatedSort = "username"
-	UserPaginatedSortFirstName  UserPaginatedSort = "firstName"
-	UserPaginatedSortLastName   UserPaginatedSort = "lastName"
-	UserPaginatedSortCreatedAt  UserPaginatedSort = "createdAt"
-	UserPaginatedSortModifiedAt UserPaginatedSort = "modifiedAt"
+	UserPaginatedSortUsername   UserPaginatedSort = "Username"
+	UserPaginatedSortFirstName  UserPaginatedSort = "FirstName"
+	UserPaginatedSortLastName   UserPaginatedSort = "LastName"
+	UserPaginatedSortCreatedAt  UserPaginatedSort = "CreatedAt"
+	UserPaginatedSortModifiedAt UserPaginatedSort = "ModifiedAt"
 )
 
 // Field returns the name of the field to sort by.

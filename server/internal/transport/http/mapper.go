@@ -13,8 +13,8 @@ import (
 const (
 	paginationLimitDefaultValue  = 100
 	paginationOffsetDefaultValue = 0
-	orderDefaultValue            = spec.OrderQueryParamAsc
 
+	timeFormatDateOnly = "2006-01-02"
 	timeFormatTimeOnly = "15:04:05"
 )
 
@@ -23,6 +23,11 @@ var (
 	errGeoJSONGeometryTypeUnexpected = errors.New("unexpected geojson geometry type")
 )
 
+// dateStringFromTime returns a standardized date string based on the time model.
+func dateStringFromTime(time time.Time) string {
+	return time.UTC().Format(timeFormatDateOnly)
+}
+
 // dateFromTime returns a standardized date based on the time model.
 func dateFromTime(time time.Time) oapitypes.Date {
 	return oapitypes.Date{
@@ -30,7 +35,7 @@ func dateFromTime(time time.Time) oapitypes.Date {
 	}
 }
 
-// timeStringFromTime returns a standardized time based on the time model.
+// timeStringFromTime returns a standardized time string based on the time model.
 func timeStringFromTime(time time.Time) string {
 	return time.UTC().Format(timeFormatTimeOnly)
 }
@@ -44,6 +49,38 @@ func timeStringToTime(timeString string) (time.Time, error) {
 func jwtFromJWTToken(token string) spec.JWT {
 	return spec.JWT{
 		Token: token,
+	}
+}
+
+// logicalOperatorToDomain returns a domain logical operator based on the standardized query parameter model.
+func logicalOperatorToDomain(logicalOperator *spec.LogicalOperatorQueryParam) domain.PaginationLogicalOperator {
+	if logicalOperator == nil {
+		return domain.PaginationLogicalOperatorAnd
+	}
+
+	switch *logicalOperator {
+	case spec.LogicalOperatorQueryParamAnd:
+		return domain.PaginationLogicalOperatorAnd
+	case spec.LogicalOperatorQueryParamOr:
+		return domain.PaginationLogicalOperatorOr
+	default:
+		return domain.PaginationLogicalOperator(*logicalOperator)
+	}
+}
+
+// orderToDomain returns a domain order based on the standardized query parameter model.
+func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
+	if order == nil {
+		return domain.PaginationOrderAsc
+	}
+
+	switch *order {
+	case spec.OrderQueryParamAsc:
+		return domain.PaginationOrderAsc
+	case spec.OrderQueryParamDesc:
+		return domain.PaginationOrderDesc
+	default:
+		return domain.PaginationOrder(*order)
 	}
 }
 
@@ -65,22 +102,14 @@ func offsetToDomain(offset *spec.OffsetQueryParam) domain.PaginationOffset {
 	return domain.PaginationOffset(*offset)
 }
 
-// orderToDomain returns a domain order based on the standardized query parameter model.
-func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
-	if order == nil {
-		return domain.PaginationOrder(orderDefaultValue)
-	}
-
-	return domain.PaginationOrder(*order)
-}
-
 // paginatedRequestToDomain returns a domain paginated request based on the standardized query parameter models.
-func paginatedRequestToDomain[T any](limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam, order *spec.OrderQueryParam, sort domain.PaginationSort[T]) domain.PaginatedRequest[T] {
+func paginatedRequestToDomain[T any](logicalOperator *spec.LogicalOperatorQueryParam, sort domain.PaginationSort[T], order *spec.OrderQueryParam, limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam) domain.PaginatedRequest[T] {
 	return domain.PaginatedRequest[T]{
-		Limit:  limitToDomain(limit),
-		Offset: offsetToDomain(offset),
-		Order:  orderToDomain(order),
-		Sort:   sort,
+		LogicalOperator: logicalOperatorToDomain(logicalOperator),
+		Sort:            sort,
+		Order:           orderToDomain(order),
+		Limit:           limitToDomain(limit),
+		Offset:          offsetToDomain(offset),
 	}
 }
 

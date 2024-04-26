@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -39,7 +40,7 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 		editableEmployee.Password,
 		editableEmployee.FirstName,
 		editableEmployee.LastName,
-		editableEmployee.Role,
+		employeeRoleFromDomain(editableEmployee.Role),
 		editableEmployee.DateOfBirth,
 		editableEmployee.PhoneNumber,
 		geoJSON,
@@ -61,6 +62,161 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 	}
 
 	return id, nil
+}
+
+// ListEmployees executes a query to return the employees for the specified filter.
+func (s *store) ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error) {
+	filterFields := make([]string, 0, 10)
+	argsWhere := make([]any, 0, 10)
+
+	// Append the optional fields to filter.
+	if filter.Username != nil {
+		filterFields = append(filterFields, "e.username")
+		argsWhere = append(argsWhere, *filter.Username)
+	}
+	if filter.FirstName != nil {
+		filterFields = append(filterFields, "e.first_name")
+		argsWhere = append(argsWhere, *filter.FirstName)
+	}
+	if filter.LastName != nil {
+		filterFields = append(filterFields, "e.last_name")
+		argsWhere = append(argsWhere, *filter.LastName)
+	}
+	if filter.Role != nil {
+		filterFields = append(filterFields, "e.role::text")
+		argsWhere = append(argsWhere, employeeRoleFromDomain(*filter.Role))
+	}
+	if filter.DateOfBirth != nil {
+		filterFields = append(filterFields, "e.date_of_birth::text")
+		argsWhere = append(argsWhere, *filter.DateOfBirth)
+	}
+	if filter.PhoneNumber != nil {
+		filterFields = append(filterFields, "e.phone_number")
+		argsWhere = append(argsWhere, *filter.PhoneNumber)
+	}
+	if filter.ScheduleStart != nil {
+		filterFields = append(filterFields, "e.schedule_start::text")
+		argsWhere = append(argsWhere, *filter.ScheduleStart)
+	}
+	if filter.ScheduleEnd != nil {
+		filterFields = append(filterFields, "e.schedule_end::text")
+		argsWhere = append(argsWhere, *filter.ScheduleEnd)
+	}
+	if filter.WayName != nil {
+		filterFields = append(filterFields, "rn.osm_name")
+		argsWhere = append(argsWhere, *filter.WayName)
+	}
+	if filter.MunicipalityName != nil {
+		filterFields = append(filterFields, "m.name")
+		argsWhere = append(argsWhere, *filter.MunicipalityName)
+	}
+
+	var sqlWhere string
+	if len(filterFields) > 0 {
+		for i, field := range filterFields {
+			filterFields[i] = field + " ILIKE '%%' || $%d || '%%'"
+		}
+
+		logicalOperator := " AND "
+		if filter.LogicalOperator == domain.PaginationLogicalOperatorOr {
+			logicalOperator = " OR "
+		}
+
+		sqlWhere = " WHERE " + strings.Join(filterFields, logicalOperator)
+	}
+
+	// Format the where sql parameters.
+	if len(argsWhere) > 0 {
+		sqlParamIndices := make([]any, len(argsWhere))
+		for i := range argsWhere {
+			sqlParamIndices[i] = i + 1
+		}
+
+		sqlWhere = fmt.Sprintf(sqlWhere, sqlParamIndices...)
+	}
+
+	// Get employees count.
+	var total int
+	row := tx.QueryRow(ctx, `
+		SELECT count(e.id) 
+		FROM employees AS e
+		LEFT JOIN road_network AS rn ON e.road_id = rn.id
+		LEFT JOIN municipalities AS m ON e.municipality_id = m.id
+	`+sqlWhere,
+		argsWhere...,
+	)
+
+	err := row.Scan(&total)
+	if err != nil {
+		return domain.PaginatedResponse[domain.Employee]{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	}
+
+	// Append the field to sort, if provided.
+	var sortField domain.EmployeePaginatedSort
+	if filter.Sort != nil {
+		sortField = filter.Sort.Field()
+	}
+
+	sqlSort := " ORDER BY "
+	switch sortField {
+	case domain.EmployeePaginatedSortUsername:
+		sqlSort += "e.username"
+	case domain.EmployeePaginatedSortFirstName:
+		sqlSort += "e.first_name"
+	case domain.EmployeePaginatedSortLastName:
+		sqlSort += "e.last_name"
+	case domain.EmployeePaginatedSortRole:
+		sqlSort += "e.role"
+	case domain.EmployeePaginatedSortDateOfBirth:
+		sqlSort += "e.date_of_birth"
+	case domain.EmployeePaginatedSortScheduleStart:
+		sqlSort += "e.schedule_start"
+	case domain.EmployeePaginatedSortScheduleEnd:
+		sqlSort += "e.schedule_end"
+	case domain.EmployeePaginatedSortWayName:
+		sqlSort += "rn.osm_name"
+	case domain.EmployeePaginatedSortMunicipalityName:
+		sqlSort += "m.name"
+	case domain.EmployeePaginatedSortCreatedAt:
+		sqlSort += "e.created_at"
+	case domain.EmployeePaginatedSortModifiedAt:
+		sqlSort += "e.modified_at"
+	default:
+		sqlSort += "e.created_at"
+	}
+
+	order := " ASC"
+	if filter.Order == domain.PaginationOrderDesc {
+		order = " DESC"
+	}
+	sqlSort += order
+
+	// Append the limit and offset.
+	sqlSort += fmt.Sprintf(" LIMIT %d OFFSET %d", filter.Limit, filter.Offset)
+
+	// Get employees.
+	rows, err := tx.Query(ctx, `
+		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, ST_AsGeoJSON(e.geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
+		FROM employees AS e
+		LEFT JOIN road_network AS rn ON e.road_id = rn.id
+		LEFT JOIN municipalities AS m ON e.municipality_id = m.id
+	`+sqlWhere+sqlSort,
+		argsWhere...,
+	)
+	if err != nil {
+		return domain.PaginatedResponse[domain.Employee]{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
+	}
+	defer rows.Close()
+
+	employees, err := getEmployeesFromRows(rows)
+	if err != nil {
+		return domain.PaginatedResponse[domain.Employee]{}, fmt.Errorf("%s: %w", descriptionFailedScanRows, err)
+	}
+
+	return domain.PaginatedResponse[domain.Employee]{
+		Total:   total,
+		Results: employees,
+	}, nil
 }
 
 // GetEmployeeByID executes a query to return the employee with the specified identifier.
@@ -243,9 +399,34 @@ func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID)
 	return nil
 }
 
+// employeeRoleToDomain returns a domain employee role based on the store model.
+func employeeRoleToDomain(role string) domain.EmployeeRole {
+	switch role {
+	case "waste_operator":
+		return domain.EmployeeRoleWasteOperator
+	case "manager":
+		return domain.EmployeeRoleManager
+	default:
+		return domain.EmployeeRole(role)
+	}
+}
+
+// employeeRoleFromDomain returns a store employee role based on the domain model.
+func employeeRoleFromDomain(role domain.EmployeeRole) string {
+	switch role {
+	case domain.EmployeeRoleWasteOperator:
+		return "waste_operator"
+	case domain.EmployeeRoleManager:
+		return "manager"
+	default:
+		return string(role)
+	}
+}
+
 // getEmployeeFromRow returns the employee by scanning the given row.
 func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	var employee domain.Employee
+	var role string
 	var geoJSONPoint domain.GeoJSONGeometryPoint
 	var wayName *string
 	var municipalityName *string
@@ -255,7 +436,7 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 		&employee.Username,
 		&employee.FirstName,
 		&employee.LastName,
-		&employee.Role,
+		&role,
 		&employee.DateOfBirth,
 		&employee.PhoneNumber,
 		&geoJSONPoint,
@@ -269,6 +450,8 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	if err != nil {
 		return domain.Employee{}, err
 	}
+
+	employee.Role = employeeRoleToDomain(role)
 
 	geoJSONProperties := make(domain.GeoJSONFeatureProperties)
 	if wayName != nil {
@@ -284,4 +467,19 @@ func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	}
 
 	return employee, nil
+}
+
+// getEmployeesFromRows returns the employees by scanning the given rows.
+func getEmployeesFromRows(rows pgx.Rows) ([]domain.Employee, error) {
+	var employees []domain.Employee
+	for rows.Next() {
+		employee, err := getEmployeeFromRow(rows)
+		if err != nil {
+			return nil, err
+		}
+
+		employees = append(employees, employee)
+	}
+
+	return employees, nil
 }

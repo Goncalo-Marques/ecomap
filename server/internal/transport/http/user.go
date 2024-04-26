@@ -326,19 +326,37 @@ func userPatchToDomain(userPatch spec.UserPatch) domain.EditableUserPatch {
 	}
 }
 
-// listUsersParamsToDomain returns a domain users paginated filter based on the standardized list users parameters.
-func listUsersParamsToDomain(params spec.ListUsersParams) domain.UsersPaginatedFilter {
-	var domainSort domain.PaginationSort[domain.UserPaginatedSort]
-	if params.Sort != nil {
-		domainSort = domain.UserPaginatedSort(*params.Sort)
+// userSortToDomain returns a domain pagination sort based on the standardized user sort model.
+func userSortToDomain(sort *spec.ListUsersParamsSort) domain.PaginationSort[domain.UserPaginatedSort] {
+	if sort == nil {
+		return domain.UserPaginatedSortCreatedAt
 	}
 
+	switch *sort {
+	case spec.ListUsersParamsSortUsername:
+		return domain.UserPaginatedSortUsername
+	case spec.ListUsersParamsSortFirstName:
+		return domain.UserPaginatedSortFirstName
+	case spec.ListUsersParamsSortLastName:
+		return domain.UserPaginatedSortLastName
+	case spec.ListUsersParamsSortCreatedAt:
+		return domain.UserPaginatedSortCreatedAt
+	case spec.ListUsersParamsSortModifiedAt:
+		return domain.UserPaginatedSortModifiedAt
+	default:
+		return domain.UserPaginatedSort(*sort)
+	}
+}
+
+// listUsersParamsToDomain returns a domain users paginated filter based on the standardized list users parameters.
+func listUsersParamsToDomain(params spec.ListUsersParams) domain.UsersPaginatedFilter {
 	return domain.UsersPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
+			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
+			userSortToDomain(params.Sort),
+			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,
 			params.Offset,
-			(*spec.OrderQueryParam)(params.Order),
-			domainSort,
 		),
 		Username:  (*domain.Username)(params.Username),
 		FirstName: (*domain.Name)(params.FirstName),
