@@ -8,6 +8,7 @@ ignoreWords:
   - appcompat
   - Avenir
   - buildx
+  - clazz
   - cloudrun
   - codegen
   - Compat
@@ -26,7 +27,11 @@ ignoreWords:
   - jackc
   - ldflags
   - libboost
+  - LINESTRING
   - mipmap
+  - nutsi
+  - nutsii
+  - nutsiii
   - oapi
   - oapitypes
   - openapi
@@ -37,6 +42,7 @@ ignoreWords:
   - pgxpool
   - pkey
   - plpgsql
+  - psql
   - Português
   - postgis
   - proguard
@@ -46,6 +52,7 @@ ignoreWords:
   - temurin
   - testcontainers
   - transporthttp
+  - trgm
 ignorePaths:
   - "*.svg"
   - .golangci.yml
@@ -58,6 +65,7 @@ ignorePaths:
   - gradlew.bat
   - proguard-rules.pro
   - server/api/swagger/ui
+  - server/database/scripts
   - server/deployments
   - server/config.yml
   - web/public

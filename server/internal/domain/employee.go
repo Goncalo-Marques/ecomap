@@ -9,10 +9,10 @@ import (
 
 // Employee errors.
 var (
-	ErrEmployeeNotFound = errors.New("employee not found") // Returned when an employee is not found.
+	ErrEmployeeAlreadyExists = errors.New("username already exists") // Returned when an employee already exists with the same username.
+	ErrEmployeeNotFound      = errors.New("employee not found")      // Returned when an employee is not found.
 )
 
-// TODO: Create method to validate employee role.
 // EmployeeRole defines the role of the employee.
 type EmployeeRole string
 
@@ -21,6 +21,17 @@ const (
 	EmployeeRoleManager       EmployeeRole = "manager"
 )
 
+// Valid returns true if the role is valid, false otherwise.
+func (r EmployeeRole) Valid() bool {
+	switch r {
+	case EmployeeRoleWasteOperator,
+		EmployeeRoleManager:
+		return true
+	default:
+		return false
+	}
+}
+
 // EditableEmployee defines the editable employee structure.
 type EditableEmployee struct {
 	Username      Username
@@ -28,10 +39,16 @@ type EditableEmployee struct {
 	LastName      Name
 	Role          EmployeeRole
 	DateOfBirth   time.Time
-	PhoneNumber   string
-	Geom          GeoJSON
+	PhoneNumber   PhoneNumber
+	GeoJSON       GeoJSON
 	ScheduleStart time.Time
 	ScheduleEnd   time.Time
+}
+
+// EditableEmployeeWithPassword defines the editable employee structure with a password.
+type EditableEmployeeWithPassword struct {
+	EditableEmployee
+	Password
 }
 
 // Employee defines the employee structure.

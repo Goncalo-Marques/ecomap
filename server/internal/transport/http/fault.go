@@ -9,15 +9,21 @@ import (
 
 // Common fault messages.
 const (
-	errRequestBodyInvalid   = "invalid request body"
-	errFieldValueInvalid    = "invalid field value"
-	errFilterValueInvalid   = "invalid filter value"
-	errCredentialsIncorrect = "incorrect credentials"
+	errAuthorizationHeaderInvalid = "invalid authorization header"
+	errJWTInvalid                 = "invalid jwt"
+	errRolesInvalid               = "invalid subject roles"
+	errAuthorizationInvalid       = "unauthorized subject"
+	errParamInvalidFormat         = "invalid parameter format"
+	errRequestBodyInvalid         = "invalid request body"
+	errFieldValueInvalid          = "invalid field value"
+	errFilterValueInvalid         = "invalid filter value"
+	errCredentialsIncorrect       = "incorrect credentials"
 )
 
 // Common fault descriptions.
 const (
 	descriptionFailedToMarshalResponseBody = "http: failed to marshal response body"
+	descriptionFailedToMapResponseBody     = "http: failed to map response body"
 )
 
 // badRequest writes an error response and sets the header with the bad request status code.

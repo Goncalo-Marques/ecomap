@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -12,12 +13,72 @@ import (
 )
 
 const (
-	errEmployeeNotFound = "employee not found"
+	errEmployeeNotFound      = "employee not found"
+	errEmployeeAlreadyExists = "username already exists"
 )
 
 // CreateEmployee handles the http request to create an employee.
 func (h *handler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var employeePost spec.EmployeePost
+	err = json.Unmarshal(requestBody, &employeePost)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	domainEditableEmployee, err := employeePostToDomain(employeePost)
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	domainEmployee, err := h.service.CreateEmployee(ctx, domainEditableEmployee)
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrEmployeeAlreadyExists):
+			conflict(w, errEmployeeAlreadyExists)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	employee, err := employeeFromDomain(domainEmployee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(employee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusCreated, responseBody)
 }
 
 // ListEmployees handles the http request to list employees.
@@ -41,7 +102,13 @@ func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employ
 		return
 	}
 
-	employee := employeeFromDomain(domainEmployee)
+	employee, err := employeeFromDomain(domainEmployee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
 	responseBody, err := json.Marshal(employee)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -110,4 +177,71 @@ func (h *handler) SignInEmployee(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeResponseJSON(w, http.StatusOK, responseBody)
+}
+
+// employeePostToDomain returns a domain editable employee with password based on the standardized employee post.
+func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmployeeWithPassword, error) {
+	if len(employeePost.GeoJson.Geometry.Coordinates) != 2 {
+		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
+	}
+
+	ScheduleStart, err := timeStringToTime(employeePost.ScheduleStart)
+	if err != nil {
+		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleStart}
+	}
+
+	ScheduleEnd, err := timeStringToTime(employeePost.ScheduleEnd)
+	if err != nil {
+		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
+	}
+
+	var role domain.EmployeeRole
+	switch employeePost.Role {
+	case spec.WasteOperator:
+		role = domain.EmployeeRoleWasteOperator
+	case spec.Manager:
+		role = domain.EmployeeRoleManager
+	}
+
+	return domain.EditableEmployeeWithPassword{
+		EditableEmployee: domain.EditableEmployee{
+			Username:    domain.Username(employeePost.Username),
+			FirstName:   domain.Name(employeePost.FirstName),
+			LastName:    domain.Name(employeePost.LastName),
+			Role:        role,
+			DateOfBirth: employeePost.DateOfBirth.Time,
+			PhoneNumber: domain.PhoneNumber(employeePost.PhoneNumber),
+			GeoJSON: domain.GeoJSONFeature{
+				Geometry: domain.GeoJSONGeometryPoint{
+					Coordinates: [2]float64(employeePost.GeoJson.Geometry.Coordinates),
+				},
+			},
+			ScheduleStart: ScheduleStart,
+			ScheduleEnd:   ScheduleEnd,
+		},
+		Password: domain.Password(employeePost.Password),
+	}, nil
+}
+
+// employeeFromDomain returns a standardized employee based on the domain model.
+func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
+	geoJSON, err := geoJSONFeaturePointFromDomain(employee.GeoJSON)
+	if err != nil {
+		return spec.Employee{}, err
+	}
+
+	return spec.Employee{
+		Id:            employee.ID,
+		Username:      string(employee.Username),
+		FirstName:     string(employee.FirstName),
+		LastName:      string(employee.LastName),
+		Role:          spec.EmployeeRole(employee.Role),
+		DateOfBirth:   dateFromTime(employee.DateOfBirth),
+		PhoneNumber:   string(employee.PhoneNumber),
+		GeoJson:       geoJSON,
+		ScheduleStart: timeStringFromTime(employee.ScheduleStart),
+		ScheduleEnd:   timeStringFromTime(employee.ScheduleEnd),
+		CreatedAt:     employee.CreatedAt,
+		ModifiedAt:    employee.ModifiedAt,
+	}, nil
 }
