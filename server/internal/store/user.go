@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/google/uuid"
@@ -96,16 +95,13 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPag
 		return domain.PaginatedResponse[domain.User]{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
 	}
 
-	var sqlSort string
-	argsSort := make([]any, 0, 2)
-
 	// Append the field to sort, if provided.
 	var sortField domain.UserPaginatedSort
 	if filter.Sort != nil {
 		sortField = filter.Sort.Field()
 	}
 
-	sqlSort = " ORDER BY "
+	sqlSort := " ORDER BY "
 	switch sortField {
 	case domain.UserPaginatedSortUsername:
 		sqlSort += "username"
@@ -128,25 +124,14 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPag
 	sqlSort += order
 
 	// Append the limit and offset.
-	sqlSort += " LIMIT $%d OFFSET $%d"
-	argsSort = append(argsSort, filter.Limit, filter.Offset)
-
-	// Format the sort sql parameters.
-	if len(argsSort) > 0 {
-		sqlParamIndices := make([]any, len(argsSort))
-		for i := range argsSort {
-			sqlParamIndices[i] = len(argsWhere) + i + 1
-		}
-
-		sqlSort = fmt.Sprintf(sqlSort, sqlParamIndices...)
-	}
+	sqlSort += fmt.Sprintf(" LIMIT %d OFFSET %d", filter.Limit, filter.Offset)
 
 	// Get users.
 	rows, err := tx.Query(ctx, `
 		SELECT id, username, first_name, last_name, created_at, modified_at 
 		FROM users 
 	`+sqlWhere+sqlSort,
-		slices.Concat(argsWhere, argsSort)...,
+		argsWhere...,
 	)
 	if err != nil {
 		return domain.PaginatedResponse[domain.User]{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
