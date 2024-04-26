@@ -329,7 +329,7 @@ func userPatchToDomain(userPatch spec.UserPatch) domain.EditableUserPatch {
 // userSortToDomain returns a domain pagination sort based on the standardized user sort model.
 func userSortToDomain(sort *spec.ListUsersParamsSort) domain.PaginationSort[domain.UserPaginatedSort] {
 	if sort == nil {
-		return nil
+		return domain.UserPaginatedSortCreatedAt
 	}
 
 	switch *sort {
