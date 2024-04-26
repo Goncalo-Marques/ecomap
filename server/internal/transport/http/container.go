@@ -21,6 +21,11 @@ func (h *handler) GetContainerByID(w http.ResponseWriter, r *http.Request, conta
 	w.WriteHeader(http.StatusNotFound)
 }
 
+// PatchContainerByID handles the http request to modify a container by ID.
+func (h *handler) PatchContainerByID(w http.ResponseWriter, r *http.Request, containerID spec.ContainerIdPathParam) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
 // DeleteContainerByID handles the http request to delete a container by ID.
 func (h *handler) DeleteContainerByID(w http.ResponseWriter, r *http.Request, containerID spec.ContainerIdPathParam) {
 	w.WriteHeader(http.StatusNotFound)
