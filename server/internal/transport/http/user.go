@@ -326,11 +326,29 @@ func userPatchToDomain(userPatch spec.UserPatch) domain.EditableUserPatch {
 	}
 }
 
+// userSortToDomain returns a domain user paginated sort based on the standardized model.
+func userSortToDomain(sort spec.ListUsersParamsSort) domain.UserPaginatedSort {
+	switch sort {
+	case spec.ListUsersParamsSortUsername:
+		return domain.UserPaginatedSortUsername
+	case spec.ListUsersParamsSortFirstName:
+		return domain.UserPaginatedSortFirstName
+	case spec.ListUsersParamsSortLastName:
+		return domain.UserPaginatedSortLastName
+	case spec.ListUsersParamsSortCreatedAt:
+		return domain.UserPaginatedSortCreatedAt
+	case spec.ListUsersParamsSortModifiedAt:
+		return domain.UserPaginatedSortModifiedAt
+	default:
+		return domain.UserPaginatedSort(sort)
+	}
+}
+
 // listUsersParamsToDomain returns a domain users paginated filter based on the standardized list users parameters.
 func listUsersParamsToDomain(params spec.ListUsersParams) domain.UsersPaginatedFilter {
 	var domainSort domain.PaginationSort[domain.UserPaginatedSort]
 	if params.Sort != nil {
-		domainSort = domain.UserPaginatedSort(*params.Sort)
+		domainSort = userSortToDomain(*params.Sort)
 	}
 
 	return domain.UsersPaginatedFilter{
