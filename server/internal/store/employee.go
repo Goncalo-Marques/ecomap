@@ -203,6 +203,27 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 	return nil
 }
 
+// UpdateEmployeePassword executes a query to update the password of the employee with the specified username.
+func (s *store) UpdateEmployeePassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error {
+	commandTag, err := tx.Exec(ctx, `
+		UPDATE employees SET
+			password = $2
+		WHERE username = $1 
+	`,
+		username,
+		password,
+	)
+	if err != nil {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeNotFound)
+	}
+
+	return nil
+}
+
 // DeleteEmployeeByID executes a query to delete the employee with the specified identifier.
 func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error {
 	commandTag, err := tx.Exec(ctx, `

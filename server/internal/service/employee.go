@@ -15,12 +15,13 @@ import (
 )
 
 const (
-	descriptionFailedCreateEmployee        = "service: failed to create employee"
-	descriptionFailedGetEmployeeByID       = "service: failed to get employee by id"
-	descriptionFailedGetEmployeeByUsername = "service: failed to get employee by username"
-	descriptionFailedGetEmployeeSignIn     = "service: failed to get employee sign-in"
-	descriptionFailedPatchEmployee         = "service: failed to patch employee"
-	descriptionFailedDeleteEmployeeByID    = "service: failed to delete employee by id"
+	descriptionFailedCreateEmployee         = "service: failed to create employee"
+	descriptionFailedGetEmployeeByID        = "service: failed to get employee by id"
+	descriptionFailedGetEmployeeByUsername  = "service: failed to get employee by username"
+	descriptionFailedGetEmployeeSignIn      = "service: failed to get employee sign-in"
+	descriptionFailedPatchEmployee          = "service: failed to patch employee"
+	descriptionFailedUpdateEmployeePassword = "service: failed to update employee password"
+	descriptionFailedDeleteEmployeeByID     = "service: failed to delete employee by id"
 )
 
 // CreateEmployee creates a new employee with the specified data.
@@ -253,6 +254,67 @@ func (s *service) PatchEmployee(ctx context.Context, id uuid.UUID, editableEmplo
 	}
 
 	return employee, nil
+}
+
+// UpdateEmployeePassword updates the password of the employee with the specified username.
+func (s *service) UpdateEmployeePassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "UpdateEmployeePassword"),
+		slog.String(logging.EmployeeUsername, string(username)),
+	}
+
+	username = domain.Username(strings.ToLower(string(username)))
+
+	if !s.authnService.ValidPassword([]byte(newPassword)) {
+		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
+	}
+
+	var signIn domain.SignIn
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		signIn, err = s.store.GetEmployeeSignIn(ctx, tx, username)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrEmployeeNotFound):
+			return logInfoAndWrapError(ctx, domain.ErrCredentialsIncorrect, descriptionFailedGetEmployeeSignIn, logAttrs...)
+		default:
+			return logAndWrapError(ctx, err, descriptionFailedGetEmployeeSignIn, logAttrs...)
+		}
+	}
+
+	valid, err := s.authnService.CheckPasswordHash([]byte(oldPassword), []byte(signIn.Password))
+	if err != nil {
+		return logAndWrapError(ctx, err, descriptionFailedCheckPasswordHash, logAttrs...)
+	}
+
+	if !valid {
+		return logInfoAndWrapError(ctx, domain.ErrCredentialsIncorrect, descriptionFailedCheckPasswordHash, logAttrs...)
+	}
+
+	hashedPassword, err := s.authnService.HashPassword([]byte(newPassword))
+	if err != nil {
+		return logAndWrapError(ctx, err, descriptionFailedHashPassword, logAttrs...)
+	}
+
+	newPassword = domain.Password(hashedPassword)
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		err = s.store.UpdateEmployeePassword(ctx, tx, username, newPassword)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrEmployeeNotFound):
+			return logInfoAndWrapError(ctx, domain.ErrCredentialsIncorrect, descriptionFailedUpdateEmployeePassword, logAttrs...)
+		default:
+			return logAndWrapError(ctx, err, descriptionFailedUpdateEmployeePassword, logAttrs...)
+		}
+	}
+
+	return nil
 }
 
 // DeleteEmployeeByID deletes the employee with the specified identifier.
