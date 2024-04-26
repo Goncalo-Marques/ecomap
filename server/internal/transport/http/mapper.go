@@ -11,8 +11,6 @@ import (
 )
 
 const (
-	logicalOperatorDefaultValue  = spec.LogicalOperatorQueryParamAnd
-	orderDefaultValue            = spec.OrderQueryParamAsc
 	paginationLimitDefaultValue  = 100
 	paginationOffsetDefaultValue = 0
 
@@ -57,7 +55,7 @@ func jwtFromJWTToken(token string) spec.JWT {
 // logicalOperatorToDomain returns a domain logical operator based on the standardized query parameter model.
 func logicalOperatorToDomain(logicalOperator *spec.LogicalOperatorQueryParam) domain.PaginationLogicalOperator {
 	if logicalOperator == nil {
-		return domain.PaginationLogicalOperator(logicalOperatorDefaultValue)
+		return domain.PaginationLogicalOperatorAnd
 	}
 
 	switch *logicalOperator {
@@ -73,7 +71,7 @@ func logicalOperatorToDomain(logicalOperator *spec.LogicalOperatorQueryParam) do
 // orderToDomain returns a domain order based on the standardized query parameter model.
 func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
 	if order == nil {
-		return domain.PaginationOrder(orderDefaultValue)
+		return domain.PaginationOrderAsc
 	}
 
 	switch *order {
