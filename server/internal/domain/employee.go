@@ -75,17 +75,17 @@ type Employee struct {
 type EmployeePaginatedSort string
 
 const (
-	EmployeePaginatedSortUsername         EmployeePaginatedSort = "username"
-	EmployeePaginatedSortFirstName        EmployeePaginatedSort = "firstName"
-	EmployeePaginatedSortLastName         EmployeePaginatedSort = "lastName"
-	EmployeePaginatedSortRole             EmployeePaginatedSort = "role"
-	EmployeePaginatedSortDateOfBirth      EmployeePaginatedSort = "dateOfBirth"
-	EmployeePaginatedSortScheduleStart    EmployeePaginatedSort = "scheduleStart"
-	EmployeePaginatedSortScheduleEnd      EmployeePaginatedSort = "scheduleEnd"
-	EmployeePaginatedSortWayName          EmployeePaginatedSort = "wayName"
-	EmployeePaginatedSortMunicipalityName EmployeePaginatedSort = "municipalityName"
-	EmployeePaginatedSortCreatedAt        EmployeePaginatedSort = "createdAt"
-	EmployeePaginatedSortModifiedAt       EmployeePaginatedSort = "modifiedAt"
+	EmployeePaginatedSortUsername         EmployeePaginatedSort = "Username"
+	EmployeePaginatedSortFirstName        EmployeePaginatedSort = "FirstName"
+	EmployeePaginatedSortLastName         EmployeePaginatedSort = "LastName"
+	EmployeePaginatedSortRole             EmployeePaginatedSort = "Role"
+	EmployeePaginatedSortDateOfBirth      EmployeePaginatedSort = "DateOfBirth"
+	EmployeePaginatedSortScheduleStart    EmployeePaginatedSort = "ScheduleStart"
+	EmployeePaginatedSortScheduleEnd      EmployeePaginatedSort = "ScheduleEnd"
+	EmployeePaginatedSortWayName          EmployeePaginatedSort = "WayName"
+	EmployeePaginatedSortMunicipalityName EmployeePaginatedSort = "MunicipalityName"
+	EmployeePaginatedSortCreatedAt        EmployeePaginatedSort = "CreatedAt"
+	EmployeePaginatedSortModifiedAt       EmployeePaginatedSort = "ModifiedAt"
 )
 
 // Field returns the name of the field to sort by.
