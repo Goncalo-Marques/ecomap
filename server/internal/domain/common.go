@@ -12,6 +12,8 @@ const (
 
 	nameMinLength = 1
 	nameMaxLength = 50
+
+	phoneNumberMaxLength = 20
 )
 
 // Common errors.
@@ -36,6 +38,15 @@ func (u Username) Valid() bool {
 	return len(u) >= usernameMinLength && len(u) <= usernameMaxLength
 }
 
+// Password defines the password type.
+type Password string
+
+// SignIn defines the sign-in structure.
+type SignIn struct {
+	Username Username
+	Password Password
+}
+
 // Name defines the name type.
 type Name string
 
@@ -44,14 +55,10 @@ func (n Name) Valid() bool {
 	return len(n) >= nameMinLength && len(n) <= nameMaxLength
 }
 
-// Password defines the password type.
-type Password string
+// PhoneNumber defines the phone number type.
+type PhoneNumber string
 
-// GeoJSON defines the GeoJSON format type.
-type GeoJSON map[string]interface{}
-
-// SignIn defines the sign-in structure.
-type SignIn struct {
-	Username Username
-	Password Password
+// Valid returns true if the phone number is valid, false otherwise.
+func (pn PhoneNumber) Valid() bool {
+	return len(pn) <= phoneNumberMaxLength
 }

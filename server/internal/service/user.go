@@ -36,20 +36,20 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 
 	editableUser.Username = domain.Username(replaceSpacesWithHyphen(string(editableUser.Username)))
 	editableUser.Username = domain.Username(strings.ToLower(string(editableUser.Username)))
-	editableUser.FirstName = domain.Name(replaceSpacesWithHyphen(string(editableUser.FirstName)))
-	editableUser.LastName = domain.Name(replaceSpacesWithHyphen(string(editableUser.LastName)))
+	editableUser.FirstName = domain.Name(removeExtraSpaces(string(editableUser.FirstName)))
+	editableUser.LastName = domain.Name(removeExtraSpaces(string(editableUser.LastName)))
 
 	if !editableUser.Username.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldUsername}, descriptionInvalidFieldValue, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldUsername}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if !s.authnService.ValidPassword([]byte(editableUser.Password)) {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldPassword}, descriptionInvalidFieldValue, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldPassword}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if !editableUser.FirstName.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldFirstName}, descriptionInvalidFieldValue, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldFirstName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if !editableUser.LastName.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldLastName}, descriptionInvalidFieldValue, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldLastName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
 	hashedPassword, err := s.authnService.HashPassword([]byte(editableUser.Password))
@@ -62,8 +62,17 @@ func (s *service) CreateUser(ctx context.Context, editableUser domain.EditableUs
 	var user domain.User
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		user, err = s.store.CreateUser(ctx, tx, editableUser)
-		return err
+		id, err := s.store.CreateUser(ctx, tx, editableUser)
+		if err != nil {
+			return err
+		}
+
+		user, err = s.store.GetUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 	if err != nil {
 		switch {
@@ -84,16 +93,16 @@ func (s *service) ListUsers(ctx context.Context, filter domain.UsersPaginatedFil
 	}
 
 	if !filter.Limit.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterLimit}, descriptionInvalidFilterValue, logAttrs...)
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLimit}, descriptionInvalidFilterValue, logAttrs...)
 	}
 	if !filter.Offset.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOffset}, descriptionInvalidFilterValue, logAttrs...)
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterOffset}, descriptionInvalidFilterValue, logAttrs...)
 	}
 	if !filter.Order.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterOrder}, descriptionInvalidFilterValue, logAttrs...)
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterOrder}, descriptionInvalidFilterValue, logAttrs...)
 	}
 	if filter.Sort != nil && !filter.Sort.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: filterSort}, descriptionInvalidFilterValue, logAttrs...)
+		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}
 
 	var paginatedUsers domain.PaginatedResponse[domain.User]
@@ -136,7 +145,7 @@ func (s *service) GetUserByID(ctx context.Context, id uuid.UUID) (domain.User, e
 	return user, nil
 }
 
-// PatchUser modifies the user with the specified identifier. Only the specified fields in the request body are updated.
+// PatchUser modifies the user with the specified identifier.
 func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "PatchUser"),
@@ -149,30 +158,39 @@ func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser doma
 		editableUser.Username = &username
 	}
 	if editableUser.FirstName != nil {
-		firstName := domain.Name(replaceSpacesWithHyphen(string(*editableUser.FirstName)))
+		firstName := domain.Name(removeExtraSpaces(string(*editableUser.FirstName)))
 		editableUser.FirstName = &firstName
 	}
 	if editableUser.LastName != nil {
-		lastName := domain.Name(replaceSpacesWithHyphen(string(*editableUser.LastName)))
+		lastName := domain.Name(removeExtraSpaces(string(*editableUser.LastName)))
 		editableUser.LastName = &lastName
 	}
 
 	if editableUser.Username != nil && !editableUser.Username.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldUsername}, descriptionInvalidFieldValue, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldUsername}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if editableUser.FirstName != nil && !editableUser.FirstName.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldFirstName}, descriptionInvalidFieldValue, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldFirstName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 	if editableUser.LastName != nil && !editableUser.LastName.Valid() {
-		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldLastName}, descriptionInvalidFieldValue, logAttrs...)
+		return domain.User{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldLastName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
 	var user domain.User
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		user, err = s.store.PatchUser(ctx, tx, id, editableUser)
-		return err
+		err = s.store.PatchUser(ctx, tx, id, editableUser)
+		if err != nil {
+			return err
+		}
+
+		user, err = s.store.GetUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 	if err != nil {
 		switch {
@@ -197,7 +215,7 @@ func (s *service) UpdateUserPassword(ctx context.Context, username domain.Userna
 	username = domain.Username(strings.ToLower(string(username)))
 
 	if !s.authnService.ValidPassword([]byte(newPassword)) {
-		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
+		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
 	var signIn domain.SignIn
@@ -258,7 +276,7 @@ func (s *service) ResetUserPassword(ctx context.Context, username domain.Usernam
 	username = domain.Username(strings.ToLower(string(username)))
 
 	if !s.authnService.ValidPassword([]byte(newPassword)) {
-		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: fieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
+		return logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldNewPassword}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
 	hashedPassword, err := s.authnService.HashPassword([]byte(newPassword))
@@ -295,8 +313,17 @@ func (s *service) DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		user, err = s.store.DeleteUserByID(ctx, tx, id)
-		return err
+		user, err = s.store.GetUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		err = s.store.DeleteUserByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 	if err != nil {
 		switch {

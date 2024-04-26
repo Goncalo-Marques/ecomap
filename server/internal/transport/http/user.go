@@ -34,7 +34,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	domainEditableUser := userPostToDomainEditableUserWithPassword(userPost)
+	domainEditableUser := userPostToDomain(userPost)
 	domainUser, err := h.service.CreateUser(ctx, domainEditableUser)
 	if err != nil {
 		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
@@ -66,7 +66,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (h *handler) ListUsers(w http.ResponseWriter, r *http.Request, params spec.ListUsersParams) {
 	ctx := r.Context()
 
-	domainUsersFilter := listUsersParamsToDomainUsersPaginatedFilter(params)
+	domainUsersFilter := listUsersParamsToDomain(params)
 	domainPaginatedUsers, err := h.service.ListUsers(ctx, domainUsersFilter)
 	if err != nil {
 		var domainErrFilterValueInvalid *domain.ErrFilterValueInvalid
@@ -136,7 +136,7 @@ func (h *handler) PatchUserByID(w http.ResponseWriter, r *http.Request, userID s
 		return
 	}
 
-	domainEditableUser := userPatchToDomainEditableUserPatch(userPatch)
+	domainEditableUser := userPatchToDomain(userPatch)
 	domainUser, err := h.service.PatchUser(ctx, userID, domainEditableUser)
 	if err != nil {
 		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
@@ -303,4 +303,75 @@ func (h *handler) SignInUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeResponseJSON(w, http.StatusOK, responseBody)
+}
+
+// userPostToDomain returns a domain editable user with password based on the standardized user post.
+func userPostToDomain(userPost spec.UserPost) domain.EditableUserWithPassword {
+	return domain.EditableUserWithPassword{
+		EditableUser: domain.EditableUser{
+			Username:  domain.Username(userPost.Username),
+			FirstName: domain.Name(userPost.FirstName),
+			LastName:  domain.Name(userPost.LastName),
+		},
+		Password: domain.Password(userPost.Password),
+	}
+}
+
+// userPatchToDomain returns a domain patchable user based on the standardized user patch.
+func userPatchToDomain(userPatch spec.UserPatch) domain.EditableUserPatch {
+	return domain.EditableUserPatch{
+		Username:  (*domain.Username)(userPatch.Username),
+		FirstName: (*domain.Name)(userPatch.FirstName),
+		LastName:  (*domain.Name)(userPatch.LastName),
+	}
+}
+
+// listUsersParamsToDomain returns a domain users paginated filter based on the standardized list users parameters.
+func listUsersParamsToDomain(params spec.ListUsersParams) domain.UsersPaginatedFilter {
+	var domainSort domain.PaginationSort[domain.UserPaginatedSort]
+	if params.Sort != nil {
+		domainSort = domain.UserPaginatedSort(*params.Sort)
+	}
+
+	return domain.UsersPaginatedFilter{
+		PaginatedRequest: paginatedRequestToDomain(
+			params.Limit,
+			params.Offset,
+			(*spec.OrderQueryParam)(params.Order),
+			domainSort,
+		),
+		Username:  (*domain.Username)(params.Username),
+		FirstName: (*domain.Name)(params.FirstName),
+		LastName:  (*domain.Name)(params.LastName),
+	}
+}
+
+// userFromDomain returns a standardized user based on the domain model.
+func userFromDomain(user domain.User) spec.User {
+	return spec.User{
+		Id:         user.ID,
+		Username:   string(user.Username),
+		FirstName:  string(user.FirstName),
+		LastName:   string(user.LastName),
+		CreatedAt:  user.CreatedAt,
+		ModifiedAt: user.ModifiedAt,
+	}
+}
+
+// usersFromDomain returns standardized users based on the domain model.
+func usersFromDomain(users []domain.User) []spec.User {
+	specUsers := make([]spec.User, len(users))
+	for i, user := range users {
+		specUsers[i] = userFromDomain(user)
+	}
+
+	return specUsers
+}
+
+// usersPaginatedFromDomain returns a standardized users paginated response based on the domain model.
+func usersPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.User]) spec.UsersPaginated {
+	return spec.UsersPaginated{
+		Total: paginatedResponse.Total,
+		Users: usersFromDomain(paginatedResponse.Results),
+	}
 }
