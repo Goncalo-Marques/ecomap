@@ -683,6 +683,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
         500:
           $ref: "#/components/responses/InternalServerError"
     get:
@@ -753,6 +757,47 @@ paths:
                 $ref: "#/components/schemas/Container"
         400:
           description: Invalid container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a container by ID.
+      operationId: patchContainerByID
+      description: Modifies the container with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContainerPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid container ID or request body.
           content:
             application/json:
               schema:
@@ -1255,6 +1300,13 @@ components:
       required:
         - category
         - geoJson
+      properties:
+        category:
+          $ref: "#/components/schemas/ContainerCategory"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    ContainerPatch:
+      type: object
       properties:
         category:
           $ref: "#/components/schemas/ContainerCategory"
