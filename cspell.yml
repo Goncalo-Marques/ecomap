@@ -55,6 +55,7 @@ ignoreWords:
   - transporthttp
   - trgm
   - unparam
+  - birthdate
 ignorePaths:
   - "*.svg"
   - .golangci.yml

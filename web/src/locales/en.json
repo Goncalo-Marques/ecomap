@@ -21,5 +21,22 @@
 	"notFound.description": "The page you are looking for does not exist.",
 	"forbidden.title": "Access forbidden",
 	"forbidden.description": "You do not have permission to access this page.",
-	"map.layers": "Layers"
+	"map.layers": "Layers",
+	"employees.title": "Employees",
+	"employees.addEmployee": "Add new employee",
+	"employees.search": "Search by name",
+	"employees.save": "Save",
+	"employees.cancel": "Cancel",
+	"employees.personalInfo": "Personal information",
+	"employees.firstName": "First Name",
+	"employees.lastName": "Last Name",
+	"employees.username": "Username",
+	"employees.birthdate": "Birthdate",
+	"employees.location": "Location",
+	"employees.phoneNumber": "Phone Number",
+	"employees.work": "Work",
+	"employees.startTime": "Start time",
+	"employees.endTime": "End time",
+	"employees.position": "Position",
+	"employees.select.location": "Select Location"
 }

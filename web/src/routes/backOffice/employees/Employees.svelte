@@ -2,10 +2,13 @@
 <script lang="ts">
 	import type { ComponentProps } from "svelte";
 	import Button from "../../../lib/components/Button.svelte";
+	import Input from "../../../lib/components/Input.svelte";
 	import Table from "../../../lib/components/table/Table.svelte";
 	import type { Columns, Sorting } from "../../../lib/components/table/types";
 	import ecomapHttpClient from "../../../lib/clients/ecomap/http";
 	import type { components } from "../../../../api/ecomap/http";
+	import { t } from "../../../lib/utils/i8n";
+	import Icon from "../../../lib/components/Icon.svelte";
 
 	type User = components["schemas"]["User"];
 	type UserSortableFields = NonNullable<
@@ -118,24 +121,61 @@
 </script>
 
 <main>
-	<Table
-		{columns}
-		{sorting}
-		rows={usersPromise}
-		pagination={{
-			name: "users",
-			pageIndex,
-			pageSize,
-			total: usersAmount,
-			onPageChange: handlePageChange,
-		}}
-		onSortingChange={handleSortingChange}
-	/>
+	<section>
+		<h1>{$t("employees.title")}</h1>
+		<header>
+			<Input placeholder={$t("employees.search")} />
+			<div class="left">
+				<Button>
+					<Icon name="add"></Icon>
+					{$t("employees.addEmployee")}
+				</Button>
+			</div>
+		</header>
+
+		<Table
+			{columns}
+			{sorting}
+			rows={usersPromise}
+			pagination={{
+				name: "users",
+				pageIndex,
+				pageSize,
+				total: usersAmount,
+				onPageChange: handlePageChange,
+			}}
+			onSortingChange={handleSortingChange}
+		/>
+	</section>
 </main>
 
 <style>
 	main {
 		flex: 1;
 		padding: 2.5rem;
+	}
+	section {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding: 2rem;
+		border-radius: 0.25rem;
+		gap: 2.5rem;
+		background-color: var(--white);
+		outline: 1px solid var(--gray-300);
+	}
+
+	h1 {
+		font: var(--text-2xl-semibold);
+		color: var(--gray-900);
+	}
+
+	header {
+		display: flex;
+		align-items: center;
+	}
+
+	.left {
+		margin-left: auto;
 	}
 </style>
