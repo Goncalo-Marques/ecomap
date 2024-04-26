@@ -3,7 +3,10 @@
 	import { onMount, type ComponentProps } from "svelte";
 	import Button from "../../../lib/components/Button.svelte";
 	import Table from "../../../lib/components/table/Table.svelte";
-	import type { Columns, Sorting } from "../../../lib/components/table/types";
+	import type {
+		Columns,
+		SortingDirection,
+	} from "../../../lib/components/table/types";
 	import ecomapHttpClient from "../../../lib/clients/ecomap/http";
 	import type { components } from "../../../../api/ecomap/http";
 
@@ -19,10 +22,8 @@
 
 	const pageSize = 1;
 
-	let sorting: Sorting<UserSortableFields> = {
-		field: "firstName",
-		direction: "asc",
-	};
+	let sortingField: UserSortableFields = "firstName";
+	let sortingOrder: SortingDirection = "asc";
 
 	const columns: Columns<User> = [
 		{
@@ -84,7 +85,8 @@
 	async function fetchUsers(
 		pageIndex: number,
 		pageSize: number,
-		sorting: Sorting<UserSortableFields>,
+		sortingField: UserSortableFields,
+		sortingOrder: SortingDirection,
 	) {
 		loading = true;
 
@@ -93,8 +95,8 @@
 				query: {
 					offset: pageIndex * pageSize,
 					limit: pageSize,
-					sort: sorting.field,
-					order: sorting.direction,
+					sort: sortingField,
+					order: sortingOrder,
 				},
 			},
 		});
@@ -111,25 +113,30 @@
 		users = res.data.users;
 	}
 
-	function handleSortingChange(newSorting: Sorting<UserSortableFields>) {
-		fetchUsers(pageIndex, pageSize, newSorting);
-		sorting = newSorting;
+	function handleSortingChange(
+		field: UserSortableFields,
+		order: SortingDirection,
+	) {
+		fetchUsers(pageIndex, pageSize, field, order);
+		sortingField = field;
+		sortingOrder = order;
 	}
 
 	async function handlePageChange(newPageIndex: number) {
-		fetchUsers(newPageIndex, pageSize, sorting);
+		fetchUsers(newPageIndex, pageSize, sortingField, sortingOrder);
 		pageIndex = newPageIndex;
 	}
 
 	onMount(() => {
-		fetchUsers(pageIndex, pageSize, sorting);
+		fetchUsers(pageIndex, pageSize, sortingField, sortingOrder);
 	});
 </script>
 
 <main>
 	<Table
 		{columns}
-		{sorting}
+		{sortingField}
+		{sortingOrder}
 		{loading}
 		rows={users}
 		pagination={{

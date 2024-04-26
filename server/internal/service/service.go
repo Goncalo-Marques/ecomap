@@ -14,17 +14,6 @@ import (
 )
 
 const (
-	fieldUsername    = "username"
-	fieldPassword    = "password"
-	fieldNewPassword = "newPassword"
-	fieldFirstName   = "firstName"
-	fieldLastName    = "lastName"
-
-	filterLimit  = "limit"
-	filterOffset = "offset"
-	filterSort   = "sort"
-	filterOrder  = "order"
-
 	descriptionInvalidFieldValue       = "service: invalid field value"
 	descriptionInvalidFilterValue      = "service: invalid filter value"
 	descriptionFailedHashPassword      = "service: failed to hash password"
@@ -43,18 +32,25 @@ type AuthenticationService interface {
 
 // Store defines the store interface.
 type Store interface {
-	CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (domain.User, error)
+	CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.EditableUserWithPassword) (uuid.UUID, error)
 	ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error)
 	GetUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
 	GetUserByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.User, error)
 	GetUserSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
-	PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error)
+	PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableUser domain.EditableUserPatch) error
 	UpdateUserPassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
-	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.User, error)
+	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
+	CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error)
 	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
+	PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableEmployee domain.EditableEmployeePatch, roadID, municipalityID *int) error
+	UpdateEmployeePassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
+	DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+
+	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 
 	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)
 }
@@ -130,4 +126,9 @@ func logAndWrapError(ctx context.Context, err error, description string, logAttr
 // replaceSpacesWithHyphen returns s with no extra spaces and separates it with a hyphen.
 func replaceSpacesWithHyphen(s string) string {
 	return strings.Join(strings.Fields(s), "-")
+}
+
+// removeExtraSpaces returns s with no extra spaces.
+func removeExtraSpaces(s string) string {
+	return strings.Join(strings.Fields(s), " ")
 }

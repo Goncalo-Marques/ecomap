@@ -7,10 +7,9 @@
 	import Table from "../../../../lib/components/table/Table.svelte";
 	import type {
 		Columns,
-		Sorting,
+		SortingDirection,
 	} from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
-	import { MISSING_VALUE_SYMBOL } from "../../../../lib/constants/symbols";
 	import { t } from "../../../../lib/utils/i8n";
 	import containersStore from "./containersStore";
 	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
@@ -29,12 +28,13 @@
 		},
 		{
 			type: "accessor",
-			field: "geom",
+			field: "geoJson",
 			header: $t("containers.location"),
 			enableSorting: false,
-			cell() {
-				// TODO: Display address of the container.
-				return MISSING_VALUE_SYMBOL;
+			cell(geoJson) {
+				const { municipalityName, wayName } = geoJson.properties;
+
+				return `${wayName}, ${municipalityName}`;
 			},
 		},
 		{
@@ -70,13 +70,18 @@
 
 	/**
 	 * Handles changes of the containers table sorting state.
-	 * @param sorting New sorting state.
+	 * @param field New sorting field.
+	 * @param order New sorting order.
 	 */
-	function handleSortingChange(sorting: Sorting<ContainerSortableFields>) {
+	function handleSortingChange(
+		field: ContainerSortableFields,
+		order: SortingDirection,
+	) {
 		filters.update(store => {
 			return {
 				...store,
-				sorting,
+				sort: field,
+				order,
 			};
 		});
 	}
@@ -85,7 +90,8 @@
 <Table
 	{columns}
 	loading={$loading}
-	sorting={$filters.sorting}
+	sortingField={$filters.sort}
+	sortingOrder={$filters.order}
 	rows={$data.containers}
 	pagination={{
 		name: $t("containers.title").toLowerCase(),
