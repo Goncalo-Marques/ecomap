@@ -221,7 +221,38 @@ func (h *handler) DeleteEmployeeByID(w http.ResponseWriter, r *http.Request, emp
 
 // UpdateEmployeePassword handles the http request to update an employee password.
 func (h *handler) UpdateEmployeePassword(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var passwordChange spec.PasswordChange
+	err = json.Unmarshal(requestBody, &passwordChange)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	err = h.service.UpdateEmployeePassword(ctx, domain.Username(passwordChange.Username), domain.Password(passwordChange.OldPassword), domain.Password(passwordChange.NewPassword))
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrCredentialsIncorrect):
+			unauthorized(w, errCredentialsIncorrect)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	writeResponseJSON(w, http.StatusNoContent, nil)
 }
 
 // ResetEmployeePassword handles the http request to reset an employee password.
