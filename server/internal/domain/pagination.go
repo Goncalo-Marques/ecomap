@@ -49,8 +49,8 @@ type PaginationSort[T any] interface {
 type PaginationOrder string
 
 const (
-	PaginationOrderAsc  PaginationOrder = "asc"
-	PaginationOrderDesc PaginationOrder = "desc"
+	PaginationOrderAsc  PaginationOrder = "Asc"
+	PaginationOrderDesc PaginationOrder = "Desc"
 )
 
 // Valid returns true if the pagination order is valid, false otherwise.

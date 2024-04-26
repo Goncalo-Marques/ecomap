@@ -76,7 +76,14 @@ func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
 		return domain.PaginationOrder(orderDefaultValue)
 	}
 
-	return domain.PaginationOrder(*order)
+	switch *order {
+	case spec.OrderQueryParamAsc:
+		return domain.PaginationOrderAsc
+	case spec.OrderQueryParamDesc:
+		return domain.PaginationOrderDesc
+	default:
+		return domain.PaginationOrder(*order)
+	}
 }
 
 // limitToDomain returns a domain pagination limit based on the standardized query parameter model.
