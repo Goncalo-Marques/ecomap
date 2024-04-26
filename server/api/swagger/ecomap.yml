@@ -969,7 +969,7 @@ components:
     PhoneNumber:
       type: string
       maxLength: 20
-      example: +351 912 345 678
+      example: 351 912 345 678
 
     GeoJSONGeometryPoint:
       type: object
