@@ -16,6 +16,7 @@ const (
 	paginationLimitDefaultValue  = 100
 	paginationOffsetDefaultValue = 0
 
+	timeFormatDateOnly = "2006-01-02"
 	timeFormatTimeOnly = "15:04:05"
 )
 
@@ -24,6 +25,11 @@ var (
 	errGeoJSONGeometryTypeUnexpected = errors.New("unexpected geojson geometry type")
 )
 
+// dateStringFromTime returns a standardized date string based on the time model.
+func dateStringFromTime(time time.Time) string {
+	return time.UTC().Format(timeFormatDateOnly)
+}
+
 // dateFromTime returns a standardized date based on the time model.
 func dateFromTime(time time.Time) oapitypes.Date {
 	return oapitypes.Date{
@@ -31,7 +37,7 @@ func dateFromTime(time time.Time) oapitypes.Date {
 	}
 }
 
-// timeStringFromTime returns a standardized time based on the time model.
+// timeStringFromTime returns a standardized time string based on the time model.
 func timeStringFromTime(time time.Time) string {
 	return time.UTC().Format(timeFormatTimeOnly)
 }

@@ -52,6 +52,7 @@ type Service interface {
 	SignInUser(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 
 	CreateEmployee(ctx context.Context, editableEmployee domain.EditableEmployeeWithPassword) (domain.Employee, error)
+	ListEmployees(ctx context.Context, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 	PatchEmployee(ctx context.Context, id uuid.UUID, editableEmployee domain.EditableEmployeePatch) (domain.Employee, error)
 	UpdateEmployeePassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error
