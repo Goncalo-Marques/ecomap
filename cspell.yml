@@ -29,6 +29,7 @@ ignoreWords:
   - libboost
   - LINESTRING
   - mipmap
+  - nolint
   - nutsi
   - nutsii
   - nutsiii
@@ -53,6 +54,7 @@ ignoreWords:
   - testcontainers
   - transporthttp
   - trgm
+  - unparam
 ignorePaths:
   - "*.svg"
   - .golangci.yml

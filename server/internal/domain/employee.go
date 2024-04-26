@@ -51,6 +51,18 @@ type EditableEmployeeWithPassword struct {
 	Password
 }
 
+// EditableEmployeePatch defines the patchable employee structure.
+type EditableEmployeePatch struct {
+	Username      *Username
+	FirstName     *Name
+	LastName      *Name
+	DateOfBirth   *time.Time
+	PhoneNumber   *PhoneNumber
+	GeoJSON       GeoJSON
+	ScheduleStart *time.Time
+	ScheduleEnd   *time.Time
+}
+
 // Employee defines the employee structure.
 type Employee struct {
 	EditableEmployee

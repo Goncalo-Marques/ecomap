@@ -137,6 +137,72 @@ func (s *store) GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domai
 	return signIn, nil
 }
 
+// PatchEmployee executes a query to patch an employee with the specified identifier and data.
+func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableEmployee domain.EditableEmployeePatch, roadID, municipalityID *int) error {
+	var geoJSON []byte
+	var err error
+
+	if editableEmployee.GeoJSON != nil {
+		var geometry domain.GeoJSONGeometryPoint
+		if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
+			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
+				geometry = g
+			}
+		}
+
+		geoJSON, err = json.Marshal(geometry)
+		if err != nil {
+			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
+		}
+	}
+
+	commandTag, err := tx.Exec(ctx, `
+		UPDATE employees SET
+			username = coalesce($2, username),
+			first_name = coalesce($3, first_name),
+			last_name = coalesce($4, last_name),
+			date_of_birth = coalesce($5, date_of_birth),
+			phone_number = coalesce($6, phone_number),
+			geom = coalesce(ST_GeomFromGeoJSON($7), geom),
+			road_id = CASE 
+					WHEN $7 IS NOT NULL THEN $8 
+					ELSE road_id
+				END,
+			municipality_id = CASE 
+					WHEN $7 IS NOT NULL THEN $9 
+					ELSE municipality_id
+				END,
+			schedule_start = coalesce($10, schedule_start),
+			schedule_end = coalesce($11, schedule_end)
+		WHERE id = $1
+	`,
+		id,
+		editableEmployee.Username,
+		editableEmployee.FirstName,
+		editableEmployee.LastName,
+		editableEmployee.DateOfBirth,
+		editableEmployee.PhoneNumber,
+		geoJSON,
+		roadID,
+		municipalityID,
+		editableEmployee.ScheduleStart,
+		editableEmployee.ScheduleEnd,
+	)
+	if err != nil {
+		if getConstraintName(err) == constraintEmployeesUsernameKey {
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAlreadyExists)
+		}
+
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeNotFound)
+	}
+
+	return nil
+}
+
 // getEmployeeFromRow returns the employee by scanning the given row.
 func getEmployeeFromRow(row pgx.Row) (domain.Employee, error) {
 	var employee domain.Employee

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
@@ -121,7 +122,68 @@ func (h *handler) GetEmployeeByID(w http.ResponseWriter, r *http.Request, employ
 
 // PatchEmployeeByID handles the http request to modify an employee by ID.
 func (h *handler) PatchEmployeeByID(w http.ResponseWriter, r *http.Request, employeeID spec.EmployeeIdPathParam) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var employeePatch spec.EmployeePatch
+	err = json.Unmarshal(requestBody, &employeePatch)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	domainEditableEmployee, err := employeePatchToDomain(employeePatch)
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	domainEmployee, err := h.service.PatchEmployee(ctx, employeeID, domainEditableEmployee)
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrEmployeeNotFound):
+			notFound(w, errEmployeeNotFound)
+		case errors.Is(err, domain.ErrEmployeeAlreadyExists):
+			conflict(w, errEmployeeAlreadyExists)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	employee, err := employeeFromDomain(domainEmployee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(employee)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // DeleteEmployeeByID handles the http request to delete an employee by ID.
@@ -185,12 +247,12 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
 	}
 
-	ScheduleStart, err := timeStringToTime(employeePost.ScheduleStart)
+	scheduleStart, err := timeStringToTime(employeePost.ScheduleStart)
 	if err != nil {
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleStart}
 	}
 
-	ScheduleEnd, err := timeStringToTime(employeePost.ScheduleEnd)
+	scheduleEnd, err := timeStringToTime(employeePost.ScheduleEnd)
 	if err != nil {
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
 	}
@@ -216,10 +278,62 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 					Coordinates: [2]float64(employeePost.GeoJson.Geometry.Coordinates),
 				},
 			},
-			ScheduleStart: ScheduleStart,
-			ScheduleEnd:   ScheduleEnd,
+			ScheduleStart: scheduleStart,
+			ScheduleEnd:   scheduleEnd,
 		},
 		Password: domain.Password(employeePost.Password),
+	}, nil
+}
+
+// employeePatchToDomain returns a domain patchable employee based on the standardized employee patch.
+func employeePatchToDomain(employeePatch spec.EmployeePatch) (domain.EditableEmployeePatch, error) {
+	var dateOfBirth *time.Time
+	if employeePatch.DateOfBirth != nil {
+		dateOfBirth = &employeePatch.DateOfBirth.Time
+	}
+
+	var geoJSON domain.GeoJSON
+	if employeePatch.GeoJson != nil {
+		if len(employeePatch.GeoJson.Geometry.Coordinates) != 2 {
+			return domain.EditableEmployeePatch{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
+		}
+
+		geoJSON = domain.GeoJSONFeature{
+			Geometry: domain.GeoJSONGeometryPoint{
+				Coordinates: [2]float64(employeePatch.GeoJson.Geometry.Coordinates),
+			},
+		}
+	}
+
+	var scheduleStart *time.Time
+	if employeePatch.ScheduleStart != nil {
+		schedule, err := timeStringToTime(*employeePatch.ScheduleStart)
+		if err != nil {
+			return domain.EditableEmployeePatch{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleStart}
+		}
+
+		scheduleStart = &schedule
+	}
+
+	var scheduleEnd *time.Time
+	if employeePatch.ScheduleEnd != nil {
+		schedule, err := timeStringToTime(*employeePatch.ScheduleEnd)
+		if err != nil {
+			return domain.EditableEmployeePatch{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
+		}
+
+		scheduleEnd = &schedule
+	}
+
+	return domain.EditableEmployeePatch{
+		Username:      (*domain.Username)(employeePatch.Username),
+		FirstName:     (*domain.Name)(employeePatch.FirstName),
+		LastName:      (*domain.Name)(employeePatch.LastName),
+		DateOfBirth:   dateOfBirth,
+		PhoneNumber:   (*domain.PhoneNumber)(employeePatch.PhoneNumber),
+		GeoJSON:       geoJSON,
+		ScheduleStart: scheduleStart,
+		ScheduleEnd:   scheduleEnd,
 	}, nil
 }
 

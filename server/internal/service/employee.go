@@ -19,6 +19,7 @@ const (
 	descriptionFailedGetEmployeeByID       = "service: failed to get employee by id"
 	descriptionFailedGetEmployeeByUsername = "service: failed to get employee by username"
 	descriptionFailedGetEmployeeSignIn     = "service: failed to get employee sign-in"
+	descriptionFailedPatchEmployee         = "service: failed to patch employee"
 )
 
 // CreateEmployee creates a new employee with the specified data.
@@ -144,6 +145,109 @@ func (s *service) GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Emp
 			return domain.Employee{}, logInfoAndWrapError(ctx, err, descriptionFailedGetEmployeeByID, logAttrs...)
 		default:
 			return domain.Employee{}, logAndWrapError(ctx, err, descriptionFailedGetEmployeeByID, logAttrs...)
+		}
+	}
+
+	return employee, nil
+}
+
+// PatchEmployee modifies the employee with the specified identifier.
+func (s *service) PatchEmployee(ctx context.Context, id uuid.UUID, editableEmployee domain.EditableEmployeePatch) (domain.Employee, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "PatchEmployee"),
+		slog.String(logging.EmployeeID, id.String()),
+	}
+
+	if editableEmployee.Username != nil {
+		username := domain.Username(replaceSpacesWithHyphen(string(*editableEmployee.Username)))
+		username = domain.Username(strings.ToLower(string(username)))
+		editableEmployee.Username = &username
+	}
+	if editableEmployee.FirstName != nil {
+		firstName := domain.Name(removeExtraSpaces(string(*editableEmployee.FirstName)))
+		editableEmployee.FirstName = &firstName
+	}
+	if editableEmployee.LastName != nil {
+		lastName := domain.Name(removeExtraSpaces(string(*editableEmployee.LastName)))
+		editableEmployee.LastName = &lastName
+	}
+
+	if editableEmployee.Username != nil && !editableEmployee.Username.Valid() {
+		return domain.Employee{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldUsername}, descriptionInvalidFieldValue, logAttrs...)
+	}
+	if editableEmployee.FirstName != nil && !editableEmployee.FirstName.Valid() {
+		return domain.Employee{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldFirstName}, descriptionInvalidFieldValue, logAttrs...)
+	}
+	if editableEmployee.LastName != nil && !editableEmployee.LastName.Valid() {
+		return domain.Employee{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldLastName}, descriptionInvalidFieldValue, logAttrs...)
+	}
+	if editableEmployee.PhoneNumber != nil && !editableEmployee.PhoneNumber.Valid() {
+		return domain.Employee{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldPhoneNumber}, descriptionInvalidFieldValue, logAttrs...)
+	}
+
+	var geometry domain.GeoJSONGeometryPoint
+	if editableEmployee.GeoJSON != nil {
+		if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
+			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
+				geometry = g
+			}
+		}
+	}
+
+	var employee domain.Employee
+	var err error
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		var roadID *int
+		var municipalityID *int
+
+		if editableEmployee.GeoJSON != nil {
+			road, err := s.store.GetRoadByGeometry(ctx, tx, geometry)
+			if err != nil {
+				if !errors.Is(err, domain.ErrRoadNotFound) {
+					return err
+				}
+			} else {
+				roadID = &road.ID
+			}
+
+			municipality, err := s.store.GetMunicipalityByGeometry(ctx, tx, geometry)
+			if err != nil {
+				if !errors.Is(err, domain.ErrMunicipalityNotFound) {
+					return err
+				}
+			} else {
+				municipalityID = &municipality.ID
+			}
+		}
+
+		err = s.store.PatchEmployee(ctx, tx, id, editableEmployee, roadID, municipalityID)
+		if err != nil {
+			return err
+		}
+
+		employee, err = s.store.GetEmployeeByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		if employee.ScheduleStart.After(employee.ScheduleEnd) {
+			if editableEmployee.ScheduleStart != nil {
+				return &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleStart}
+			} else {
+				return &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrEmployeeNotFound),
+			errors.Is(err, domain.ErrEmployeeAlreadyExists):
+			return domain.Employee{}, logInfoAndWrapError(ctx, err, descriptionFailedPatchEmployee, logAttrs...)
+		default:
+			return domain.Employee{}, logAndWrapError(ctx, err, descriptionFailedPatchEmployee, logAttrs...)
 		}
 	}
 

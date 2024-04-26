@@ -145,7 +145,7 @@ func (s *service) GetUserByID(ctx context.Context, id uuid.UUID) (domain.User, e
 	return user, nil
 }
 
-// PatchUser modifies the user with the specified identifier. Only the specified fields in the request body are updated.
+// PatchUser modifies the user with the specified identifier.
 func (s *service) PatchUser(ctx context.Context, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "PatchUser"),

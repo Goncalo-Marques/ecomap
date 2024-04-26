@@ -1149,14 +1149,10 @@ components:
       properties:
         username:
           $ref: "#/components/schemas/Username"
-        password:
-          $ref: "#/components/schemas/Password"
         firstName:
           $ref: "#/components/schemas/Name"
         lastName:
           $ref: "#/components/schemas/Name"
-        role:
-          $ref: "#/components/schemas/EmployeeRole"
         dateOfBirth:
           $ref: "#/components/schemas/Date"
         phoneNumber:
