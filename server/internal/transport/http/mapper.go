@@ -60,7 +60,14 @@ func logicalOperatorToDomain(logicalOperator *spec.LogicalOperatorQueryParam) do
 		return domain.PaginationLogicalOperator(logicalOperatorDefaultValue)
 	}
 
-	return domain.PaginationLogicalOperator(*logicalOperator)
+	switch *logicalOperator {
+	case spec.LogicalOperatorQueryParamAnd:
+		return domain.PaginationLogicalOperatorAnd
+	case spec.LogicalOperatorQueryParamOr:
+		return domain.PaginationLogicalOperatorOr
+	default:
+		return domain.PaginationLogicalOperator(*logicalOperator)
+	}
 }
 
 // orderToDomain returns a domain order based on the standardized query parameter model.

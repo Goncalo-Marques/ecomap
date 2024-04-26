@@ -23,8 +23,8 @@ func (e *ErrFilterValueInvalid) Error() string {
 type PaginationLogicalOperator string
 
 const (
-	PaginationLogicalOperatorAnd PaginationLogicalOperator = "and"
-	PaginationLogicalOperatorOr  PaginationLogicalOperator = "or"
+	PaginationLogicalOperatorAnd PaginationLogicalOperator = "And"
+	PaginationLogicalOperatorOr  PaginationLogicalOperator = "Or"
 )
 
 // Valid returns true if the pagination logical operator is valid, false otherwise.
