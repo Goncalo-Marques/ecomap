@@ -1,4 +1,4 @@
-import { get, writable } from "svelte/store";
+import { derived, get, writable, type Writable } from "svelte/store";
 import type {
 	FiltersToSearchParams,
 	SearchParamsToFilters,
@@ -6,9 +6,32 @@ import type {
 	TableStore,
 } from "../../domain/stores/table";
 import { updateSearchParams } from "../utils/url";
+import url from "./url";
+
+/**
+ * Fetches data to be displayed on a table.
+ * @param loading Loading store.
+ * @param data Data store.
+ * @param filters Filters.
+ * @param dataFn Function that retrieves the data to be displayed in a table.
+ */
+async function fetchData<TData, TFilters>(
+	loading: Writable<boolean>,
+	data: Writable<TData>,
+	filters: TFilters,
+	dataFn: DataFn<TData, TFilters>,
+) {
+	loading.set(true);
+
+	const responseData = await dataFn(filters);
+	data.set(responseData);
+
+	loading.set(false);
+}
 
 /**
  * Creates a store to be used to interact with a table component.
+ * @param pathname Pathname of the location where the table is used. Used to determine when to request new data.
  * @param initialData Initial data of the store.
  * @param filtersToSearchParams Mapper of filters to URL search params.
  * @param searchParamsToFilters Mapper of URL search params to filters.
@@ -16,6 +39,7 @@ import { updateSearchParams } from "../utils/url";
  * @returns Table store.
  */
 export function createTableStore<TData, TFilters>(
+	pathname: string,
 	initialData: TData,
 	filtersToSearchParams: FiltersToSearchParams<TFilters>,
 	searchParamsToFilters: SearchParamsToFilters<TFilters>,
@@ -25,9 +49,9 @@ export function createTableStore<TData, TFilters>(
 
 	const loading = writable(false);
 
-	const searchParams = new URLSearchParams(location.search);
-	const filters = writable(searchParamsToFilters(searchParams));
-	const { set: setFilters } = filters;
+	const filters = derived(url, newUrl =>
+		searchParamsToFilters(newUrl.searchParams),
+	);
 
 	const store: TableStore<TData, TFilters> = {
 		data: {
@@ -37,34 +61,27 @@ export function createTableStore<TData, TFilters>(
 			subscribe: loading.subscribe,
 		},
 		filters: {
-			subscribe: filters.subscribe,
-			set(value) {
-				setFilters(value);
+			subscribe(run, invalidate) {
+				return filters.subscribe(updatedFilters => {
+					const currentUrl = get(url);
+					if (currentUrl.pathname === pathname) {
+						// Fetch new data when filters are updated.
+						fetchData(loading, data, updatedFilters, dataFn);
+					}
 
-				// Fetch new data after setting the filters.
-				store.fetchData();
+					run(updatedFilters);
+				}, invalidate);
+			},
+			set(value) {
+				// Update the URL search params.
+				updateSearchParams(filtersToSearchParams(value));
 			},
 			update(updater) {
 				const updatedFilters = updater(get(filters));
 
-				setFilters(updatedFilters);
-
-				// Fetch new data after updating the filters.
-				store.fetchData();
+				// Update the URL search params.
+				updateSearchParams(filtersToSearchParams(updatedFilters));
 			},
-		},
-		async fetchData() {
-			loading.set(true);
-
-			const currentFilters = get(filters);
-
-			// Updates the URL search params with the current filters.
-			updateSearchParams(filtersToSearchParams(currentFilters));
-
-			const responseData = await dataFn(currentFilters);
-			data.set(responseData);
-
-			loading.set(false);
 		},
 	};
 

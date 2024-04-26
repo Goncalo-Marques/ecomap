@@ -133,34 +133,19 @@ export interface ColumnCommon {
 }
 
 /**
- * Callback fired when sorting state changes.
- * @template TSortableFields Type of the sortable fields.
- * @param sorting Updated sorting state.
- */
-export type onSortingChangeFn<TSortableFields extends SortableField> = (
-	sorting: Sorting<TSortableFields>,
-) => void;
-
-/**
  * The available directions of a column sorting state.
  */
 export type SortingDirection = "asc" | "desc" | undefined;
 
 /**
- * Sorting state.
+ * Callback fired when sorting state changes.
  * @template TSortableFields Type of the sortable fields.
+ * @param sorting Updated sorting state.
  */
-export interface Sorting<TSortableFields extends SortableField> {
-	/**
-	 * The name of the row field with the sorting.
-	 */
-	field: TSortableFields;
-
-	/**
-	 * The direction of the sort of the field.
-	 */
-	direction: SortingDirection;
-}
+export type onSortingChangeFn<TSortableFields extends SortableField> = (
+	field: TSortableFields,
+	direction: SortingDirection,
+) => void;
 
 /**
  * Columns sorting state.

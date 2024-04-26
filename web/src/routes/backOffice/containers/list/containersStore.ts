@@ -5,16 +5,15 @@ import type {
 import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 import { createTableStore } from "../../../../lib/stores/table";
+import { BackOfficeRoutes } from "../../../constants/routes";
 
 /**
  * The search parameter names for each filter of the containers table.
  */
 const FILTERS_PARAMS_NAMES = {
 	pageIndex: "pageIndex",
-	sorting: {
-		field: "sort",
-		direction: "order",
-	},
+	sort: "sort",
+	order: "order",
 } as const;
 
 /**
@@ -30,10 +29,8 @@ const initialData: PaginatedContainers = {
  */
 export const initialFilters: ContainersFilters = {
 	pageIndex: 0,
-	sorting: {
-		field: "category",
-		direction: "asc",
-	},
+	sort: "category",
+	order: "asc",
 };
 
 /**
@@ -45,14 +42,14 @@ function searchParamsToFilters(
 	searchParams: URLSearchParams,
 ): ContainersFilters {
 	let pageIndex = initialFilters.pageIndex;
-	let sortingField = initialFilters.sorting.field;
-	let sortingDirection = initialFilters.sorting.direction;
+	let sortingField = initialFilters.sort;
+	let sortingDirection = initialFilters.order;
 
 	const pageIndexParam = Number(
 		searchParams.get(FILTERS_PARAMS_NAMES.pageIndex),
 	);
-	const sortParam = searchParams.get(FILTERS_PARAMS_NAMES.sorting.field);
-	const orderParam = searchParams.get(FILTERS_PARAMS_NAMES.sorting.direction);
+	const sortParam = searchParams.get(FILTERS_PARAMS_NAMES.sort);
+	const orderParam = searchParams.get(FILTERS_PARAMS_NAMES.order);
 
 	// Update page index when it's is a valid number.
 	if (!Number.isNaN(pageIndexParam)) {
@@ -82,10 +79,8 @@ function searchParamsToFilters(
 
 	return {
 		pageIndex,
-		sorting: {
-			field: sortingField,
-			direction: sortingDirection,
-		},
+		sort: sortingField,
+		order: sortingDirection,
 	};
 }
 
@@ -95,15 +90,15 @@ function searchParamsToFilters(
  * @returns URL search params.
  */
 function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
-	const { pageIndex, sorting } = filters;
+	const { pageIndex, sort, order } = filters;
 
 	const searchParams = new URLSearchParams(location.search);
 
 	searchParams.set(FILTERS_PARAMS_NAMES.pageIndex, pageIndex.toString());
-	searchParams.set(FILTERS_PARAMS_NAMES.sorting.field, sorting.field);
+	searchParams.set(FILTERS_PARAMS_NAMES.sort, sort);
 
-	if (sorting.direction) {
-		searchParams.set(FILTERS_PARAMS_NAMES.sorting.direction, sorting.direction);
+	if (order) {
+		searchParams.set(FILTERS_PARAMS_NAMES.order, order);
 	}
 
 	return searchParams;
@@ -117,15 +112,15 @@ function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
 async function getContainers(
 	filters: ContainersFilters,
 ): Promise<PaginatedContainers> {
-	const { pageIndex, sorting } = filters;
+	const { pageIndex, sort, order } = filters;
 
 	const res = await ecomapHttpClient.GET("/containers", {
 		params: {
 			query: {
 				offset: pageIndex * DEFAULT_PAGE_SIZE,
 				limit: DEFAULT_PAGE_SIZE,
-				sort: sorting.field,
-				order: sorting.direction,
+				sort,
+				order,
 			},
 		},
 	});
@@ -138,6 +133,7 @@ async function getContainers(
 }
 
 const containersStore = createTableStore(
+	BackOfficeRoutes.CONTAINERS,
 	initialData,
 	filtersToSearchParams,
 	searchParamsToFilters,

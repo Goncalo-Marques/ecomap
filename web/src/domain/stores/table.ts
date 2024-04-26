@@ -24,11 +24,6 @@ export interface TableStore<TData, TFilters> {
 	 * Used to store the filters of a table.
 	 */
 	filters: Writable<TFilters>;
-
-	/**
-	 * Requests new data.
-	 */
-	fetchData(): Promise<void>;
 }
 
 /**

@@ -4,7 +4,6 @@ import type {
 	Columns,
 	TableCellSvelteComponent,
 	Row,
-	Sorting,
 	SortingColumns,
 	SortingDirection,
 	SortableField,
@@ -43,14 +42,15 @@ export function getColumnsSorting<
 	TSortableFields extends SortableField,
 >(
 	columns: Columns<TRow>,
-	sorting: Sorting<TSortableFields> | null,
+	sortingField: TSortableFields | null,
+	sortingDirection: SortingDirection | null,
 ): SortingColumns<TRow> {
 	const fields = getColumnsFields(columns);
 	const columnsSorting = {} as SortingColumns<TRow>;
 
 	for (const field of fields) {
-		if (sorting && field === sorting.field) {
-			columnsSorting[field] = sorting.direction;
+		if (sortingField && sortingDirection && field === sortingField) {
+			columnsSorting[field] = sortingDirection;
 		} else {
 			columnsSorting[field] = undefined;
 		}

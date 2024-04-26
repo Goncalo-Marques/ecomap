@@ -14,7 +14,8 @@
 	import type {
 		Columns,
 		Pagination,
-		Sorting,
+		SortingColumns,
+		SortingDirection,
 		onSortingChangeFn,
 	} from "./types";
 
@@ -48,17 +49,23 @@
 	export let loading: boolean = false;
 
 	/**
-	 * The sorting state of the table.
+	 * The sorting field of the table.
 	 * @default null
 	 */
-	export let sorting: Sorting<TSortableFields> | null = null;
+	export let sortingField: TSortableFields | null = null;
+
+	/**
+	 * The sorting order of the table.
+	 * @default null
+	 */
+	export let sortingOrder: SortingDirection | null = null;
 
 	/**
 	 * Map that contains the sorting state for each column.
 	 * @example
 	 * { id: "asc", name: undefined }
 	 */
-	let columnsSorting = getColumnsSorting(columns, sorting);
+	let columnsSorting: SortingColumns<TRow>;
 
 	/**
 	 * Handles on click event for each table header cell.
@@ -90,16 +97,18 @@
 			);
 		}
 
-		const updatedSorting: Sorting<TSortableFields> = {
-			field: field as TSortableFields,
-			direction: toggleDirection(direction),
-		};
+		const updatedSortingField = field as TSortableFields;
+		const updatedSortingDirection = toggleDirection(direction);
 
 		// Retrieve the updated columns sorting map with the updated sorting state.
-		columnsSorting = getColumnsSorting(columns, updatedSorting);
+		columnsSorting = getColumnsSorting(
+			columns,
+			updatedSortingField,
+			updatedSortingDirection,
+		);
 
 		// Dispatch onSortingChange callback with the updated sorting state.
-		onSortingChange?.(updatedSorting);
+		onSortingChange?.(updatedSortingField, updatedSortingDirection);
 	}
 
 	/**
@@ -152,6 +161,9 @@
 
 		pagination?.onPageChange(pagination.pageIndex + 1);
 	}
+
+	// Re-constructs columnsSorting every time columns, sortingField or sortingOrder changes.
+	$: columnsSorting = getColumnsSorting(columns, sortingField, sortingOrder);
 </script>
 
 <div class="table-container">
