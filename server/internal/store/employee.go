@@ -399,18 +399,6 @@ func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID)
 	return nil
 }
 
-// employeeRoleToDomain returns a domain employee role based on the store model.
-func employeeRoleToDomain(role string) domain.EmployeeRole {
-	switch role {
-	case "waste_operator":
-		return domain.EmployeeRoleWasteOperator
-	case "manager":
-		return domain.EmployeeRoleManager
-	default:
-		return domain.EmployeeRole(role)
-	}
-}
-
 // employeeRoleFromDomain returns a store employee role based on the domain model.
 func employeeRoleFromDomain(role domain.EmployeeRole) string {
 	switch role {
@@ -420,6 +408,18 @@ func employeeRoleFromDomain(role domain.EmployeeRole) string {
 		return "manager"
 	default:
 		return string(role)
+	}
+}
+
+// employeeRoleToDomain returns a domain employee role based on the store model.
+func employeeRoleToDomain(role string) domain.EmployeeRole {
+	switch role {
+	case "waste_operator":
+		return domain.EmployeeRoleWasteOperator
+	case "manager":
+		return domain.EmployeeRoleManager
+	default:
+		return domain.EmployeeRole(role)
 	}
 }
 
