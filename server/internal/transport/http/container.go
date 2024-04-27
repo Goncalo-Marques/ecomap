@@ -80,7 +80,38 @@ func (h *handler) CreateContainer(w http.ResponseWriter, r *http.Request) {
 
 // ListContainers handles the http request to list containers.
 func (h *handler) ListContainers(w http.ResponseWriter, r *http.Request, params spec.ListContainersParams) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	domainContainersFilter := listContainersParamsToDomain(params)
+	domainPaginatedContainers, err := h.service.ListContainers(ctx, domainContainersFilter)
+	if err != nil {
+		var domainErrFilterValueInvalid *domain.ErrFilterValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFilterValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFilterValueInvalid, domainErrFilterValueInvalid.FilterName))
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	containersPaginated, err := containersPaginatedFromDomain(domainPaginatedContainers)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(containersPaginated)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // GetContainerByID handles the http request to get a container by ID.
@@ -186,6 +217,46 @@ func containerPostToDomain(containerPost spec.ContainerPost) (domain.EditableCon
 	}, nil
 }
 
+// listContainersParamsToDomain returns a domain containers paginated filter based on the standardized list containers parameters.
+func listContainersParamsToDomain(params spec.ListContainersParams) domain.ContainersPaginatedFilter {
+	domainSort := domain.ContainerPaginatedSortCreatedAt
+	if params.Sort != nil {
+		switch *params.Sort {
+		case spec.ListContainersParamsSortCategory:
+			domainSort = domain.ContainerPaginatedSortCategory
+		case spec.ListContainersParamsSortWayName:
+			domainSort = domain.ContainerPaginatedSortWayName
+		case spec.ListContainersParamsSortMunicipalityName:
+			domainSort = domain.ContainerPaginatedSortMunicipalityName
+		case spec.ListContainersParamsSortCreatedAt:
+			domainSort = domain.ContainerPaginatedSortCreatedAt
+		case spec.ListContainersParamsSortModifiedAt:
+			domainSort = domain.ContainerPaginatedSortModifiedAt
+		default:
+			domainSort = domain.ContainerPaginatedSort(*params.Sort)
+		}
+	}
+
+	var domainCategory *domain.ContainerCategory
+	if params.Category != nil {
+		category := containerCategoryToDomain(*params.Category)
+		domainCategory = &category
+	}
+
+	return domain.ContainersPaginatedFilter{
+		PaginatedRequest: paginatedRequestToDomain(
+			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
+			domainSort,
+			(*spec.OrderQueryParam)(params.Order),
+			params.Limit,
+			params.Offset,
+		),
+		Category:         domainCategory,
+		WayName:          params.WayName,
+		MunicipalityName: params.MunicipalityName,
+	}
+}
+
 // containerFromDomain returns a standardized container based on the domain model.
 func containerFromDomain(container domain.Container) (spec.Container, error) {
 	geoJSON, err := geoJSONFeaturePointFromDomain(container.GeoJSON)
@@ -199,5 +270,33 @@ func containerFromDomain(container domain.Container) (spec.Container, error) {
 		GeoJson:    geoJSON,
 		CreatedAt:  container.CreatedAt,
 		ModifiedAt: container.ModifiedAt,
+	}, nil
+}
+
+// containersFromDomain returns standardized containers based on the domain model.
+func containersFromDomain(containers []domain.Container) ([]spec.Container, error) {
+	specContainers := make([]spec.Container, len(containers))
+	var err error
+
+	for i, container := range containers {
+		specContainers[i], err = containerFromDomain(container)
+		if err != nil {
+			return []spec.Container{}, err
+		}
+	}
+
+	return specContainers, nil
+}
+
+// containersPaginatedFromDomain returns a standardized containers paginated response based on the domain model.
+func containersPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.Container]) (spec.ContainersPaginated, error) {
+	containers, err := containersFromDomain(paginatedResponse.Results)
+	if err != nil {
+		return spec.ContainersPaginated{}, err
+	}
+
+	return spec.ContainersPaginated{
+		Total:      paginatedResponse.Total,
+		Containers: containers,
 	}, nil
 }

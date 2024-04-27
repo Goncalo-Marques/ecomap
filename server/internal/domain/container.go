@@ -26,8 +26,8 @@ const (
 )
 
 // Valid returns true if the category is valid, false otherwise.
-func (r ContainerCategory) Valid() bool {
-	switch r {
+func (c ContainerCategory) Valid() bool {
+	switch c {
 	case ContainerCategoryGeneral,
 		ContainerCategoryPaper,
 		ContainerCategoryPlastic,
@@ -53,4 +53,42 @@ type Container struct {
 	ID         uuid.UUID
 	CreatedAt  time.Time
 	ModifiedAt time.Time
+}
+
+// ContainerPaginatedSort defines the field of the container to sort.
+type ContainerPaginatedSort string
+
+const (
+	ContainerPaginatedSortCategory         ContainerPaginatedSort = "category"
+	ContainerPaginatedSortWayName          ContainerPaginatedSort = "wayName"
+	ContainerPaginatedSortMunicipalityName ContainerPaginatedSort = "municipalityName"
+	ContainerPaginatedSortCreatedAt        ContainerPaginatedSort = "createdAt"
+	ContainerPaginatedSortModifiedAt       ContainerPaginatedSort = "modifiedAt"
+)
+
+// Field returns the name of the field to sort by.
+func (s ContainerPaginatedSort) Field() ContainerPaginatedSort {
+	return s
+}
+
+// Valid returns true if the field is valid, false otherwise.
+func (s ContainerPaginatedSort) Valid() bool {
+	switch s {
+	case ContainerPaginatedSortCategory,
+		ContainerPaginatedSortWayName,
+		ContainerPaginatedSortMunicipalityName,
+		ContainerPaginatedSortCreatedAt,
+		ContainerPaginatedSortModifiedAt:
+		return true
+	default:
+		return false
+	}
+}
+
+// ContainersPaginatedFilter defines the containers filter structure.
+type ContainersPaginatedFilter struct {
+	PaginatedRequest[ContainerPaginatedSort]
+	Category         *ContainerCategory
+	WayName          *string
+	MunicipalityName *string
 }

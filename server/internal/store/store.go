@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -13,6 +14,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/goncalo-marques/ecomap/server/internal/config"
+	"github.com/goncalo-marques/ecomap/server/internal/domain"
 	"github.com/goncalo-marques/ecomap/server/internal/store/tx"
 )
 
@@ -77,4 +79,46 @@ func getConstraintName(err error) string {
 	}
 
 	return ""
+}
+
+// listSQLWhere returns a SQL WHERE clause for the specified filter fields using the specified logical operator.
+func listSQLWhere(fields []string, logicalOperator domain.PaginationLogicalOperator) string {
+	if len(fields) == 0 {
+		return ""
+	}
+
+	// Construct SQL.
+	for i, field := range fields {
+		fields[i] = field + " ILIKE '%%' || $%d || '%%'"
+	}
+
+	lo := " AND "
+	if logicalOperator == domain.PaginationLogicalOperatorOr {
+		lo = " OR "
+	}
+
+	sql := " WHERE " + strings.Join(fields, lo)
+
+	// Format parameters.
+	sqlParamIndices := make([]any, len(fields))
+	for i := range fields {
+		sqlParamIndices[i] = i + 1
+	}
+
+	return fmt.Sprintf(sql, sqlParamIndices...)
+}
+
+// listSQLOrder returns a SQL ORDER keyword for the specified field and order.
+func listSQLOrder(field string, order domain.PaginationOrder) string {
+	o := " ASC"
+	if order == domain.PaginationOrderDesc {
+		o = " DESC"
+	}
+
+	return " ORDER BY " + field + o
+}
+
+// listSQLLimitOffset returns a SQL LIMIT and OFFSET clause for the specified limit and offset.
+func listSQLLimitOffset(limit domain.PaginationLimit, offset domain.PaginationOffset) string {
+	return fmt.Sprintf(" LIMIT %d OFFSET %d", limit, offset)
 }

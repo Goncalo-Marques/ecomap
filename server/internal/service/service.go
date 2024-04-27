@@ -51,6 +51,7 @@ type Store interface {
 	DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
 	CreateContainer(ctx context.Context, tx pgx.Tx, editableContainer domain.EditableContainer, roadID, municipalityID *int) (uuid.UUID, error)
+	ListContainers(ctx context.Context, tx pgx.Tx, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
 	GetContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Container, error)
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)

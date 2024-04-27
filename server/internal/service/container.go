@@ -14,6 +14,7 @@ import (
 
 const (
 	descriptionFailedCreateContainer  = "service: failed to create container"
+	descriptionFailedListContainers   = "service: failed to list containers"
 	descriptionFailedGetContainerByID = "service: failed to get container by id"
 )
 
@@ -75,6 +76,42 @@ func (s *service) CreateContainer(ctx context.Context, editableContainer domain.
 	}
 
 	return container, nil
+}
+
+// ListContainers returns the containers with the specified filter.
+func (s *service) ListContainers(ctx context.Context, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "ListContainers"),
+	}
+
+	if !filter.LogicalOperator.Valid() {
+		return domain.PaginatedResponse[domain.Container]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLogicalOperator}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.Sort != nil && !filter.Sort.Valid() {
+		return domain.PaginatedResponse[domain.Container]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Order.Valid() {
+		return domain.PaginatedResponse[domain.Container]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterOrder}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Limit.Valid() {
+		return domain.PaginatedResponse[domain.Container]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLimit}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Offset.Valid() {
+		return domain.PaginatedResponse[domain.Container]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterOffset}, descriptionInvalidFilterValue, logAttrs...)
+	}
+
+	var paginatedContainers domain.PaginatedResponse[domain.Container]
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		paginatedContainers, err = s.store.ListContainers(ctx, tx, filter)
+		return err
+	})
+	if err != nil {
+		return domain.PaginatedResponse[domain.Container]{}, logAndWrapError(ctx, err, descriptionFailedListContainers, logAttrs...)
+	}
+
+	return paginatedContainers, nil
 }
 
 // GetContainerByID returns the container with the specified identifier.

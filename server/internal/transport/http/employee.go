@@ -474,42 +474,38 @@ func employeePatchToDomain(employeePatch spec.EmployeePatch) (domain.EditableEmp
 	}, nil
 }
 
-// employeeSortToDomain returns a domain pagination sort based on the standardized employee sort model.
-func employeeSortToDomain(sort *spec.ListEmployeesParamsSort) domain.PaginationSort[domain.EmployeePaginatedSort] {
-	if sort == nil {
-		return domain.EmployeePaginatedSortCreatedAt
-	}
-
-	switch *sort {
-	case spec.ListEmployeesParamsSortUsername:
-		return domain.EmployeePaginatedSortUsername
-	case spec.ListEmployeesParamsSortFirstName:
-		return domain.EmployeePaginatedSortFirstName
-	case spec.ListEmployeesParamsSortLastName:
-		return domain.EmployeePaginatedSortLastName
-	case spec.ListEmployeesParamsSortRole:
-		return domain.EmployeePaginatedSortRole
-	case spec.ListEmployeesParamsSortDateOfBirth:
-		return domain.EmployeePaginatedSortDateOfBirth
-	case spec.ListEmployeesParamsSortScheduleStart:
-		return domain.EmployeePaginatedSortScheduleStart
-	case spec.ListEmployeesParamsSortScheduleEnd:
-		return domain.EmployeePaginatedSortScheduleEnd
-	case spec.ListEmployeesParamsSortWayName:
-		return domain.EmployeePaginatedSortWayName
-	case spec.ListEmployeesParamsSortMunicipalityName:
-		return domain.EmployeePaginatedSortMunicipalityName
-	case spec.ListEmployeesParamsSortCreatedAt:
-		return domain.EmployeePaginatedSortCreatedAt
-	case spec.ListEmployeesParamsSortModifiedAt:
-		return domain.EmployeePaginatedSortModifiedAt
-	default:
-		return domain.EmployeePaginatedSort(*sort)
-	}
-}
-
 // listEmployeesParamsToDomain returns a domain employees paginated filter based on the standardized list employees parameters.
 func listEmployeesParamsToDomain(params spec.ListEmployeesParams) domain.EmployeesPaginatedFilter {
+	domainSort := domain.EmployeePaginatedSortCreatedAt
+	if params.Sort != nil {
+		switch *params.Sort {
+		case spec.ListEmployeesParamsSortUsername:
+			domainSort = domain.EmployeePaginatedSortUsername
+		case spec.ListEmployeesParamsSortFirstName:
+			domainSort = domain.EmployeePaginatedSortFirstName
+		case spec.ListEmployeesParamsSortLastName:
+			domainSort = domain.EmployeePaginatedSortLastName
+		case spec.ListEmployeesParamsSortRole:
+			domainSort = domain.EmployeePaginatedSortRole
+		case spec.ListEmployeesParamsSortDateOfBirth:
+			domainSort = domain.EmployeePaginatedSortDateOfBirth
+		case spec.ListEmployeesParamsSortScheduleStart:
+			domainSort = domain.EmployeePaginatedSortScheduleStart
+		case spec.ListEmployeesParamsSortScheduleEnd:
+			domainSort = domain.EmployeePaginatedSortScheduleEnd
+		case spec.ListEmployeesParamsSortWayName:
+			domainSort = domain.EmployeePaginatedSortWayName
+		case spec.ListEmployeesParamsSortMunicipalityName:
+			domainSort = domain.EmployeePaginatedSortMunicipalityName
+		case spec.ListEmployeesParamsSortCreatedAt:
+			domainSort = domain.EmployeePaginatedSortCreatedAt
+		case spec.ListEmployeesParamsSortModifiedAt:
+			domainSort = domain.EmployeePaginatedSortModifiedAt
+		default:
+			domainSort = domain.EmployeePaginatedSort(*params.Sort)
+		}
+	}
+
 	var domainRole *domain.EmployeeRole
 	if params.Role != nil {
 		role := employeeRoleToDomain(*params.Role)
@@ -525,7 +521,7 @@ func listEmployeesParamsToDomain(params spec.ListEmployeesParams) domain.Employe
 	return domain.EmployeesPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
 			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
-			employeeSortToDomain(params.Sort),
+			domainSort,
 			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,
 			params.Offset,

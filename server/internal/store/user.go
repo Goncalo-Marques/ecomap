@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -62,31 +61,9 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPag
 		argsWhere = append(argsWhere, *filter.LastName)
 	}
 
-	var sqlWhere string
-	if len(filterFields) > 0 {
-		for i, field := range filterFields {
-			filterFields[i] = field + " ILIKE '%%' || $%d || '%%'"
-		}
+	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
 
-		logicalOperator := " AND "
-		if filter.LogicalOperator == domain.PaginationLogicalOperatorOr {
-			logicalOperator = " OR "
-		}
-
-		sqlWhere = " WHERE " + strings.Join(filterFields, logicalOperator)
-	}
-
-	// Format the where sql parameters.
-	if len(argsWhere) > 0 {
-		sqlParamIndices := make([]any, len(argsWhere))
-		for i := range argsWhere {
-			sqlParamIndices[i] = i + 1
-		}
-
-		sqlWhere = fmt.Sprintf(sqlWhere, sqlParamIndices...)
-	}
-
-	// Get users count.
+	// Get the total number of rows for the given filter.
 	var total int
 	row := tx.QueryRow(ctx, `
 		SELECT count(id) 
@@ -101,41 +78,30 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPag
 	}
 
 	// Append the field to sort, if provided.
-	var sortField domain.UserPaginatedSort
+	var domainSortField domain.UserPaginatedSort
 	if filter.Sort != nil {
-		sortField = filter.Sort.Field()
+		domainSortField = filter.Sort.Field()
 	}
 
-	sqlSort := " ORDER BY "
-	switch sortField {
+	sortField := "created_at"
+	switch domainSortField {
 	case domain.UserPaginatedSortUsername:
-		sqlSort += "username"
+		sortField = "username"
 	case domain.UserPaginatedSortFirstName:
-		sqlSort += "first_name"
+		sortField = "first_name"
 	case domain.UserPaginatedSortLastName:
-		sqlSort += "last_name"
+		sortField = "last_name"
 	case domain.UserPaginatedSortCreatedAt:
-		sqlSort += "created_at"
+		sortField = "created_at"
 	case domain.UserPaginatedSortModifiedAt:
-		sqlSort += "modified_at"
-	default:
-		sqlSort += "created_at"
+		sortField = "modified_at"
 	}
 
-	order := " ASC"
-	if filter.Order == domain.PaginationOrderDesc {
-		order = " DESC"
-	}
-	sqlSort += order
-
-	// Append the limit and offset.
-	sqlSort += fmt.Sprintf(" LIMIT %d OFFSET %d", filter.Limit, filter.Offset)
-
-	// Get users.
+	// Get rows for the given filter.
 	rows, err := tx.Query(ctx, `
 		SELECT id, username, first_name, last_name, created_at, modified_at 
 		FROM users 
-	`+sqlWhere+sqlSort,
+	`+sqlWhere+listSQLOrder(sortField, filter.Order)+listSQLLimitOffset(filter.Limit, filter.Offset),
 		argsWhere...,
 	)
 	if err != nil {
