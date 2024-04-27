@@ -84,7 +84,38 @@ func (h *handler) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 
 // ListEmployees handles the http request to list employees.
 func (h *handler) ListEmployees(w http.ResponseWriter, r *http.Request, params spec.ListEmployeesParams) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	domainEmployeesFilter := listEmployeesParamsToDomain(params)
+	domainPaginatedEmployees, err := h.service.ListEmployees(ctx, domainEmployeesFilter)
+	if err != nil {
+		var domainErrFilterValueInvalid *domain.ErrFilterValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFilterValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFilterValueInvalid, domainErrFilterValueInvalid.FilterName))
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	employeesPaginated, err := employeesPaginatedFromDomain(domainPaginatedEmployees)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(employeesPaginated)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // GetEmployeeByID handles the http request to get an employee by id.
@@ -331,10 +362,35 @@ func (h *handler) SignInEmployee(w http.ResponseWriter, r *http.Request) {
 	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
+// employeeRoleToDomain returns a domain employee role based on the standardized model.
+func employeeRoleToDomain(role spec.EmployeeRole) domain.EmployeeRole {
+	switch role {
+	case spec.WasteOperator:
+		return domain.EmployeeRoleWasteOperator
+	case spec.Manager:
+		return domain.EmployeeRoleManager
+	default:
+		return domain.EmployeeRole(role)
+	}
+}
+
+// employeeRoleFromDomain returns a standardized employee role based on the domain model.
+func employeeRoleFromDomain(role domain.EmployeeRole) spec.EmployeeRole {
+	switch role {
+	case domain.EmployeeRoleWasteOperator:
+		return spec.WasteOperator
+	case domain.EmployeeRoleManager:
+		return spec.Manager
+	default:
+		return spec.EmployeeRole(role)
+	}
+}
+
 // employeePostToDomain returns a domain editable employee with password based on the standardized employee post.
 func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmployeeWithPassword, error) {
-	if len(employeePost.GeoJson.Geometry.Coordinates) != 2 {
-		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
+	geoJSON, err := geoJSONFeaturePointToDomain(&employeePost.GeoJson)
+	if err != nil {
+		return domain.EditableEmployeeWithPassword{}, err
 	}
 
 	scheduleStart, err := timeStringToTime(employeePost.ScheduleStart)
@@ -347,27 +403,15 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
 	}
 
-	var role domain.EmployeeRole
-	switch employeePost.Role {
-	case spec.WasteOperator:
-		role = domain.EmployeeRoleWasteOperator
-	case spec.Manager:
-		role = domain.EmployeeRoleManager
-	}
-
 	return domain.EditableEmployeeWithPassword{
 		EditableEmployee: domain.EditableEmployee{
-			Username:    domain.Username(employeePost.Username),
-			FirstName:   domain.Name(employeePost.FirstName),
-			LastName:    domain.Name(employeePost.LastName),
-			Role:        role,
-			DateOfBirth: employeePost.DateOfBirth.Time,
-			PhoneNumber: domain.PhoneNumber(employeePost.PhoneNumber),
-			GeoJSON: domain.GeoJSONFeature{
-				Geometry: domain.GeoJSONGeometryPoint{
-					Coordinates: [2]float64(employeePost.GeoJson.Geometry.Coordinates),
-				},
-			},
+			Username:      domain.Username(employeePost.Username),
+			FirstName:     domain.Name(employeePost.FirstName),
+			LastName:      domain.Name(employeePost.LastName),
+			Role:          employeeRoleToDomain(employeePost.Role),
+			DateOfBirth:   employeePost.DateOfBirth.Time,
+			PhoneNumber:   domain.PhoneNumber(employeePost.PhoneNumber),
+			GeoJSON:       geoJSON,
 			ScheduleStart: scheduleStart,
 			ScheduleEnd:   scheduleEnd,
 		},
@@ -382,17 +426,9 @@ func employeePatchToDomain(employeePatch spec.EmployeePatch) (domain.EditableEmp
 		dateOfBirth = &employeePatch.DateOfBirth.Time
 	}
 
-	var geoJSON domain.GeoJSON
-	if employeePatch.GeoJson != nil {
-		if len(employeePatch.GeoJson.Geometry.Coordinates) != 2 {
-			return domain.EditableEmployeePatch{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
-		}
-
-		geoJSON = domain.GeoJSONFeature{
-			Geometry: domain.GeoJSONGeometryPoint{
-				Coordinates: [2]float64(employeePatch.GeoJson.Geometry.Coordinates),
-			},
-		}
+	geoJSON, err := geoJSONFeaturePointToDomain(employeePatch.GeoJson)
+	if err != nil {
+		return domain.EditableEmployeePatch{}, err
 	}
 
 	var scheduleStart *time.Time
@@ -427,6 +463,71 @@ func employeePatchToDomain(employeePatch spec.EmployeePatch) (domain.EditableEmp
 	}, nil
 }
 
+// listEmployeesParamsToDomain returns a domain employees paginated filter based on the standardized list employees parameters.
+func listEmployeesParamsToDomain(params spec.ListEmployeesParams) domain.EmployeesPaginatedFilter {
+	domainSort := domain.EmployeePaginatedSortCreatedAt
+	if params.Sort != nil {
+		switch *params.Sort {
+		case spec.ListEmployeesParamsSortUsername:
+			domainSort = domain.EmployeePaginatedSortUsername
+		case spec.ListEmployeesParamsSortFirstName:
+			domainSort = domain.EmployeePaginatedSortFirstName
+		case spec.ListEmployeesParamsSortLastName:
+			domainSort = domain.EmployeePaginatedSortLastName
+		case spec.ListEmployeesParamsSortRole:
+			domainSort = domain.EmployeePaginatedSortRole
+		case spec.ListEmployeesParamsSortDateOfBirth:
+			domainSort = domain.EmployeePaginatedSortDateOfBirth
+		case spec.ListEmployeesParamsSortScheduleStart:
+			domainSort = domain.EmployeePaginatedSortScheduleStart
+		case spec.ListEmployeesParamsSortScheduleEnd:
+			domainSort = domain.EmployeePaginatedSortScheduleEnd
+		case spec.ListEmployeesParamsSortWayName:
+			domainSort = domain.EmployeePaginatedSortWayName
+		case spec.ListEmployeesParamsSortMunicipalityName:
+			domainSort = domain.EmployeePaginatedSortMunicipalityName
+		case spec.ListEmployeesParamsSortCreatedAt:
+			domainSort = domain.EmployeePaginatedSortCreatedAt
+		case spec.ListEmployeesParamsSortModifiedAt:
+			domainSort = domain.EmployeePaginatedSortModifiedAt
+		default:
+			domainSort = domain.EmployeePaginatedSort(*params.Sort)
+		}
+	}
+
+	var domainRole *domain.EmployeeRole
+	if params.Role != nil {
+		role := employeeRoleToDomain(*params.Role)
+		domainRole = &role
+	}
+
+	var domainDateOfBirth *string
+	if params.DateOfBirth != nil {
+		timeString := dateStringFromTime(params.DateOfBirth.Time)
+		domainDateOfBirth = &timeString
+	}
+
+	return domain.EmployeesPaginatedFilter{
+		PaginatedRequest: paginatedRequestToDomain(
+			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
+			domainSort,
+			(*spec.OrderQueryParam)(params.Order),
+			params.Limit,
+			params.Offset,
+		),
+		Username:         (*domain.Username)(params.Username),
+		FirstName:        (*domain.Name)(params.FirstName),
+		LastName:         (*domain.Name)(params.LastName),
+		Role:             domainRole,
+		DateOfBirth:      domainDateOfBirth,
+		PhoneNumber:      (*domain.PhoneNumber)(params.PhoneNumber),
+		ScheduleStart:    params.ScheduleStart,
+		ScheduleEnd:      params.ScheduleEnd,
+		WayName:          params.WayName,
+		MunicipalityName: params.MunicipalityName,
+	}
+}
+
 // employeeFromDomain returns a standardized employee based on the domain model.
 func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
 	geoJSON, err := geoJSONFeaturePointFromDomain(employee.GeoJSON)
@@ -439,7 +540,7 @@ func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
 		Username:      string(employee.Username),
 		FirstName:     string(employee.FirstName),
 		LastName:      string(employee.LastName),
-		Role:          spec.EmployeeRole(employee.Role),
+		Role:          employeeRoleFromDomain(employee.Role),
 		DateOfBirth:   dateFromTime(employee.DateOfBirth),
 		PhoneNumber:   string(employee.PhoneNumber),
 		GeoJson:       geoJSON,
@@ -447,5 +548,33 @@ func employeeFromDomain(employee domain.Employee) (spec.Employee, error) {
 		ScheduleEnd:   timeStringFromTime(employee.ScheduleEnd),
 		CreatedAt:     employee.CreatedAt,
 		ModifiedAt:    employee.ModifiedAt,
+	}, nil
+}
+
+// employeesFromDomain returns standardized employees based on the domain model.
+func employeesFromDomain(employees []domain.Employee) ([]spec.Employee, error) {
+	specEmployees := make([]spec.Employee, len(employees))
+	var err error
+
+	for i, employee := range employees {
+		specEmployees[i], err = employeeFromDomain(employee)
+		if err != nil {
+			return []spec.Employee{}, err
+		}
+	}
+
+	return specEmployees, nil
+}
+
+// employeesPaginatedFromDomain returns a standardized employees paginated response based on the domain model.
+func employeesPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.Employee]) (spec.EmployeesPaginated, error) {
+	employees, err := employeesFromDomain(paginatedResponse.Results)
+	if err != nil {
+		return spec.EmployeesPaginated{}, err
+	}
+
+	return spec.EmployeesPaginated{
+		Total:     paginatedResponse.Total,
+		Employees: employees,
 	}, nil
 }
