@@ -52,6 +52,48 @@ func jwtFromJWTToken(token string) spec.JWT {
 	}
 }
 
+// geoJSONFeaturePointToDomain returns a domain GeoJSON based on the standardized GeoJSON feature point model.
+func geoJSONFeaturePointToDomain(geoJSON *spec.GeoJSONFeaturePoint) (domain.GeoJSON, error) {
+	if geoJSON == nil {
+		return nil, nil
+	}
+
+	if len(geoJSON.Geometry.Coordinates) != 2 {
+		return nil, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
+	}
+
+	return domain.GeoJSONFeature{
+		Geometry: domain.GeoJSONGeometryPoint{
+			Coordinates: [2]float64(geoJSON.Geometry.Coordinates),
+		},
+	}, nil
+}
+
+// geoJSONFeaturePointFromDomain returns standardized GeoJSON feature point based on the domain GeoJSON model.
+func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeaturePoint, error) {
+	geoJSONFeature, ok := geoJSON.(domain.GeoJSONFeature)
+	if !ok {
+		return spec.GeoJSONFeaturePoint{}, errGeoJSONFeatureTypeUnexpected
+	}
+
+	geoJSONGeometry, ok := geoJSONFeature.Geometry.(domain.GeoJSONGeometryPoint)
+	if !ok {
+		return spec.GeoJSONFeaturePoint{}, errGeoJSONGeometryTypeUnexpected
+	}
+
+	return spec.GeoJSONFeaturePoint{
+		Type: spec.Feature,
+		Geometry: spec.GeoJSONGeometryPoint{
+			Type:        spec.Point,
+			Coordinates: geoJSONGeometry.Coordinates[:],
+		},
+		Properties: spec.GeoJSONFeatureProperties{
+			WayName:          geoJSONFeature.Properties.WayName(),
+			MunicipalityName: geoJSONFeature.Properties.MunicipalityName(),
+		},
+	}, nil
+}
+
 // logicalOperatorToDomain returns a domain logical operator based on the standardized query parameter model.
 func logicalOperatorToDomain(logicalOperator *spec.LogicalOperatorQueryParam) domain.PaginationLogicalOperator {
 	if logicalOperator == nil {
@@ -111,29 +153,4 @@ func paginatedRequestToDomain[T any](logicalOperator *spec.LogicalOperatorQueryP
 		Limit:           limitToDomain(limit),
 		Offset:          offsetToDomain(offset),
 	}
-}
-
-// geoJSONFeaturePointFromDomain returns standardized GeoJSON feature point based on the domain model.
-func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeaturePoint, error) {
-	geoJSONFeature, ok := geoJSON.(domain.GeoJSONFeature)
-	if !ok {
-		return spec.GeoJSONFeaturePoint{}, errGeoJSONFeatureTypeUnexpected
-	}
-
-	geoJSONGeometry, ok := geoJSONFeature.Geometry.(domain.GeoJSONGeometryPoint)
-	if !ok {
-		return spec.GeoJSONFeaturePoint{}, errGeoJSONGeometryTypeUnexpected
-	}
-
-	return spec.GeoJSONFeaturePoint{
-		Type: spec.Feature,
-		Geometry: spec.GeoJSONGeometryPoint{
-			Type:        spec.Point,
-			Coordinates: geoJSONGeometry.Coordinates[:],
-		},
-		Properties: spec.GeoJSONFeatureProperties{
-			WayName:          geoJSONFeature.Properties.WayName(),
-			MunicipalityName: geoJSONFeature.Properties.MunicipalityName(),
-		},
-	}, nil
 }

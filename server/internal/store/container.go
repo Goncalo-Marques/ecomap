@@ -153,6 +153,62 @@ func (s *store) GetContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (
 	return container, nil
 }
 
+// PatchContainer executes a query to patch an container with the specified identifier and data.
+func (s *store) PatchContainer(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableContainer domain.EditableContainerPatch, roadID, municipalityID *int) error {
+	var category *string
+	if editableContainer.Category != nil {
+		c := containerCategoryFromDomain(*editableContainer.Category)
+		category = &c
+	}
+
+	var geoJSON []byte
+	var err error
+
+	if editableContainer.GeoJSON != nil {
+		var geometry domain.GeoJSONGeometryPoint
+		if feature, ok := editableContainer.GeoJSON.(domain.GeoJSONFeature); ok {
+			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
+				geometry = g
+			}
+		}
+
+		geoJSON, err = json.Marshal(geometry)
+		if err != nil {
+			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
+		}
+	}
+
+	commandTag, err := tx.Exec(ctx, `
+		UPDATE containers SET
+			category = coalesce($2, category),
+			geom = coalesce(ST_GeomFromGeoJSON($3), geom),
+			road_id = CASE 
+					WHEN $3 IS NOT NULL THEN $4 
+					ELSE road_id
+				END,
+			municipality_id = CASE 
+					WHEN $3 IS NOT NULL THEN $5
+					ELSE municipality_id
+				END
+		WHERE id = $1
+	`,
+		id,
+		category,
+		geoJSON,
+		roadID,
+		municipalityID,
+	)
+	if err != nil {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerNotFound)
+	}
+
+	return nil
+}
+
 // containerCategoryFromDomain returns a store container category based on the domain model.
 func containerCategoryFromDomain(category domain.ContainerCategory) string {
 	switch category {
