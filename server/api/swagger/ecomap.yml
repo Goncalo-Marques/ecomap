@@ -935,6 +935,8 @@ components:
         type: string
         enum:
           - category
+          - wayName
+          - municipalityName
           - createdAt
           - modifiedAt
         default: createdAt
