@@ -149,7 +149,66 @@ func (h *handler) GetContainerByID(w http.ResponseWriter, r *http.Request, conta
 
 // PatchContainerByID handles the http request to modify a container by ID.
 func (h *handler) PatchContainerByID(w http.ResponseWriter, r *http.Request, containerID spec.ContainerIdPathParam) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	var containerPatch spec.ContainerPatch
+	err = json.Unmarshal(requestBody, &containerPatch)
+	if err != nil {
+		badRequest(w, errRequestBodyInvalid)
+		return
+	}
+
+	domainEditableContainer, err := containerPatchToDomain(containerPatch)
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	domainContainer, err := h.service.PatchContainer(ctx, containerID, domainEditableContainer)
+	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
+		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
+		case errors.Is(err, domain.ErrContainerNotFound):
+			notFound(w, errContainerNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	container, err := containerFromDomain(domainContainer)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(container)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // DeleteContainerByID handles the http request to delete a container by ID.
@@ -203,17 +262,33 @@ func containerCategoryFromDomain(category domain.ContainerCategory) spec.Contain
 
 // containerPostToDomain returns a domain editable container based on the standardized container post.
 func containerPostToDomain(containerPost spec.ContainerPost) (domain.EditableContainer, error) {
-	if len(containerPost.GeoJson.Geometry.Coordinates) != 2 {
-		return domain.EditableContainer{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
+	geoJSON, err := geoJSONFeaturePointToDomain(&containerPost.GeoJson)
+	if err != nil {
+		return domain.EditableContainer{}, err
 	}
 
 	return domain.EditableContainer{
 		Category: containerCategoryToDomain(containerPost.Category),
-		GeoJSON: domain.GeoJSONFeature{
-			Geometry: domain.GeoJSONGeometryPoint{
-				Coordinates: [2]float64(containerPost.GeoJson.Geometry.Coordinates),
-			},
-		},
+		GeoJSON:  geoJSON,
+	}, nil
+}
+
+// containerPatchToDomain returns a domain patchable container based on the standardized container patch.
+func containerPatchToDomain(containerPatch spec.ContainerPatch) (domain.EditableContainerPatch, error) {
+	var category *domain.ContainerCategory
+	if containerPatch.Category != nil {
+		c := containerCategoryToDomain(*containerPatch.Category)
+		category = &c
+	}
+
+	geoJSON, err := geoJSONFeaturePointToDomain(containerPatch.GeoJson)
+	if err != nil {
+		return domain.EditableContainerPatch{}, err
+	}
+
+	return domain.EditableContainerPatch{
+		Category: category,
+		GeoJSON:  geoJSON,
 	}, nil
 }
 

@@ -47,6 +47,12 @@ type EditableContainer struct {
 	GeoJSON  GeoJSON
 }
 
+// EditableContainerPatch defines the patchable container structure.
+type EditableContainerPatch struct {
+	Category *ContainerCategory
+	GeoJSON  GeoJSON
+}
+
 // Container defines the container structure.
 type Container struct {
 	EditableContainer
