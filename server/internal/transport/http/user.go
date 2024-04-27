@@ -326,34 +326,30 @@ func userPatchToDomain(userPatch spec.UserPatch) domain.EditableUserPatch {
 	}
 }
 
-// userSortToDomain returns a domain pagination sort based on the standardized user sort model.
-func userSortToDomain(sort *spec.ListUsersParamsSort) domain.PaginationSort[domain.UserPaginatedSort] {
-	if sort == nil {
-		return domain.UserPaginatedSortCreatedAt
-	}
-
-	switch *sort {
-	case spec.ListUsersParamsSortUsername:
-		return domain.UserPaginatedSortUsername
-	case spec.ListUsersParamsSortFirstName:
-		return domain.UserPaginatedSortFirstName
-	case spec.ListUsersParamsSortLastName:
-		return domain.UserPaginatedSortLastName
-	case spec.ListUsersParamsSortCreatedAt:
-		return domain.UserPaginatedSortCreatedAt
-	case spec.ListUsersParamsSortModifiedAt:
-		return domain.UserPaginatedSortModifiedAt
-	default:
-		return domain.UserPaginatedSort(*sort)
-	}
-}
-
 // listUsersParamsToDomain returns a domain users paginated filter based on the standardized list users parameters.
 func listUsersParamsToDomain(params spec.ListUsersParams) domain.UsersPaginatedFilter {
+	domainSort := domain.UserPaginatedSortCreatedAt
+	if params.Sort != nil {
+		switch *params.Sort {
+		case spec.ListUsersParamsSortUsername:
+			domainSort = domain.UserPaginatedSortUsername
+		case spec.ListUsersParamsSortFirstName:
+			domainSort = domain.UserPaginatedSortFirstName
+		case spec.ListUsersParamsSortLastName:
+			domainSort = domain.UserPaginatedSortLastName
+		case spec.ListUsersParamsSortCreatedAt:
+			domainSort = domain.UserPaginatedSortCreatedAt
+		case spec.ListUsersParamsSortModifiedAt:
+			domainSort = domain.UserPaginatedSortModifiedAt
+		default:
+			domainSort = domain.UserPaginatedSort(*params.Sort)
+		}
+	}
+
 	return domain.UsersPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
 			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
-			userSortToDomain(params.Sort),
+			domainSort,
 			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,
 			params.Offset,
