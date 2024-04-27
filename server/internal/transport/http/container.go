@@ -12,6 +12,10 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/logging"
 )
 
+const (
+	errContainerNotFound = "container not found"
+)
+
 // CreateContainer handles the http request to create a container.
 func (h *handler) CreateContainer(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -81,7 +85,35 @@ func (h *handler) ListContainers(w http.ResponseWriter, r *http.Request, params 
 
 // GetContainerByID handles the http request to get a container by ID.
 func (h *handler) GetContainerByID(w http.ResponseWriter, r *http.Request, containerID spec.ContainerIdPathParam) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	domainContainer, err := h.service.GetContainerByID(ctx, containerID)
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrContainerNotFound):
+			notFound(w, errContainerNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	container, err := containerFromDomain(domainContainer)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(container)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // PatchContainerByID handles the http request to modify a container by ID.
