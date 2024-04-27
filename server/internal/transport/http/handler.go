@@ -61,6 +61,7 @@ type Service interface {
 	SignInEmployee(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 
 	CreateContainer(ctx context.Context, editableContainer domain.EditableContainer) (domain.Container, error)
+	ListContainers(ctx context.Context, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
 	GetContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
 }
 
