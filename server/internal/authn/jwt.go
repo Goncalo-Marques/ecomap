@@ -19,7 +19,7 @@ type SubjectRole string
 
 const (
 	SubjectRoleUser          SubjectRole = "user"
-	SubjectRoleWasteOperator SubjectRole = "waste_operator"
+	SubjectRoleWasteOperator SubjectRole = "wasteOperator"
 	SubjectRoleManager       SubjectRole = "manager"
 )
 
