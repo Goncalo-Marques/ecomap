@@ -17,8 +17,8 @@ var (
 type EmployeeRole string
 
 const (
-	EmployeeRoleWasteOperator EmployeeRole = "WasteOperator"
-	EmployeeRoleManager       EmployeeRole = "Manager"
+	EmployeeRoleWasteOperator EmployeeRole = "wasteOperator"
+	EmployeeRoleManager       EmployeeRole = "manager"
 )
 
 // Valid returns true if the role is valid, false otherwise.
@@ -75,17 +75,17 @@ type Employee struct {
 type EmployeePaginatedSort string
 
 const (
-	EmployeePaginatedSortUsername         EmployeePaginatedSort = "Username"
-	EmployeePaginatedSortFirstName        EmployeePaginatedSort = "FirstName"
-	EmployeePaginatedSortLastName         EmployeePaginatedSort = "LastName"
-	EmployeePaginatedSortRole             EmployeePaginatedSort = "Role"
-	EmployeePaginatedSortDateOfBirth      EmployeePaginatedSort = "DateOfBirth"
-	EmployeePaginatedSortScheduleStart    EmployeePaginatedSort = "ScheduleStart"
-	EmployeePaginatedSortScheduleEnd      EmployeePaginatedSort = "ScheduleEnd"
-	EmployeePaginatedSortWayName          EmployeePaginatedSort = "WayName"
-	EmployeePaginatedSortMunicipalityName EmployeePaginatedSort = "MunicipalityName"
-	EmployeePaginatedSortCreatedAt        EmployeePaginatedSort = "CreatedAt"
-	EmployeePaginatedSortModifiedAt       EmployeePaginatedSort = "ModifiedAt"
+	EmployeePaginatedSortUsername         EmployeePaginatedSort = "username"
+	EmployeePaginatedSortFirstName        EmployeePaginatedSort = "firstName"
+	EmployeePaginatedSortLastName         EmployeePaginatedSort = "lastName"
+	EmployeePaginatedSortRole             EmployeePaginatedSort = "role"
+	EmployeePaginatedSortDateOfBirth      EmployeePaginatedSort = "dateOfBirth"
+	EmployeePaginatedSortScheduleStart    EmployeePaginatedSort = "scheduleStart"
+	EmployeePaginatedSortScheduleEnd      EmployeePaginatedSort = "scheduleEnd"
+	EmployeePaginatedSortWayName          EmployeePaginatedSort = "wayName"
+	EmployeePaginatedSortMunicipalityName EmployeePaginatedSort = "municipalityName"
+	EmployeePaginatedSortCreatedAt        EmployeePaginatedSort = "createdAt"
+	EmployeePaginatedSortModifiedAt       EmployeePaginatedSort = "modifiedAt"
 )
 
 // Field returns the name of the field to sort by.

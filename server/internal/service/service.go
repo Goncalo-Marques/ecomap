@@ -50,6 +50,9 @@ type Store interface {
 	UpdateEmployeePassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
 	DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
+	CreateContainer(ctx context.Context, tx pgx.Tx, editableContainer domain.EditableContainer, roadID, municipalityID *int) (uuid.UUID, error)
+	GetContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Container, error)
+
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 

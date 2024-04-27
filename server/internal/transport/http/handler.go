@@ -59,6 +59,8 @@ type Service interface {
 	ResetEmployeePassword(ctx context.Context, username domain.Username, newPassword domain.Password) error
 	DeleteEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 	SignInEmployee(ctx context.Context, username domain.Username, password domain.Password) (string, error)
+
+	CreateContainer(ctx context.Context, editableContainer domain.EditableContainer) (domain.Container, error)
 }
 
 // handler defines the http handler structure.

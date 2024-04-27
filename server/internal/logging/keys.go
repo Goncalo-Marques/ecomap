@@ -23,4 +23,6 @@ const (
 	EmployeeGeoJSON       = "employee.geoJson"
 	EmployeeScheduleStart = "employee.scheduleStart"
 	EmployeeScheduleEnd   = "employee.scheduleEnd"
+
+	ContainerCategory = "container.category"
 )

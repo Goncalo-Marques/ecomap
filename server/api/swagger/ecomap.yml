@@ -444,7 +444,7 @@ paths:
       tags:
         - Employee
       security:
-        - BearerAuth: [waste_operator, manager]
+        - BearerAuth: [wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdPathParam"
       responses:
@@ -479,7 +479,7 @@ paths:
       tags:
         - Employee
       security:
-        - BearerAuth: [waste_operator, manager]
+        - BearerAuth: [wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdPathParam"
       requestBody:
@@ -526,7 +526,7 @@ paths:
       tags:
         - Employee
       security:
-        - BearerAuth: [waste_operator, manager]
+        - BearerAuth: [wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdPathParam"
       responses:
@@ -696,7 +696,7 @@ paths:
       tags:
         - Container
       security:
-        - BearerAuth: [user, waste_operator, manager]
+        - BearerAuth: [user, wasteOperator, manager]
       parameters:
         - name: category
           in: query
@@ -745,7 +745,7 @@ paths:
       tags:
         - Container
       security:
-        - BearerAuth: [user, waste_operator, manager]
+        - BearerAuth: [user, wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/ContainerIdPathParam"
       responses:

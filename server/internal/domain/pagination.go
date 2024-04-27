@@ -23,8 +23,8 @@ func (e *ErrFilterValueInvalid) Error() string {
 type PaginationLogicalOperator string
 
 const (
-	PaginationLogicalOperatorAnd PaginationLogicalOperator = "And"
-	PaginationLogicalOperatorOr  PaginationLogicalOperator = "Or"
+	PaginationLogicalOperatorAnd PaginationLogicalOperator = "and"
+	PaginationLogicalOperatorOr  PaginationLogicalOperator = "or"
 )
 
 // Valid returns true if the pagination logical operator is valid, false otherwise.
@@ -49,8 +49,8 @@ type PaginationSort[T any] interface {
 type PaginationOrder string
 
 const (
-	PaginationOrderAsc  PaginationOrder = "Asc"
-	PaginationOrderDesc PaginationOrder = "Desc"
+	PaginationOrderAsc  PaginationOrder = "asc"
+	PaginationOrderDesc PaginationOrder = "desc"
 )
 
 // Valid returns true if the pagination order is valid, false otherwise.
