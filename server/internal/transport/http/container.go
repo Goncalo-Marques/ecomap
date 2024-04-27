@@ -213,7 +213,35 @@ func (h *handler) PatchContainerByID(w http.ResponseWriter, r *http.Request, con
 
 // DeleteContainerByID handles the http request to delete a container by ID.
 func (h *handler) DeleteContainerByID(w http.ResponseWriter, r *http.Request, containerID spec.ContainerIdPathParam) {
-	w.WriteHeader(http.StatusNotFound)
+	ctx := r.Context()
+
+	domainContainer, err := h.service.DeleteContainerByID(ctx, containerID)
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrContainerNotFound):
+			notFound(w, errContainerNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	container, err := containerFromDomain(domainContainer)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(container)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
 // containerCategoryToDomain returns a domain container category based on the standardized model.

@@ -64,6 +64,7 @@ type Service interface {
 	ListContainers(ctx context.Context, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
 	GetContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
 	PatchContainer(ctx context.Context, id uuid.UUID, editableContainer domain.EditableContainerPatch) (domain.Container, error)
+	DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
 }
 
 // handler defines the http handler structure.
