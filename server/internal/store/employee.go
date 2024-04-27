@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -111,31 +110,9 @@ func (s *store) ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.Empl
 		argsWhere = append(argsWhere, *filter.MunicipalityName)
 	}
 
-	var sqlWhere string
-	if len(filterFields) > 0 {
-		for i, field := range filterFields {
-			filterFields[i] = field + " ILIKE '%%' || $%d || '%%'"
-		}
+	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
 
-		logicalOperator := " AND "
-		if filter.LogicalOperator == domain.PaginationLogicalOperatorOr {
-			logicalOperator = " OR "
-		}
-
-		sqlWhere = " WHERE " + strings.Join(filterFields, logicalOperator)
-	}
-
-	// Format the where sql parameters.
-	if len(argsWhere) > 0 {
-		sqlParamIndices := make([]any, len(argsWhere))
-		for i := range argsWhere {
-			sqlParamIndices[i] = i + 1
-		}
-
-		sqlWhere = fmt.Sprintf(sqlWhere, sqlParamIndices...)
-	}
-
-	// Get employees count.
+	// Get the total number of rows for the given filter.
 	var total int
 	row := tx.QueryRow(ctx, `
 		SELECT count(e.id) 
@@ -152,55 +129,44 @@ func (s *store) ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.Empl
 	}
 
 	// Append the field to sort, if provided.
-	var sortField domain.EmployeePaginatedSort
+	var domainSortField domain.EmployeePaginatedSort
 	if filter.Sort != nil {
-		sortField = filter.Sort.Field()
+		domainSortField = filter.Sort.Field()
 	}
 
-	sqlSort := " ORDER BY "
-	switch sortField {
+	sortField := "e.created_at"
+	switch domainSortField {
 	case domain.EmployeePaginatedSortUsername:
-		sqlSort += "e.username"
+		sortField = "e.username"
 	case domain.EmployeePaginatedSortFirstName:
-		sqlSort += "e.first_name"
+		sortField = "e.first_name"
 	case domain.EmployeePaginatedSortLastName:
-		sqlSort += "e.last_name"
+		sortField = "e.last_name"
 	case domain.EmployeePaginatedSortRole:
-		sqlSort += "e.role"
+		sortField = "e.role"
 	case domain.EmployeePaginatedSortDateOfBirth:
-		sqlSort += "e.date_of_birth"
+		sortField = "e.date_of_birth"
 	case domain.EmployeePaginatedSortScheduleStart:
-		sqlSort += "e.schedule_start"
+		sortField = "e.schedule_start"
 	case domain.EmployeePaginatedSortScheduleEnd:
-		sqlSort += "e.schedule_end"
+		sortField = "e.schedule_end"
 	case domain.EmployeePaginatedSortWayName:
-		sqlSort += "rn.osm_name"
+		sortField = "rn.osm_name"
 	case domain.EmployeePaginatedSortMunicipalityName:
-		sqlSort += "m.name"
+		sortField = "m.name"
 	case domain.EmployeePaginatedSortCreatedAt:
-		sqlSort += "e.created_at"
+		sortField = "e.created_at"
 	case domain.EmployeePaginatedSortModifiedAt:
-		sqlSort += "e.modified_at"
-	default:
-		sqlSort += "e.created_at"
+		sortField = "e.modified_at"
 	}
 
-	order := " ASC"
-	if filter.Order == domain.PaginationOrderDesc {
-		order = " DESC"
-	}
-	sqlSort += order
-
-	// Append the limit and offset.
-	sqlSort += fmt.Sprintf(" LIMIT %d OFFSET %d", filter.Limit, filter.Offset)
-
-	// Get employees.
+	// Get rows for the given filter.
 	rows, err := tx.Query(ctx, `
 		SELECT e.id, e.username, e.first_name, e.last_name, e.role, e.date_of_birth, e.phone_number, ST_AsGeoJSON(e.geom)::jsonb, rn.osm_name, m.name, e.schedule_start, e.schedule_end, e.created_at, e.modified_at 
 		FROM employees AS e
 		LEFT JOIN road_network AS rn ON e.road_id = rn.id
 		LEFT JOIN municipalities AS m ON e.municipality_id = m.id
-	`+sqlWhere+sqlSort,
+	`+sqlWhere+listSQLOrder(sortField, filter.Order)+listSQLLimitOffset(filter.Limit, filter.Offset),
 		argsWhere...,
 	)
 	if err != nil {

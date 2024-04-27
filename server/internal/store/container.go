@@ -47,6 +47,88 @@ func (s *store) CreateContainer(ctx context.Context, tx pgx.Tx, editableContaine
 	return id, nil
 }
 
+// ListContainers executes a query to return the containers for the specified filter.
+func (s *store) ListContainers(ctx context.Context, tx pgx.Tx, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error) {
+	filterFields := make([]string, 0, 3)
+	argsWhere := make([]any, 0, 3)
+
+	// Append the optional fields to filter.
+	if filter.Category != nil {
+		filterFields = append(filterFields, "c.category::text")
+		argsWhere = append(argsWhere, containerCategoryFromDomain(*filter.Category))
+	}
+	if filter.WayName != nil {
+		filterFields = append(filterFields, "rn.osm_name")
+		argsWhere = append(argsWhere, *filter.WayName)
+	}
+	if filter.MunicipalityName != nil {
+		filterFields = append(filterFields, "m.name")
+		argsWhere = append(argsWhere, *filter.MunicipalityName)
+	}
+
+	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
+
+	// Get the total number of rows for the given filter.
+	var total int
+	row := tx.QueryRow(ctx, `
+		SELECT count(c.id) 
+		FROM containers AS c
+		LEFT JOIN road_network AS rn ON c.road_id = rn.id
+		LEFT JOIN municipalities AS m ON c.municipality_id = m.id
+	`+sqlWhere,
+		argsWhere...,
+	)
+
+	err := row.Scan(&total)
+	if err != nil {
+		return domain.PaginatedResponse[domain.Container]{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	}
+
+	// Append the field to sort, if provided.
+	var domainSortField domain.ContainerPaginatedSort
+	if filter.Sort != nil {
+		domainSortField = filter.Sort.Field()
+	}
+
+	sortField := "c.created_at"
+	switch domainSortField {
+	case domain.ContainerPaginatedSortCategory:
+		sortField = "c.category"
+	case domain.ContainerPaginatedSortWayName:
+		sortField = "rn.osm_name"
+	case domain.ContainerPaginatedSortMunicipalityName:
+		sortField = "m.name"
+	case domain.ContainerPaginatedSortCreatedAt:
+		sortField = "c.created_at"
+	case domain.ContainerPaginatedSortModifiedAt:
+		sortField = "c.modified_at"
+	}
+
+	// Get rows for the given filter.
+	rows, err := tx.Query(ctx, `
+		SELECT c.id, c.category, ST_AsGeoJSON(c.geom)::jsonb, rn.osm_name, m.name, c.created_at, c.modified_at
+		FROM containers AS c
+		LEFT JOIN road_network AS rn ON c.road_id = rn.id
+		LEFT JOIN municipalities AS m ON c.municipality_id = m.id
+	`+sqlWhere+listSQLOrder(sortField, filter.Order)+listSQLLimitOffset(filter.Limit, filter.Offset),
+		argsWhere...,
+	)
+	if err != nil {
+		return domain.PaginatedResponse[domain.Container]{}, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
+	}
+	defer rows.Close()
+
+	containers, err := getContainersFromRows(rows)
+	if err != nil {
+		return domain.PaginatedResponse[domain.Container]{}, fmt.Errorf("%s: %w", descriptionFailedScanRows, err)
+	}
+
+	return domain.PaginatedResponse[domain.Container]{
+		Total:   total,
+		Results: containers,
+	}, nil
+}
+
 // GetContainerByID executes a query to return the container with the specified identifier.
 func (s *store) GetContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Container, error) {
 	row := tx.QueryRow(ctx, `
@@ -152,4 +234,19 @@ func getContainerFromRow(row pgx.Row) (domain.Container, error) {
 	}
 
 	return container, nil
+}
+
+// getContainersFromRows returns the containers by scanning the given rows.
+func getContainersFromRows(rows pgx.Rows) ([]domain.Container, error) {
+	var containers []domain.Container
+	for rows.Next() {
+		container, err := getContainerFromRow(rows)
+		if err != nil {
+			return nil, err
+		}
+
+		containers = append(containers, container)
+	}
+
+	return containers, nil
 }
