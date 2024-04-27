@@ -24,5 +24,6 @@ const (
 	EmployeeScheduleStart = "employee.scheduleStart"
 	EmployeeScheduleEnd   = "employee.scheduleEnd"
 
+	ContainerID       = "container.id"
 	ContainerCategory = "container.category"
 )

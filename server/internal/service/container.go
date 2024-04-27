@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
@@ -12,7 +13,8 @@ import (
 )
 
 const (
-	descriptionFailedCreateContainer = "service: failed to create container"
+	descriptionFailedCreateContainer  = "service: failed to create container"
+	descriptionFailedGetContainerByID = "service: failed to get container by id"
 )
 
 // CreateContainer creates a new container with the specified data.
@@ -70,6 +72,32 @@ func (s *service) CreateContainer(ctx context.Context, editableContainer domain.
 	})
 	if err != nil {
 		return domain.Container{}, logAndWrapError(ctx, err, descriptionFailedCreateContainer, logAttrs...)
+	}
+
+	return container, nil
+}
+
+// GetContainerByID returns the container with the specified identifier.
+func (s *service) GetContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "GetContainerByID"),
+		slog.String(logging.ContainerID, id.String()),
+	}
+
+	var container domain.Container
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		container, err = s.store.GetContainerByID(ctx, tx, id)
+		return err
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrContainerNotFound):
+			return domain.Container{}, logInfoAndWrapError(ctx, err, descriptionFailedGetContainerByID, logAttrs...)
+		default:
+			return domain.Container{}, logAndWrapError(ctx, err, descriptionFailedGetContainerByID, logAttrs...)
+		}
 	}
 
 	return container, nil
