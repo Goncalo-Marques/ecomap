@@ -187,7 +187,7 @@ func (s *store) PatchContainer(ctx context.Context, tx pgx.Tx, id uuid.UUID, edi
 					ELSE road_id
 				END,
 			municipality_id = CASE 
-					WHEN $3 IS NOT NULL THEN $95
+					WHEN $3 IS NOT NULL THEN $5
 					ELSE municipality_id
 				END
 		WHERE id = $1
