@@ -9,6 +9,7 @@
 	import ecomapHttpClient from "../../lib/clients/ecomap/http";
 	import { SubjectRole } from "../../domain/role";
 	import type { TokenPayload } from "../../domain/jwt";
+	import FormControl from "../../lib/components/FormControl.svelte";
 
 	/**
 	 * Error message displayed after an error occurs with the server.
@@ -146,24 +147,32 @@
 
 		<form method="post" on:submit|preventDefault={handleSubmit}>
 			<div class="container">
-				<Input
-					type="text"
-					name="username"
+				<FormControl
 					error={!!formErrorMessages.username}
-					helperText={formErrorMessages.username}
-					autocomplete="off"
 					label={$t("signin.username.label")}
-					placeholder={$t("signin.username.placeholder")}
-				/>
+					helperText={formErrorMessages.username}
+				>
+					<Input
+						type="text"
+						name="username"
+						error={!!formErrorMessages.username}
+						autocomplete="off"
+						placeholder={$t("signin.username.placeholder")}
+					/>
+				</FormControl>
 
-				<Input
-					type="password"
-					name="password"
+				<FormControl
 					error={!!formErrorMessages.password}
-					helperText={formErrorMessages.password}
 					label={$t("signin.password.label")}
-					placeholder={$t("signin.password.placeholder")}
-				/>
+					helperText={formErrorMessages.password}
+				>
+					<Input
+						type="password"
+						name="password"
+						error={!!formErrorMessages.password}
+						placeholder={$t("signin.password.placeholder")}
+					/>
+				</FormControl>
 
 				{#if responseErrorMessage}
 					<p class="error">{responseErrorMessage}</p>

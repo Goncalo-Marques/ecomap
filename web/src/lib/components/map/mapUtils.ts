@@ -21,6 +21,9 @@ import type { Options as OptionsLayer } from "ol/layer/Layer";
 import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
 import type { WebGLStyle } from "ol/style/webgl";
 import { mapLayerName, colorLayerKey, nameLayerKey } from "../../constants/map";
+import type { Geometry } from "ol/geom";
+import type Feature from "ol/Feature";
+import type { Options } from "ol/source/Vector";
 
 const docElement = document.documentElement;
 const style = getComputedStyle(docElement);
@@ -140,16 +143,13 @@ export class MapHelper {
 	 * @param style Style for new layer.
 	 */
 	public addPointLayer(
-		url: string,
+		vectorOptions: Options<Feature<Geometry>>,
 		layerName: string,
 		layerColor: string,
 		style: WebGLStyle = defaultIconStyle,
 	) {
 		const pointsLayer = new WebGLPointsLayer({
-			source: new VectorSource({
-				url: url,
-				format: new GeoJSON(),
-			}),
+			source: new VectorSource(vectorOptions),
 			style: style,
 			zIndex: this.map.getAllLayers().length,
 		});

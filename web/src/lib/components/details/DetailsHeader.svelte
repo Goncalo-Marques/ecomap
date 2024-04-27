@@ -6,10 +6,15 @@
 	 * The title displayed in the header.
 	 */
 	export let title: string;
+
+	/**
+	 * The route to navigate to when the back button is clicked.
+	 */
+	export let to: string;
 </script>
 
 <header>
-	<Link to="" class="back">
+	<Link {to} class="back">
 		<Icon name="arrow_back" size="medium" />
 	</Link>
 	<h1>{title}</h1>

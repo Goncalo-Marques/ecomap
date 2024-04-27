@@ -26,3 +26,8 @@ export interface ContainersFilters {
 	sort: ContainerSortableFields;
 	order: SortingDirection;
 }
+
+/**
+ * Category of a container.
+ */
+export type ContainerCategory = components["schemas"]["ContainerCategory"];

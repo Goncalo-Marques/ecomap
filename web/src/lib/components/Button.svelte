@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HTMLButtonAttributes } from "svelte/elements";
+	import Icon from "./Icon.svelte";
 
 	type Variant = "primary" | "secondary" | "tertiary";
 	type Size = "medium" | "large";
@@ -10,6 +11,11 @@
 	 */
 	let className: string = "";
 	export { className as class };
+
+	/**
+	 * TODO.
+	 */
+	export let startIcon: string | null = null;
 
 	/**
 	 * Prevents the user from interacting with the button: it cannot be pressed or focused.
@@ -37,11 +43,15 @@
 </script>
 
 <button class={`${size} ${variant} ${className}`} {disabled} {type}>
+	{#if startIcon}
+		<Icon name={startIcon} size="small" />
+	{/if}
 	<slot />
 </button>
 
 <style>
 	button {
+		position: relative;
 		display: flex;
 		justify-content: center;
 		align-items: center;

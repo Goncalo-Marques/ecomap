@@ -193,7 +193,7 @@
 								: undefined}
 
 							<button class={sortingClass}>
-								<Icon name={`arrow_${arrowDirection}`} size="small" />
+								<Icon name={`arrow_${arrowDirection}`} size="x-small" />
 							</button>
 						{/if}
 					</th>
@@ -252,7 +252,7 @@
 					disabled={pagination.pageIndex === 0}
 					on:click={handlePreviousPageClick}
 				>
-					<Icon name="arrow_back" size="small" />
+					<Icon name="arrow_back" size="x-small" />
 				</button>
 
 				{#each pagesArray as pageIndex}
@@ -271,7 +271,7 @@
 					disabled={pagination.pageIndex === pages - 1}
 					on:click={handleNextPageClick}
 				>
-					<Icon name="arrow_forward" size="small" />
+					<Icon name="arrow_forward" size="x-small" />
 				</button>
 			</div>
 		</div>
