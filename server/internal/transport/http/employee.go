@@ -388,8 +388,9 @@ func employeeRoleFromDomain(role domain.EmployeeRole) spec.EmployeeRole {
 
 // employeePostToDomain returns a domain editable employee with password based on the standardized employee post.
 func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmployeeWithPassword, error) {
-	if len(employeePost.GeoJson.Geometry.Coordinates) != 2 {
-		return domain.EditableEmployeeWithPassword{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
+	geoJSON, err := geoJSONFeaturePointToDomain(&employeePost.GeoJson)
+	if err != nil {
+		return domain.EditableEmployeeWithPassword{}, err
 	}
 
 	scheduleStart, err := timeStringToTime(employeePost.ScheduleStart)
@@ -404,17 +405,13 @@ func employeePostToDomain(employeePost spec.EmployeePost) (domain.EditableEmploy
 
 	return domain.EditableEmployeeWithPassword{
 		EditableEmployee: domain.EditableEmployee{
-			Username:    domain.Username(employeePost.Username),
-			FirstName:   domain.Name(employeePost.FirstName),
-			LastName:    domain.Name(employeePost.LastName),
-			Role:        employeeRoleToDomain(employeePost.Role),
-			DateOfBirth: employeePost.DateOfBirth.Time,
-			PhoneNumber: domain.PhoneNumber(employeePost.PhoneNumber),
-			GeoJSON: domain.GeoJSONFeature{
-				Geometry: domain.GeoJSONGeometryPoint{
-					Coordinates: [2]float64(employeePost.GeoJson.Geometry.Coordinates),
-				},
-			},
+			Username:      domain.Username(employeePost.Username),
+			FirstName:     domain.Name(employeePost.FirstName),
+			LastName:      domain.Name(employeePost.LastName),
+			Role:          employeeRoleToDomain(employeePost.Role),
+			DateOfBirth:   employeePost.DateOfBirth.Time,
+			PhoneNumber:   domain.PhoneNumber(employeePost.PhoneNumber),
+			GeoJSON:       geoJSON,
 			ScheduleStart: scheduleStart,
 			ScheduleEnd:   scheduleEnd,
 		},
@@ -429,17 +426,9 @@ func employeePatchToDomain(employeePatch spec.EmployeePatch) (domain.EditableEmp
 		dateOfBirth = &employeePatch.DateOfBirth.Time
 	}
 
-	var geoJSON domain.GeoJSON
-	if employeePatch.GeoJson != nil {
-		if len(employeePatch.GeoJson.Geometry.Coordinates) != 2 {
-			return domain.EditableEmployeePatch{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldGeoJSON}
-		}
-
-		geoJSON = domain.GeoJSONFeature{
-			Geometry: domain.GeoJSONGeometryPoint{
-				Coordinates: [2]float64(employeePatch.GeoJson.Geometry.Coordinates),
-			},
-		}
+	geoJSON, err := geoJSONFeaturePointToDomain(employeePatch.GeoJson)
+	if err != nil {
+		return domain.EditableEmployeePatch{}, err
 	}
 
 	var scheduleStart *time.Time
