@@ -209,6 +209,25 @@ func (s *store) PatchContainer(ctx context.Context, tx pgx.Tx, id uuid.UUID, edi
 	return nil
 }
 
+// DeleteContainerByID executes a query to delete the container with the specified identifier.
+func (s *store) DeleteContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error {
+	commandTag, err := tx.Exec(ctx, `
+		DELETE FROM containers
+		WHERE id = $1
+	`,
+		id,
+	)
+	if err != nil {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerNotFound)
+	}
+
+	return nil
+}
+
 // containerCategoryFromDomain returns a store container category based on the domain model.
 func containerCategoryFromDomain(category domain.ContainerCategory) string {
 	switch category {

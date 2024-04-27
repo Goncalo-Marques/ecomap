@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	descriptionFailedCreateContainer  = "service: failed to create container"
-	descriptionFailedListContainers   = "service: failed to list containers"
-	descriptionFailedGetContainerByID = "service: failed to get container by id"
-	descriptionFailedPatchContainer   = "service: failed to patch container"
+	descriptionFailedCreateContainer     = "service: failed to create container"
+	descriptionFailedListContainers      = "service: failed to list containers"
+	descriptionFailedGetContainerByID    = "service: failed to get container by id"
+	descriptionFailedPatchContainer      = "service: failed to patch container"
+	descriptionFailedDeleteContainerByID = "service: failed to delete container by id"
 )
 
 // CreateContainer creates a new container with the specified data.
@@ -206,6 +207,41 @@ func (s *service) PatchContainer(ctx context.Context, id uuid.UUID, editableCont
 			return domain.Container{}, logInfoAndWrapError(ctx, err, descriptionFailedPatchContainer, logAttrs...)
 		default:
 			return domain.Container{}, logAndWrapError(ctx, err, descriptionFailedPatchContainer, logAttrs...)
+		}
+	}
+
+	return container, nil
+}
+
+// DeleteContainerByID deletes the container with the specified identifier.
+func (s *service) DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "DeleteContainerByID"),
+		slog.String(logging.ContainerID, id.String()),
+	}
+
+	var container domain.Container
+	var err error
+
+	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		container, err = s.store.GetContainerByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		err = s.store.DeleteContainerByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrContainerNotFound):
+			return domain.Container{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteContainerByID, logAttrs...)
+		default:
+			return domain.Container{}, logAndWrapError(ctx, err, descriptionFailedDeleteContainerByID, logAttrs...)
 		}
 	}
 
