@@ -15,6 +15,7 @@ const (
 	FieldGeoJSON       = "geoJson"
 	FieldScheduleStart = "scheduleStart"
 	FieldScheduleEnd   = "scheduleEnd"
+	FieldCategory      = "category"
 
 	FieldFilterLogicalOperator = "logicalOperator"
 	FieldFilterSort            = "sort"
