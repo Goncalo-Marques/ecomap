@@ -28,7 +28,7 @@ func (s *store) CreateContainer(ctx context.Context, tx pgx.Tx, editableContaine
 
 	row := tx.QueryRow(ctx, `
 		INSERT INTO containers (category, geom, road_id, municipality_id)
-		VALUES ($1, $2, $3, $4) 
+		VALUES ($1, ST_GeomFromGeoJSON($2), $3, $4) 
 		RETURNING id
 	`,
 		containerCategoryFromDomain(editableContainer.Category),
