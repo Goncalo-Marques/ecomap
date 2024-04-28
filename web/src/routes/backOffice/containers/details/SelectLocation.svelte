@@ -8,6 +8,8 @@
 	import VectorLayer from "ol/layer/Vector";
 	import { Feature } from "ol";
 	import { Point } from "ol/geom";
+	import VectorSource from "ol/source/Vector";
+	import Button from "../../../../lib/components/Button.svelte";
 
 	export let open: boolean;
 
@@ -15,23 +17,39 @@
 
 	let map: OlMap;
 
-	let mapHelper: MapHelper;
-
-	let selectedCoordinate: Coordinate;
+	const layer = new VectorLayer({
+		source: new VectorSource<Feature<Point>>({ features: [] }),
+		style: {
+			"icon-src": "/images/pin.svg",
+		},
+	});
 
 	function markLocation(coordinate: Coordinate) {
+		const source = layer.getSource();
+
+		if (!source) {
+			return;
+		}
+
+		source.clear();
+		map.removeLayer(layer);
+
 		const point = new Point(coordinate);
-		const feature = new Feature({ name: "location", geometry: point });
-		feature.setId("location");
-		map.s;
+		const feature = new Feature(point);
+
+		source.addFeature(feature);
+		map.addLayer(layer);
 	}
 
 	onMount(() => {
-		mapHelper = new MapHelper(map);
 		map.on("click", e => markLocation(e.coordinate));
 	});
 </script>
 
 <Modal {open} {onClose} title="Selecionar localização">
 	<Map bind:map mapId="select-location-map" --height="32rem" --width="60rem" />
+	<svelte:fragment slot="actions">
+		<Button variant="tertiary">Cancelar</Button>
+		<Button startIcon="check">Guardar</Button>
+	</svelte:fragment>
 </Modal>

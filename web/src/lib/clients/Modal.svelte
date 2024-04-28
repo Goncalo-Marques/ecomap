@@ -44,7 +44,9 @@
 	<section style:padding={gutters ? "1.5rem" : ""}>
 		<slot />
 	</section>
-	<footer></footer>
+	<footer>
+		<slot name="actions" />
+	</footer>
 </dialog>
 
 <style>
@@ -80,6 +82,10 @@
 	}
 
 	footer {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 0.5rem;
 		padding: 1.5rem;
 	}
 </style>
