@@ -232,7 +232,10 @@
 	{#if pagination}
 		{@const start = pagination.pageSize * pagination.pageIndex + 1}
 		{@const end = pagination.pageSize * (pagination.pageIndex + 1)}
-		{@const pages = Math.ceil(pagination.total / pagination.pageSize)}
+		{@const pages =
+			pagination.total > 0
+				? Math.ceil(pagination.total / pagination.pageSize)
+				: 1}
 		{@const pagesArray = Array.from({ length: pages }, (_, idx) => idx)}
 
 		<div class="pagination">

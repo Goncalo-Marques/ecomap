@@ -59,10 +59,6 @@ paths:
       security:
         - BearerAuth: [manager]
       parameters:
-        - $ref: "#/components/parameters/LimitQueryParam"
-        - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/OrderQueryParam"
-        - $ref: "#/components/parameters/UserSortQueryParam"
         - name: username
           in: query
           description: Username to filter by.
@@ -78,6 +74,11 @@ paths:
           description: Last name to filter by.
           schema:
             $ref: "#/components/schemas/Name"
+        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/UserSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
       responses:
         200:
           description: Successful operation.
@@ -361,10 +362,6 @@ paths:
       security:
         - BearerAuth: [manager]
       parameters:
-        - $ref: "#/components/parameters/LimitQueryParam"
-        - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/OrderQueryParam"
-        - $ref: "#/components/parameters/EmployeeSortQueryParam"
         - name: username
           in: query
           description: Username to filter by.
@@ -405,6 +402,21 @@ paths:
           description: End schedule to filter by.
           schema:
             $ref: "#/components/schemas/Time"
+        - name: wayName
+          in: query
+          description: Way name to filter by.
+          schema:
+            type: string
+        - name: municipalityName
+          in: query
+          description: Municipality name to filter by.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/EmployeeSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
       responses:
         200:
           description: Successful operation.
@@ -432,7 +444,7 @@ paths:
       tags:
         - Employee
       security:
-        - BearerAuth: [waste_operator, manager]
+        - BearerAuth: [wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdPathParam"
       responses:
@@ -467,7 +479,7 @@ paths:
       tags:
         - Employee
       security:
-        - BearerAuth: [waste_operator, manager]
+        - BearerAuth: [wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdPathParam"
       requestBody:
@@ -514,7 +526,7 @@ paths:
       tags:
         - Employee
       security:
-        - BearerAuth: [waste_operator, manager]
+        - BearerAuth: [wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/EmployeeIdPathParam"
       responses:
@@ -671,6 +683,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
         500:
           $ref: "#/components/responses/InternalServerError"
     get:
@@ -680,17 +696,28 @@ paths:
       tags:
         - Container
       security:
-        - BearerAuth: [user, waste_operator, manager]
+        - BearerAuth: [user, wasteOperator, manager]
       parameters:
-        - $ref: "#/components/parameters/LimitQueryParam"
-        - $ref: "#/components/parameters/OffsetQueryParam"
-        - $ref: "#/components/parameters/OrderQueryParam"
-        - $ref: "#/components/parameters/ContainerSortQueryParam"
         - name: category
           in: query
           description: Container category to filter by.
           schema:
             $ref: "#/components/schemas/ContainerCategory"
+        - name: wayName
+          in: query
+          description: Way name to filter by.
+          schema:
+            type: string
+        - name: municipalityName
+          in: query
+          description: Municipality name to filter by.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/ContainerSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
       responses:
         200:
           description: Successful operation.
@@ -718,7 +745,7 @@ paths:
       tags:
         - Container
       security:
-        - BearerAuth: [user, waste_operator, manager]
+        - BearerAuth: [user, wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/ContainerIdPathParam"
       responses:
@@ -730,6 +757,47 @@ paths:
                 $ref: "#/components/schemas/Container"
         400:
           description: Invalid container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a container by ID.
+      operationId: patchContainerByID
+      description: Modifies the container with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContainerPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid container ID or request body.
           content:
             application/json:
               schema:
@@ -790,6 +858,16 @@ components:
       bearerFormat: JWT
 
   parameters:
+    LogicalOperatorQueryParam:
+      name: logicalOperator
+      in: query
+      description: Logical operator used for the provided filter.
+      schema:
+        type: string
+        enum:
+          - and
+          - or
+        default: and
     LimitQueryParam:
       name: limit
       in: query
@@ -844,6 +922,8 @@ components:
           - dateOfBirth
           - scheduleStart
           - scheduleEnd
+          - wayName
+          - municipalityName
           - createdAt
           - modifiedAt
         default: createdAt
@@ -855,6 +935,8 @@ components:
         type: string
         enum:
           - category
+          - wayName
+          - municipalityName
           - createdAt
           - modifiedAt
         default: createdAt
@@ -934,7 +1016,7 @@ components:
     PhoneNumber:
       type: string
       maxLength: 20
-      example: +351 912 345 678
+      example: 351 912 345 678
 
     GeoJSONGeometryPoint:
       type: object
@@ -1220,6 +1302,13 @@ components:
       required:
         - category
         - geoJson
+      properties:
+        category:
+          $ref: "#/components/schemas/ContainerCategory"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    ContainerPatch:
+      type: object
       properties:
         category:
           $ref: "#/components/schemas/ContainerCategory"

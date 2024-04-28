@@ -42,12 +42,19 @@ type Store interface {
 	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
 	CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error)
+	ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
 	GetEmployeeByUsername(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.Employee, error)
 	GetEmployeeSignIn(ctx context.Context, tx pgx.Tx, username domain.Username) (domain.SignIn, error)
 	PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableEmployee domain.EditableEmployeePatch, roadID, municipalityID *int) error
 	UpdateEmployeePassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
 	DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+
+	CreateContainer(ctx context.Context, tx pgx.Tx, editableContainer domain.EditableContainer, roadID, municipalityID *int) (uuid.UUID, error)
+	ListContainers(ctx context.Context, tx pgx.Tx, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	GetContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Container, error)
+	PatchContainer(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableContainer domain.EditableContainerPatch, roadID, municipalityID *int) error
+	DeleteContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)

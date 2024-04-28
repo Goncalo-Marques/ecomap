@@ -52,12 +52,19 @@ type Service interface {
 	SignInUser(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 
 	CreateEmployee(ctx context.Context, editableEmployee domain.EditableEmployeeWithPassword) (domain.Employee, error)
+	ListEmployees(ctx context.Context, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 	PatchEmployee(ctx context.Context, id uuid.UUID, editableEmployee domain.EditableEmployeePatch) (domain.Employee, error)
 	UpdateEmployeePassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error
 	ResetEmployeePassword(ctx context.Context, username domain.Username, newPassword domain.Password) error
 	DeleteEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
 	SignInEmployee(ctx context.Context, username domain.Username, password domain.Password) (string, error)
+
+	CreateContainer(ctx context.Context, editableContainer domain.EditableContainer) (domain.Container, error)
+	ListContainers(ctx context.Context, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	GetContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
+	PatchContainer(ctx context.Context, id uuid.UUID, editableContainer domain.EditableContainerPatch) (domain.Container, error)
+	DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
 }
 
 // handler defines the http handler structure.
