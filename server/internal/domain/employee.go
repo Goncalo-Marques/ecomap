@@ -17,7 +17,7 @@ var (
 type EmployeeRole string
 
 const (
-	EmployeeRoleWasteOperator EmployeeRole = "waste_operator"
+	EmployeeRoleWasteOperator EmployeeRole = "wasteOperator"
 	EmployeeRoleManager       EmployeeRole = "manager"
 )
 
@@ -69,4 +69,61 @@ type Employee struct {
 	ID         uuid.UUID
 	CreatedAt  time.Time
 	ModifiedAt time.Time
+}
+
+// EmployeePaginatedSort defines the field of the employee to sort.
+type EmployeePaginatedSort string
+
+const (
+	EmployeePaginatedSortUsername         EmployeePaginatedSort = "username"
+	EmployeePaginatedSortFirstName        EmployeePaginatedSort = "firstName"
+	EmployeePaginatedSortLastName         EmployeePaginatedSort = "lastName"
+	EmployeePaginatedSortRole             EmployeePaginatedSort = "role"
+	EmployeePaginatedSortDateOfBirth      EmployeePaginatedSort = "dateOfBirth"
+	EmployeePaginatedSortScheduleStart    EmployeePaginatedSort = "scheduleStart"
+	EmployeePaginatedSortScheduleEnd      EmployeePaginatedSort = "scheduleEnd"
+	EmployeePaginatedSortWayName          EmployeePaginatedSort = "wayName"
+	EmployeePaginatedSortMunicipalityName EmployeePaginatedSort = "municipalityName"
+	EmployeePaginatedSortCreatedAt        EmployeePaginatedSort = "createdAt"
+	EmployeePaginatedSortModifiedAt       EmployeePaginatedSort = "modifiedAt"
+)
+
+// Field returns the name of the field to sort by.
+func (s EmployeePaginatedSort) Field() EmployeePaginatedSort {
+	return s
+}
+
+// Valid returns true if the field is valid, false otherwise.
+func (s EmployeePaginatedSort) Valid() bool {
+	switch s {
+	case EmployeePaginatedSortUsername,
+		EmployeePaginatedSortFirstName,
+		EmployeePaginatedSortLastName,
+		EmployeePaginatedSortRole,
+		EmployeePaginatedSortDateOfBirth,
+		EmployeePaginatedSortScheduleStart,
+		EmployeePaginatedSortScheduleEnd,
+		EmployeePaginatedSortWayName,
+		EmployeePaginatedSortMunicipalityName,
+		EmployeePaginatedSortCreatedAt,
+		EmployeePaginatedSortModifiedAt:
+		return true
+	default:
+		return false
+	}
+}
+
+// EmployeesPaginatedFilter defines the employees filter structure.
+type EmployeesPaginatedFilter struct {
+	PaginatedRequest[EmployeePaginatedSort]
+	Username         *Username
+	FirstName        *Name
+	LastName         *Name
+	Role             *EmployeeRole
+	DateOfBirth      *string
+	PhoneNumber      *PhoneNumber
+	ScheduleStart    *string
+	ScheduleEnd      *string
+	WayName          *string
+	MunicipalityName *string
 }

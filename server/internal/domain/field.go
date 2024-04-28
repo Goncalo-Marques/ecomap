@@ -2,6 +2,9 @@ package domain
 
 // Field names.
 const (
+	FieldParamEmployeeID = "employeeId"
+	FieldParamUserID     = "userId"
+
 	FieldUsername      = "username"
 	FieldPassword      = "password"
 	FieldNewPassword   = "newPassword"
@@ -12,9 +15,11 @@ const (
 	FieldGeoJSON       = "geoJson"
 	FieldScheduleStart = "scheduleStart"
 	FieldScheduleEnd   = "scheduleEnd"
+	FieldCategory      = "category"
 
-	FieldFilterLimit  = "limit"
-	FieldFilterOffset = "offset"
-	FieldFilterSort   = "sort"
-	FieldFilterOrder  = "order"
+	FieldFilterLogicalOperator = "logicalOperator"
+	FieldFilterSort            = "sort"
+	FieldFilterOrder           = "order"
+	FieldFilterLimit           = "limit"
+	FieldFilterOffset          = "offset"
 )
