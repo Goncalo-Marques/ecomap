@@ -19,7 +19,7 @@
 			type: "accessor",
 			field: "category",
 			header: $t("containers.category"),
-			enableSorting: true,
+			enableSorting: false,
 			cell(category) {
 				return $t(`containers.category.${category}`);
 			},
@@ -30,7 +30,10 @@
 			header: $t("containers.location"),
 			enableSorting: false,
 			cell(geoJson) {
-				const { municipalityName, wayName } = geoJson.properties;
+				const {
+					municipalityName,
+					wayName = $t("containers.location.unknownWay"),
+				} = geoJson.properties;
 
 				return `${wayName}, ${municipalityName}`;
 			},

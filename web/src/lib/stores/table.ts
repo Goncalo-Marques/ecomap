@@ -67,6 +67,9 @@ export function createTableStore<TData, TFilters>(
 					if (currentUrl.pathname === pathname) {
 						// Fetch new data when filters are updated.
 						fetchData(loading, data, updatedFilters, dataFn);
+					} else {
+						// Reset data store when the user exits the pathname that the store belongs to.
+						data.set(initialData);
 					}
 
 					run(updatedFilters);

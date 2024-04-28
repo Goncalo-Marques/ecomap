@@ -2,10 +2,12 @@
 	import { t } from "../../../lib/utils/i8n";
 	import Card from "../components/Card.svelte";
 	import ContainersTable from "./list/ContainersTable.svelte";
+	import SearchContainers from "./list/SearchContainers.svelte";
 </script>
 
 <Card class="card">
 	<h1>{$t("sidebar.containers")}</h1>
+	<SearchContainers />
 	<ContainersTable />
 </Card>
 

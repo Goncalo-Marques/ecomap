@@ -141,3 +141,31 @@ export function getCellStyle<TRow extends Row>(column: Column<TRow>): string {
 
 	return `${minWidth}; ${maxWidth}; ${width}`;
 }
+
+/**
+ * Retrieves the list of the pages to display in the table pagination.
+ * @param pages Pagination pages.
+ * @param pageIndex Page index.
+ * @returns List of the pages to display in the table pagination.
+ */
+export function getVisiblePages(pages: number[], pageIndex: number): number[] {
+	let startIndex = 0;
+	if (pageIndex > 0) {
+		let startOffset = 1;
+
+		if (pageIndex === pages.length - 1) {
+			startOffset += 1;
+		}
+
+		startIndex = pageIndex - startOffset;
+	}
+
+	let endOffset = 2;
+	if (pageIndex === 0) {
+		endOffset += 1;
+	}
+
+	const endIndex = pageIndex + endOffset;
+
+	return pages.slice(startIndex, endIndex);
+}

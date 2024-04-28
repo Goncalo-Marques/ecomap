@@ -9,6 +9,7 @@
 		getCell,
 		getCellStyle,
 		getColumnsSorting,
+		getVisiblePages,
 		toggleDirection,
 	} from "./utils";
 	import type {
@@ -18,6 +19,7 @@
 		SortingDirection,
 		onSortingChangeFn,
 	} from "./types";
+	import TableColumnFilter from "./TableColumnFilter.svelte";
 
 	/**
 	 * The columns of the table.
@@ -192,9 +194,10 @@
 								: undefined}
 
 							<button class={sortingClass}>
-								<Icon name={`arrow_${arrowDirection}`} size="small" />
+								<Icon name={`arrow_${arrowDirection}`} size="x-small" />
 							</button>
 						{/if}
+						<TableColumnFilter />
 					</th>
 				{/each}
 			</tr>
@@ -238,6 +241,7 @@
 				? Math.ceil(pagination.total / pagination.pageSize)
 				: 1}
 		{@const pagesArray = Array.from({ length: pages }, (_, idx) => idx)}
+		{@const visiblePages = getVisiblePages(pagesArray, pagination.pageIndex)}
 
 		<div class="pagination">
 			<span class="pagination-info">
@@ -256,10 +260,10 @@
 					disabled={pagination.pageIndex === 0}
 					on:click={handlePreviousPageClick}
 				>
-					<Icon name="arrow_back" size="small" />
+					<Icon name="arrow_back" size="x-small" />
 				</button>
 
-				{#each pagesArray as pageIndex}
+				{#each visiblePages as pageIndex}
 					<button
 						class="pagination-page"
 						data-index={pageIndex}
@@ -275,7 +279,7 @@
 					disabled={pagination.pageIndex === pages - 1}
 					on:click={handleNextPageClick}
 				>
-					<Icon name="arrow_forward" size="small" />
+					<Icon name="arrow_forward" size="x-small" />
 				</button>
 			</div>
 		</div>
@@ -294,16 +298,14 @@
 		display: flex;
 		flex-direction: column;
 	}
-	thead,
-	tbody {
-		overflow-x: hidden;
-		overflow-y: auto;
-		scrollbar-gutter: stable;
-	}
+
 	thead {
 		flex-shrink: 0;
 	}
 	tbody {
+		overflow-x: hidden;
+		scrollbar-gutter: stable;
+		overflow-y: auto;
 		flex: 1 1 0;
 		border-bottom: 1px solid var(--gray-300);
 	}

@@ -7,10 +7,16 @@
 		"containers.title": {
 			"type": "string"
 		},
+		"containers.search": {
+			"type": "string"
+		},
 		"containers.category": {
 			"type": "string"
 		},
 		"containers.location": {
+			"type": "string"
+		},
+		"containers.location.unknownWay": {
 			"type": "string"
 		},
 		"containers.category.general": {

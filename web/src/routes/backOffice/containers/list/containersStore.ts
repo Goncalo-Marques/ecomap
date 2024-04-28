@@ -11,9 +11,10 @@ import { BackOfficeRoutes } from "../../../constants/routes";
  * The search parameter names for each filter of the containers table.
  */
 const FILTERS_PARAMS_NAMES = {
-	pageIndex: "pageIndex",
+	pageIndex: "page-index",
 	sort: "sort",
 	order: "order",
+	location: "location",
 } as const;
 
 /**
@@ -31,6 +32,7 @@ export const initialFilters: ContainersFilters = {
 	pageIndex: 0,
 	sort: "category",
 	order: "asc",
+	location: "",
 };
 
 /**
@@ -50,6 +52,7 @@ function searchParamsToFilters(
 	);
 	const sortParam = searchParams.get(FILTERS_PARAMS_NAMES.sort);
 	const orderParam = searchParams.get(FILTERS_PARAMS_NAMES.order);
+	const locationParam = searchParams.get(FILTERS_PARAMS_NAMES.location);
 
 	// Update page index when it's is a valid number.
 	if (!Number.isNaN(pageIndexParam)) {
@@ -79,6 +82,7 @@ function searchParamsToFilters(
 
 	return {
 		pageIndex,
+		location: locationParam ?? "",
 		sort: sortingField,
 		order: sortingDirection,
 	};
@@ -90,12 +94,13 @@ function searchParamsToFilters(
  * @returns URL search params.
  */
 function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
-	const { pageIndex, sort, order } = filters;
+	const { pageIndex, sort, order, location } = filters;
 
-	const searchParams = new URLSearchParams(location.search);
+	const searchParams = new URLSearchParams(window.location.search);
 
 	searchParams.set(FILTERS_PARAMS_NAMES.pageIndex, pageIndex.toString());
 	searchParams.set(FILTERS_PARAMS_NAMES.sort, sort);
+	searchParams.set(FILTERS_PARAMS_NAMES.location, location);
 
 	if (order) {
 		searchParams.set(FILTERS_PARAMS_NAMES.order, order);
@@ -112,7 +117,7 @@ function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
 async function getContainers(
 	filters: ContainersFilters,
 ): Promise<PaginatedContainers> {
-	const { pageIndex, sort, order } = filters;
+	const { pageIndex, sort, order, location } = filters;
 
 	const res = await ecomapHttpClient.GET("/containers", {
 		params: {
@@ -121,6 +126,9 @@ async function getContainers(
 				limit: DEFAULT_PAGE_SIZE,
 				sort,
 				order,
+				wayName: location,
+				municipalityName: location,
+				logicalOperator: "or",
 			},
 		},
 	});

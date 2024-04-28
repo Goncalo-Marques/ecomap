@@ -25,4 +25,5 @@ export interface ContainersFilters {
 	pageIndex: number;
 	sort: ContainerSortableFields;
 	order: SortingDirection;
+	location: string;
 }
