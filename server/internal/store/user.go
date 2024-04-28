@@ -32,7 +32,7 @@ func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.E
 
 	err := row.Scan(&id)
 	if err != nil {
-		if getConstraintName(err) == constraintUsersUsernameKey {
+		if constraintNameFromError(err) == constraintUsersUsernameKey {
 			return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrUserAlreadyExists)
 		}
 
@@ -205,7 +205,7 @@ func (s *store) PatchUser(ctx context.Context, tx pgx.Tx, id uuid.UUID, editable
 		editableUser.LastName,
 	)
 	if err != nil {
-		if getConstraintName(err) == constraintUsersUsernameKey {
+		if constraintNameFromError(err) == constraintUsersUsernameKey {
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserAlreadyExists)
 		}
 
@@ -249,7 +249,7 @@ func (s *store) DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) err
 		id,
 	)
 	if err != nil {
-		switch getConstraintName(err) {
+		switch constraintNameFromError(err) {
 		case constraintUsersContainerBookmarksUserIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserAssociatedWithUserContainerBookmark)
 		case constraintContainersReportsIssuerIDFkey:

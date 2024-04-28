@@ -71,9 +71,9 @@ func (s *store) Close() {
 	s.database.Close()
 }
 
-// getConstraintName returns the name of the constraint of the given error. If the error is not of type pgconn.PgError,
-// an empty string is returned.
-func getConstraintName(err error) string {
+// constraintNameFromError returns the name of the constraint of the given error. If the error is not of type
+// pgconn.PgError, an empty string is returned.
+func constraintNameFromError(err error) string {
 	if pqErr, ok := err.(*pgconn.PgError); ok {
 		return pqErr.ConstraintName
 	}

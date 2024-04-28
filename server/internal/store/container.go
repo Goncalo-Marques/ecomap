@@ -218,7 +218,7 @@ func (s *store) DeleteContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID
 		id,
 	)
 	if err != nil {
-		switch getConstraintName(err) {
+		switch constraintNameFromError(err) {
 		case constraintContainersReportsContainerIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerAssociatedWithContainerReport)
 		case constraintUsersContainerBookmarksContainerIDFkey:

@@ -53,7 +53,7 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 
 	err = row.Scan(&id)
 	if err != nil {
-		if getConstraintName(err) == constraintEmployeesUsernameKey {
+		if constraintNameFromError(err) == constraintEmployeesUsernameKey {
 			return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrEmployeeAlreadyExists)
 		}
 
@@ -311,7 +311,7 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 		editableEmployee.ScheduleEnd,
 	)
 	if err != nil {
-		if getConstraintName(err) == constraintEmployeesUsernameKey {
+		if constraintNameFromError(err) == constraintEmployeesUsernameKey {
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAlreadyExists)
 		}
 
@@ -355,7 +355,7 @@ func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID)
 		id,
 	)
 	if err != nil {
-		switch getConstraintName(err) {
+		switch constraintNameFromError(err) {
 		case constraintContainersReportsResolverIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithContainerReportAsResolver)
 		case constraintRoutesContainersResponsibleIDFkey:
