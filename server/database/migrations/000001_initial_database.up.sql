@@ -153,7 +153,7 @@ CREATE TABLE warehouses (
     created_at      timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     modified_at     timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT warehouses_pkey                          PRIMARY KEY (id),
-    CONSTRAINT warehouses_truck_capacity_positive_check CHECK (truck_capacity > 0)
+    CONSTRAINT warehouses_truck_capacity_positive_check CHECK (truck_capacity >= 0)
 );
 
 CREATE TRIGGER warehouses_update_modified_at
