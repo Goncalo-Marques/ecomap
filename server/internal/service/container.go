@@ -238,7 +238,10 @@ func (s *service) DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrContainerNotFound):
+		case errors.Is(err, domain.ErrContainerNotFound),
+			errors.Is(err, domain.ErrContainerAssociatedWithContainerReport),
+			errors.Is(err, domain.ErrContainerAssociatedWithUserContainerBookmark),
+			errors.Is(err, domain.ErrContainerAssociatedWithRouteContainer):
 			return domain.Container{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteContainerByID, logAttrs...)
 		default:
 			return domain.Container{}, logAndWrapError(ctx, err, descriptionFailedDeleteContainerByID, logAttrs...)
