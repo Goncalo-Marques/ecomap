@@ -216,6 +216,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        409:
+          description: User is associated with a report or a bookmark.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
   /users/password:
@@ -554,6 +560,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        409:
+          description: Employee is associated with a report or a route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
   /employees/password:
@@ -845,6 +857,12 @@ paths:
           $ref: "#/components/responses/Forbidden"
         404:
           description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Container is associated with a report, bookmark, or route.
           content:
             application/json:
               schema:
