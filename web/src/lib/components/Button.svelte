@@ -1,8 +1,11 @@
 <script lang="ts">
-	import type { HTMLButtonAttributes } from "svelte/elements";
+	import type {
+		HTMLButtonAttributes,
+		MouseEventHandler,
+	} from "svelte/elements";
 
 	type Variant = "primary" | "secondary" | "tertiary";
-	type Size = "medium" | "large";
+	type Size = "small" | "medium" | "large";
 
 	/**
 	 * A space-separated list of the classes of the element.
@@ -16,6 +19,12 @@
 	 * @default false
 	 */
 	export let disabled: boolean = false;
+
+	/**
+	 *
+	 * @default null
+	 */
+	export let onClick: MouseEventHandler<HTMLButtonElement> | null = null;
 
 	/**
 	 * The size of the button.
@@ -36,7 +45,12 @@
 	export let variant: Variant = "primary";
 </script>
 
-<button class={`${size} ${variant} ${className}`} {disabled} {type}>
+<button
+	class={`${size} ${variant} ${className}`}
+	{disabled}
+	{type}
+	on:click={onClick}
+>
 	<slot />
 </button>
 
@@ -101,6 +115,9 @@
 		}
 	}
 
+	.small {
+		padding: 0.375rem 0.5rem;
+	}
 	.medium {
 		padding: 0.5rem 0.75rem;
 	}

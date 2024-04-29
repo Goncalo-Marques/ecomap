@@ -10,13 +10,11 @@ import { BackOfficeRoutes } from "../../../constants/routes";
 /**
  * The search parameter names for each filter of the containers table.
  */
-const FILTERS_PARAMS_NAMES = {
+const FILTERS_PARAMS_NAMES: Record<keyof ContainersFilters, string> = {
 	pageIndex: "page-index",
-	sort: "sort",
-	order: "order",
 	location: "location",
 	category: "category",
-} as const;
+};
 
 /**
  * The initial data of the containers table.
@@ -31,8 +29,6 @@ const initialData: PaginatedContainers = {
  */
 export const initialFilters: ContainersFilters = {
 	pageIndex: 0,
-	sort: "category",
-	order: "asc",
 	location: "",
 	category: undefined,
 };
@@ -46,39 +42,21 @@ function searchParamsToFilters(
 	searchParams: URLSearchParams,
 ): ContainersFilters {
 	let pageIndex = initialFilters.pageIndex;
-	let sortingField = initialFilters.sort;
-	let sortingDirection = initialFilters.order;
 	let location = initialFilters.location;
 	let category = initialFilters.category;
 
 	const pageIndexParam = Number(
 		searchParams.get(FILTERS_PARAMS_NAMES.pageIndex),
 	);
-	const sortParam = searchParams.get(FILTERS_PARAMS_NAMES.sort);
-	const orderParam = searchParams.get(FILTERS_PARAMS_NAMES.order);
 	const locationParam = searchParams.get(FILTERS_PARAMS_NAMES.location);
 	const categoryParam = searchParams.get(FILTERS_PARAMS_NAMES.category);
 
-	// Update page index when it's is a valid number.
+	// Update page index when it's a valid number.
 	if (!Number.isNaN(pageIndexParam)) {
 		pageIndex = pageIndexParam;
 	}
 
-	// Update sorting field when it's a valid sort for containers.
-	switch (sortParam) {
-		case "category":
-		case "createdAt":
-		case "modifiedAt":
-			sortingField = sortParam;
-	}
-
-	// Update sorting direction when it's a valid direction for containers.
-	switch (orderParam) {
-		case "asc":
-		case "desc":
-			sortingDirection = orderParam;
-	}
-
+	// Update location when it's a non empty value.
 	if (locationParam) {
 		location = locationParam;
 	}
@@ -98,8 +76,6 @@ function searchParamsToFilters(
 		pageIndex,
 		location,
 		category,
-		sort: sortingField,
-		order: sortingDirection,
 	};
 }
 
@@ -109,18 +85,10 @@ function searchParamsToFilters(
  * @returns URL search params.
  */
 function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
-	const { pageIndex, sort, order, location, category } = filters;
+	const { pageIndex, location, category } = filters;
 
 	const searchParams = new URLSearchParams(window.location.search);
-
 	searchParams.set(FILTERS_PARAMS_NAMES.pageIndex, pageIndex.toString());
-	searchParams.set(FILTERS_PARAMS_NAMES.sort, sort);
-
-	if (order) {
-		searchParams.set(FILTERS_PARAMS_NAMES.order, order);
-	} else {
-		searchParams.delete(FILTERS_PARAMS_NAMES.order);
-	}
 
 	if (location) {
 		searchParams.set(FILTERS_PARAMS_NAMES.location, location);
@@ -145,15 +113,15 @@ function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
 async function getContainers(
 	filters: ContainersFilters,
 ): Promise<PaginatedContainers> {
-	const { pageIndex, sort, order, location, category } = filters;
+	const { pageIndex, location, category } = filters;
 
 	const res = await ecomapHttpClient.GET("/containers", {
 		params: {
 			query: {
 				offset: pageIndex * DEFAULT_PAGE_SIZE,
 				limit: DEFAULT_PAGE_SIZE,
-				sort,
-				order,
+				sort: "createdAt",
+				order: "desc",
 				category,
 				wayName: location,
 				municipalityName: location,

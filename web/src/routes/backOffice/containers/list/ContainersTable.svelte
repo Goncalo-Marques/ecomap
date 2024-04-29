@@ -27,7 +27,7 @@
 			type: "accessor",
 			field: "category",
 			header: $t("containers.category"),
-			enableSorting: false,
+			enableSorting: true,
 			enableFiltering: true,
 			options: categoryFilters,
 			cell(category) {
@@ -95,8 +95,6 @@
 <Table
 	{columns}
 	loading={$loading}
-	sortingField={$filters.sort}
-	sortingOrder={$filters.order}
 	rows={$data.containers}
 	pagination={{
 		name: $t("containers.title").toLowerCase(),

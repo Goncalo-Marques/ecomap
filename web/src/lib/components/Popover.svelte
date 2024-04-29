@@ -1,4 +1,6 @@
 <script lang="ts">
+	export let popover: HTMLElement | null = null;
+
 	/**
 	 * Handles click event on trigger element of the popover.
 	 * @param e Click event.
@@ -21,7 +23,13 @@
 	<slot name="trigger" />
 </button>
 
-<div role="menu" class="dropdown" popover="auto" id="popover">
+<div
+	bind:this={popover}
+	role="menu"
+	class="dropdown"
+	popover="auto"
+	id="popover"
+>
 	<slot />
 </div>
 

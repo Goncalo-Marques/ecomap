@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Input from "../../../../lib/components/Input.svelte";
 	import Search from "../../../../lib/components/Search.svelte";
 	import debounce from "../../../../lib/utils/debounce";
 	import { t } from "../../../../lib/utils/i8n";

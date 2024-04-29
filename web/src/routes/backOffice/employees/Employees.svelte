@@ -31,6 +31,7 @@
 			field: "firstName",
 			header: "Name",
 			enableSorting: true,
+			enableFiltering: false,
 			cell(firstName, row) {
 				return `${firstName} ${row.lastName}`;
 			},
@@ -40,6 +41,7 @@
 			field: "username",
 			header: "Username",
 			enableSorting: true,
+			enableFiltering: false,
 			cell(username) {
 				return username;
 			},
@@ -49,6 +51,7 @@
 			field: "createdAt",
 			header: "Created at",
 			enableSorting: false,
+			enableFiltering: false,
 			cell(createdAt) {
 				return new Date(createdAt).toDateString();
 			},
@@ -58,6 +61,7 @@
 			field: "modifiedAt",
 			header: "Modified at",
 			enableSorting: true,
+			enableFiltering: false,
 			cell(modifiedAt) {
 				return new Date(modifiedAt).toDateString();
 			},

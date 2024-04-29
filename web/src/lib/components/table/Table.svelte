@@ -70,11 +70,16 @@
 	let columnsSorting: SortingColumns<TRow>;
 
 	/**
-	 * Handles on click event for each table header cell.
+	 * Handles on click event for each table header cell sorting button.
 	 * @param e Click event.
 	 */
-	function handleHeaderCellClick(e: Event) {
-		const headerCell = e.currentTarget as HTMLTableCellElement;
+	function handleSortingClick(e: Event) {
+		const sortingButton = e.currentTarget as HTMLButtonElement;
+		const headerCell = sortingButton.parentElement;
+
+		if (!headerCell) {
+			return;
+		}
 
 		// Retrieves data attributes from the header cell element.
 		const { field, sortable, direction } = headerCell.dataset;
@@ -183,7 +188,6 @@
 							? columnsSorting[column.field]
 							: null}
 						style={getCellStyle(column)}
-						on:click={handleHeaderCellClick}
 					>
 						{column.header}
 						{#if column.type === "accessor"}
@@ -194,10 +198,13 @@
 										: "downward"}
 								{@const sortingClass = columnsSorting[column.field]
 									? "sorted"
-									: undefined}
+									: ""}
 
-								<button class={sortingClass}>
-									<Icon name={`arrow_${arrowDirection}`} size="x-small" />
+								<button
+									on:click={handleSortingClick}
+									class={`sort ${sortingClass}`}
+								>
+									<Icon name={`arrow_${arrowDirection}`} size="small" />
 								</button>
 							{/if}
 
@@ -346,7 +353,7 @@
 		gap: 0.5rem;
 		font: var(--text-base-semibold);
 	}
-	th :global(.sorted) {
+	th .sorted {
 		color: var(--green-700);
 	}
 	td {
@@ -365,6 +372,12 @@
 	}
 	.loading > :global(.material-symbols-rounded) {
 		animation: var(--animation-spin);
+	}
+
+	.sort {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.pagination {
