@@ -78,6 +78,15 @@ export interface ColumnAccessor<TRow, TField, TValue> extends ColumnCommon {
 	 * Indicates if the column is sortable.
 	 */
 	enableSorting: boolean;
+
+	/**
+	 * Indicates if the column is filterable.
+	 */
+	enableFiltering: boolean;
+
+	options?: { value: TValue; label: string }[];
+
+	onFilterChange?: (value: TValue) => void;
 }
 
 /**

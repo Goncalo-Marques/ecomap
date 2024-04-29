@@ -15,6 +15,7 @@ const FILTERS_PARAMS_NAMES = {
 	sort: "sort",
 	order: "order",
 	location: "location",
+	category: "category",
 } as const;
 
 /**
@@ -33,6 +34,7 @@ export const initialFilters: ContainersFilters = {
 	sort: "category",
 	order: "asc",
 	location: "",
+	category: undefined,
 };
 
 /**
@@ -46,6 +48,8 @@ function searchParamsToFilters(
 	let pageIndex = initialFilters.pageIndex;
 	let sortingField = initialFilters.sort;
 	let sortingDirection = initialFilters.order;
+	let location = initialFilters.location;
+	let category = initialFilters.category;
 
 	const pageIndexParam = Number(
 		searchParams.get(FILTERS_PARAMS_NAMES.pageIndex),
@@ -53,6 +57,7 @@ function searchParamsToFilters(
 	const sortParam = searchParams.get(FILTERS_PARAMS_NAMES.sort);
 	const orderParam = searchParams.get(FILTERS_PARAMS_NAMES.order);
 	const locationParam = searchParams.get(FILTERS_PARAMS_NAMES.location);
+	const categoryParam = searchParams.get(FILTERS_PARAMS_NAMES.category);
 
 	// Update page index when it's is a valid number.
 	if (!Number.isNaN(pageIndexParam)) {
@@ -65,9 +70,6 @@ function searchParamsToFilters(
 		case "createdAt":
 		case "modifiedAt":
 			sortingField = sortParam;
-			break;
-		default:
-			break;
 	}
 
 	// Update sorting direction when it's a valid direction for containers.
@@ -75,14 +77,27 @@ function searchParamsToFilters(
 		case "asc":
 		case "desc":
 			sortingDirection = orderParam;
-			break;
-		default:
-			break;
+	}
+
+	if (locationParam) {
+		location = locationParam;
+	}
+
+	switch (categoryParam) {
+		case "general":
+		case "paper":
+		case "plastic":
+		case "metal":
+		case "glass":
+		case "organic":
+		case "hazardous":
+			category = categoryParam;
 	}
 
 	return {
 		pageIndex,
-		location: locationParam ?? "",
+		location,
+		category,
 		sort: sortingField,
 		order: sortingDirection,
 	};
@@ -94,16 +109,29 @@ function searchParamsToFilters(
  * @returns URL search params.
  */
 function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
-	const { pageIndex, sort, order, location } = filters;
+	const { pageIndex, sort, order, location, category } = filters;
 
 	const searchParams = new URLSearchParams(window.location.search);
 
 	searchParams.set(FILTERS_PARAMS_NAMES.pageIndex, pageIndex.toString());
 	searchParams.set(FILTERS_PARAMS_NAMES.sort, sort);
-	searchParams.set(FILTERS_PARAMS_NAMES.location, location);
 
 	if (order) {
 		searchParams.set(FILTERS_PARAMS_NAMES.order, order);
+	} else {
+		searchParams.delete(FILTERS_PARAMS_NAMES.order);
+	}
+
+	if (location) {
+		searchParams.set(FILTERS_PARAMS_NAMES.location, location);
+	} else {
+		searchParams.delete(FILTERS_PARAMS_NAMES.location);
+	}
+
+	if (category) {
+		searchParams.set(FILTERS_PARAMS_NAMES.category, category);
+	} else {
+		searchParams.delete(FILTERS_PARAMS_NAMES.category);
 	}
 
 	return searchParams;
@@ -117,7 +145,7 @@ function filtersToSearchParams(filters: ContainersFilters): URLSearchParams {
 async function getContainers(
 	filters: ContainersFilters,
 ): Promise<PaginatedContainers> {
-	const { pageIndex, sort, order, location } = filters;
+	const { pageIndex, sort, order, location, category } = filters;
 
 	const res = await ecomapHttpClient.GET("/containers", {
 		params: {
@@ -126,6 +154,7 @@ async function getContainers(
 				limit: DEFAULT_PAGE_SIZE,
 				sort,
 				order,
+				category,
 				wayName: location,
 				municipalityName: location,
 				logicalOperator: "or",

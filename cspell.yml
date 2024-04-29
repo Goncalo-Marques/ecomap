@@ -44,6 +44,7 @@ ignoreWords:
   - pkey
   - plpgsql
   - psql
+  - popovertarget
   - Português
   - postgis
   - proguard

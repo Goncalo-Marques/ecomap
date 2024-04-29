@@ -26,4 +26,5 @@ export interface ContainersFilters {
 	sort: ContainerSortableFields;
 	order: SortingDirection;
 	location: string;
+	category?: Container["category"];
 }

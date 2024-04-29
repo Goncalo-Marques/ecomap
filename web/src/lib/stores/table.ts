@@ -49,9 +49,20 @@ export function createTableStore<TData, TFilters>(
 
 	const loading = writable(false);
 
-	const filters = derived(url, newUrl =>
-		searchParamsToFilters(newUrl.searchParams),
-	);
+	const filters = derived(url, currentUrl => {
+		const filtersFromSearchParams = searchParamsToFilters(
+			currentUrl.searchParams,
+		);
+
+		if (currentUrl.pathname === pathname) {
+			fetchData(loading, data, filtersFromSearchParams, dataFn);
+		} else {
+			// Reset data store to its initial state when the user exits the pathname that the store belongs to.
+			data.set(initialData);
+		}
+
+		return filtersFromSearchParams;
+	});
 
 	const store: TableStore<TData, TFilters> = {
 		data: {
@@ -61,20 +72,7 @@ export function createTableStore<TData, TFilters>(
 			subscribe: loading.subscribe,
 		},
 		filters: {
-			subscribe(run, invalidate) {
-				return filters.subscribe(updatedFilters => {
-					const currentUrl = get(url);
-					if (currentUrl.pathname === pathname) {
-						// Fetch new data when filters are updated.
-						fetchData(loading, data, updatedFilters, dataFn);
-					} else {
-						// Reset data store when the user exits the pathname that the store belongs to.
-						data.set(initialData);
-					}
-
-					run(updatedFilters);
-				}, invalidate);
-			},
+			subscribe: filters.subscribe,
 			set(value) {
 				// Update the URL search params.
 				updateSearchParams(filtersToSearchParams(value));

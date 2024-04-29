@@ -10,9 +10,17 @@
 	} from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
+	import { categoryOptions } from "../constants/category";
 	import containersStore from "./containersStore";
 
 	const { loading, data, filters } = containersStore;
+
+	const categoryFilters = categoryOptions.map(category => {
+		return {
+			value: category,
+			label: $t(`containers.category.${category}`),
+		};
+	});
 
 	const columns: Columns<Container> = [
 		{
@@ -20,8 +28,19 @@
 			field: "category",
 			header: $t("containers.category"),
 			enableSorting: false,
+			enableFiltering: true,
+			options: categoryFilters,
 			cell(category) {
 				return $t(`containers.category.${category}`);
+			},
+			onFilterChange(value) {
+				containersStore.filters.update(filters => {
+					return {
+						...filters,
+						pageIndex: 0,
+						category: value,
+					};
+				});
 			},
 		},
 		{
@@ -29,6 +48,7 @@
 			field: "geoJson",
 			header: $t("containers.location"),
 			enableSorting: false,
+			enableFiltering: false,
 			cell(geoJson) {
 				const {
 					municipalityName,

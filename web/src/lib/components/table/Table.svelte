@@ -186,18 +186,28 @@
 						on:click={handleHeaderCellClick}
 					>
 						{column.header}
-						{#if column.type === "accessor" && column.enableSorting}
-							{@const arrowDirection =
-								columnsSorting[column.field] === "asc" ? "upward" : "downward"}
-							{@const sortingClass = columnsSorting[column.field]
-								? "sorted"
-								: undefined}
+						{#if column.type === "accessor"}
+							{#if column.enableSorting}
+								{@const arrowDirection =
+									columnsSorting[column.field] === "asc"
+										? "upward"
+										: "downward"}
+								{@const sortingClass = columnsSorting[column.field]
+									? "sorted"
+									: undefined}
 
-							<button class={sortingClass}>
-								<Icon name={`arrow_${arrowDirection}`} size="x-small" />
-							</button>
+								<button class={sortingClass}>
+									<Icon name={`arrow_${arrowDirection}`} size="x-small" />
+								</button>
+							{/if}
+
+							{#if column.enableFiltering}
+								<TableColumnFilter
+									options={column.options}
+									onValueChange={column.onFilterChange}
+								/>
+							{/if}
 						{/if}
-						<TableColumnFilter />
 					</th>
 				{/each}
 			</tr>
