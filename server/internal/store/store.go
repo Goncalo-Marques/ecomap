@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -79,6 +80,22 @@ func constraintNameFromError(err error) string {
 	}
 
 	return ""
+}
+
+// jsonMarshalGeoJSONGeometryPoint marshals the given GeoJSON into geometry point JSON.
+func jsonMarshalGeoJSONGeometryPoint(geoJSON domain.GeoJSON) ([]byte, error) {
+	if geoJSON == nil {
+		return nil, nil
+	}
+
+	var geometry domain.GeoJSONGeometryPoint
+	if feature, ok := geoJSON.(domain.GeoJSONFeature); ok {
+		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
+			geometry = g
+		}
+	}
+
+	return json.Marshal(geometry)
 }
 
 // listSQLWhere returns a SQL WHERE clause for the specified filter fields using the specified logical operator.

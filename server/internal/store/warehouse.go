@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -14,14 +13,7 @@ import (
 
 // CreateWarehouse executes a query to create a warehouse with the specified data.
 func (s *store) CreateWarehouse(ctx context.Context, tx pgx.Tx, editableWarehouse domain.EditableWarehouse, roadID, municipalityID *int) (uuid.UUID, error) {
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableWarehouse.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
-	geoJSON, err := json.Marshal(geometry)
+	geoJSON, err := jsonMarshalGeoJSONGeometryPoint(editableWarehouse.GeoJSON)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
@@ -147,23 +139,13 @@ func (s *store) GetWarehouseByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (
 	return warehouse, nil
 }
 
-// TODO: Validate truck capacity when patching as documented in the spec.
-// TODO: Create map helper for the GeoJSON.
-
 // PatchWarehouse executes a query to patch an warehouse with the specified identifier and data.
 func (s *store) PatchWarehouse(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch, roadID, municipalityID *int) error {
 	var geoJSON []byte
 	var err error
 
 	if editableWarehouse.GeoJSON != nil {
-		var geometry domain.GeoJSONGeometryPoint
-		if feature, ok := editableWarehouse.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-
-		geoJSON, err = json.Marshal(geometry)
+		geoJSON, err = jsonMarshalGeoJSONGeometryPoint(editableWarehouse.GeoJSON)
 		if err != nil {
 			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 		}

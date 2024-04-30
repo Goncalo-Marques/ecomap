@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -18,14 +17,7 @@ const (
 
 // CreateEmployee executes a query to create an employee with the specified data.
 func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error) {
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
-	geoJSON, err := json.Marshal(geometry)
+	geoJSON, err := jsonMarshalGeoJSONGeometryPoint(editableEmployee.GeoJSON)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
@@ -265,14 +257,7 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 	var err error
 
 	if editableEmployee.GeoJSON != nil {
-		var geometry domain.GeoJSONGeometryPoint
-		if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-
-		geoJSON, err = json.Marshal(geometry)
+		geoJSON, err = jsonMarshalGeoJSONGeometryPoint(editableEmployee.GeoJSON)
 		if err != nil {
 			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 		}
