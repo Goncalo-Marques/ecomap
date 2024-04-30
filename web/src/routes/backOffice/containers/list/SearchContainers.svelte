@@ -24,7 +24,7 @@
 	<Search
 		value={$filters.location}
 		placeholder={$t("containers.search")}
-		onInput={debounce(handleSearchChange, 200)}
+		onInput={debounce(handleSearchChange)}
 	/>
 </div>
 

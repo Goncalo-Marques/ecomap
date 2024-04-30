@@ -24,7 +24,8 @@
 	export let placeholder: HTMLInputAttributes["placeholder"] = null;
 
 	/**
-	 *
+	 * The value of the search input.
+	 * @default null
 	 */
 	export let value: string | null = null;
 </script>

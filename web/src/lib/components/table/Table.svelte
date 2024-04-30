@@ -210,8 +210,8 @@
 
 							{#if column.enableFiltering}
 								<TableColumnFilter
-									options={column.options}
-									onValueChange={column.onFilterChange}
+									options={column.filterOptions}
+									onFilterChange={column.onFilterChange}
 								/>
 							{/if}
 						{/if}
@@ -317,6 +317,8 @@
 	}
 
 	thead {
+		overflow-y: auto;
+		scrollbar-gutter: stable;
 		flex-shrink: 0;
 	}
 	tbody {

@@ -27,9 +27,9 @@
 			type: "accessor",
 			field: "category",
 			header: $t("containers.category"),
-			enableSorting: true,
+			enableSorting: false,
 			enableFiltering: true,
-			options: categoryFilters,
+			filterOptions: categoryFilters,
 			cell(category) {
 				return $t(`containers.category.${category}`);
 			},

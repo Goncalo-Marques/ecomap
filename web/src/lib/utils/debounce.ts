@@ -2,12 +2,12 @@
  * Debounces a given callback with a given time.
  * @template TCallback Type of the callback function.
  * @param callback Callback after the debounce.
- * @param waitFor Number of milliseconds to wait for the debounce.
+ * @param [waitFor=200] Number of milliseconds to wait for the debounce.
  * @returns Debounced callback.
  */
 function debounce<
 	TCallback extends (...args: Parameters<TCallback>) => ReturnType<TCallback>,
->(callback: TCallback, waitFor: number) {
+>(callback: TCallback, waitFor: number = 200) {
 	let timeout: NodeJS.Timeout;
 
 	return (...args: Parameters<TCallback>) => {

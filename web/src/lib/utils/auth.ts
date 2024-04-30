@@ -40,3 +40,22 @@ export function decodeTokenPayload(token: string): TokenPayload | null {
 
 	return payload;
 }
+
+/**
+ * Stores token in cookies.
+ * @param token JWT token.
+ * @param expirationTime JWT expiration time.
+ */
+export function storeToken(token: string, expirationTime: number) {
+	const expireTimeInMs = expirationTime * 1000;
+	const expireDate = new Date(expireTimeInMs).toUTCString();
+
+	document.cookie = `token=${token}; Path=/; Expires=${expireDate}; SameSite=Strict; Secure`;
+}
+
+/**
+ * Clears token in cookies.
+ */
+export function clearToken() {
+	document.cookie = `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+}

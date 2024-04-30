@@ -1,19 +1,47 @@
-<script lang="ts" generics="TValue">
+<script
+	lang="ts"
+	generics="TRow extends Record<string, unknown>, TValue extends TRow[keyof TRow]"
+>
+	import type { FilterOption } from "./types";
+
 	import Button from "../Button.svelte";
 	import Icon from "../Icon.svelte";
 	import Popover from "../Popover.svelte";
+	import Radio from "../Radio.svelte";
 
-	export let options: { value: TValue; label: string }[] = [];
+	/**
+	 * The filter options of the column.
+	 * @default []
+	 */
+	export let options: FilterOption<TValue>[] = [];
 
-	export let onValueChange: ((value: TValue) => void) | null = null;
+	/**
+	 * Callback fired when a column filter changes.
+	 * @default null
+	 */
+	export let onFilterChange: ((value: TValue | undefined) => void) | null =
+		null;
 
+	/**
+	 * The selected radio button value.
+	 */
+	let selectedValue: TValue | undefined;
+
+	/**
+	 * The popover element that contains the filter options.
+	 */
 	let popover: HTMLElement;
 
-	let selectedValue: TValue | null = null;
-
-	$: if (selectedValue) {
-		onValueChange?.(selectedValue);
+	/**
+	 * Clears the selected filter and closes the popover element.
+	 */
+	function clearFilter() {
+		selectedValue = undefined;
+		popover.hidePopover();
 	}
+
+	// Dispatch callback every time selectedValue changes.
+	$: onFilterChange?.(selectedValue);
 </script>
 
 <Popover bind:popover>
@@ -25,28 +53,16 @@
 	<div class="content">
 		<fieldset>
 			{#each options as option}
-				<label>
-					<input
-						type="radio"
-						name="option"
-						value={option.value}
-						bind:group={selectedValue}
-					/>
-					{option.label}
-				</label>
+				<Radio
+					label={option.label}
+					value={option.value}
+					bind:group={selectedValue}
+				/>
 			{/each}
 		</fieldset>
 
 		<div class="actions">
-			<Button
-				type="reset"
-				variant="primary"
-				size="small"
-				onClick={() => {
-					selectedValue = null;
-					popover.hidePopover();
-				}}
-			>
+			<Button variant="primary" size="small" onClick={clearFilter}>
 				Clear
 			</Button>
 		</div>
@@ -80,16 +96,15 @@
 
 	.actions {
 		display: flex;
-		justify-content: flex-end;
+
+		& > button {
+			flex: 1;
+		}
 	}
 
 	fieldset {
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
-	}
-
-	label {
-		font: var(--text-base-regular);
 	}
 </style>

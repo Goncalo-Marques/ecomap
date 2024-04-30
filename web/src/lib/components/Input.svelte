@@ -60,13 +60,14 @@
 	export let type: HTMLInputAttributes["type"] = null;
 
 	/**
-	 * The label for the input.
+	 * The label of the input.
 	 * @default null
 	 */
 	export let label: string | null = null;
 
 	/**
-	 *
+	 * The value of the input.
+	 * @default null
 	 */
 	export let value: string | null = null;
 </script>

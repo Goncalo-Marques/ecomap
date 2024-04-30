@@ -116,6 +116,7 @@
 	}
 
 	.small {
+		font-size: 0.75rem;
 		padding: 0.375rem 0.5rem;
 	}
 	.medium {

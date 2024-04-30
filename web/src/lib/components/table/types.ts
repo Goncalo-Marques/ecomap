@@ -27,6 +27,21 @@ export type Column<TRow extends Row> = {
 }[keyof TRow];
 
 /**
+ * Column filter option.
+ */
+export interface FilterOption<TValue> {
+	/**
+	 * The value of the option.
+	 */
+	value: TValue;
+
+	/**
+	 * The label of the option.
+	 */
+	label: string;
+}
+
+/**
  * Table cell Svelte component.
  */
 export interface TableCellSvelteComponent {
@@ -84,9 +99,16 @@ export interface ColumnAccessor<TRow, TField, TValue> extends ColumnCommon {
 	 */
 	enableFiltering: boolean;
 
-	options?: { value: TValue; label: string }[];
+	/**
+	 * The filter options of the column.
+	 */
+	filterOptions?: FilterOption<TValue>[];
 
-	onFilterChange?: (value: TValue) => void;
+	/**
+	 * Callback fired when a column filter changes.
+	 * @param value Filter value.
+	 */
+	onFilterChange?: (value: TValue | undefined) => void;
 }
 
 /**
