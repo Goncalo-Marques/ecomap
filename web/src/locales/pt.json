@@ -1,5 +1,6 @@
 {
 	"$schema": "./schema.json",
+	"clear": "Limpar",
 	"pagination.of": "de",
 	"createdAt": "Data de criação",
 	"modifiedAt": "Data de última modificação",
@@ -8,8 +9,10 @@
 	"containers.title": "Contentores",
 	"containers.notFound.title": "Contentor não encontrado",
 	"containers.notFound.description": "O contentor que procura não existe.",
+	"containers.search": "Pesquise por localização",
 	"containers.category": "Categoria",
 	"containers.location": "Localização",
+	"containers.location.unknownWay": "Rua desconhecida",
 	"containers.category.general": "Geral",
 	"containers.category.glass": "Vidro",
 	"containers.category.hazardous": "Perigoso",

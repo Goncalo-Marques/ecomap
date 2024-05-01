@@ -65,6 +65,12 @@ type Service interface {
 	GetContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
 	PatchContainer(ctx context.Context, id uuid.UUID, editableContainer domain.EditableContainerPatch) (domain.Container, error)
 	DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
+
+	CreateWarehouse(ctx context.Context, editableWarehouse domain.EditableWarehouse) (domain.Warehouse, error)
+	ListWarehouses(ctx context.Context, filter domain.WarehousesPaginatedFilter) (domain.PaginatedResponse[domain.Warehouse], error)
+	GetWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
+	PatchWarehouse(ctx context.Context, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch) (domain.Warehouse, error)
+	DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
 }
 
 // handler defines the http handler structure.

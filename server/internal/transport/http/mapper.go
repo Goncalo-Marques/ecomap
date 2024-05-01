@@ -94,22 +94,6 @@ func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeatureP
 	}, nil
 }
 
-// logicalOperatorToDomain returns a domain logical operator based on the standardized query parameter model.
-func logicalOperatorToDomain(logicalOperator *spec.LogicalOperatorQueryParam) domain.PaginationLogicalOperator {
-	if logicalOperator == nil {
-		return domain.PaginationLogicalOperatorAnd
-	}
-
-	switch *logicalOperator {
-	case spec.LogicalOperatorQueryParamAnd:
-		return domain.PaginationLogicalOperatorAnd
-	case spec.LogicalOperatorQueryParamOr:
-		return domain.PaginationLogicalOperatorOr
-	default:
-		return domain.PaginationLogicalOperator(*logicalOperator)
-	}
-}
-
 // orderToDomain returns a domain order based on the standardized query parameter model.
 func orderToDomain(order *spec.OrderQueryParam) domain.PaginationOrder {
 	if order == nil {
@@ -145,12 +129,11 @@ func offsetToDomain(offset *spec.OffsetQueryParam) domain.PaginationOffset {
 }
 
 // paginatedRequestToDomain returns a domain paginated request based on the standardized query parameter models.
-func paginatedRequestToDomain[T any](logicalOperator *spec.LogicalOperatorQueryParam, sort domain.PaginationSort[T], order *spec.OrderQueryParam, limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam) domain.PaginatedRequest[T] {
+func paginatedRequestToDomain[T any](sort domain.PaginationSort[T], order *spec.OrderQueryParam, limit *spec.LimitQueryParam, offset *spec.OffsetQueryParam) domain.PaginatedRequest[T] {
 	return domain.PaginatedRequest[T]{
-		LogicalOperator: logicalOperatorToDomain(logicalOperator),
-		Sort:            sort,
-		Order:           orderToDomain(order),
-		Limit:           limitToDomain(limit),
-		Offset:          offsetToDomain(offset),
+		Sort:   sort,
+		Order:  orderToDomain(order),
+		Limit:  limitToDomain(limit),
+		Offset: offsetToDomain(offset),
 	}
 }

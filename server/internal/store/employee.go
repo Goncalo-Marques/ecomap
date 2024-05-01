@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -18,14 +17,7 @@ const (
 
 // CreateEmployee executes a query to create an employee with the specified data.
 func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error) {
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
-	geoJSON, err := json.Marshal(geometry)
+	geoJSON, err := jsonMarshalGeoJSONGeometryPoint(editableEmployee.GeoJSON)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
@@ -53,7 +45,7 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 
 	err = row.Scan(&id)
 	if err != nil {
-		if getConstraintName(err) == constraintEmployeesUsernameKey {
+		if constraintNameFromError(err) == constraintEmployeesUsernameKey {
 			return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrEmployeeAlreadyExists)
 		}
 
@@ -65,8 +57,9 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 
 // ListEmployees executes a query to return the employees for the specified filter.
 func (s *store) ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error) {
-	filterFields := make([]string, 0, 10)
-	argsWhere := make([]any, 0, 10)
+	var filterFields []string
+	var filterLocationFields []string
+	var argsWhere []any
 
 	// Append the optional fields to filter.
 	if filter.Username != nil {
@@ -101,16 +94,12 @@ func (s *store) ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.Empl
 		filterFields = append(filterFields, "e.schedule_end::text")
 		argsWhere = append(argsWhere, *filter.ScheduleEnd)
 	}
-	if filter.WayName != nil {
-		filterFields = append(filterFields, "rn.osm_name")
-		argsWhere = append(argsWhere, *filter.WayName)
-	}
-	if filter.MunicipalityName != nil {
-		filterFields = append(filterFields, "m.name")
-		argsWhere = append(argsWhere, *filter.MunicipalityName)
+	if filter.LocationName != nil {
+		filterLocationFields = []string{"rn.osm_name", "m.name"}
+		argsWhere = append(argsWhere, *filter.LocationName)
 	}
 
-	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
+	sqlWhere := listSQLWhere(filterFields, filterLocationFields)
 
 	// Get the total number of rows for the given filter.
 	var total int
@@ -265,14 +254,7 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 	var err error
 
 	if editableEmployee.GeoJSON != nil {
-		var geometry domain.GeoJSONGeometryPoint
-		if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-
-		geoJSON, err = json.Marshal(geometry)
+		geoJSON, err = jsonMarshalGeoJSONGeometryPoint(editableEmployee.GeoJSON)
 		if err != nil {
 			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 		}
@@ -311,7 +293,7 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 		editableEmployee.ScheduleEnd,
 	)
 	if err != nil {
-		if getConstraintName(err) == constraintEmployeesUsernameKey {
+		if constraintNameFromError(err) == constraintEmployeesUsernameKey {
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAlreadyExists)
 		}
 
@@ -355,6 +337,15 @@ func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID)
 		id,
 	)
 	if err != nil {
+		switch constraintNameFromError(err) {
+		case constraintContainersReportsResolverIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithContainerReportAsResolver)
+		case constraintRoutesContainersResponsibleIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithRouteContainerAsResponsible)
+		case constraintRoutesEmployeesEmployeeIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithRouteEmployee)
+		}
+
 		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
 	}
 

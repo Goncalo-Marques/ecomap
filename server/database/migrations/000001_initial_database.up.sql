@@ -129,13 +129,14 @@ CREATE TABLE users_container_bookmarks (
 
 -- Trucks.
 CREATE TABLE trucks (
-    id              uuid        NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    make            varchar(50) NOT NULL,
-    model           varchar(50) NOT NULL,
-    license_plate   varchar(30) NOT NULL,
-    person_capacity integer     NOT NULL,
-    created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_at     timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    id              uuid                    NOT NULL    DEFAULT GEN_RANDOM_UUID(),
+    make            varchar(50)             NOT NULL,
+    model           varchar(50)             NOT NULL,
+    license_plate   varchar(30)             NOT NULL,
+    person_capacity integer                 NOT NULL,
+    geom            geometry('POINT', 4326) NOT NULL,
+    created_at      timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at     timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT trucks_pkey                              PRIMARY KEY (id),
     CONSTRAINT trucks_person_capacity_positive_check    CHECK (person_capacity > 0)
 );
@@ -148,12 +149,12 @@ CREATE TRIGGER trucks_update_modified_at
 -- Warehouses.
 CREATE TABLE warehouses (
     id              uuid                    NOT NULL    DEFAULT GEN_RANDOM_UUID(),
-    geom            geometry('POINT', 4326) NOT NULL,
     truck_capacity  integer                 NOT NULL,
+    geom            geometry('POINT', 4326) NOT NULL,
     created_at      timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     modified_at     timestamp               NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT warehouses_pkey                          PRIMARY KEY (id),
-    CONSTRAINT warehouses_truck_capacity_positive_check CHECK (truck_capacity > 0)
+    CONSTRAINT warehouses_truck_capacity_positive_check CHECK (truck_capacity >= 0)
 );
 
 CREATE TRIGGER warehouses_update_modified_at

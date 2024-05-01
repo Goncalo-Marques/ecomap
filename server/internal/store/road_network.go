@@ -18,10 +18,11 @@ func (s *store) GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domai
 		return domain.Road{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
 
+	// Only consider roads that are not motorways, trunk roads or primary roads (clazz > 20).
 	row := tx.QueryRow(ctx, `
 		SELECT rn.id, rn.osm_id, rn.osm_name, rn.osm_meta, rn.osm_source_id, rn.osm_target_id, rn.clazz, rn.flags, rn.source, rn.target, rn.km, rn.kmh, rn.cost, rn.reverse_cost, rn.x1, rn.y1, rn.x2, rn.y2
 		FROM pgr_findCloseEdges(
-			$$SELECT id, geom_way as geom FROM road_network$$,
+			$$SELECT id, geom_way as geom FROM road_network WHERE clazz > 20$$,
 			ST_GeomFromGeoJSON($1),
 			0.5
 		) AS ce

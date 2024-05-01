@@ -9,6 +9,8 @@ tags:
     description: Employee operations
   - name: Container
     description: Container operations
+  - name: Warehouse
+    description: Warehouse operations
 servers:
   - url: https://server-7fzc7ivuwa-ew.a.run.app/api
     description: Production server.
@@ -74,7 +76,6 @@ paths:
           description: Last name to filter by.
           schema:
             $ref: "#/components/schemas/Name"
-        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
         - $ref: "#/components/parameters/UserSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -210,6 +211,12 @@ paths:
           $ref: "#/components/responses/Forbidden"
         404:
           description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: User is associated with a report or a bookmark.
           content:
             application/json:
               schema:
@@ -402,17 +409,7 @@ paths:
           description: End schedule to filter by.
           schema:
             $ref: "#/components/schemas/Time"
-        - name: wayName
-          in: query
-          description: Way name to filter by.
-          schema:
-            type: string
-        - name: municipalityName
-          in: query
-          description: Municipality name to filter by.
-          schema:
-            type: string
-        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
         - $ref: "#/components/parameters/EmployeeSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -548,6 +545,12 @@ paths:
           $ref: "#/components/responses/Forbidden"
         404:
           description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Employee is associated with a report or a route.
           content:
             application/json:
               schema:
@@ -703,17 +706,7 @@ paths:
           description: Container category to filter by.
           schema:
             $ref: "#/components/schemas/ContainerCategory"
-        - name: wayName
-          in: query
-          description: Way name to filter by.
-          schema:
-            type: string
-        - name: municipalityName
-          in: query
-          description: Municipality name to filter by.
-          schema:
-            type: string
-        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
         - $ref: "#/components/parameters/ContainerSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -847,6 +840,204 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        409:
+          description: Container is associated with a report, bookmark, or route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /warehouses:
+    post:
+      summary: Create a warehouse.
+      operationId: createWarehouse
+      description: Creates a new warehouse with the specified data.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarehousePost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List warehouses.
+      operationId: listWarehouses
+      description: Returns the warehouses with the specified filter.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/WarehouseSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarehousesPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /warehouses/{warehouseId}:
+    get:
+      summary: Get a warehouse by ID.
+      operationId: getWarehouseByID
+      description: Returns the warehouse with the specified identifier.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid warehouse ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Warehouse not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a warehouse by ID.
+      operationId: patchWarehouseByID
+      description: Modifies the warehouse with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarehousePatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid warehouse ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Warehouse not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Warehouse already has more trucks than the new capacity.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a warehouse by ID.
+      operationId: deleteWarehouseByID
+      description: Deletes the warehouse with the specified identifier.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid warehouse ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Warehouse not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Warehouse is associated with a truck or a route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
 
@@ -858,16 +1049,13 @@ components:
       bearerFormat: JWT
 
   parameters:
-    LogicalOperatorQueryParam:
-      name: logicalOperator
+    LocationNameFilterQueryParam:
+      name: locationName
       in: query
-      description: Logical operator used for the provided filter.
+      description: Name of the location to filter by. It considers the name of the way or the name of the municipality.
       schema:
         type: string
-        enum:
-          - and
-          - or
-        default: and
+
     LimitQueryParam:
       name: limit
       in: query
@@ -895,6 +1083,7 @@ components:
           - asc
           - desc
         default: asc
+
     UserSortQueryParam:
       name: sort
       in: query
@@ -940,6 +1129,18 @@ components:
           - createdAt
           - modifiedAt
         default: createdAt
+    WarehouseSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the warehouse field to sort by.
+      schema:
+        type: string
+        enum:
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
 
     UserIdPathParam:
       name: userId
@@ -959,6 +1160,13 @@ components:
       name: containerId
       in: path
       description: Container identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    WarehouseIdPathParam:
+      name: warehouseId
+      in: path
+      description: Warehouse identifier.
       required: true
       schema:
         $ref: "#/components/schemas/UUID"
@@ -1039,9 +1247,6 @@ components:
     GeoJSONFeatureProperties:
       type: object
       description: GeoJSON feature properties.
-      required:
-        - wayName
-        - municipalityName
       properties:
         wayName:
           type: string
@@ -1081,6 +1286,9 @@ components:
         - glass
         - organic
         - hazardous
+    WarehouseTruckCapacity:
+      type: integer
+      minimum: 0
 
     SignIn:
       type: object
@@ -1344,6 +1552,54 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Container"
+
+    WarehousePost:
+      type: object
+      required:
+        - truckCapacity
+        - geoJson
+      properties:
+        truckCapacity:
+          $ref: "#/components/schemas/WarehouseTruckCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    WarehousePatch:
+      type: object
+      properties:
+        truckCapacity:
+          $ref: "#/components/schemas/WarehouseTruckCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    Warehouse:
+      type: object
+      required:
+        - id
+        - truckCapacity
+        - geoJson
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        truckCapacity:
+          $ref: "#/components/schemas/WarehouseTruckCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    WarehousesPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - warehouses
+          properties:
+            warehouses:
+              type: array
+              items:
+                $ref: "#/components/schemas/Warehouse"
 
   responses:
     Unauthorized:

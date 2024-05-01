@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -14,14 +13,7 @@ import (
 
 // CreateContainer executes a query to create a container with the specified data.
 func (s *store) CreateContainer(ctx context.Context, tx pgx.Tx, editableContainer domain.EditableContainer, roadID, municipalityID *int) (uuid.UUID, error) {
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableContainer.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
-	geoJSON, err := json.Marshal(geometry)
+	geoJSON, err := jsonMarshalGeoJSONGeometryPoint(editableContainer.GeoJSON)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
@@ -49,24 +41,21 @@ func (s *store) CreateContainer(ctx context.Context, tx pgx.Tx, editableContaine
 
 // ListContainers executes a query to return the containers for the specified filter.
 func (s *store) ListContainers(ctx context.Context, tx pgx.Tx, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error) {
-	filterFields := make([]string, 0, 3)
-	argsWhere := make([]any, 0, 3)
+	var filterFields []string
+	var filterLocationFields []string
+	var argsWhere []any
 
 	// Append the optional fields to filter.
 	if filter.Category != nil {
 		filterFields = append(filterFields, "c.category::text")
 		argsWhere = append(argsWhere, containerCategoryFromDomain(*filter.Category))
 	}
-	if filter.WayName != nil {
-		filterFields = append(filterFields, "rn.osm_name")
-		argsWhere = append(argsWhere, *filter.WayName)
-	}
-	if filter.MunicipalityName != nil {
-		filterFields = append(filterFields, "m.name")
-		argsWhere = append(argsWhere, *filter.MunicipalityName)
+	if filter.LocationName != nil {
+		filterLocationFields = []string{"rn.osm_name", "m.name"}
+		argsWhere = append(argsWhere, *filter.LocationName)
 	}
 
-	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
+	sqlWhere := listSQLWhere(filterFields, filterLocationFields)
 
 	// Get the total number of rows for the given filter.
 	var total int
@@ -165,14 +154,7 @@ func (s *store) PatchContainer(ctx context.Context, tx pgx.Tx, id uuid.UUID, edi
 	var err error
 
 	if editableContainer.GeoJSON != nil {
-		var geometry domain.GeoJSONGeometryPoint
-		if feature, ok := editableContainer.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-
-		geoJSON, err = json.Marshal(geometry)
+		geoJSON, err = jsonMarshalGeoJSONGeometryPoint(editableContainer.GeoJSON)
 		if err != nil {
 			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 		}
@@ -218,6 +200,15 @@ func (s *store) DeleteContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID
 		id,
 	)
 	if err != nil {
+		switch constraintNameFromError(err) {
+		case constraintContainersReportsContainerIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerAssociatedWithContainerReport)
+		case constraintUsersContainerBookmarksContainerIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerAssociatedWithUserContainerBookmark)
+		case constraintRoutesContainersContainerIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerAssociatedWithRouteContainer)
+		}
+
 		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
 	}
 

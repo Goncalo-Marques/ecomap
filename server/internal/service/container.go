@@ -86,9 +86,6 @@ func (s *service) ListContainers(ctx context.Context, filter domain.ContainersPa
 		slog.String(logging.ServiceMethod, "ListContainers"),
 	}
 
-	if !filter.LogicalOperator.Valid() {
-		return domain.PaginatedResponse[domain.Container]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLogicalOperator}, descriptionInvalidFilterValue, logAttrs...)
-	}
 	if filter.Sort != nil && !filter.Sort.Valid() {
 		return domain.PaginatedResponse[domain.Container]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}
@@ -238,7 +235,10 @@ func (s *service) DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrContainerNotFound):
+		case errors.Is(err, domain.ErrContainerNotFound),
+			errors.Is(err, domain.ErrContainerAssociatedWithContainerReport),
+			errors.Is(err, domain.ErrContainerAssociatedWithUserContainerBookmark),
+			errors.Is(err, domain.ErrContainerAssociatedWithRouteContainer):
 			return domain.Container{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteContainerByID, logAttrs...)
 		default:
 			return domain.Container{}, logAndWrapError(ctx, err, descriptionFailedDeleteContainerByID, logAttrs...)

@@ -9,8 +9,10 @@ import (
 
 // User errors.
 var (
-	ErrUserAlreadyExists = errors.New("username already exists") // Returned when a user already exists with the same username.
-	ErrUserNotFound      = errors.New("user not found")          // Returned when a user is not found.
+	ErrUserAlreadyExists                         = errors.New("username already exists")                         // Returned when a user already exists with the same username.
+	ErrUserNotFound                              = errors.New("user not found")                                  // Returned when a user is not found.
+	ErrUserAssociatedWithUserContainerBookmark   = errors.New("user associated with container bookmark")         // Returned when a user is associated with a container bookmark.
+	ErrUserAssociatedWithContainerReportAsIssuer = errors.New("user associated with container report as issuer") // Returned when a user is associated with a container report as an issuer.
 )
 
 // EditableUser defines the editable user structure.

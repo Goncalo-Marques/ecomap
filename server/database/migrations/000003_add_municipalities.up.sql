@@ -26,5 +26,8 @@ ALTER TABLE employees ADD CONSTRAINT employees_municipality_id_fkey FOREIGN KEY 
 ALTER TABLE containers ADD municipality_id integer;
 ALTER TABLE containers ADD CONSTRAINT containers_municipality_id_fkey FOREIGN KEY (municipality_id) REFERENCES municipalities (id);
 
+ALTER TABLE trucks ADD municipality_id integer;
+ALTER TABLE trucks ADD CONSTRAINT trucks_municipality_id_fkey FOREIGN KEY (municipality_id) REFERENCES municipalities (id);
+
 ALTER TABLE warehouses ADD municipality_id integer;
 ALTER TABLE warehouses ADD CONSTRAINT warehouses_municipality_id_fkey FOREIGN KEY (municipality_id) REFERENCES municipalities (id);

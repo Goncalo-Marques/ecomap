@@ -31,5 +31,8 @@ ALTER TABLE employees ADD CONSTRAINT employees_road_id_fkey FOREIGN KEY (road_id
 ALTER TABLE containers ADD road_id integer;
 ALTER TABLE containers ADD CONSTRAINT containers_road_id_fkey FOREIGN KEY (road_id) REFERENCES road_network (id);
 
+ALTER TABLE trucks ADD road_id integer;
+ALTER TABLE trucks ADD CONSTRAINT trucks_road_id_fkey FOREIGN KEY (road_id) REFERENCES road_network (id);
+
 ALTER TABLE warehouses ADD road_id integer;
 ALTER TABLE warehouses ADD CONSTRAINT warehouses_road_id_fkey FOREIGN KEY (road_id) REFERENCES road_network (id);

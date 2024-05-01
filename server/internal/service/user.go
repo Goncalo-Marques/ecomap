@@ -92,9 +92,6 @@ func (s *service) ListUsers(ctx context.Context, filter domain.UsersPaginatedFil
 		slog.String(logging.ServiceMethod, "ListUsers"),
 	}
 
-	if !filter.LogicalOperator.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLogicalOperator}, descriptionInvalidFilterValue, logAttrs...)
-	}
 	if filter.Sort != nil && !filter.Sort.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}
@@ -330,7 +327,9 @@ func (s *service) DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrUserNotFound):
+		case errors.Is(err, domain.ErrUserNotFound),
+			errors.Is(err, domain.ErrUserAssociatedWithUserContainerBookmark),
+			errors.Is(err, domain.ErrUserAssociatedWithContainerReportAsIssuer):
 			return domain.User{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteUserByID, logAttrs...)
 		default:
 			return domain.User{}, logAndWrapError(ctx, err, descriptionFailedDeleteUserByID, logAttrs...)

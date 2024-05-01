@@ -1,5 +1,8 @@
 <script lang="ts">
-	import type { HTMLInputAttributes } from "svelte/elements";
+	import type {
+		ChangeEventHandler,
+		HTMLInputAttributes,
+	} from "svelte/elements";
 
 	/**
 	 * The hint for form autofill feature.
@@ -39,6 +42,12 @@
 	export let name: HTMLInputAttributes["name"] = null;
 
 	/**
+	 * Callback fired when input value changes.
+	 * @default null
+	 */
+	export let onInput: ChangeEventHandler<HTMLInputElement> | null = null;
+
+	/**
 	 * The text that appears in the form control when it has no value set.
 	 * @default null
 	 */
@@ -51,10 +60,16 @@
 	export let type: HTMLInputAttributes["type"] = null;
 
 	/**
-	 * The label for the input.
+	 * The label of the input.
 	 * @default null
 	 */
 	export let label: string | null = null;
+
+	/**
+	 * The value of the input.
+	 * @default null
+	 */
+	export let value: string | null = null;
 </script>
 
 <label class={className}>
@@ -68,6 +83,8 @@
 		{name}
 		{placeholder}
 		{type}
+		{value}
+		on:input={onInput}
 	/>
 	{#if helperText}
 		<span class={`helper-text ${error ? "error" : ""}`}>{helperText}</span>
