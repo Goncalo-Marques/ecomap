@@ -9,6 +9,8 @@ tags:
     description: Employee operations
   - name: Container
     description: Container operations
+  - name: Truck
+    description: Truck operations
   - name: Warehouse
     description: Warehouse operations
 servers:
@@ -352,6 +354,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
         409:
           description: Username already exists.
           content:
@@ -849,6 +855,207 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /trucks:
+    post:
+      summary: Create a truck.
+      operationId: createTruck
+      description: Creates a new truck with the specified data.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TruckPost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List trucks.
+      operationId: listTrucks
+      description: Returns the trucks with the specified filter.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - name: make
+          in: query
+          description: Truck make to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckMake"
+        - name: model
+          in: query
+          description: Truck model to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckModel"
+        - name: licensePlate
+          in: query
+          description: Truck license plate to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckLicensePlate"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/TruckSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrucksPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /trucks/{truckId}:
+    get:
+      summary: Get a truck by ID.
+      operationId: getTruckByID
+      description: Returns the truck with the specified identifier.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid truck ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Truck not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a truck by ID.
+      operationId: patchTruckByID
+      description: Modifies the truck with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TruckPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid truck ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Truck not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a truck by ID.
+      operationId: deleteTruckByID
+      description: Deletes the truck with the specified identifier.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid truck ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Truck not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Truck is associated with a warehouse or a route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
   /warehouses:
     post:
       summary: Create a warehouse.
@@ -1129,6 +1336,21 @@ components:
           - createdAt
           - modifiedAt
         default: createdAt
+    TruckSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the truck field to sort by.
+      schema:
+        type: string
+        enum:
+          - make
+          - model
+          - licensePlate
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
     WarehouseSortQueryParam:
       name: sort
       in: query
@@ -1160,6 +1382,13 @@ components:
       name: containerId
       in: path
       description: Container identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    TruckIdPathParam:
+      name: truckId
+      in: path
+      description: Truck identifier.
       required: true
       schema:
         $ref: "#/components/schemas/UUID"
@@ -1286,6 +1515,18 @@ components:
         - glass
         - organic
         - hazardous
+    TruckMake:
+      type: string
+      maximum: 50
+    TruckModel:
+      type: string
+      maximum: 50
+    TruckLicensePlate:
+      type: string
+      maximum: 30
+    TruckPersonCapacity:
+      type: integer
+      minimum: 1
     WarehouseTruckCapacity:
       type: integer
       minimum: 0
@@ -1552,6 +1793,78 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Container"
+
+    TruckPost:
+      type: object
+      required:
+        - make
+        - model
+        - licensePlate
+        - personCapacity
+        - geoJson
+      properties:
+        make:
+          $ref: "#/components/schemas/TruckMake"
+        model:
+          $ref: "#/components/schemas/TruckModel"
+        licensePlate:
+          $ref: "#/components/schemas/TruckLicensePlate"
+        personCapacity:
+          $ref: "#/components/schemas/TruckPersonCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    TruckPatch:
+      type: object
+      properties:
+        make:
+          $ref: "#/components/schemas/TruckMake"
+        model:
+          $ref: "#/components/schemas/TruckModel"
+        licensePlate:
+          $ref: "#/components/schemas/TruckLicensePlate"
+        personCapacity:
+          $ref: "#/components/schemas/TruckPersonCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    Truck:
+      type: object
+      required:
+        - id
+        - make
+        - model
+        - licensePlate
+        - personCapacity
+        - geoJson
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        make:
+          $ref: "#/components/schemas/TruckMake"
+        model:
+          $ref: "#/components/schemas/TruckModel"
+        licensePlate:
+          $ref: "#/components/schemas/TruckLicensePlate"
+        personCapacity:
+          $ref: "#/components/schemas/TruckPersonCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    TrucksPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - trucks
+          properties:
+            trucks:
+              type: array
+              items:
+                $ref: "#/components/schemas/Truck"
 
     WarehousePost:
       type: object
