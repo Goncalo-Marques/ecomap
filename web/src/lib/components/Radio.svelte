@@ -31,6 +31,10 @@
 	 */
 	export let value: TValue | null = null;
 
+	/**
+	 * Callback fired when radio button value changes.
+	 * @default null
+	 */
 	export let onChange: ChangeEventHandler<HTMLInputElement> | null = null;
 </script>
 
