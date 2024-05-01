@@ -1,6 +1,7 @@
 <script lang="ts">
 	/**
 	 * The popover element.
+	 * @default null
 	 */
 	export let popover: HTMLElement | null = null;
 
