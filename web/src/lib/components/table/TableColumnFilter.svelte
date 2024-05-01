@@ -28,10 +28,10 @@
 	 * The initial value of the filter.
 	 * @default undefined
 	 */
-	export let initialValue: TValue | undefined = undefined;
+	export let initialValue: TValue | undefined;
 
 	/**
-	 * The selected radio button value.
+	 * Internal value to manage the selected radio button.
 	 */
 	let selectedValue: TValue | undefined = initialValue;
 
@@ -41,31 +41,49 @@
 	let popover: HTMLElement;
 
 	/**
+	 * Updates the selected value of the filter and fires the
+	 * `onFilterChanges` callback.
+	 * @param value Updated filter value.
+	 */
+	function updatedSelectedValue(value: TValue | undefined) {
+		selectedValue = value;
+		onFilterChange?.(value);
+	}
+
+	/**
 	 * Clears the selected filter and closes the popover element.
 	 */
 	function clearFilter() {
-		selectedValue = undefined;
+		updatedSelectedValue(undefined);
 		popover.hidePopover();
 	}
 
-	// Dispatch callback every time selectedValue changes.
-	$: onFilterChange?.(selectedValue);
+	/**
+	 * Handles change events of a radio button.
+	 * @param e Change event.
+	 */
+	function handleRadioChange(e: Event) {
+		const radioButton = e.currentTarget as HTMLInputElement;
+		const value = radioButton.value as TValue;
+		updatedSelectedValue(value);
+	}
 </script>
 
 <Popover bind:popover>
 	<div slot="trigger" class="filter">
 		<Icon name="filter_alt" size="small" />
-		<span class="badge" style:display={!selectedValue ? "none" : ""} />
+		<span class="badge" style:display={selectedValue ? "" : "none"} />
 	</div>
 
 	<div class="content">
 		<fieldset>
 			{#each options as option}
 				<Radio
+					name="option"
 					label={option.label}
 					value={option.value}
-					checked={option.value === initialValue}
-					bind:group={selectedValue}
+					checked={option.value === selectedValue}
+					onChange={handleRadioChange}
 				/>
 			{/each}
 		</fieldset>

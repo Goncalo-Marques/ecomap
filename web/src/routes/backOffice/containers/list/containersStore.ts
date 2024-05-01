@@ -123,9 +123,7 @@ async function getContainers(
 				sort: "createdAt",
 				order: "desc",
 				category,
-				wayName: location,
-				municipalityName: location,
-				logicalOperator: "or",
+				locationName: location,
 			},
 		},
 	});
