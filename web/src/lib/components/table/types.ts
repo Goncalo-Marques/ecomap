@@ -105,6 +105,11 @@ export interface ColumnAccessor<TRow, TField, TValue> extends ColumnCommon {
 	filterOptions?: FilterOption<TValue>[];
 
 	/**
+	 * The initial value of the column filter.
+	 */
+	filterInitialValue?: TValue;
+
+	/**
 	 * Callback fired when a column filter changes.
 	 * @param value Filter value.
 	 */

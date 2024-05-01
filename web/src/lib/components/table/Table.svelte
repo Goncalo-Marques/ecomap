@@ -211,6 +211,7 @@
 							{#if column.enableFiltering}
 								<TableColumnFilter
 									options={column.filterOptions}
+									initialValue={column.filterInitialValue}
 									onFilterChange={column.onFilterChange}
 								/>
 							{/if}

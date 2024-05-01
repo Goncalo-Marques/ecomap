@@ -21,7 +21,7 @@
 	export let disabled: boolean = false;
 
 	/**
-	 *
+	 * Callback fired when button is clicked.
 	 * @default null
 	 */
 	export let onClick: MouseEventHandler<HTMLButtonElement> | null = null;

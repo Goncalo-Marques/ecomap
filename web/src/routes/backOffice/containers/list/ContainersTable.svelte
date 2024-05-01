@@ -15,13 +15,6 @@
 
 	const { loading, data, filters } = containersStore;
 
-	const categoryFilters = categoryOptions.map(category => {
-		return {
-			value: category,
-			label: $t(`containers.category.${category}`),
-		};
-	});
-
 	const columns: Columns<Container> = [
 		{
 			type: "accessor",
@@ -29,16 +22,22 @@
 			header: $t("containers.category"),
 			enableSorting: false,
 			enableFiltering: true,
-			filterOptions: categoryFilters,
+			filterOptions: categoryOptions.map(category => {
+				return {
+					value: category,
+					label: $t(`containers.category.${category}`),
+				};
+			}),
+			filterInitialValue: $filters.category,
 			cell(category) {
 				return $t(`containers.category.${category}`);
 			},
-			onFilterChange(value) {
-				containersStore.filters.update(filters => {
+			onFilterChange(category) {
+				filters.update(filters => {
 					return {
 						...filters,
 						pageIndex: 0,
-						category: value,
+						category,
 					};
 				});
 			},

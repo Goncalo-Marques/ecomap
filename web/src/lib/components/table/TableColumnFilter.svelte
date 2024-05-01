@@ -2,6 +2,8 @@
 	lang="ts"
 	generics="TRow extends Record<string, unknown>, TValue extends TRow[keyof TRow]"
 >
+	import { t } from "../../utils/i8n";
+
 	import type { FilterOption } from "./types";
 
 	import Button from "../Button.svelte";
@@ -23,9 +25,15 @@
 		null;
 
 	/**
+	 * The initial value of the filter.
+	 * @default undefined
+	 */
+	export let initialValue: TValue | undefined = undefined;
+
+	/**
 	 * The selected radio button value.
 	 */
-	let selectedValue: TValue | undefined;
+	let selectedValue: TValue | undefined = initialValue;
 
 	/**
 	 * The popover element that contains the filter options.
@@ -56,6 +64,7 @@
 				<Radio
 					label={option.label}
 					value={option.value}
+					checked={option.value === initialValue}
 					bind:group={selectedValue}
 				/>
 			{/each}
@@ -63,7 +72,7 @@
 
 		<div class="actions">
 			<Button variant="primary" size="small" onClick={clearFilter}>
-				Clear
+				{$t("clear")}
 			</Button>
 		</div>
 	</div>

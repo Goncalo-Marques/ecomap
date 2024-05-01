@@ -1,5 +1,6 @@
 {
 	"$schema": "./schema.json",
+	"clear": "Clear",
 	"pagination.of": "of",
 	"containers.title": "Containers",
 	"containers.search": "Search by location",
