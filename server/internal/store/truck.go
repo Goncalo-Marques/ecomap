@@ -66,7 +66,7 @@ func (s *store) ListTrucks(ctx context.Context, tx pgx.Tx, filter domain.TrucksP
 		argsWhere = append(argsWhere, *filter.LocationName)
 	}
 
-	sqlWhere := listSQLWhere(nil, filterLocationFields)
+	sqlWhere := listSQLWhere(filterFields, filterLocationFields)
 
 	// Get the total number of rows for the given filter.
 	var total int
