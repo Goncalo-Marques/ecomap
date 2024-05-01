@@ -10,6 +10,7 @@
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
+	import { getContainerLocation } from "../utils/location";
 
 	/**
 	 * Container ID.
@@ -39,7 +40,11 @@
 		<Spinner />
 	</div>
 {:then container}
-	<DetailsHeader title="TODO" />
+	{@const locationName = getContainerLocation(
+		container.geoJson.properties.wayName,
+		container.geoJson.properties.municipalityName,
+	)}
+	<DetailsHeader title={locationName} />
 	<DetailsContent>
 		<DetailsSection label={$t("generalInfo")}>
 			<DetailsFields>
@@ -47,7 +52,7 @@
 					label={$t("containers.category")}
 					value={$t(`containers.category.${container.category}`)}
 				/>
-				<Field label={$t("containers.location")} value="TODO" />
+				<Field label={$t("containers.location")} value={locationName} />
 			</DetailsFields>
 		</DetailsSection>
 		<DetailsSection label={$t("additionalInfo")}>

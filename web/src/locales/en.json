@@ -13,6 +13,7 @@
 	"containers.category": "Category",
 	"containers.location": "Location",
 	"containers.location.unknownWay": "Unknown way",
+	"containers.location.unknownMunicipality": "Unknown municipality",
 	"containers.category.general": "General",
 	"containers.category.glass": "Glass",
 	"containers.category.hazardous": "Hazardous",

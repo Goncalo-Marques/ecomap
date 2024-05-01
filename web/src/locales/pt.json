@@ -13,6 +13,7 @@
 	"containers.category": "Categoria",
 	"containers.location": "Localização",
 	"containers.location.unknownWay": "Rua desconhecida",
+	"containers.location.unknownMunicipality": "municipío desconhecido",
 	"containers.category.general": "Geral",
 	"containers.category.glass": "Vidro",
 	"containers.category.hazardous": "Perigoso",

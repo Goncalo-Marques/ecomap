@@ -2,11 +2,13 @@
 	import type { ComponentProps } from "svelte";
 	import type { Container } from "../../../../domain/container";
 	import Table from "../../../../lib/components/table/Table.svelte";
+	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
 	import type { Columns } from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
 	import { categoryOptions } from "../constants/category";
 	import containersStore from "./containersStore";
+	import { getContainerLocation } from "../utils/location";
 
 	const { loading, data, filters } = containersStore;
 
@@ -45,11 +47,11 @@
 			enableFiltering: false,
 			cell(geoJson) {
 				const {
-					municipalityName,
+					municipalityName = $t("containers.location.unknownMunicipality"),
 					wayName = $t("containers.location.unknownWay"),
 				} = geoJson.properties;
 
-				return `${wayName}, ${municipalityName}`;
+				return getContainerLocation(wayName, municipalityName);
 			},
 		},
 		{
