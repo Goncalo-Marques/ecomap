@@ -46,10 +46,7 @@
 			enableSorting: false,
 			enableFiltering: false,
 			cell(geoJson) {
-				const {
-					municipalityName = $t("containers.location.unknownMunicipality"),
-					wayName = $t("containers.location.unknownWay"),
-				} = geoJson.properties;
+				const { municipalityName, wayName } = geoJson.properties;
 
 				return getContainerLocation(wayName, municipalityName);
 			},
