@@ -14,8 +14,11 @@ import (
 )
 
 const (
-	errEmployeeNotFound      = "employee not found"
-	errEmployeeAlreadyExists = "username already exists"
+	errEmployeeNotFound                                  = "employee not found"
+	errEmployeeAlreadyExists                             = "username already exists"
+	errEmployeeAssociatedWithContainerReportAsResolver   = "employee associated with container report as resolver"
+	errEmployeeAssociatedWithRouteContainerAsResponsible = "employee associated with route container as responsible"
+	errEmployeeAssociatedWithRouteEmployee               = "employee associated with route"
 )
 
 // CreateEmployee handles the http request to create an employee.
@@ -226,6 +229,12 @@ func (h *handler) DeleteEmployeeByID(w http.ResponseWriter, r *http.Request, emp
 		switch {
 		case errors.Is(err, domain.ErrEmployeeNotFound):
 			notFound(w, errEmployeeNotFound)
+		case errors.Is(err, domain.ErrEmployeeAssociatedWithContainerReportAsResolver):
+			conflict(w, errEmployeeAssociatedWithContainerReportAsResolver)
+		case errors.Is(err, domain.ErrEmployeeAssociatedWithRouteContainerAsResponsible):
+			conflict(w, errEmployeeAssociatedWithRouteContainerAsResponsible)
+		case errors.Is(err, domain.ErrEmployeeAssociatedWithRouteEmployee):
+			conflict(w, errEmployeeAssociatedWithRouteEmployee)
 		default:
 			internalServerError(w)
 		}

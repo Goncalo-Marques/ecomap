@@ -330,7 +330,9 @@ func (s *service) DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrUserNotFound):
+		case errors.Is(err, domain.ErrUserNotFound),
+			errors.Is(err, domain.ErrUserAssociatedWithUserContainerBookmark),
+			errors.Is(err, domain.ErrUserAssociatedWithContainerReportAsIssuer):
 			return domain.User{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteUserByID, logAttrs...)
 		default:
 			return domain.User{}, logAndWrapError(ctx, err, descriptionFailedDeleteUserByID, logAttrs...)
