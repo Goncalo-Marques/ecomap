@@ -12,6 +12,7 @@ import (
 
 const (
 	constraintWarehousesTrucksWarehouseIDFkey = "warehouses_trucks_warehouse_id_fkey"
+	constraintWarehousesTrucksTruckIDFkey     = "warehouses_trucks_truck_id_fkey"
 )
 
 // ListWarehouseTrucks executes a query to return the trucks associated with the warehouse with the specified identifier.
