@@ -1,13 +1,7 @@
 <script lang="ts">
-	import type {
-		Container,
-		ContainerSortableFields,
-	} from "../../../../domain/container";
+	import type { Container } from "../../../../domain/container";
 	import Table from "../../../../lib/components/table/Table.svelte";
-	import type {
-		Columns,
-		SortingDirection,
-	} from "../../../../lib/components/table/types";
+	import type { Columns } from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
 	import { categoryOptions } from "../constants/category";
