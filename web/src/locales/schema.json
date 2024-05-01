@@ -40,9 +40,6 @@
 		"containers.location.unknownWay": {
 			"type": "string"
 		},
-		"containers.location.unknownMunicipality": {
-			"type": "string"
-		},
 		"containers.category.general": {
 			"type": "string"
 		},

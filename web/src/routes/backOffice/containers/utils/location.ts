@@ -13,16 +13,14 @@ export function getContainerLocation(
 ) {
 	const translation = get(t);
 	const unknownWay = translation("containers.location.unknownWay");
-	const unknownMunicipality = translation(
-		"containers.location.unknownMunicipality",
-	);
 
 	const way = wayName ?? unknownWay;
 
-	let municipality = unknownMunicipality;
+	let locationName = way;
+
 	if (municipalityName) {
-		municipality = municipalityName;
+		locationName += `, ${municipalityName}`;
 	}
 
-	return `${way}, ${municipality}`;
+	return locationName;
 }
