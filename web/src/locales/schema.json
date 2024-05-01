@@ -1,6 +1,48 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"properties": {
+		"clear": {
+			"type": "string"
+		},
+		"pagination.of": {
+			"type": "string"
+		},
+		"containers.title": {
+			"type": "string"
+		},
+		"containers.search": {
+			"type": "string"
+		},
+		"containers.category": {
+			"type": "string"
+		},
+		"containers.location": {
+			"type": "string"
+		},
+		"containers.location.unknownWay": {
+			"type": "string"
+		},
+		"containers.category.general": {
+			"type": "string"
+		},
+		"containers.category.paper": {
+			"type": "string"
+		},
+		"containers.category.plastic": {
+			"type": "string"
+		},
+		"containers.category.metal": {
+			"type": "string"
+		},
+		"containers.category.glass": {
+			"type": "string"
+		},
+		"containers.category.organic": {
+			"type": "string"
+		},
+		"containers.category.hazardous": {
+			"type": "string"
+		},
 		"error.requiredField": {
 			"type": "string"
 		},

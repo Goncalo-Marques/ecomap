@@ -1,38 +1,14 @@
-import { derived, writable } from "svelte/store";
-
 /**
- * Href store.
+ * Updates the current URL with new search params.
+ * @param searchParams Search params to be set in the URL.
  */
-const href = writable(window.location.href);
-
-const originalPushState = history.pushState;
-const originalReplaceState = history.replaceState;
-
-/**
- * Updates href store with the current location href.
- */
-function updateHref() {
-	href.set(window.location.href);
+export function updateSearchParams(searchParams: URLSearchParams) {
+	history.pushState(null, "", `${location.pathname}?${searchParams}`);
 }
 
-// Monkey patch pushState and replaceState events to update href store when either one is triggered.
-history.pushState = function (...args) {
-	originalPushState.apply(this, args);
-	updateHref();
-};
-history.replaceState = function (...args) {
-	originalReplaceState.apply(this, args);
-	updateHref();
-};
-
-window.addEventListener("popstate", updateHref);
-window.addEventListener("hashchange", updateHref);
-
 /**
- * URL store.
+ * Clears search params from the current URL.
  */
-const url = {
-	subscribe: derived(href, $href => new URL($href)).subscribe,
-};
-
-export default url;
+export function clearSearchParams() {
+	history.pushState(null, "", location.pathname);
+}

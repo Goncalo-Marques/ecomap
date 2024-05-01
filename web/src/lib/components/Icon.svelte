@@ -20,11 +20,14 @@
 		-webkit-user-select: none;
 		user-select: none;
 	}
-	.x-small {
+	.xx-small {
 		font-size: 0.875rem;
 	}
-	.small {
+	.x-small {
 		font-size: 1rem;
+	}
+	.small {
+		font-size: 1.25rem;
 	}
 	.medium {
 		font-size: 1.5rem;
