@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -18,14 +17,7 @@ const (
 
 // CreateEmployee executes a query to create an employee with the specified data.
 func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error) {
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
-	geoJSON, err := json.Marshal(geometry)
+	geoJSON, err := jsonMarshalGeoJSONGeometryPoint(editableEmployee.GeoJSON)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
@@ -53,7 +45,7 @@ func (s *store) CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee 
 
 	err = row.Scan(&id)
 	if err != nil {
-		if getConstraintName(err) == constraintEmployeesUsernameKey {
+		if constraintNameFromError(err) == constraintEmployeesUsernameKey {
 			return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrEmployeeAlreadyExists)
 		}
 
@@ -265,14 +257,7 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 	var err error
 
 	if editableEmployee.GeoJSON != nil {
-		var geometry domain.GeoJSONGeometryPoint
-		if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-
-		geoJSON, err = json.Marshal(geometry)
+		geoJSON, err = jsonMarshalGeoJSONGeometryPoint(editableEmployee.GeoJSON)
 		if err != nil {
 			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 		}
@@ -311,7 +296,7 @@ func (s *store) PatchEmployee(ctx context.Context, tx pgx.Tx, id uuid.UUID, edit
 		editableEmployee.ScheduleEnd,
 	)
 	if err != nil {
-		if getConstraintName(err) == constraintEmployeesUsernameKey {
+		if constraintNameFromError(err) == constraintEmployeesUsernameKey {
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAlreadyExists)
 		}
 
@@ -355,7 +340,7 @@ func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID)
 		id,
 	)
 	if err != nil {
-		switch getConstraintName(err) {
+		switch constraintNameFromError(err) {
 		case constraintContainersReportsResolverIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithContainerReportAsResolver)
 		case constraintRoutesContainersResponsibleIDFkey:

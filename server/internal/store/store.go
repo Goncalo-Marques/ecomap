@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -71,14 +72,30 @@ func (s *store) Close() {
 	s.database.Close()
 }
 
-// getConstraintName returns the name of the constraint of the given error. If the error is not of type pgconn.PgError,
-// an empty string is returned.
-func getConstraintName(err error) string {
+// constraintNameFromError returns the name of the constraint of the given error. If the error is not of type
+// pgconn.PgError, an empty string is returned.
+func constraintNameFromError(err error) string {
 	if pqErr, ok := err.(*pgconn.PgError); ok {
 		return pqErr.ConstraintName
 	}
 
 	return ""
+}
+
+// jsonMarshalGeoJSONGeometryPoint marshals the given GeoJSON into geometry point JSON.
+func jsonMarshalGeoJSONGeometryPoint(geoJSON domain.GeoJSON) ([]byte, error) {
+	if geoJSON == nil {
+		return nil, nil
+	}
+
+	var geometry domain.GeoJSONGeometryPoint
+	if feature, ok := geoJSON.(domain.GeoJSONFeature); ok {
+		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
+			geometry = g
+		}
+	}
+
+	return json.Marshal(geometry)
 }
 
 // listSQLWhere returns a SQL WHERE clause for the specified filter fields using the specified logical operator.

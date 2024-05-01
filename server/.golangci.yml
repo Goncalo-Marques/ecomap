@@ -5,7 +5,6 @@ linters-settings:
 linters:
   enable:
     - goimports
-    - goconst
     - gofumpt
     - govet
     - stylecheck

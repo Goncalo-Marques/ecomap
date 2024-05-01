@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -14,14 +13,7 @@ import (
 
 // CreateContainer executes a query to create a container with the specified data.
 func (s *store) CreateContainer(ctx context.Context, tx pgx.Tx, editableContainer domain.EditableContainer, roadID, municipalityID *int) (uuid.UUID, error) {
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableContainer.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
-	geoJSON, err := json.Marshal(geometry)
+	geoJSON, err := jsonMarshalGeoJSONGeometryPoint(editableContainer.GeoJSON)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 	}
@@ -165,14 +157,7 @@ func (s *store) PatchContainer(ctx context.Context, tx pgx.Tx, id uuid.UUID, edi
 	var err error
 
 	if editableContainer.GeoJSON != nil {
-		var geometry domain.GeoJSONGeometryPoint
-		if feature, ok := editableContainer.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-
-		geoJSON, err = json.Marshal(geometry)
+		geoJSON, err = jsonMarshalGeoJSONGeometryPoint(editableContainer.GeoJSON)
 		if err != nil {
 			return fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
 		}
@@ -218,7 +203,7 @@ func (s *store) DeleteContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID
 		id,
 	)
 	if err != nil {
-		switch getConstraintName(err) {
+		switch constraintNameFromError(err) {
 		case constraintContainersReportsContainerIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerAssociatedWithContainerReport)
 		case constraintUsersContainerBookmarksContainerIDFkey:

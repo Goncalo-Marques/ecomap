@@ -56,6 +56,14 @@ type Store interface {
 	PatchContainer(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableContainer domain.EditableContainerPatch, roadID, municipalityID *int) error
 	DeleteContainerByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
+	CreateWarehouse(ctx context.Context, tx pgx.Tx, editableWarehouse domain.EditableWarehouse, roadID, municipalityID *int) (uuid.UUID, error)
+	ListWarehouses(ctx context.Context, tx pgx.Tx, filter domain.WarehousesPaginatedFilter) (domain.PaginatedResponse[domain.Warehouse], error)
+	GetWarehouseByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Warehouse, error)
+	PatchWarehouse(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch, roadID, municipalityID *int) error
+	DeleteWarehouseByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+
+	ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, id uuid.UUID) ([]domain.Truck, error)
+
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 
