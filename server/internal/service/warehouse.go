@@ -86,9 +86,6 @@ func (s *service) ListWarehouses(ctx context.Context, filter domain.WarehousesPa
 		slog.String(logging.ServiceMethod, "ListWarehouses"),
 	}
 
-	if !filter.LogicalOperator.Valid() {
-		return domain.PaginatedResponse[domain.Warehouse]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLogicalOperator}, descriptionInvalidFilterValue, logAttrs...)
-	}
 	if filter.Sort != nil && !filter.Sort.Valid() {
 		return domain.PaginatedResponse[domain.Warehouse]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}

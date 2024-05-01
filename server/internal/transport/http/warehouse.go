@@ -302,14 +302,12 @@ func listWarehousesParamsToDomain(params spec.ListWarehousesParams) domain.Wareh
 
 	return domain.WarehousesPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
-			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
 			domainSort,
 			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,
 			params.Offset,
 		),
-		WayName:          params.WayName,
-		MunicipalityName: params.MunicipalityName,
+		LocationName: params.LocationName,
 	}
 }
 

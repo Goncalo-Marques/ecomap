@@ -119,14 +119,13 @@ func (s EmployeePaginatedSort) Valid() bool {
 // EmployeesPaginatedFilter defines the employees filter structure.
 type EmployeesPaginatedFilter struct {
 	PaginatedRequest[EmployeePaginatedSort]
-	Username         *Username
-	FirstName        *Name
-	LastName         *Name
-	Role             *EmployeeRole
-	DateOfBirth      *string
-	PhoneNumber      *PhoneNumber
-	ScheduleStart    *string
-	ScheduleEnd      *string
-	WayName          *string
-	MunicipalityName *string
+	Username      *Username
+	FirstName     *Name
+	LastName      *Name
+	Role          *EmployeeRole
+	DateOfBirth   *string
+	PhoneNumber   *PhoneNumber
+	ScheduleStart *string
+	ScheduleEnd   *string
+	LocationName  *string
 }

@@ -44,8 +44,8 @@ func (s *store) CreateUser(ctx context.Context, tx pgx.Tx, editableUser domain.E
 
 // ListUsers executes a query to return the users for the specified filter.
 func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error) {
-	filterFields := make([]string, 0, 3)
-	argsWhere := make([]any, 0, 3)
+	var filterFields []string
+	var argsWhere []any
 
 	// Append the optional fields to filter.
 	if filter.Username != nil {
@@ -61,7 +61,7 @@ func (s *store) ListUsers(ctx context.Context, tx pgx.Tx, filter domain.UsersPag
 		argsWhere = append(argsWhere, *filter.LastName)
 	}
 
-	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
+	sqlWhere := listSQLWhere(filterFields, nil)
 
 	// Get the total number of rows for the given filter.
 	var total int

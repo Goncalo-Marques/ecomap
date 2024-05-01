@@ -80,6 +80,5 @@ func (s WarehousePaginatedSort) Valid() bool {
 // WarehousesPaginatedFilter defines the warehouses filter structure.
 type WarehousesPaginatedFilter struct {
 	PaginatedRequest[WarehousePaginatedSort]
-	WayName          *string
-	MunicipalityName *string
+	LocationName *string
 }

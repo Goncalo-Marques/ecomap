@@ -134,9 +134,6 @@ func (s *service) ListEmployees(ctx context.Context, filter domain.EmployeesPagi
 		slog.String(logging.ServiceMethod, "ListEmployees"),
 	}
 
-	if !filter.LogicalOperator.Valid() {
-		return domain.PaginatedResponse[domain.Employee]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLogicalOperator}, descriptionInvalidFilterValue, logAttrs...)
-	}
 	if filter.Sort != nil && !filter.Sort.Valid() {
 		return domain.PaginatedResponse[domain.Employee]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}

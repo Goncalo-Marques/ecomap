@@ -354,7 +354,6 @@ func listUsersParamsToDomain(params spec.ListUsersParams) domain.UsersPaginatedF
 
 	return domain.UsersPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
-			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
 			domainSort,
 			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,

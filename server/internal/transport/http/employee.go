@@ -518,22 +518,20 @@ func listEmployeesParamsToDomain(params spec.ListEmployeesParams) domain.Employe
 
 	return domain.EmployeesPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
-			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
 			domainSort,
 			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,
 			params.Offset,
 		),
-		Username:         (*domain.Username)(params.Username),
-		FirstName:        (*domain.Name)(params.FirstName),
-		LastName:         (*domain.Name)(params.LastName),
-		Role:             domainRole,
-		DateOfBirth:      domainDateOfBirth,
-		PhoneNumber:      (*domain.PhoneNumber)(params.PhoneNumber),
-		ScheduleStart:    params.ScheduleStart,
-		ScheduleEnd:      params.ScheduleEnd,
-		WayName:          params.WayName,
-		MunicipalityName: params.MunicipalityName,
+		Username:      (*domain.Username)(params.Username),
+		FirstName:     (*domain.Name)(params.FirstName),
+		LastName:      (*domain.Name)(params.LastName),
+		Role:          domainRole,
+		DateOfBirth:   domainDateOfBirth,
+		PhoneNumber:   (*domain.PhoneNumber)(params.PhoneNumber),
+		ScheduleStart: params.ScheduleStart,
+		ScheduleEnd:   params.ScheduleEnd,
+		LocationName:  params.LocationName,
 	}
 }
 

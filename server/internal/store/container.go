@@ -41,24 +41,21 @@ func (s *store) CreateContainer(ctx context.Context, tx pgx.Tx, editableContaine
 
 // ListContainers executes a query to return the containers for the specified filter.
 func (s *store) ListContainers(ctx context.Context, tx pgx.Tx, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error) {
-	filterFields := make([]string, 0, 3)
-	argsWhere := make([]any, 0, 3)
+	var filterFields []string
+	var filterLocationFields []string
+	var argsWhere []any
 
 	// Append the optional fields to filter.
 	if filter.Category != nil {
 		filterFields = append(filterFields, "c.category::text")
 		argsWhere = append(argsWhere, containerCategoryFromDomain(*filter.Category))
 	}
-	if filter.WayName != nil {
-		filterFields = append(filterFields, "rn.osm_name")
-		argsWhere = append(argsWhere, *filter.WayName)
-	}
-	if filter.MunicipalityName != nil {
-		filterFields = append(filterFields, "m.name")
-		argsWhere = append(argsWhere, *filter.MunicipalityName)
+	if filter.LocationName != nil {
+		filterLocationFields = []string{"rn.osm_name", "m.name"}
+		argsWhere = append(argsWhere, *filter.LocationName)
 	}
 
-	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
+	sqlWhere := listSQLWhere(filterFields, filterLocationFields)
 
 	// Get the total number of rows for the given filter.
 	var total int

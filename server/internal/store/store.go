@@ -98,34 +98,53 @@ func jsonMarshalGeoJSONGeometryPoint(geoJSON domain.GeoJSON) ([]byte, error) {
 	return json.Marshal(geometry)
 }
 
-// listSQLWhere returns a SQL WHERE clause for the specified filter fields using the specified logical operator.
-func listSQLWhere(fields []string, logicalOperator domain.PaginationLogicalOperator) string {
-	if len(fields) == 0 {
+// listSQLWhere returns an SQL WHERE clause for the specified filter fields, including optional location filters.
+func listSQLWhere(fields []string, locationFields []string) string {
+	if len(fields) == 0 && len(locationFields) == 0 {
 		return ""
 	}
 
 	// Construct SQL.
-	for i, field := range fields {
-		fields[i] = field + " ILIKE '%%' || $%d || '%%'"
+	var sqlFilter string
+	if len(fields) != 0 {
+		for i, field := range fields {
+			fields[i] = field + " ILIKE '%%' || $%d || '%%'"
+		}
+
+		sqlFilter = strings.Join(fields, " AND ")
 	}
 
-	lo := " AND "
-	if logicalOperator == domain.PaginationLogicalOperatorOr {
-		lo = " OR "
+	var sqlLocationFilter string
+	if len(locationFields) != 0 {
+		for i, field := range locationFields {
+			locationFields[i] = field + " ILIKE '%%' || $%d || '%%'"
+		}
+
+		sqlLocationFilter = "(" + strings.Join(locationFields, " OR ") + ")"
 	}
 
-	sql := " WHERE " + strings.Join(fields, lo)
+	sql := " WHERE "
+	if len(sqlLocationFilter) == 0 {
+		sql += sqlFilter
+	} else if len(sqlFilter) == 0 {
+		sql += sqlLocationFilter
+	} else {
+		sql += strings.Join([]string{sqlFilter, sqlLocationFilter}, " AND ")
+	}
 
 	// Format parameters.
-	sqlParamIndices := make([]any, len(fields))
+	sqlParamIndices := make([]any, len(fields)+len(locationFields))
 	for i := range fields {
 		sqlParamIndices[i] = i + 1
+	}
+	for i := range locationFields {
+		sqlParamIndices[len(fields)+i] = len(fields) + 1
 	}
 
 	return fmt.Sprintf(sql, sqlParamIndices...)
 }
 
-// listSQLOrder returns a SQL ORDER keyword for the specified field and order.
+// listSQLOrder returns an SQL ORDER keyword for the specified field and order.
 func listSQLOrder(field string, order domain.PaginationOrder) string {
 	o := " ASC"
 	if order == domain.PaginationOrderDesc {
@@ -135,7 +154,7 @@ func listSQLOrder(field string, order domain.PaginationOrder) string {
 	return " ORDER BY " + field + o
 }
 
-// listSQLLimitOffset returns a SQL LIMIT and OFFSET clause for the specified limit and offset.
+// listSQLLimitOffset returns an SQL LIMIT and OFFSET clause for the specified limit and offset.
 func listSQLLimitOffset(limit domain.PaginationLimit, offset domain.PaginationOffset) string {
 	return fmt.Sprintf(" LIMIT %d OFFSET %d", limit, offset)
 }
