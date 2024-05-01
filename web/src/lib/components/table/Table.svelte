@@ -372,6 +372,12 @@
 		z-index: 10;
 	}
 
+	.sort {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.pagination {
 		display: flex;
 		align-items: center;
