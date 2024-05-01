@@ -26,7 +26,6 @@
 
 	/**
 	 * The initial value of the filter.
-	 * @default undefined
 	 */
 	export let initialValue: TValue | undefined;
 
