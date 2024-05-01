@@ -16,6 +16,7 @@ const (
 	FieldScheduleStart = "scheduleStart"
 	FieldScheduleEnd   = "scheduleEnd"
 	FieldCategory      = "category"
+	FieldTruckCapacity = "truckCapacity"
 
 	FieldFilterLogicalOperator = "logicalOperator"
 	FieldFilterSort            = "sort"

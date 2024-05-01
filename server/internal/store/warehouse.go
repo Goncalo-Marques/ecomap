@@ -119,7 +119,7 @@ func (s *store) ListWarehouses(ctx context.Context, tx pgx.Tx, filter domain.War
 func (s *store) GetWarehouseByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Warehouse, error) {
 	row := tx.QueryRow(ctx, `
 		SELECT w.id, w.truck_capacity, ST_AsGeoJSON(w.geom)::jsonb, rn.osm_name, m.name, w.created_at, w.modified_at 
-		FROM warehouses AS c
+		FROM warehouses AS w
 		LEFT JOIN road_network AS rn ON w.road_id = rn.id
 		LEFT JOIN municipalities AS m ON w.municipality_id = m.id
 		WHERE w.id = $1 
