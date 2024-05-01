@@ -16,6 +16,7 @@ import (
 
 const (
 	descriptionFailedCreateEmployee         = "service: failed to create employee"
+	descriptionFailedListEmployees          = "service: failed to list employees"
 	descriptionFailedGetEmployeeByID        = "service: failed to get employee by id"
 	descriptionFailedGetEmployeeByUsername  = "service: failed to get employee by username"
 	descriptionFailedGetEmployeeSignIn      = "service: failed to get employee sign-in"
@@ -125,6 +126,42 @@ func (s *service) CreateEmployee(ctx context.Context, editableEmployee domain.Ed
 	}
 
 	return employee, nil
+}
+
+// ListEmployees returns the employees with the specified filter.
+func (s *service) ListEmployees(ctx context.Context, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "ListEmployees"),
+	}
+
+	if !filter.LogicalOperator.Valid() {
+		return domain.PaginatedResponse[domain.Employee]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLogicalOperator}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if filter.Sort != nil && !filter.Sort.Valid() {
+		return domain.PaginatedResponse[domain.Employee]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Order.Valid() {
+		return domain.PaginatedResponse[domain.Employee]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterOrder}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Limit.Valid() {
+		return domain.PaginatedResponse[domain.Employee]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLimit}, descriptionInvalidFilterValue, logAttrs...)
+	}
+	if !filter.Offset.Valid() {
+		return domain.PaginatedResponse[domain.Employee]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterOffset}, descriptionInvalidFilterValue, logAttrs...)
+	}
+
+	var paginatedEmployees domain.PaginatedResponse[domain.Employee]
+	var err error
+
+	err = s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		paginatedEmployees, err = s.store.ListEmployees(ctx, tx, filter)
+		return err
+	})
+	if err != nil {
+		return domain.PaginatedResponse[domain.Employee]{}, logAndWrapError(ctx, err, descriptionFailedListEmployees, logAttrs...)
+	}
+
+	return paginatedEmployees, nil
 }
 
 // GetEmployeeByID returns the employee with the specified identifier.
