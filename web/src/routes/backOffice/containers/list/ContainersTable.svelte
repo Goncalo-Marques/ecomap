@@ -71,24 +71,6 @@
 			};
 		});
 	}
-
-	/**
-	 * Handles changes of the containers table sorting state.
-	 * @param field New sorting field.
-	 * @param order New sorting order.
-	 */
-	function handleSortingChange(
-		field: ContainerSortableFields,
-		order: SortingDirection,
-	) {
-		filters.update(store => {
-			return {
-				...store,
-				sort: field,
-				order,
-			};
-		});
-	}
 </script>
 
 <Table
@@ -102,5 +84,4 @@
 		total: $data.total,
 		onPageChange: handlePageChange,
 	}}
-	onSortingChange={handleSortingChange}
 />
