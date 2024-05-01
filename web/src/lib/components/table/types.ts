@@ -27,6 +27,21 @@ export type Column<TRow extends Row> = {
 }[keyof TRow];
 
 /**
+ * Column filter option.
+ */
+export interface FilterOption<TValue> {
+	/**
+	 * The value of the option.
+	 */
+	value: TValue;
+
+	/**
+	 * The label of the option.
+	 */
+	label: string;
+}
+
+/**
  * Table cell Svelte component.
  */
 export interface TableCellSvelteComponent {
@@ -78,6 +93,27 @@ export interface ColumnAccessor<TRow, TField, TValue> extends ColumnCommon {
 	 * Indicates if the column is sortable.
 	 */
 	enableSorting: boolean;
+
+	/**
+	 * Indicates if the column is filterable.
+	 */
+	enableFiltering: boolean;
+
+	/**
+	 * The filter options of the column.
+	 */
+	filterOptions?: FilterOption<TValue>[];
+
+	/**
+	 * The initial value of the column filter.
+	 */
+	filterInitialValue?: TValue;
+
+	/**
+	 * Callback fired when a column filter changes.
+	 * @param value Filter value.
+	 */
+	onFilterChange?: (value: TValue | undefined) => void;
 }
 
 /**
@@ -133,34 +169,19 @@ export interface ColumnCommon {
 }
 
 /**
- * Callback fired when sorting state changes.
- * @template TSortableFields Type of the sortable fields.
- * @param sorting Updated sorting state.
- */
-export type onSortingChangeFn<TSortableFields extends SortableField> = (
-	sorting: Sorting<TSortableFields>,
-) => void;
-
-/**
  * The available directions of a column sorting state.
  */
 export type SortingDirection = "asc" | "desc" | undefined;
 
 /**
- * Sorting state.
+ * Callback fired when sorting state changes.
  * @template TSortableFields Type of the sortable fields.
+ * @param sorting Updated sorting state.
  */
-export interface Sorting<TSortableFields extends SortableField> {
-	/**
-	 * The name of the row field with the sorting.
-	 */
-	field: TSortableFields;
-
-	/**
-	 * The direction of the sort of the field.
-	 */
-	direction: SortingDirection;
-}
+export type onSortingChangeFn<TSortableFields extends SortableField> = (
+	field: TSortableFields,
+	direction: SortingDirection,
+) => void;
 
 /**
  * Columns sorting state.

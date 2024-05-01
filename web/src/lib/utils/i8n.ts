@@ -82,6 +82,9 @@ function _locale(): Writable<string> {
 			const supportedLocale = getSupportedLocale(locale);
 			localStorage.setItem("locale", supportedLocale);
 
+			// Refresh current page when switching locales.
+			location.reload();
+
 			set(supportedLocale);
 		},
 		update(cb) {
@@ -89,6 +92,9 @@ function _locale(): Writable<string> {
 
 			const supportedLocale = getSupportedLocale(updatedLocale);
 			localStorage.setItem("locale", supportedLocale);
+
+			// Refresh current page when switching locales.
+			location.reload();
 
 			set(supportedLocale);
 		},

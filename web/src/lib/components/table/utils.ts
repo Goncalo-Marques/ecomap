@@ -4,7 +4,6 @@ import type {
 	Columns,
 	TableCellSvelteComponent,
 	Row,
-	Sorting,
 	SortingColumns,
 	SortingDirection,
 	SortableField,
@@ -43,14 +42,15 @@ export function getColumnsSorting<
 	TSortableFields extends SortableField,
 >(
 	columns: Columns<TRow>,
-	sorting: Sorting<TSortableFields> | null,
+	sortingField: TSortableFields | null,
+	sortingDirection: SortingDirection | null,
 ): SortingColumns<TRow> {
 	const fields = getColumnsFields(columns);
 	const columnsSorting = {} as SortingColumns<TRow>;
 
 	for (const field of fields) {
-		if (sorting && field === sorting.field) {
-			columnsSorting[field] = sorting.direction;
+		if (sortingField && sortingDirection && field === sortingField) {
+			columnsSorting[field] = sortingDirection;
 		} else {
 			columnsSorting[field] = undefined;
 		}
@@ -140,4 +140,31 @@ export function getCellStyle<TRow extends Row>(column: Column<TRow>): string {
 	}
 
 	return `${minWidth}; ${maxWidth}; ${width}`;
+}
+
+/**
+ * Retrieves the list of the pages to display in the table pagination.
+ * @param pages Pagination pages.
+ * @param pageIndex Page index.
+ * @param [size=5] Size of visible pages.
+ * @returns List of the pages to display in the table pagination.
+ */
+export function getVisiblePages(
+	pages: number[],
+	pageIndex: number,
+	size: number = 5,
+): number[] {
+	const half = Math.floor(size / 2);
+
+	const remainderRightSide =
+		half - Math.min(half, pages.length - 1 - pageIndex);
+	const remainderLeftSide = Math.max(0, half - pageIndex);
+
+	const startIndex = Math.max(0, pageIndex - half - remainderRightSide);
+	const endIndex = Math.min(
+		pages.length - 1,
+		pageIndex + half + remainderLeftSide,
+	);
+
+	return pages.slice(startIndex, endIndex + 1);
 }

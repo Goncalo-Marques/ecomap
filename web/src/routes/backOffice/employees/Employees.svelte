@@ -1,9 +1,12 @@
 <!-- TODO: Replace the current page with the actual employee data -->
 <script lang="ts">
-	import type { ComponentProps } from "svelte";
+	import { onMount, type ComponentProps } from "svelte";
 	import Button from "../../../lib/components/Button.svelte";
 	import Table from "../../../lib/components/table/Table.svelte";
-	import type { Columns, Sorting } from "../../../lib/components/table/types";
+	import type {
+		Columns,
+		SortingDirection,
+	} from "../../../lib/components/table/types";
 	import ecomapHttpClient from "../../../lib/clients/ecomap/http";
 	import type { components } from "../../../../api/ecomap/http";
 
@@ -12,15 +15,15 @@
 		components["parameters"]["UserSortQueryParam"]
 	>;
 
-	let usersPromise: Promise<User[]>;
+	let users: User[];
 	let usersAmount = 0;
+
+	let loading = false;
 
 	const pageSize = 1;
 
-	let sorting: Sorting<UserSortableFields> = {
-		field: "firstName",
-		direction: "asc",
-	};
+	let sortingField: UserSortableFields = "firstName";
+	let sortingOrder: SortingDirection = "asc";
 
 	const columns: Columns<User> = [
 		{
@@ -28,6 +31,7 @@
 			field: "firstName",
 			header: "Name",
 			enableSorting: true,
+			enableFiltering: false,
 			cell(firstName, row) {
 				return `${firstName} ${row.lastName}`;
 			},
@@ -37,6 +41,7 @@
 			field: "username",
 			header: "Username",
 			enableSorting: true,
+			enableFiltering: false,
 			cell(username) {
 				return username;
 			},
@@ -46,6 +51,7 @@
 			field: "createdAt",
 			header: "Created at",
 			enableSorting: false,
+			enableFiltering: false,
 			cell(createdAt) {
 				return new Date(createdAt).toDateString();
 			},
@@ -55,6 +61,7 @@
 			field: "modifiedAt",
 			header: "Modified at",
 			enableSorting: true,
+			enableFiltering: false,
 			cell(modifiedAt) {
 				return new Date(modifiedAt).toDateString();
 			},
@@ -82,46 +89,60 @@
 	async function fetchUsers(
 		pageIndex: number,
 		pageSize: number,
-		sorting: Sorting<UserSortableFields>,
-	): Promise<User[]> {
+		sortingField: UserSortableFields,
+		sortingOrder: SortingDirection,
+	) {
+		loading = true;
+
 		const res = await ecomapHttpClient.GET("/users", {
 			params: {
 				query: {
 					offset: pageIndex * pageSize,
 					limit: pageSize,
-					sort: sorting.field,
-					order: sorting.direction,
+					sort: sortingField,
+					order: sortingOrder,
 				},
 			},
 		});
 
+		loading = false;
+
 		if (res.error) {
 			usersAmount = 0;
-			return [];
+			users = [];
+			return;
 		}
 
 		usersAmount = res.data.total;
-		return res.data.users;
+		users = res.data.users;
 	}
 
-	function handleSortingChange(newSorting: Sorting<UserSortableFields>) {
-		usersPromise = fetchUsers(pageIndex, pageSize, newSorting);
-		sorting = newSorting;
+	function handleSortingChange(
+		field: UserSortableFields,
+		order: SortingDirection,
+	) {
+		fetchUsers(pageIndex, pageSize, field, order);
+		sortingField = field;
+		sortingOrder = order;
 	}
 
 	async function handlePageChange(newPageIndex: number) {
-		usersPromise = fetchUsers(newPageIndex, pageSize, sorting);
+		fetchUsers(newPageIndex, pageSize, sortingField, sortingOrder);
 		pageIndex = newPageIndex;
 	}
 
-	usersPromise = fetchUsers(pageIndex, pageSize, sorting);
+	onMount(() => {
+		fetchUsers(pageIndex, pageSize, sortingField, sortingOrder);
+	});
 </script>
 
 <main>
 	<Table
 		{columns}
-		{sorting}
-		rows={usersPromise}
+		{sortingField}
+		{sortingOrder}
+		{loading}
+		rows={users}
 		pagination={{
 			name: "users",
 			pageIndex,

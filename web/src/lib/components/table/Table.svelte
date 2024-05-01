@@ -2,19 +2,24 @@
 	lang="ts"
 	generics="TRow extends Record<string, unknown>, TSortableFields extends string"
 >
+	import { t } from "../../utils/i8n";
+
 	import Icon from "../Icon.svelte";
 	import {
 		getCell,
 		getCellStyle,
 		getColumnsSorting,
+		getVisiblePages,
 		toggleDirection,
 	} from "./utils";
 	import type {
 		Columns,
 		Pagination,
-		Sorting,
+		SortingColumns,
+		SortingDirection,
 		onSortingChangeFn,
 	} from "./types";
+	import TableColumnFilter from "./TableColumnFilter.svelte";
 
 	/**
 	 * The columns of the table.
@@ -37,27 +42,44 @@
 	 * The rows to display in the table.
 	 * @default []
 	 */
-	export let rows: TRow[] | Promise<TRow[]> = [];
+	export let rows: TRow[] = [];
 
 	/**
-	 * The sorting state of the table.
+	 * Indicates if table is loading in data.
+	 * @default false
+	 */
+	export let loading: boolean = false;
+
+	/**
+	 * The sorting field of the table.
 	 * @default null
 	 */
-	export let sorting: Sorting<TSortableFields> | null = null;
+	export let sortingField: TSortableFields | null = null;
+
+	/**
+	 * The sorting order of the table.
+	 * @default null
+	 */
+	export let sortingOrder: SortingDirection | null = null;
 
 	/**
 	 * Map that contains the sorting state for each column.
 	 * @example
 	 * { id: "asc", name: undefined }
 	 */
-	let columnsSorting = getColumnsSorting(columns, sorting);
+	let columnsSorting: SortingColumns<TRow>;
 
 	/**
-	 * Handles on click event for each table header cell.
+	 * Handles on click event for each table header cell sorting button.
 	 * @param e Click event.
 	 */
-	function handleHeaderCellClick(e: Event) {
-		const headerCell = e.currentTarget as HTMLTableCellElement;
+	function handleSortingClick(e: Event) {
+		const sortingButton = e.currentTarget as HTMLButtonElement;
+		const headerCell = sortingButton.parentElement;
+
+		if (!headerCell) {
+			return;
+		}
 
 		// Retrieves data attributes from the header cell element.
 		const { field, sortable, direction } = headerCell.dataset;
@@ -82,16 +104,18 @@
 			);
 		}
 
-		const updatedSorting: Sorting<TSortableFields> = {
-			field: field as TSortableFields,
-			direction: toggleDirection(direction),
-		};
+		const updatedSortingField = field as TSortableFields;
+		const updatedSortingDirection = toggleDirection(direction);
 
 		// Retrieve the updated columns sorting map with the updated sorting state.
-		columnsSorting = getColumnsSorting(columns, updatedSorting);
+		columnsSorting = getColumnsSorting(
+			columns,
+			updatedSortingField,
+			updatedSortingDirection,
+		);
 
 		// Dispatch onSortingChange callback with the updated sorting state.
-		onSortingChange?.(updatedSorting);
+		onSortingChange?.(updatedSortingField, updatedSortingDirection);
 	}
 
 	/**
@@ -144,6 +168,9 @@
 
 		pagination?.onPageChange(pagination.pageIndex + 1);
 	}
+
+	// Re-constructs columnsSorting every time columns, sortingField or sortingOrder changes.
+	$: columnsSorting = getColumnsSorting(columns, sortingField, sortingOrder);
 </script>
 
 <div class="table-container">
@@ -161,69 +188,87 @@
 							? columnsSorting[column.field]
 							: null}
 						style={getCellStyle(column)}
-						on:click={handleHeaderCellClick}
 					>
 						{column.header}
-						{#if column.type === "accessor" && column.enableSorting}
-							{@const arrowDirection =
-								columnsSorting[column.field] === "asc" ? "upward" : "downward"}
-							{@const sortingClass = columnsSorting[column.field]
-								? "sorted"
-								: undefined}
+						{#if column.type === "accessor"}
+							{#if column.enableSorting}
+								{@const arrowDirection =
+									columnsSorting[column.field] === "asc"
+										? "upward"
+										: "downward"}
+								{@const sortingClass = columnsSorting[column.field]
+									? "sorted"
+									: ""}
 
-							<button class={sortingClass}>
-								<Icon name={`arrow_${arrowDirection}`} size="small" />
-							</button>
+								<button
+									on:click={handleSortingClick}
+									class={`sort ${sortingClass}`}
+								>
+									<Icon name={`arrow_${arrowDirection}`} size="small" />
+								</button>
+							{/if}
+
+							{#if column.enableFiltering}
+								<TableColumnFilter
+									options={column.filterOptions}
+									initialValue={column.filterInitialValue}
+									onFilterChange={column.onFilterChange}
+								/>
+							{/if}
 						{/if}
 					</th>
 				{/each}
 			</tr>
 		</thead>
 		<tbody>
-			{#await rows then rows}
-				{#each rows as row}
-					<tr>
-						{#each columns as column}
-							{@const cell = getCell(column, row)}
+			{#each rows as row}
+				<tr>
+					{#each columns as column}
+						{@const cell = getCell(column, row)}
 
-							<td
-								align={column.align}
-								style={getCellStyle(column)}
-								data-field={column.type === "accessor" ? column.field : null}
-							>
-								{#if typeof cell === "string"}
-									{cell}
-								{:else if cell.slotContent}
-									<svelte:component this={cell.component} {...cell.props}>
-										{cell.slotContent}
-									</svelte:component>
-								{:else}
-									<svelte:component this={cell.component} {...cell.props} />
-								{/if}
-							</td>
-						{/each}
-					</tr>
-				{/each}
-			{/await}
+						<td
+							align={column.align}
+							style={getCellStyle(column)}
+							data-field={column.type === "accessor" ? column.field : null}
+						>
+							{#if typeof cell === "string"}
+								{cell}
+							{:else if cell.slotContent}
+								<svelte:component this={cell.component} {...cell.props}>
+									{cell.slotContent}
+								</svelte:component>
+							{:else}
+								<svelte:component this={cell.component} {...cell.props} />
+							{/if}
+						</td>
+					{/each}
+				</tr>
+			{/each}
 		</tbody>
 	</table>
-	{#await rows}
+	{#if loading}
 		<div role="progressbar" class="loading">
 			<Icon name="progress_activity" size="xx-large" />
 		</div>
-	{/await}
+	{/if}
 	{#if pagination}
 		{@const start = pagination.pageSize * pagination.pageIndex + 1}
 		{@const end = pagination.pageSize * (pagination.pageIndex + 1)}
-		{@const pages = Math.ceil(pagination.total / pagination.pageSize)}
+		{@const pages =
+			pagination.total > 0
+				? Math.ceil(pagination.total / pagination.pageSize)
+				: 1}
 		{@const pagesArray = Array.from({ length: pages }, (_, idx) => idx)}
+		{@const visiblePages = getVisiblePages(pagesArray, pagination.pageIndex)}
 
 		<div class="pagination">
 			<span class="pagination-info">
 				{start > pagination.total ? pagination.total : start}-{end >
 				pagination.total
 					? pagination.total
-					: end} of {pagination.total}
+					: end}
+				{$t("pagination.of")}
+				{pagination.total}
 				{pagination.name}
 			</span>
 
@@ -233,10 +278,10 @@
 					disabled={pagination.pageIndex === 0}
 					on:click={handlePreviousPageClick}
 				>
-					<Icon name="arrow_back" size="small" />
+					<Icon name="arrow_back" size="x-small" />
 				</button>
 
-				{#each pagesArray as pageIndex}
+				{#each visiblePages as pageIndex}
 					<button
 						class="pagination-page"
 						data-index={pageIndex}
@@ -252,7 +297,7 @@
 					disabled={pagination.pageIndex === pages - 1}
 					on:click={handleNextPageClick}
 				>
-					<Icon name="arrow_forward" size="small" />
+					<Icon name="arrow_forward" size="x-small" />
 				</button>
 			</div>
 		</div>
@@ -271,16 +316,16 @@
 		display: flex;
 		flex-direction: column;
 	}
-	thead,
-	tbody {
-		overflow-x: hidden;
+
+	thead {
 		overflow-y: auto;
 		scrollbar-gutter: stable;
-	}
-	thead {
 		flex-shrink: 0;
 	}
 	tbody {
+		overflow-x: hidden;
+		scrollbar-gutter: stable;
+		overflow-y: auto;
 		flex: 1 1 0;
 		border-bottom: 1px solid var(--gray-300);
 	}
@@ -311,7 +356,7 @@
 		gap: 0.5rem;
 		font: var(--text-base-semibold);
 	}
-	th :global(.sorted) {
+	th .sorted {
 		color: var(--green-700);
 	}
 	td {
@@ -330,6 +375,12 @@
 	}
 	.loading > :global(.material-symbols-rounded) {
 		animation: var(--animation-spin);
+	}
+
+	.sort {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.pagination {

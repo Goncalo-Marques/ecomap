@@ -18,7 +18,7 @@
 		backOfficeBasename,
 		CommonRoutes,
 	} from "./routes/constants/routes";
-	import url from "./lib/utils/url";
+	import url from "./lib/stores/url";
 
 	onMount(() => {
 		if ($url.pathname === "/") {
