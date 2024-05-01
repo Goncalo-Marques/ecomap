@@ -18,9 +18,8 @@ const (
 	FieldCategory      = "category"
 	FieldTruckCapacity = "truckCapacity"
 
-	FieldFilterLogicalOperator = "logicalOperator"
-	FieldFilterSort            = "sort"
-	FieldFilterOrder           = "order"
-	FieldFilterLimit           = "limit"
-	FieldFilterOffset          = "offset"
+	FieldFilterSort   = "sort"
+	FieldFilterOrder  = "order"
+	FieldFilterLimit  = "limit"
+	FieldFilterOffset = "offset"
 )

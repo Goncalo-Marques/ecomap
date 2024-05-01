@@ -97,7 +97,6 @@ func (s ContainerPaginatedSort) Valid() bool {
 // ContainersPaginatedFilter defines the containers filter structure.
 type ContainersPaginatedFilter struct {
 	PaginatedRequest[ContainerPaginatedSort]
-	Category         *ContainerCategory
-	WayName          *string
-	MunicipalityName *string
+	Category     *ContainerCategory
+	LocationName *string
 }

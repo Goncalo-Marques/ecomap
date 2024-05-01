@@ -41,20 +41,16 @@ func (s *store) CreateWarehouse(ctx context.Context, tx pgx.Tx, editableWarehous
 
 // ListWarehouses executes a query to return the warehouses for the specified filter.
 func (s *store) ListWarehouses(ctx context.Context, tx pgx.Tx, filter domain.WarehousesPaginatedFilter) (domain.PaginatedResponse[domain.Warehouse], error) {
-	filterFields := make([]string, 0, 2)
-	argsWhere := make([]any, 0, 2)
+	var filterLocationFields []string
+	var argsWhere []any
 
 	// Append the optional fields to filter.
-	if filter.WayName != nil {
-		filterFields = append(filterFields, "rn.osm_name")
-		argsWhere = append(argsWhere, *filter.WayName)
-	}
-	if filter.MunicipalityName != nil {
-		filterFields = append(filterFields, "m.name")
-		argsWhere = append(argsWhere, *filter.MunicipalityName)
+	if filter.LocationName != nil {
+		filterLocationFields = []string{"rn.osm_name", "m.name"}
+		argsWhere = append(argsWhere, *filter.LocationName)
 	}
 
-	sqlWhere := listSQLWhere(filterFields, filter.LogicalOperator)
+	sqlWhere := listSQLWhere(nil, filterLocationFields)
 
 	// Get the total number of rows for the given filter.
 	var total int

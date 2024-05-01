@@ -357,15 +357,13 @@ func listContainersParamsToDomain(params spec.ListContainersParams) domain.Conta
 
 	return domain.ContainersPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
-			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
 			domainSort,
 			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,
 			params.Offset,
 		),
-		Category:         domainCategory,
-		WayName:          params.WayName,
-		MunicipalityName: params.MunicipalityName,
+		Category:     domainCategory,
+		LocationName: params.LocationName,
 	}
 }
 

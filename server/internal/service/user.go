@@ -92,9 +92,6 @@ func (s *service) ListUsers(ctx context.Context, filter domain.UsersPaginatedFil
 		slog.String(logging.ServiceMethod, "ListUsers"),
 	}
 
-	if !filter.LogicalOperator.Valid() {
-		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterLogicalOperator}, descriptionInvalidFilterValue, logAttrs...)
-	}
 	if filter.Sort != nil && !filter.Sort.Valid() {
 		return domain.PaginatedResponse[domain.User]{}, logInfoAndWrapError(ctx, &domain.ErrFilterValueInvalid{FilterName: domain.FieldFilterSort}, descriptionInvalidFilterValue, logAttrs...)
 	}

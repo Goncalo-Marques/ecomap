@@ -76,7 +76,6 @@ paths:
           description: Last name to filter by.
           schema:
             $ref: "#/components/schemas/Name"
-        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
         - $ref: "#/components/parameters/UserSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -410,17 +409,7 @@ paths:
           description: End schedule to filter by.
           schema:
             $ref: "#/components/schemas/Time"
-        - name: wayName
-          in: query
-          description: Way name to filter by.
-          schema:
-            type: string
-        - name: municipalityName
-          in: query
-          description: Municipality name to filter by.
-          schema:
-            type: string
-        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
         - $ref: "#/components/parameters/EmployeeSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -717,17 +706,7 @@ paths:
           description: Container category to filter by.
           schema:
             $ref: "#/components/schemas/ContainerCategory"
-        - name: wayName
-          in: query
-          description: Way name to filter by.
-          schema:
-            type: string
-        - name: municipalityName
-          in: query
-          description: Municipality name to filter by.
-          schema:
-            type: string
-        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
         - $ref: "#/components/parameters/ContainerSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -913,17 +892,7 @@ paths:
       security:
         - BearerAuth: [wasteOperator, manager]
       parameters:
-        - name: wayName
-          in: query
-          description: Way name to filter by.
-          schema:
-            type: string
-        - name: municipalityName
-          in: query
-          description: Municipality name to filter by.
-          schema:
-            type: string
-        - $ref: "#/components/parameters/LogicalOperatorQueryParam"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
         - $ref: "#/components/parameters/WarehouseSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -1080,16 +1049,13 @@ components:
       bearerFormat: JWT
 
   parameters:
-    LogicalOperatorQueryParam:
-      name: logicalOperator
+    LocationNameFilterQueryParam:
+      name: locationName
       in: query
-      description: Logical operator used for the provided filter.
+      description: Name of the location to filter by. It considers the name of the way or the name of the municipality.
       schema:
         type: string
-        enum:
-          - and
-          - or
-        default: and
+
     LimitQueryParam:
       name: limit
       in: query
@@ -1117,6 +1083,7 @@ components:
           - asc
           - desc
         default: asc
+
     UserSortQueryParam:
       name: sort
       in: query
