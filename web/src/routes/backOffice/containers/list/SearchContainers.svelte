@@ -4,6 +4,8 @@
 	import { t } from "../../../../lib/utils/i8n";
 	import containersStore from "./containersStore";
 
+	const { filters } = containersStore;
+
 	/**
 	 * Handles the change of value of the search input.
 	 * @param e Input change event.
@@ -12,7 +14,7 @@
 		const searchInput = e.target as HTMLInputElement;
 		const value = searchInput.value;
 
-		containersStore.filters.update(filters => {
+		filters.update(filters => {
 			return {
 				...filters,
 				pageIndex: 0,
@@ -20,8 +22,6 @@
 			};
 		});
 	}
-
-	const { filters } = containersStore;
 </script>
 
 <div class="search">

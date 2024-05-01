@@ -146,26 +146,25 @@ export function getCellStyle<TRow extends Row>(column: Column<TRow>): string {
  * Retrieves the list of the pages to display in the table pagination.
  * @param pages Pagination pages.
  * @param pageIndex Page index.
+ * @param [size=5] Size of visible pages.
  * @returns List of the pages to display in the table pagination.
  */
-export function getVisiblePages(pages: number[], pageIndex: number): number[] {
-	let startIndex = 0;
-	if (pageIndex > 0) {
-		let startOffset = 1;
+export function getVisiblePages(
+	pages: number[],
+	pageIndex: number,
+	size: number = 5,
+): number[] {
+	const half = Math.floor(size / 2);
 
-		if (pageIndex === pages.length - 1) {
-			startOffset += 1;
-		}
+	const remainderRightSide =
+		half - Math.min(half, pages.length - 1 - pageIndex);
+	const remainderLeftSide = Math.max(0, half - pageIndex);
 
-		startIndex = pageIndex - startOffset;
-	}
+	const startIndex = Math.max(0, pageIndex - half - remainderRightSide);
+	const endIndex = Math.min(
+		pages.length - 1,
+		pageIndex + half + remainderLeftSide,
+	);
 
-	let endOffset = 2;
-	if (pageIndex === 0) {
-		endOffset += 1;
-	}
-
-	const endIndex = pageIndex + endOffset;
-
-	return pages.slice(startIndex, endIndex);
+	return pages.slice(startIndex, endIndex + 1);
 }

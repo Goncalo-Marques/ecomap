@@ -43,6 +43,8 @@
 
 <style>
 	label {
+		display: flex;
+		gap: 0.5rem;
 		font: var(--text-base-regular);
 	}
 </style>
