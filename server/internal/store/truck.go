@@ -111,7 +111,7 @@ func (s *store) ListTrucks(ctx context.Context, tx pgx.Tx, filter domain.TrucksP
 	// Get rows for the given filter.
 	rows, err := tx.Query(ctx, `
 		SELECT t.id, t.make, t.model, t.license_plate, t.person_capacity, ST_AsGeoJSON(t.geom)::jsonb, rn.osm_name, m.name, t.created_at, t.modified_at
-		FROM trucks AS w
+		FROM trucks AS t
 		LEFT JOIN road_network AS rn ON t.road_id = rn.id
 		LEFT JOIN municipalities AS m ON t.municipality_id = m.id
 	`+sqlWhere+listSQLOrder(sortField, filter.Order)+listSQLLimitOffset(filter.Limit, filter.Offset),
