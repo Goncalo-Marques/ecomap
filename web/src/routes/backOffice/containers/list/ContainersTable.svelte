@@ -1,11 +1,14 @@
 <script lang="ts">
+	import type { ComponentProps } from "svelte";
 	import type { Container } from "../../../../domain/container";
 	import Table from "../../../../lib/components/table/Table.svelte";
+	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
 	import type { Columns } from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
 	import { categoryOptions } from "../constants/category";
 	import containersStore from "./containersStore";
+	import { getContainerLocation } from "../utils/location";
 
 	const { loading, data, filters } = containersStore;
 
@@ -43,12 +46,25 @@
 			enableSorting: false,
 			enableFiltering: false,
 			cell(geoJson) {
-				const {
-					municipalityName,
-					wayName = $t("containers.location.unknownWay"),
-				} = geoJson.properties;
+				const { municipalityName, wayName } = geoJson.properties;
 
-				return `${wayName}, ${municipalityName}`;
+				return getContainerLocation(wayName, municipalityName);
+			},
+		},
+		{
+			type: "display",
+			header: "",
+			align: "center",
+			size: 120,
+			cell(row) {
+				const props: ComponentProps<TableDetailsAction> = {
+					id: row.id,
+				};
+
+				return {
+					component: TableDetailsAction,
+					props,
+				};
 			},
 		},
 	];

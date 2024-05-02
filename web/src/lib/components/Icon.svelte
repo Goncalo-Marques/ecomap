@@ -1,5 +1,5 @@
 <script lang="ts">
-	type Size = "x-small" | "small" | "medium" | "large" | "x-large" | "xx-large";
+	import type { IconSize } from "../../domain/components/icon";
 
 	/**
 	 * The icon name.
@@ -10,7 +10,7 @@
 	 * The icon size.
 	 * @default "medium"
 	 */
-	export let size: Size = "medium";
+	export let size: IconSize = "medium";
 </script>
 
 <span class={`material-symbols-rounded ${size}`}>{name}</span>
