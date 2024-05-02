@@ -86,7 +86,7 @@
 		{@const { wayName, municipalityName } = container.geoJson.properties}
 		<Link to={container.id}>
 			<div class="back">
-				<Button onlyIcon startIcon="arrow_back" variant="tertiary" />
+				<Button startIcon="arrow_back" variant="tertiary" />
 			</div>
 		</Link>
 		<BottomSheet title={getContainerLocation(wayName, municipalityName)}>

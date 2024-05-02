@@ -53,10 +53,9 @@
 
 	/**
 	 * Indicates if the button only contains an icon.
-	 * If `true`, the styles for the button differ from the standard ones.
-	 * @default false
+	 * When the button doesn't contain a slot, the styles for the button differ from the standard ones.
 	 */
-	export let onlyIcon = false;
+	let onlyIcon = !$$props.$$slots;
 </script>
 
 <button
