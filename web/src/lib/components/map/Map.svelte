@@ -38,6 +38,13 @@
 	export let showLayers: boolean = false;
 
 	/**
+	 * Projection used.
+	 *
+	 * @default "EPSG:3857"
+	 */
+	export let projection: string = "EPSG:3857";
+
+	/**
 	 * Open Layers map.
 	 */
 	export let map: Map;
@@ -55,7 +62,7 @@
 	let layers: Layer[] = [];
 
 	onMount(() => {
-		map = createMap(lon, lat, zoom);
+		map = createMap(lon, lat, zoom, projection);
 
 		map.setTarget(mapId);
 		map.getLayers().on("add", () => {

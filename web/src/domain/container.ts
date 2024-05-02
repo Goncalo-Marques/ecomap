@@ -1,5 +1,4 @@
 import type { components } from "../../api/ecomap/http";
-import type { SortingDirection } from "../lib/components/table/types";
 
 /**
  * Container.
@@ -23,8 +22,8 @@ export type PaginatedContainers = components["schemas"]["ContainersPaginated"];
  */
 export interface ContainersFilters {
 	pageIndex: number;
-	sort: ContainerSortableFields;
-	order: SortingDirection;
+	location: string;
+	category?: Container["category"];
 }
 
 /**

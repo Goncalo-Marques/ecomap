@@ -2,7 +2,6 @@ import Map from "ol/Map";
 import View from "ol/View";
 import SimpleGeometry from "ol/geom/SimpleGeometry";
 import { type Coordinate } from "ol/coordinate";
-import GeoJSON from "ol/format/GeoJSON";
 
 import { Vector as VectorSource, Cluster, OSM } from "ol/source";
 import { WebGLTile as TileLayer, Layer } from "ol/layer";
@@ -107,23 +106,20 @@ export class MapHelper {
 	/**
 	 * Add a vector layer to the map.
 	 *
-	 * @param url Receives geojson data.
+	 * @param sourceOptions Options of the vector layer source.
 	 * @param layerName Name for layer.
-	 * @param layerColor Color that identifies the layer.
-	 * @param style Style for new layer.
+	 * @param [layerColor="#15803D"] Color that identifies the layer.
+	 * @param [style=defaultIconStyle] Style for new layer.
 	 */
 	public addVectorLayer(
-		url: string,
+		sourceOptions: Options<Feature<Geometry>>,
 		layerName: string,
-		layerColor: string,
+		layerColor: string = "#15803D",
 		style: VectorStyle = defaultVectorStyle,
 	) {
 		const vectorLayer = new WebGLLayer(
 			{
-				source: new VectorSource({
-					url: url,
-					format: new GeoJSON(),
-				}),
+				source: new VectorSource(sourceOptions),
 				zIndex: this.map.getAllLayers().length,
 			},
 			style,
@@ -137,19 +133,19 @@ export class MapHelper {
 	/**
 	 * Add a point vector layer into map.
 	 *
-	 * @param url Receives geojson data.
+	 * @param sourceOptions Options of the point layer source.
 	 * @param layerName Name for layer.
-	 * @param layerColor Color that identifies the layer.
-	 * @param style Style for new layer.
+	 * @param [layerColor="#15803D"] Color that identifies the layer.
+	 * @param [style=defaultIconStyle] Style for new layer.
 	 */
 	public addPointLayer(
-		vectorOptions: Options<Feature<Geometry>>,
+		sourceOptions: Options<Feature<Geometry>>,
 		layerName: string,
-		layerColor: string,
+		layerColor: string = "#15803D",
 		style: WebGLStyle = defaultIconStyle,
 	) {
 		const pointsLayer = new WebGLPointsLayer({
-			source: new VectorSource(vectorOptions),
+			source: new VectorSource(sourceOptions),
 			style: style,
 			zIndex: this.map.getAllLayers().length,
 		});
@@ -162,16 +158,16 @@ export class MapHelper {
 	/**
 	 * Add a clusterLayer into map.
 	 *
-	 * @param url Receives geojson data.
+	 * @param sourceOptions Options of the cluster layer source.
 	 * @param layerName Name for layer.
-	 * @param layerColor Color that identifies the layer.
-	 * @param clusterStyle Style for the cluster nodes.
-	 * @param iconStyle Style for each independent node.
+	 * @param [layerColor="#15803D"] Color that identifies the layer.
+	 * @param [clusterStyle=defaultClusterSymbol] Style for the cluster nodes.
+	 * @param [iconStyle=defaultClusterIcon] Style for each independent node.
 	 */
 	public addClusterLayer(
-		url: string,
+		sourceOptions: Options<Feature<Geometry>>,
 		layerName: string,
-		layerColor: string,
+		layerColor: string = "#15803D",
 		clusterStyle: Style = defaultClusterSymbol,
 		iconStyle: Style = defaultClusterIcon,
 	) {
@@ -180,10 +176,7 @@ export class MapHelper {
 			source: new Cluster({
 				distance: 50,
 				minDistance: 10,
-				source: new VectorSource({
-					url: url,
-					format: new GeoJSON(),
-				}),
+				source: new VectorSource(sourceOptions),
 			}),
 			style: (feature: FeatureLike) => {
 				const size = feature.get("features").length;

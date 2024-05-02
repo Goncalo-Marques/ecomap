@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { Link } from "svelte-routing";
 	import type { Container } from "../../../../domain/container";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
+	import Button from "../../../../lib/components/Button.svelte";
+	import Card from "../../components/Card.svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
 	import Field from "../../../../lib/components/Field.svelte";
@@ -10,6 +13,7 @@
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
+	import { getContainerLocation } from "../utils/location";
 	import Input from "../../../../lib/components/Input.svelte";
 	import Map from "../../../../lib/components/map/Map.svelte";
 	import OlMap from "ol/Map";
@@ -53,81 +57,96 @@
 	const containerPromise = fetchContainer();
 </script>
 
-{#await containerPromise}
-	<div class="container-loading">
-		<Spinner />
-	</div>
-{:then container}
-	<DetailsHeader to="" title="TODO">
-		{#if mode === "view"}
-			<Link to={`${container.id}/edit`}>
-				<Button startIcon="edit">Editar informação</Button>
+<Card class="page-layout">
+	{#await containerPromise}
+		<div class="container-loading">
+			<Spinner />
+		</div>
+	{:then container}
+		{@const locationName = getContainerLocation(
+			container.geoJson.properties.wayName,
+			container.geoJson.properties.municipalityName,
+		)}
+		<DetailsHeader to="" title={locationName}>
+			<Link to={`${container.id}/map`}>
+				<Button variant="secondary" startIcon="map">{$t("sidebar.map")}</Button>
 			</Link>
-		{:else}
-			<Button variant="tertiary">Cancelar</Button>
-			<Button startIcon="check">Guardar</Button>
-		{/if}
-	</DetailsHeader>
-	<DetailsContent>
-		<DetailsSection label={$t("generalInfo")}>
-			<DetailsFields>
-				{#if mode === "view"}
-					<Field
-						label={$t("containers.category")}
-						value={$t(`containers.category.${container.category}`)}
-					/>
-					<Field label={$t("containers.location")} value="TODO" />
-				{:else}
-					<FormControl label={$t("containers.category")}>
-						<Select name="category" value={container.category}>
-							{#each categoryOptions as category}
-								<Option value={category}>
-									{$t(`containers.category.${category}`)}
-								</Option>
-							{/each}
-						</Select>
-					</FormControl>
-					<FormControl label={$t("containers.location")}>
-						<Input
-							readonly
-							name="location"
-							placeholder={$t("containers.location")}
-							endIcon="location_on"
-							onClick={() => (openSelectLocation = true)}
-						/>
-					</FormControl>
-				{/if}
-			</DetailsFields>
-		</DetailsSection>
-		{#if mode === "view"}
-			<DetailsSection label={$t("additionalInfo")}>
+			{#if mode === "view"}
+				<Link to={`${container.id}/edit`}>
+					<Button startIcon="edit">Editar informação</Button>
+				</Link>
+			{:else}
+				<Button variant="tertiary">Cancelar</Button>
+				<Button startIcon="check">Guardar</Button>
+			{/if}
+		</DetailsHeader>
+		<DetailsContent>
+			<DetailsSection label={$t("generalInfo")}>
 				<DetailsFields>
-					<Field
-						label={$t("createdAt")}
-						value={formatDate(container.createdAt, DateFormats.shortDateTime)}
-					/>
-					<Field
-						label={$t("modifiedAt")}
-						value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
-					/>
+					{#if mode === "view"}
+						<Field
+							label={$t("containers.category")}
+							value={$t(`containers.category.${container.category}`)}
+						/>
+						<Field label={$t("containers.location")} value={locationName} />
+					{:else}
+						<FormControl label={$t("containers.category")}>
+							<Select name="category" value={container.category}>
+								{#each categoryOptions as category}
+									<Option value={category}>
+										{$t(`containers.category.${category}`)}
+									</Option>
+								{/each}
+							</Select>
+						</FormControl>
+						<FormControl label={$t("containers.location")}>
+							<Input
+								readonly
+								name="location"
+								placeholder={$t("containers.location")}
+								endIcon="location_on"
+								onClick={() => (openSelectLocation = true)}
+							/>
+						</FormControl>
+					{/if}
 				</DetailsFields>
 			</DetailsSection>
-		{:else}
-			<DetailsSection class="container-map-preview" label={"Pré-visualização"}>
-				<Map bind:map />
-			</DetailsSection>
-		{/if}
-		<SelectLocation
-			open={openSelectLocation}
-			onClose={() => (openSelectLocation = false)}
-		/>
-	</DetailsContent>
-{:catch}
-	<div class="container-not-found">
-		<h2>{$t("containers.notFound.title")}</h2>
-		<p>{$t("containers.notFound.description")}</p>
-	</div>
-{/await}
+			{#if mode === "view"}
+				<DetailsSection label={$t("additionalInfo")}>
+					<DetailsFields>
+						<Field
+							label={$t("createdAt")}
+							value={formatDate(container.createdAt, DateFormats.shortDateTime)}
+						/>
+						<Field
+							label={$t("modifiedAt")}
+							value={formatDate(
+								container.modifiedAt,
+								DateFormats.shortDateTime,
+							)}
+						/>
+					</DetailsFields>
+				</DetailsSection>
+			{:else}
+				<DetailsSection
+					class="container-map-preview"
+					label={"Pré-visualização"}
+				>
+					<Map bind:map />
+				</DetailsSection>
+				<SelectLocation
+					open={openSelectLocation}
+					onClose={() => (openSelectLocation = false)}
+				/>
+			{/if}
+		</DetailsContent>
+	{:catch}
+		<div class="container-not-found">
+			<h2>{$t("containers.notFound.title")}</h2>
+			<p>{$t("containers.notFound.description")}</p>
+		</div>
+	{/await}
+</Card>
 
 <style>
 	.container-loading {

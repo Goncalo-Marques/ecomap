@@ -13,7 +13,10 @@ import (
 )
 
 const (
-	errContainerNotFound = "container not found"
+	errContainerNotFound                            = "container not found"
+	errContainerAssociatedWithContainerReport       = "container associated with user report"
+	errContainerAssociatedWithUserContainerBookmark = "container associated with user bookmark"
+	errContainerAssociatedWithRouteContainer        = "container associated with route"
 )
 
 // CreateContainer handles the http request to create a container.
@@ -220,6 +223,12 @@ func (h *handler) DeleteContainerByID(w http.ResponseWriter, r *http.Request, co
 		switch {
 		case errors.Is(err, domain.ErrContainerNotFound):
 			notFound(w, errContainerNotFound)
+		case errors.Is(err, domain.ErrContainerAssociatedWithContainerReport):
+			conflict(w, errContainerAssociatedWithContainerReport)
+		case errors.Is(err, domain.ErrContainerAssociatedWithUserContainerBookmark):
+			conflict(w, errContainerAssociatedWithUserContainerBookmark)
+		case errors.Is(err, domain.ErrContainerAssociatedWithRouteContainer):
+			conflict(w, errContainerAssociatedWithRouteContainer)
 		default:
 			internalServerError(w)
 		}
@@ -348,15 +357,13 @@ func listContainersParamsToDomain(params spec.ListContainersParams) domain.Conta
 
 	return domain.ContainersPaginatedFilter{
 		PaginatedRequest: paginatedRequestToDomain(
-			(*spec.LogicalOperatorQueryParam)(params.LogicalOperator),
 			domainSort,
 			(*spec.OrderQueryParam)(params.Order),
 			params.Limit,
 			params.Offset,
 		),
-		Category:         domainCategory,
-		WayName:          params.WayName,
-		MunicipalityName: params.MunicipalityName,
+		Category:     domainCategory,
+		LocationName: params.LocationName,
 	}
 }
 

@@ -1,5 +1,9 @@
 <script lang="ts">
-	import type { HTMLInputAttributes, MouseEventHandler } from "svelte/elements";
+	import type {
+		ChangeEventHandler,
+		HTMLInputAttributes,
+		MouseEventHandler,
+	} from "svelte/elements";
 	import Icon from "./Icon.svelte";
 
 	/**
@@ -39,6 +43,12 @@
 	export let onClick: MouseEventHandler<HTMLInputElement> | null = null;
 
 	/**
+	 * Callback fired when input value changes.
+	 * @default null
+	 */
+	export let onInput: ChangeEventHandler<HTMLInputElement> | null = null;
+
+	/**
 	 * The text that appears in the form control when it has no value set.
 	 * @default null
 	 */
@@ -55,6 +65,18 @@
 	 * @default null
 	 */
 	export let type: HTMLInputAttributes["type"] = null;
+
+	/**
+	 * The label of the input.
+	 * @default null
+	 */
+	export let label: string | null = null;
+
+	/**
+	 * The value of the input.
+	 * @default null
+	 */
+	export let value: string | null = null;
 </script>
 
 <div class="input-container">
@@ -65,7 +87,9 @@
 		{name}
 		{placeholder}
 		{type}
+		{value}
 		{readonly}
+		on:input={onInput}
 		on:click={onClick}
 		data-endIcon={endIcon}
 	/>

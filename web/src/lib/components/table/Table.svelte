@@ -9,6 +9,7 @@
 		getCell,
 		getCellStyle,
 		getColumnsSorting,
+		getVisiblePages,
 		toggleDirection,
 	} from "./utils";
 	import type {
@@ -18,6 +19,7 @@
 		SortingDirection,
 		onSortingChangeFn,
 	} from "./types";
+	import TableColumnFilter from "./TableColumnFilter.svelte";
 	import Spinner from "../Spinner.svelte";
 
 	/**
@@ -69,11 +71,16 @@
 	let columnsSorting: SortingColumns<TRow>;
 
 	/**
-	 * Handles on click event for each table header cell.
+	 * Handles on click event for each table header cell sorting button.
 	 * @param e Click event.
 	 */
-	function handleHeaderCellClick(e: Event) {
-		const headerCell = e.currentTarget as HTMLTableCellElement;
+	function handleSortingClick(e: Event) {
+		const sortingButton = e.currentTarget as HTMLButtonElement;
+		const headerCell = sortingButton.parentElement;
+
+		if (!headerCell) {
+			return;
+		}
 
 		// Retrieves data attributes from the header cell element.
 		const { field, sortable, direction } = headerCell.dataset;
@@ -182,19 +189,33 @@
 							? columnsSorting[column.field]
 							: null}
 						style={getCellStyle(column)}
-						on:click={handleHeaderCellClick}
 					>
 						{column.header}
-						{#if column.type === "accessor" && column.enableSorting}
-							{@const arrowDirection =
-								columnsSorting[column.field] === "asc" ? "upward" : "downward"}
-							{@const sortingClass = columnsSorting[column.field]
-								? "sorted"
-								: undefined}
+						{#if column.type === "accessor"}
+							{#if column.enableSorting}
+								{@const arrowDirection =
+									columnsSorting[column.field] === "asc"
+										? "upward"
+										: "downward"}
+								{@const sortingClass = columnsSorting[column.field]
+									? "sorted"
+									: ""}
 
-							<button class={sortingClass}>
-								<Icon name={`arrow_${arrowDirection}`} size="x-small" />
-							</button>
+								<button
+									on:click={handleSortingClick}
+									class={`sort ${sortingClass}`}
+								>
+									<Icon name={`arrow_${arrowDirection}`} size="small" />
+								</button>
+							{/if}
+
+							{#if column.enableFiltering}
+								<TableColumnFilter
+									options={column.filterOptions}
+									initialValue={column.filterInitialValue}
+									onFilterChange={column.onFilterChange}
+								/>
+							{/if}
 						{/if}
 					</th>
 				{/each}
@@ -237,6 +258,7 @@
 				? Math.ceil(pagination.total / pagination.pageSize)
 				: 1}
 		{@const pagesArray = Array.from({ length: pages }, (_, idx) => idx)}
+		{@const visiblePages = getVisiblePages(pagesArray, pagination.pageIndex)}
 
 		<div class="pagination">
 			<span class="pagination-info">
@@ -258,7 +280,7 @@
 					<Icon name="arrow_back" size="x-small" />
 				</button>
 
-				{#each pagesArray as pageIndex}
+				{#each visiblePages as pageIndex}
 					<button
 						class="pagination-page"
 						data-index={pageIndex}
@@ -293,16 +315,16 @@
 		display: flex;
 		flex-direction: column;
 	}
-	thead,
-	tbody {
-		overflow-x: hidden;
+
+	thead {
 		overflow-y: auto;
 		scrollbar-gutter: stable;
-	}
-	thead {
 		flex-shrink: 0;
 	}
 	tbody {
+		overflow-x: hidden;
+		scrollbar-gutter: stable;
+		overflow-y: auto;
 		flex: 1 1 0;
 		border-bottom: 1px solid var(--gray-300);
 	}
@@ -333,7 +355,7 @@
 		gap: 0.5rem;
 		font: var(--text-base-semibold);
 	}
-	th :global(.sorted) {
+	th .sorted {
 		color: var(--green-700);
 	}
 	td {
@@ -348,6 +370,12 @@
 		top: 50%;
 		transform: translate(-50%, -50%);
 		z-index: 10;
+	}
+
+	.sort {
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.pagination {

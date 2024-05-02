@@ -1,7 +1,7 @@
 import { navigate } from "svelte-routing";
 import createClient, { type Middleware } from "openapi-fetch";
 import type { components, paths } from "../../../../api/ecomap/http";
-import { getToken } from "../../utils/auth";
+import { clearToken, getToken } from "../../utils/auth";
 import { CommonRoutes } from "../../../routes/constants/routes";
 
 const middleware: Middleware = {
@@ -18,6 +18,7 @@ const middleware: Middleware = {
 
 		switch (response.status) {
 			case 401:
+				clearToken();
 				// Only redirect if the page is not the sign in page.
 				if (location.pathname !== CommonRoutes.SIGN_IN) {
 					navigate(CommonRoutes.SIGN_IN);

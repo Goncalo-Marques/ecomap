@@ -18,7 +18,9 @@
 		<Icon name="arrow_back" size="medium" />
 	</Link>
 	<h1>{title}</h1>
-	<slot />
+	<div class="actions">
+		<slot />
+	</div>
 </header>
 
 <style>
@@ -37,5 +39,11 @@
 	header > h1 {
 		flex: 1;
 		font: var(--text-2xl-semibold);
+	}
+
+	.actions {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
 	}
 </style>

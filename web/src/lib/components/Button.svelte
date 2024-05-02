@@ -1,9 +1,12 @@
 <script lang="ts">
-	import type { HTMLButtonAttributes } from "svelte/elements";
+	import type {
+		HTMLButtonAttributes,
+		MouseEventHandler,
+	} from "svelte/elements";
 	import Icon from "./Icon.svelte";
 
 	type Variant = "primary" | "secondary" | "tertiary";
-	type Size = "medium" | "large";
+	type Size = "small" | "medium" | "large";
 
 	/**
 	 * A space-separated list of the classes of the element.
@@ -13,15 +16,29 @@
 	export { className as class };
 
 	/**
-	 * TODO.
-	 */
-	export let startIcon: string | null = null;
-
-	/**
 	 * Prevents the user from interacting with the button: it cannot be pressed or focused.
 	 * @default false
 	 */
 	export let disabled: boolean = false;
+
+	/**
+	 * Callback fired when button is clicked.
+	 * @default null
+	 */
+	export let onClick: MouseEventHandler<HTMLButtonElement> | null = null;
+
+	/**
+	 * Indicates if the button only contains an icon.
+	 * If `true`, the styles for the button differ from the standard ones.
+	 * @default false
+	 */
+	export let onlyIcon = false;
+
+	/**
+	 * The name of the icon positioned at the beginning of the button.
+	 * @default null
+	 */
+	export let startIcon: string | null = null;
 
 	/**
 	 * The size of the button.
@@ -42,9 +59,14 @@
 	export let variant: Variant = "primary";
 </script>
 
-<button class={`${size} ${variant} ${className}`} {disabled} {type}>
+<button
+	class={`${size} ${variant} ${className} ${onlyIcon ? "only-icon" : ""}`}
+	{disabled}
+	{type}
+	on:click={onClick}
+>
 	{#if startIcon}
-		<Icon name={startIcon} size="small" />
+		<Icon name={startIcon} size={onlyIcon ? "medium" : "small"} />
 	{/if}
 	<slot />
 </button>
@@ -81,7 +103,7 @@
 	}
 	.secondary {
 		color: var(--green-700);
-		background-color: transparent;
+		background-color: var(--white);
 		border: 1px solid var(--green-700);
 
 		&:hover:enabled {
@@ -98,7 +120,7 @@
 	}
 	.tertiary {
 		color: var(--green-700);
-		background-color: transparent;
+		background-color: var(--white);
 
 		&:hover:enabled {
 			color: var(--green-800);
@@ -111,10 +133,18 @@
 		}
 	}
 
+	.small {
+		font-size: 0.75rem;
+		padding: 0.375rem 0.5rem;
+	}
 	.medium {
 		padding: 0.5rem 0.75rem;
 	}
 	.large {
 		padding: 0.625rem 1rem;
+	}
+
+	.only-icon {
+		padding: 0.625rem;
 	}
 </style>

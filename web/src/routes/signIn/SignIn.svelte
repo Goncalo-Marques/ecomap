@@ -5,7 +5,11 @@
 	import Button from "../../lib/components/Button.svelte";
 	import Input from "../../lib/components/Input.svelte";
 	import { t } from "../../lib/utils/i8n";
-	import { decodeTokenPayload, getToken } from "../../lib/utils/auth";
+	import {
+		decodeTokenPayload,
+		getToken,
+		storeToken,
+	} from "../../lib/utils/auth";
 	import ecomapHttpClient from "../../lib/clients/ecomap/http";
 	import { SubjectRole } from "../../domain/role";
 	import type { TokenPayload } from "../../domain/jwt";
@@ -42,18 +46,6 @@
 		} else {
 			formErrorMessages.password = "";
 		}
-	}
-
-	/**
-	 * Stores token in cookies.
-	 * @param token JWT token.
-	 * @param expirationTime JWT expiration time.
-	 */
-	function storeToken(token: string, expirationTime: number) {
-		const expireTimeInMs = expirationTime * 1000;
-		const expireDate = new Date(expireTimeInMs);
-
-		document.cookie = `token=${token}; Path=/; Expires=${expireDate}; SameSite=Strict; Secure`;
 	}
 
 	/**

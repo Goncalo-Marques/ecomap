@@ -34,7 +34,9 @@ h6 {
 	overflow-wrap: break-word;
 }
 
-button {
+button,
+fieldset,
+[popover] {
 	border: none;
 	padding: 0;
 }
