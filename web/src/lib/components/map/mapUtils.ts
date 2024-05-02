@@ -23,6 +23,7 @@ import { mapLayerName, colorLayerKey, nameLayerKey } from "../../constants/map";
 import type { Geometry } from "ol/geom";
 import type Feature from "ol/Feature";
 import type { Options } from "ol/source/Vector";
+import Rotate from "ol/control/Rotate";
 
 const docElement = document.documentElement;
 const style = getComputedStyle(docElement);
@@ -264,6 +265,7 @@ export function createMap(
 	baseLayer.set(nameLayerKey, mapLayerName);
 
 	return new Map({
+		controls: [new Rotate()],
 		layers: [baseLayer],
 		view: new View({
 			center: fromLonLat([lon, lat]),
