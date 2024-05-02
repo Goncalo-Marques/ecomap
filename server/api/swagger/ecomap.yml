@@ -5,6 +5,8 @@ info:
 tags:
   - name: User
     description: User operations
+  - name: User Container Bookmark
+    description: User container bookmark operations
   - name: Employee
     description: Employee operations
   - name: Container
@@ -326,6 +328,129 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /users/{userId}/bookmarks/containers:
+    get:
+      summary: List user container bookmarks.
+      operationId: listUserContainerBookmarks
+      description: Returns the user container bookmarks with the specified filter.
+      tags:
+        - User Container Bookmark
+      security:
+        - BearerAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+        - name: containerCategory
+          in: query
+          description: Container category to filter by.
+          schema:
+            $ref: "#/components/schemas/ContainerCategory"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/UserContainerBookmarkSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainersPaginated"
+        400:
+          description: Invalid user ID or filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/{userId}/bookmarks/containers/{containerId}:
+    post:
+      summary: Create a user container bookmark.
+      operationId: createUserContainerBookmark
+      description: Creates a new user container bookmark.
+      tags:
+        - User Container Bookmark
+      security:
+        - BearerAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid user ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User or container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Bookmark already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a user container bookmark.
+      operationId: deleteUserContainerBookmark
+      description: Deletes the user container bookmark.
+      tags:
+        - User Container Bookmark
+      security:
+        - BearerAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid user ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User or container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Bookmark does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
   /employees:
     post:
       summary: Create an employee.
@@ -1259,7 +1384,7 @@ components:
     LocationNameFilterQueryParam:
       name: locationName
       in: query
-      description: Name of the location to filter by. It considers the name of the way or the name of the municipality.
+      description: Name of the location to filter by. It considers the name of the way and the name of the municipality.
       schema:
         type: string
 
@@ -1303,6 +1428,18 @@ components:
           - lastName
           - createdAt
           - modifiedAt
+        default: createdAt
+    UserContainerBookmarkSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the container bookmark field to sort by.
+      schema:
+        type: string
+        enum:
+          - containerCategory
+          - wayName
+          - municipalityName
+          - createdAt
         default: createdAt
     EmployeeSortQueryParam:
       name: sort
