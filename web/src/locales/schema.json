@@ -7,7 +7,25 @@
 		"pagination.of": {
 			"type": "string"
 		},
+		"createdAt": {
+			"type": "string"
+		},
+		"modifiedAt": {
+			"type": "string"
+		},
+		"generalInfo": {
+			"type": "string"
+		},
+		"additionalInfo": {
+			"type": "string"
+		},
 		"containers.title": {
+			"type": "string"
+		},
+		"containers.notFound.title": {
+			"type": "string"
+		},
+		"containers.notFound.description": {
 			"type": "string"
 		},
 		"containers.search": {
