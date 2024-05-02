@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { Link } from "svelte-routing";
 	import type { Container } from "../../../../domain/container";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
+	import Button from "../../../../lib/components/Button.svelte";
+	import Card from "../../components/Card.svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
 	import Field from "../../../../lib/components/Field.svelte";
@@ -35,45 +38,51 @@
 	const containerPromise = fetchContainer();
 </script>
 
-{#await containerPromise}
-	<div class="container-loading">
-		<Spinner />
-	</div>
-{:then container}
-	{@const locationName = getContainerLocation(
-		container.geoJson.properties.wayName,
-		container.geoJson.properties.municipalityName,
-	)}
-	<DetailsHeader title={locationName} />
-	<DetailsContent>
-		<DetailsSection label={$t("generalInfo")}>
-			<DetailsFields>
-				<Field
-					label={$t("containers.category")}
-					value={$t(`containers.category.${container.category}`)}
-				/>
-				<Field label={$t("containers.location")} value={locationName} />
-			</DetailsFields>
-		</DetailsSection>
-		<DetailsSection label={$t("additionalInfo")}>
-			<DetailsFields>
-				<Field
-					label={$t("createdAt")}
-					value={formatDate(container.createdAt, DateFormats.shortDateTime)}
-				/>
-				<Field
-					label={$t("modifiedAt")}
-					value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
-				/>
-			</DetailsFields>
-		</DetailsSection>
-	</DetailsContent>
-{:catch}
-	<div class="container-not-found">
-		<h2>{$t("containers.notFound.title")}</h2>
-		<p>{$t("containers.notFound.description")}</p>
-	</div>
-{/await}
+<Card class="page-layout">
+	{#await containerPromise}
+		<div class="container-loading">
+			<Spinner />
+		</div>
+	{:then container}
+		{@const locationName = getContainerLocation(
+			container.geoJson.properties.wayName,
+			container.geoJson.properties.municipalityName,
+		)}
+		<DetailsHeader title={locationName}>
+			<Link to={`${container.id}/map`}>
+				<Button variant="secondary" startIcon="map">{$t("sidebar.map")}</Button>
+			</Link>
+		</DetailsHeader>
+		<DetailsContent>
+			<DetailsSection label={$t("generalInfo")}>
+				<DetailsFields>
+					<Field
+						label={$t("containers.category")}
+						value={$t(`containers.category.${container.category}`)}
+					/>
+					<Field label={$t("containers.location")} value={locationName} />
+				</DetailsFields>
+			</DetailsSection>
+			<DetailsSection label={$t("additionalInfo")}>
+				<DetailsFields>
+					<Field
+						label={$t("createdAt")}
+						value={formatDate(container.createdAt, DateFormats.shortDateTime)}
+					/>
+					<Field
+						label={$t("modifiedAt")}
+						value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
+					/>
+				</DetailsFields>
+			</DetailsSection>
+		</DetailsContent>
+	{:catch}
+		<div class="container-not-found">
+			<h2>{$t("containers.notFound.title")}</h2>
+			<p>{$t("containers.notFound.description")}</p>
+		</div>
+	{/await}
+</Card>
 
 <style>
 	.container-loading {
