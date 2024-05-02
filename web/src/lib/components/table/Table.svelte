@@ -20,6 +20,7 @@
 		onSortingChangeFn,
 	} from "./types";
 	import TableColumnFilter from "./TableColumnFilter.svelte";
+	import Spinner from "../Spinner.svelte";
 
 	/**
 	 * The columns of the table.
@@ -247,9 +248,7 @@
 		</tbody>
 	</table>
 	{#if loading}
-		<div role="progressbar" class="loading">
-			<Icon name="progress_activity" size="xx-large" />
-		</div>
+		<Spinner class="table-loading-spinner" />
 	{/if}
 	{#if pagination}
 		{@const start = pagination.pageSize * pagination.pageIndex + 1}
@@ -365,16 +364,12 @@
 		text-wrap: nowrap;
 	}
 
-	.loading {
+	.table-container :global(.table-loading-spinner) {
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
 		z-index: 10;
-		color: var(--green-700);
-	}
-	.loading > :global(.material-symbols-rounded) {
-		animation: var(--animation-spin);
 	}
 
 	.sort {
