@@ -35,7 +35,7 @@
 
 	/**
 	 * Adds a container to the map.
-	 * @param coordinates Container coordinates
+	 * @param coordinates Container coordinates.
 	 */
 	function addContainerToMap(coordinates: number[]) {
 		const point = new Point(coordinates);
