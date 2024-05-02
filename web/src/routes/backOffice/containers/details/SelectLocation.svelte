@@ -13,9 +13,13 @@
 
 	export let open: boolean;
 
-	export let onClose: () => void;
+	export let onCancel: () => void;
+
+	export let onSave: (coordinates: number[]) => void;
 
 	let map: OlMap;
+
+	let selectedCoordinates: number[];
 
 	const layer = new VectorLayer({
 		source: new VectorSource<Feature<Point>>({ features: [] }),
@@ -49,7 +53,15 @@
 <Modal {open} {onClose} title="Selecionar localização">
 	<Map bind:map mapId="select-location-map" --height="32rem" --width="60rem" />
 	<svelte:fragment slot="actions">
-		<Button variant="tertiary">Cancelar</Button>
-		<Button startIcon="check">Guardar</Button>
+		<Button variant="tertiary" onClick={onCancel}>Cancelar</Button>
+		<Button
+			startIcon="check"
+			disabled={!!selectedCoordinates}
+			onClick={() => {
+				onSave(selectedCoordinates);
+			}}
+		>
+			Guardar
+		</Button>
 	</svelte:fragment>
 </Modal>

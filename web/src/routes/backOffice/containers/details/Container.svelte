@@ -21,8 +21,6 @@
 	import Option from "../../../../lib/components/Option.svelte";
 	import { categoryOptions } from "../../../../lib/constants/container";
 	import FormControl from "../../../../lib/components/FormControl.svelte";
-	import Button from "../../../../lib/components/Button.svelte";
-	import { Link } from "svelte-routing";
 	import SelectLocation from "./SelectLocation.svelte";
 
 	/**
@@ -68,10 +66,12 @@
 			container.geoJson.properties.municipalityName,
 		)}
 		<DetailsHeader to="" title={locationName}>
-			<Link to={`${container.id}/map`}>
-				<Button variant="secondary" startIcon="map">{$t("sidebar.map")}</Button>
-			</Link>
 			{#if mode === "view"}
+				<Link to={`${container.id}/map`}>
+					<Button variant="secondary" startIcon="map">
+						{$t("sidebar.map")}
+					</Button>
+				</Link>
 				<Link to={`${container.id}/edit`}>
 					<Button startIcon="edit">Editar informação</Button>
 				</Link>
@@ -137,6 +137,7 @@
 				<SelectLocation
 					open={openSelectLocation}
 					onClose={() => (openSelectLocation = false)}
+					onSelectLocation
 				/>
 			{/if}
 		</DetailsContent>
