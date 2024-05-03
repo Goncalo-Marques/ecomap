@@ -366,12 +366,6 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         403:
           $ref: "#/components/responses/Forbidden"
-        404:
-          description: User not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
   /users/{userId}/bookmarks/containers/{containerId}:
@@ -437,12 +431,6 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         403:
           $ref: "#/components/responses/Forbidden"
-        404:
-          description: User or container not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         409:
           description: Bookmark does not exist.
           content:
@@ -451,6 +439,7 @@ paths:
                 $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
+
   /employees:
     post:
       summary: Create an employee.

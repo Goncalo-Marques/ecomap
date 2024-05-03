@@ -41,6 +41,10 @@ type Store interface {
 	UpdateUserPassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
 	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
+	CreateUserContainerBookmark(ctx context.Context, tx pgx.Tx, userID, containerID uuid.UUID) error
+	ListUserContainerBookmarks(ctx context.Context, tx pgx.Tx, userID uuid.UUID, filter domain.UserContainerBookmarksPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteUserContainerBookmark(ctx context.Context, tx pgx.Tx, userID, containerID uuid.UUID) error
+
 	CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error)
 	ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
