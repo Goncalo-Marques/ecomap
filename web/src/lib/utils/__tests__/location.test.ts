@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getContainerLocation } from "../location";
+import { getLocationName } from "../location";
 
-describe("Container utils", () => {
-	const containerLocationCases = [
+describe("Utils", () => {
+	const locationCases = [
 		{
 			wayName: "Main Street",
 			municipalityName: "London",
@@ -25,12 +25,10 @@ describe("Container utils", () => {
 		},
 	];
 
-	it.each(containerLocationCases)(
-		"should return $expectedLocation",
+	it.each(locationCases)(
+		"should return correct location name",
 		({ wayName, municipalityName, expectedLocation }) => {
-			expect(getContainerLocation(wayName, municipalityName)).toBe(
-				expectedLocation,
-			);
+			expect(getLocationName(wayName, municipalityName)).toBe(expectedLocation);
 		},
 	);
 });

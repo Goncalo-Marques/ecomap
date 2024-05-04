@@ -13,9 +13,9 @@
 	import type { Container } from "../../../../domain/container";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
-	import { getContainerLocation } from "../utils/location";
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
+	import { getLocationName } from "../../../../lib/utils/location";
 
 	/**
 	 * Container ID.
@@ -45,7 +45,7 @@
 		mapHelper.addPointLayer({ features: [feature] }, "container");
 
 		const view = map.getView();
-		view.fit(point, { maxZoom: 18 });
+		view.fit(point);
 	}
 
 	/**
@@ -89,7 +89,7 @@
 				<Button startIcon="arrow_back" variant="tertiary" />
 			</div>
 		</Link>
-		<BottomSheet title={getContainerLocation(wayName, municipalityName)}>
+		<BottomSheet title={getLocationName(wayName, municipalityName)}>
 			<Field
 				label={$t("containers.category")}
 				value={$t(`containers.category.${container.category}`)}
