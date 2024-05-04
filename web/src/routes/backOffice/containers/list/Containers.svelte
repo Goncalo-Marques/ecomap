@@ -11,7 +11,7 @@
 	<h1>{$t("sidebar.containers")}</h1>
 	<div class="top-bar">
 		<SearchContainers />
-		<Link to="create">
+		<Link to="create" style="display:contents">
 			<Button startIcon="add">{$t("containers.create.title")}</Button>
 		</Link>
 	</div>

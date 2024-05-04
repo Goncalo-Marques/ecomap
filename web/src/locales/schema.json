@@ -91,6 +91,15 @@
 		"containers.update.success": {
 			"type": "string"
 		},
+		"containers.delete.success": {
+			"type": "string"
+		},
+		"containers.delete.conflict.title": {
+			"type": "string"
+		},
+		"containers.delete.conflict.description": {
+			"type": "string"
+		},
 		"error.requiredField": {
 			"type": "string"
 		},
