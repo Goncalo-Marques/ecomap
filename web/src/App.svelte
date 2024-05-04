@@ -8,7 +8,7 @@
 	import Warehouses from "./routes/backOffice/warehouses/Warehouses.svelte";
 	import Trucks from "./routes/backOffice/trucks/Trucks.svelte";
 	import Reports from "./routes/backOffice/reports/Reports.svelte";
-	import Employees from "./routes/backOffice/employees/EmployeesRouter.svelte";
+	import EmployeesRouter from "./routes/backOffice/employees/EmployeesRouter.svelte";
 	import Forbidden from "./routes/clientErrors/Forbidden.svelte";
 	import NotFound from "./routes/clientErrors/NotFound.svelte";
 	import BackOfficeLayout from "./routes/backOffice/components/BackOfficeLayout.svelte";
@@ -31,7 +31,7 @@
 	<Route path={`/${backOfficeBasename}/*`}>
 		<Router>
 			<BackOfficeLayout>
-				<Route path={BackOfficeRouterPaths.EMPLOYEES} component={Employees} />
+				<Route path={BackOfficeRouterPaths.EMPLOYEES} component={EmployeesRouter} />
 				<Route path={BackOfficeRouterPaths.REPORTS} component={Reports} />
 				<Route path={BackOfficeRouterPaths.TRUCKS} component={Trucks} />
 				<Route path={BackOfficeRouterPaths.WAREHOUSES} component={Warehouses} />

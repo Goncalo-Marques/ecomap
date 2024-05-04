@@ -64,25 +64,25 @@ function searchParamsToFilters(
 		pageIndex = pageIndexParam;
 	}
 
-	// Update location when it's a non empty value.
+	// Update username when it's a non empty value.
 	if (nameParam) {
 		username = nameParam;
 	}
 
-	// update role when it's a valid role.
+	// Update role when it's a valid role.
 	switch (roleParam) {
 		case "wasteOperator":
 		case "manager":
 			role = roleParam;
 	}
 
-	// update sort when sortParam is username.
+	// Update sort when sortParam is username.
 	switch (sortParam) {
 		case "username":
 			sort = sortParam;
 	}
 
-	// update order when it's a valid sorting direction.
+	// Update order when it's a valid sorting direction.
 	switch (orderParam) {
 		case "asc":
 		case "desc":
@@ -151,9 +151,9 @@ async function getEmployees(
 			query: {
 				offset: pageIndex * DEFAULT_PAGE_SIZE,
 				limit: DEFAULT_PAGE_SIZE,
-				sort: sort,
-				order: order,
-				username: username,
+				sort,
+				order,
+				username,
 				role,
 			},
 		},

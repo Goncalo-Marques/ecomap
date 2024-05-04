@@ -130,52 +130,10 @@
 		"employees.title": {
 			"type": "string"
 		},
-		"employees.addEmployee": {
-			"type": "string"
-		},
 		"employees.search": {
 			"type": "string"
 		},
-		"employees.save": {
-			"type": "string"
-		},
-		"employees.cancel": {
-			"type": "string"
-		},
-		"employees.personalInfo": {
-			"type": "string"
-		},
-		"employees.firstName": {
-			"type": "string"
-		},
-		"employees.lastName": {
-			"type": "string"
-		},
 		"employees.username": {
-			"type": "string"
-		},
-		"employees.birthdate": {
-			"type": "string"
-		},
-		"employees.phoneNumber": {
-			"type": "string"
-		},
-		"employees.location": {
-			"type": "string"
-		},
-		"employees.work": {
-			"type": "string"
-		},
-		"employees.startTime": {
-			"type": "string"
-		},
-		"employees.position": {
-			"type": "string"
-		},
-		"employees.endTime": {
-			"type": "string"
-		},
-		"employees.select.location": {
 			"type": "string"
 		},
 		"employees.name": {
