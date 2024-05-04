@@ -17,6 +17,10 @@ tags:
     description: Warehouse operations
   - name: Route
     description: Route operations
+  - name: Route Container
+    description: Route container operations
+  - name: Route Employee
+    description: Route employee operations
   - name: Way
     description: Way operations
   - name: Municipality
@@ -1586,6 +1590,118 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /routes/{routeId}/containers:
+    get:
+      summary: List route containers.
+      operationId: listRouteContainers
+      description: Returns the route containers with the specified filter.
+      tags:
+        - Route Container
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - name: containerCategory
+          in: query
+          description: Container category to filter by.
+          schema:
+            $ref: "#/components/schemas/ContainerCategory"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/RouteContainerSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainersPaginated"
+        400:
+          description: Invalid route ID or filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /routes/{routeId}/containers/{containerId}:
+    post:
+      summary: Create a route container association.
+      operationId: createRouteContainer
+      description: Creates a route container association.
+      tags:
+        - Route Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route or container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Association already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a route container association.
+      operationId: deleteRouteContainer
+      description: Deletes the route container association.
+      tags:
+        - Route Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Association does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
   /ways/reverse-geocoding:
     get:
       summary: Get a way by reverse geocoding.
@@ -1735,7 +1851,7 @@ components:
     UserContainerBookmarkSortQueryParam:
       name: sort
       in: query
-      description: Name of the container bookmark field to sort by.
+      description: Name of the user container bookmark field to sort by.
       schema:
         type: string
         enum:
@@ -1818,6 +1934,18 @@ components:
           - municipalityName
           - createdAt
           - modifiedAt
+        default: createdAt
+    RouteContainerSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the route container field to sort by.
+      schema:
+        type: string
+        enum:
+          - containerCategory
+          - wayName
+          - municipalityName
+          - createdAt
         default: createdAt
 
     UserIdPathParam:
