@@ -4,22 +4,23 @@
 	import Icon from "./Icon.svelte";
 
 	/**
-	 * TODO.
+	 * The name of the icon to be used.
 	 */
 	export let icon: string;
 
 	/**
-	 * TODO.
+	 * The icon size.
 	 */
 	export let size: IconSize = "medium";
 
 	/**
-	 * TODO.
+	 * Callback fired when button is clicked.
+	 * @default null
 	 */
 	export let onClick: MouseEventHandler<HTMLButtonElement> | null = null;
 </script>
 
-<button on:click={onClick}>
+<button type="button" on:click={onClick}>
 	<Icon name={icon} {size} />
 </button>
 

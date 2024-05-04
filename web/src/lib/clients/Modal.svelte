@@ -8,18 +8,21 @@
 
 	export let gutters: boolean = false;
 
-	export let onClose: () => void;
+	export let onOpenChange: (open: boolean) => void;
+
+	export let onClickOutside: (() => void) | null = null;
 
 	let dialog: HTMLDialogElement;
 
 	function closeModal() {
-		onClose();
+		onOpenChange(false);
 		dialog.close();
 	}
 
 	function handleClick(e: Event) {
 		if (e.target === dialog) {
 			closeModal();
+			onClickOutside?.();
 		}
 	}
 
@@ -28,6 +31,7 @@
 	});
 
 	$: if (!dialog?.open && open) {
+		onOpenChange(true);
 		dialog.showModal();
 	} else if (dialog?.open && !open) {
 		closeModal();

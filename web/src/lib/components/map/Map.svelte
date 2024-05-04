@@ -57,6 +57,11 @@
 	export let mapId: string = "map_id";
 
 	/**
+	 * Callback fired when map is initialized.
+	 */
+	export let onInit: ((map: Map) => void) | null = null;
+
+	/**
 	 * Map layers.
 	 */
 	let layers: Layer[] = [];
@@ -68,6 +73,8 @@
 		map.getLayers().on("add", () => {
 			layers = map.getAllLayers();
 		});
+
+		onInit?.(map);
 	});
 </script>
 

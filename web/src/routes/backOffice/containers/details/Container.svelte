@@ -1,6 +1,9 @@
 <script lang="ts">
-	import { Link } from "svelte-routing";
-	import type { Container } from "../../../../domain/container";
+	import { Link, navigate } from "svelte-routing";
+	import type {
+		Container,
+		ContainerCategory,
+	} from "../../../../domain/container";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import Button from "../../../../lib/components/Button.svelte";
 	import Card from "../../components/Card.svelte";
@@ -14,28 +17,11 @@
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
 	import { getContainerLocation } from "../utils/location";
-	import Input from "../../../../lib/components/Input.svelte";
-	import Map from "../../../../lib/components/map/Map.svelte";
-	import OlMap from "ol/Map";
-	import Select from "../../../../lib/components/Select.svelte";
-	import Option from "../../../../lib/components/Option.svelte";
-	import { categoryOptions } from "../../../../lib/constants/container";
-	import FormControl from "../../../../lib/components/FormControl.svelte";
-	import SelectLocation from "./SelectLocation.svelte";
 
 	/**
 	 * Container ID.
 	 */
 	export let id: string;
-
-	/**
-	 * TODO.
-	 */
-	export let mode: "view" | "edit";
-
-	let map: OlMap;
-
-	let openSelectLocation = false;
 
 	/**
 	 * Fetches container data.
@@ -66,80 +52,37 @@
 			container.geoJson.properties.municipalityName,
 		)}
 		<DetailsHeader to="" title={locationName}>
-			{#if mode === "view"}
-				<Link to={`${container.id}/map`}>
-					<Button variant="secondary" startIcon="map">
-						{$t("sidebar.map")}
-					</Button>
-				</Link>
-				<Link to={`${container.id}/edit`}>
-					<Button startIcon="edit">Editar informação</Button>
-				</Link>
-			{:else}
-				<Button variant="tertiary">Cancelar</Button>
-				<Button startIcon="check">Guardar</Button>
-			{/if}
+			<Link to={`${container.id}/map`}>
+				<Button variant="secondary" startIcon="map">
+					{$t("sidebar.map")}
+				</Button>
+			</Link>
+			<Link to={`${container.id}/edit`}>
+				<Button startIcon="edit">Editar informação</Button>
+			</Link>
 		</DetailsHeader>
 		<DetailsContent>
 			<DetailsSection label={$t("generalInfo")}>
 				<DetailsFields>
-					{#if mode === "view"}
-						<Field
-							label={$t("containers.category")}
-							value={$t(`containers.category.${container.category}`)}
-						/>
-						<Field label={$t("containers.location")} value={locationName} />
-					{:else}
-						<FormControl label={$t("containers.category")}>
-							<Select name="category" value={container.category}>
-								{#each categoryOptions as category}
-									<Option value={category}>
-										{$t(`containers.category.${category}`)}
-									</Option>
-								{/each}
-							</Select>
-						</FormControl>
-						<FormControl label={$t("containers.location")}>
-							<Input
-								readonly
-								name="location"
-								placeholder={$t("containers.location")}
-								endIcon="location_on"
-								onClick={() => (openSelectLocation = true)}
-							/>
-						</FormControl>
-					{/if}
+					<Field
+						label={$t("containers.category")}
+						value={$t(`containers.category.${container.category}`)}
+					/>
+					<Field label={$t("containers.location")} value={locationName} />
 				</DetailsFields>
 			</DetailsSection>
-			{#if mode === "view"}
-				<DetailsSection label={$t("additionalInfo")}>
-					<DetailsFields>
-						<Field
-							label={$t("createdAt")}
-							value={formatDate(container.createdAt, DateFormats.shortDateTime)}
-						/>
-						<Field
-							label={$t("modifiedAt")}
-							value={formatDate(
-								container.modifiedAt,
-								DateFormats.shortDateTime,
-							)}
-						/>
-					</DetailsFields>
-				</DetailsSection>
-			{:else}
-				<DetailsSection
-					class="container-map-preview"
-					label={"Pré-visualização"}
-				>
-					<Map bind:map />
-				</DetailsSection>
-				<SelectLocation
-					open={openSelectLocation}
-					onClose={() => (openSelectLocation = false)}
-					onSelectLocation
-				/>
-			{/if}
+			<DetailsSection label={$t("additionalInfo")}>
+				<DetailsFields>
+					<Field
+						label={$t("createdAt")}
+						value={formatDate(container.createdAt, DateFormats.shortDateTime)}
+					/>
+					<Field
+						label={$t("modifiedAt")}
+						value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
+					/>
+				</DetailsFields>
+			</DetailsSection>
 		</DetailsContent>
 	{:catch}
 		<div class="container-not-found">
