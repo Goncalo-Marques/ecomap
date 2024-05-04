@@ -81,6 +81,9 @@
 	 */
 	let selectedCoordinate = container?.geoJson.geometry.coordinates;
 
+	/**
+	 * The location name of the container.
+	 */
 	let locationName = getLocationName(
 		container?.geoJson.properties.wayName,
 		container?.geoJson.properties.municipalityName,
