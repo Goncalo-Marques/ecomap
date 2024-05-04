@@ -16,7 +16,7 @@ export const mapLayerName = "mapLayer";
 /**
  * Default maximum zoom of the map.
  */
-export const DEFAULT_MAX_ZOOM = 18;
+export const DEFAULT_MAX_ZOOM = 20;
 
 /**
  * Open Layers map projection.
