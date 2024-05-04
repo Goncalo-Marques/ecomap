@@ -11,7 +11,7 @@
 	} from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
-	import { categoryOptions } from "../constants/category";
+	import { rolesOptions } from "../constants/roles";
 	import employeesStore from "./employeesStore";
 	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
 
@@ -44,7 +44,7 @@
 			header: $t("employees.role"),
 			enableSorting: false,
 			enableFiltering: true,
-			filterOptions: categoryOptions.map(role => {
+			filterOptions: rolesOptions.map(role => {
 				return {
 					value: role,
 					label: $t(`employees.role.${role}`),
