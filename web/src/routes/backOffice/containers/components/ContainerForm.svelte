@@ -84,10 +84,12 @@
 	/**
 	 * The location name of the container.
 	 */
-	let locationName = getLocationName(
-		container?.geoJson.properties.wayName,
-		container?.geoJson.properties.municipalityName,
-	);
+	let locationName = container
+		? getLocationName(
+				container.geoJson.properties.wayName,
+				container.geoJson.properties.municipalityName,
+			)
+		: "";
 
 	/**
 	 * Error messages of the form fields.
@@ -146,8 +148,8 @@
 	 */
 	function handleSubmit(e: SubmitEvent) {
 		const formData = new FormData(e.currentTarget as HTMLFormElement);
-		const category = formData.get("category");
-		const location = formData.get("location");
+		const category = formData.get("category") ?? "";
+		const location = formData.get("location") ?? "";
 
 		// Check if category and location are both strings.
 		if (typeof category !== "string" || typeof location !== "string") {
@@ -186,8 +188,17 @@
 	<DetailsContent>
 		<DetailsSection label={$t("generalInfo")}>
 			<DetailsFields>
-				<FormControl label={$t("containers.category")}>
-					<Select name="category" value={container?.category}>
+				<FormControl
+					label={$t("containers.category")}
+					error={!!formErrorMessages.category}
+					helperText={formErrorMessages.category}
+				>
+					<Select
+						name="category"
+						error={!!formErrorMessages.category}
+						placeholder={$t("containers.category.placeholder")}
+						value={container?.category}
+					>
 						{#each categoryOptions as category}
 							<Option value={category}>
 								{$t(`containers.category.${category}`)}
@@ -205,7 +216,7 @@
 						name="location"
 						value={locationName}
 						error={!!formErrorMessages.location}
-						placeholder={$t("containers.location")}
+						placeholder={$t("containers.location.placeholder")}
 						endIcon="location_on"
 						onClick={() => (openSelectLocation = true)}
 					/>
