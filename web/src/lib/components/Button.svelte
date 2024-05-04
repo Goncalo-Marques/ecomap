@@ -22,12 +22,6 @@
 	export let disabled: boolean = false;
 
 	/**
-	 * The name of the icon positioned at the beginning of the button.
-	 * @default null
-	 */
-	export let startIcon: string | null = null;
-
-	/**
 	 * Callback fired when button is clicked.
 	 * @default null
 	 */
@@ -38,6 +32,12 @@
 	 * @default "medium"
 	 */
 	export let size: Size = "medium";
+
+	/**
+	 * The name of the icon positioned at the beginning of the button.
+	 * @default null
+	 */
+	export let startIcon: string | null = null;
 
 	/**
 	 * The type of the button.
@@ -72,6 +72,7 @@
 
 <style>
 	button {
+		position: relative;
 		display: flex;
 		justify-content: center;
 		align-items: center;

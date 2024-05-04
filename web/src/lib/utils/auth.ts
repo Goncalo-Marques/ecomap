@@ -3,7 +3,7 @@ import type { TokenPayload } from "../../domain/jwt";
 /**
  * Cookie name for the JWT token.
  */
-const TOKEN_COOKIE_NAME = "token" as const;
+const TOKEN_COOKIE_NAME = "token";
 
 /**
  * Retrieves subject token.

@@ -19,6 +19,24 @@
 		"additionalInfo": {
 			"type": "string"
 		},
+		"editInfo": {
+			"type": "string"
+		},
+		"cancel": {
+			"type": "string"
+		},
+		"save": {
+			"type": "string"
+		},
+		"preview": {
+			"type": "string"
+		},
+		"selectLocation": {
+			"type": "string"
+		},
+		"location.unknownWay": {
+			"type": "string"
+		},
 		"containers.title": {
 			"type": "string"
 		},
@@ -35,9 +53,6 @@
 			"type": "string"
 		},
 		"containers.location": {
-			"type": "string"
-		},
-		"containers.location.unknownWay": {
 			"type": "string"
 		},
 		"containers.category.general": {
@@ -61,10 +76,19 @@
 		"containers.category.hazardous": {
 			"type": "string"
 		},
+		"containers.update.success": {
+			"type": "string"
+		},
 		"error.requiredField": {
 			"type": "string"
 		},
 		"error.unexpected": {
+			"type": "string"
+		},
+		"error.unexpected.title": {
+			"type": "string"
+		},
+		"error.unexpected.description": {
 			"type": "string"
 		},
 		"signin.title": {
