@@ -8,11 +8,11 @@
 	import Card from "../../components/Card.svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
-	import { getContainerLocation } from "../utils/location";
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
 	import ContainerForm from "../components/ContainerForm.svelte";
 	import { BackOfficeRoutes } from "../../../constants/routes";
 	import { getToastContext } from "../../../../lib/contexts/toast";
+	import { getLocationName } from "../../../../lib/utils/location";
 
 	/**
 	 * Container ID.
@@ -87,7 +87,7 @@
 			<Spinner />
 		</div>
 	{:then container}
-		{@const locationName = getContainerLocation(
+		{@const locationName = getLocationName(
 			container.geoJson.properties.wayName,
 			container.geoJson.properties.municipalityName,
 		)}

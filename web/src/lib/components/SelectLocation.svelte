@@ -9,8 +9,13 @@
 	import VectorSource from "ol/source/Vector";
 	import Button from "./Button.svelte";
 	import type { Coordinate } from "ol/coordinate";
-	import { convertToMapProjection } from "../utils/map";
+	import {
+		convertToMapProjection,
+		convertToResourceProjection,
+	} from "../utils/map";
 	import { t } from "../utils/i8n";
+	import ecomapHttpClient from "../clients/ecomap/http";
+	import { getLocationName } from "../utils/location";
 
 	/**
 	 * Indicates if the modal is open.
@@ -19,13 +24,16 @@
 
 	/**
 	 * Callback fired when open state of the modal changes.
+	 * @param open New open state modal.
 	 */
 	export let onOpenChange: (open: boolean) => void;
 
 	/**
 	 * Callback fired when save action is triggered.
+	 * @param coordinate Container coordinate.
+	 * @param locationName Container location name.
 	 */
-	export let onSave: (coordinate: Coordinate) => void;
+	export let onSave: (coordinate: Coordinate, locationName: string) => void;
 
 	/**
 	 * Coordinate to display in the map.
@@ -104,6 +112,59 @@
 	}
 
 	/**
+	 * Retrieves the location of a resource given a map coordinate.
+	 * @param coordinate Map coordinate.
+	 */
+	async function getLocation(coordinate: Coordinate) {
+		const resourceCoordinate = convertToResourceProjection(coordinate);
+
+		const wayNamePromise = ecomapHttpClient.GET("/ways/reverse-geocoding", {
+			params: {
+				query: {
+					coordinates: resourceCoordinate,
+				},
+			},
+		});
+
+		const municipalityNamePromise = ecomapHttpClient.GET(
+			"/municipalities/reverse-geocoding",
+			{
+				params: {
+					query: {
+						coordinates: resourceCoordinate,
+					},
+				},
+			},
+		);
+
+		const [wayNameRes, municipalityNameRes] = await Promise.allSettled([
+			wayNamePromise,
+			municipalityNamePromise,
+		]);
+
+		let wayName: string | undefined;
+		let municipalityName: string | undefined;
+
+		if (wayNameRes.status === "fulfilled") {
+			const wayRes = wayNameRes.value;
+
+			if (!wayRes.error) {
+				wayName = wayRes.data.osmName;
+			}
+		}
+
+		if (municipalityNameRes.status === "fulfilled") {
+			const municipalityRes = municipalityNameRes.value;
+
+			if (!municipalityRes.error) {
+				municipalityName = municipalityRes.data.name;
+			}
+		}
+
+		return { wayName, municipalityName };
+	}
+
+	/**
 	 * Handles the click event on the map.
 	 * @param e Click event.
 	 */
@@ -114,7 +175,7 @@
 	/**
 	 * Handles the save action of the modal.
 	 */
-	function handleSave() {
+	async function handleSave() {
 		const source = layer.getSource();
 		if (!source) {
 			return;
@@ -131,7 +192,11 @@
 		}
 
 		const coordinates = point.getCoordinates();
-		onSave(coordinates);
+		const { wayName, municipalityName } = await getLocation(coordinates);
+
+		const locationName = getLocationName(wayName, municipalityName);
+		onSave(coordinates, locationName);
+
 		onOpenChange(false);
 	}
 

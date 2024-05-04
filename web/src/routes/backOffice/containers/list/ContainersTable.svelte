@@ -8,7 +8,7 @@
 	import { t } from "../../../../lib/utils/i8n";
 	import { categoryOptions } from "../constants/category";
 	import containersStore from "./containersStore";
-	import { getContainerLocation } from "../utils/location";
+	import { getLocationName } from "../../../../lib/utils/location";
 
 	const { loading, data, filters } = containersStore;
 
@@ -48,7 +48,7 @@
 			cell(geoJson) {
 				const { municipalityName, wayName } = geoJson.properties;
 
-				return getContainerLocation(wayName, municipalityName);
+				return getLocationName(wayName, municipalityName);
 			},
 		},
 		{

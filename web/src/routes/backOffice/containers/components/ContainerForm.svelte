@@ -29,7 +29,7 @@
 		convertToResourceProjection,
 	} from "../../../../lib/utils/map";
 	import { isValidContainerCategory } from "../utils/category";
-	import { formatContainerCoordinate } from "../utils/location";
+	import { getLocationName } from "../../../../lib/utils/location";
 
 	/**
 	 * The back route.
@@ -80,6 +80,11 @@
 	 * The selected container location coordinate.
 	 */
 	let selectedCoordinate = container?.geoJson.geometry.coordinates;
+
+	let locationName = getLocationName(
+		container?.geoJson.properties.wayName,
+		container?.geoJson.properties.municipalityName,
+	);
 
 	/**
 	 * Error messages of the form fields.
@@ -195,9 +200,7 @@
 					<Input
 						readonly
 						name="location"
-						value={formatContainerCoordinate(
-							selectedCoordinate ?? container?.geoJson.geometry.coordinates,
-						)}
+						value={locationName}
 						error={!!formErrorMessages.location}
 						placeholder={$t("containers.location")}
 						endIcon="location_on"
@@ -224,9 +227,10 @@
 			open={openSelectLocation}
 			coordinate={selectedCoordinate}
 			onOpenChange={open => (openSelectLocation = open)}
-			onSave={coordinate => {
+			onSave={(coordinate, name) => {
 				addContainerToMap(coordinate);
 				selectedCoordinate = convertToResourceProjection(coordinate);
+				locationName = name;
 			}}
 		/>
 	</DetailsContent>

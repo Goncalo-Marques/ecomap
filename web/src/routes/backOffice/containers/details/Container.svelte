@@ -13,7 +13,7 @@
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
-	import { getContainerLocation } from "../utils/location";
+	import { getLocationName } from "../../../../lib/utils/location";
 
 	/**
 	 * Container ID.
@@ -44,7 +44,7 @@
 			<Spinner />
 		</div>
 	{:then container}
-		{@const locationName = getContainerLocation(
+		{@const locationName = getLocationName(
 			container.geoJson.properties.wayName,
 			container.geoJson.properties.municipalityName,
 		)}
