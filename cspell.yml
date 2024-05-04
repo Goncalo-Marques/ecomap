@@ -44,6 +44,7 @@ ignoreWords:
   - pkey
   - plpgsql
   - psql
+  - popovertarget
   - Português
   - postgis
   - proguard
@@ -77,3 +78,4 @@ ignoreRegExpList:
   - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.
   - "import\\s*.*\".*?\"" # Ignore go single line imports.
   - "//\\s*go:generate.*" # Ignore go generate directive.
+  - "url(.*)" # Ignore CSS url function.

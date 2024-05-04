@@ -10,7 +10,10 @@
 		"postinstall": "npm run generate-oapi",
 		"lint": "svelte-check --tsconfig ./tsconfig.json && eslint . --ext .js,.ts,.svelte && prettier . --check --ignore-path ../.gitignore",
 		"lint:fix": "eslint . --ext .js,.ts,.svelte --fix && prettier . --write --ignore-path ../.gitignore",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"test": "vitest run",
+		"test:ui": "vitest --ui",
+		"test:watch": "vitest"
 	},
 	"prettier": {
 		"arrowParens": "avoid",
@@ -65,26 +68,28 @@
 		]
 	},
 	"dependencies": {
-		"openapi-fetch": "^0.9.3"
+		"ol": "^9.1.0",
+		"openapi-fetch": "^0.9.5"
 	},
 	"devDependencies": {
-		"@sveltejs/vite-plugin-svelte": "^3.0.2",
-		"@tsconfig/svelte": "^5.0.2",
-		"@typescript-eslint/eslint-plugin": "^7.1.0",
-		"@typescript-eslint/parser": "^7.1.0",
+		"@sveltejs/vite-plugin-svelte": "^3.1.0",
+		"@tsconfig/svelte": "^5.0.4",
+		"@typescript-eslint/eslint-plugin": "^7.8.0",
+		"@typescript-eslint/parser": "^7.8.0",
 		"eslint": "^8.57.0",
-		"eslint-plugin-svelte": "^2.36.0",
+		"eslint-plugin-svelte": "^2.38.0",
+		"jsdom": "^24.0.0",
 		"openapi-typescript": "^6.7.5",
-		"ol": "^9.1.0",
 		"prettier": "^3.2.5",
-		"prettier-plugin-svelte": "^3.2.2",
-		"svelte": "^4.2.11",
-		"svelte-check": "^3.6.4",
-		"svelte-eslint-parser": "^0.34.1",
+		"prettier-plugin-svelte": "^3.2.3",
+		"svelte": "^4.2.15",
+		"svelte-check": "^3.7.0",
+		"svelte-eslint-parser": "^0.35.0",
 		"svelte-routing": "^2.12.0",
 		"tslib": "^2.6.2",
-		"typescript": "^5.2.2",
-		"vite": "^5.1.4"
+		"typescript": "^5.4.5",
+		"vite": "^5.2.10",
+		"vitest": "^1.5.3"
 	},
 	"engines": {
 		"node": ">=20.0.0 <21.0.0"

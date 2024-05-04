@@ -1,6 +1,66 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"properties": {
+		"clear": {
+			"type": "string"
+		},
+		"pagination.of": {
+			"type": "string"
+		},
+		"createdAt": {
+			"type": "string"
+		},
+		"modifiedAt": {
+			"type": "string"
+		},
+		"generalInfo": {
+			"type": "string"
+		},
+		"additionalInfo": {
+			"type": "string"
+		},
+		"containers.title": {
+			"type": "string"
+		},
+		"containers.notFound.title": {
+			"type": "string"
+		},
+		"containers.notFound.description": {
+			"type": "string"
+		},
+		"containers.search": {
+			"type": "string"
+		},
+		"containers.category": {
+			"type": "string"
+		},
+		"containers.location": {
+			"type": "string"
+		},
+		"containers.location.unknownWay": {
+			"type": "string"
+		},
+		"containers.category.general": {
+			"type": "string"
+		},
+		"containers.category.paper": {
+			"type": "string"
+		},
+		"containers.category.plastic": {
+			"type": "string"
+		},
+		"containers.category.metal": {
+			"type": "string"
+		},
+		"containers.category.glass": {
+			"type": "string"
+		},
+		"containers.category.organic": {
+			"type": "string"
+		},
+		"containers.category.hazardous": {
+			"type": "string"
+		},
 		"error.requiredField": {
 			"type": "string"
 		},
@@ -68,55 +128,70 @@
 			"type": "string"
 		},
 		"employees.title": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.addEmployee": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.search": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.save": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.cancel": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.personalInfo": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.firstName": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.lastName": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.username": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.birthdate": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.phoneNumber": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.location": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.work": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.startTime": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.position": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.endTime": {
-			"type":"string"
+			"type": "string"
 		},
 		"employees.select.location": {
-			"type":"string"
+			"type": "string"
+		},
+		"employees.name": {
+			"type": "string"
+		},
+		"employees.schedule": {
+			"type": "string"
+		},
+		"employees.role": {
+			"type": "string"
+		},
+		"employees.role.manager": {
+			"type": "string"
+		},
+		"employees.role.wasteOperator": {
+			"type": "string"
 		}
 	}
 }

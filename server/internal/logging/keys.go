@@ -26,4 +26,13 @@ const (
 
 	ContainerID       = "container.id"
 	ContainerCategory = "container.category"
+
+	WarehouseID            = "warehouse.id"
+	WarehouseTruckCapacity = "warehouse.truckCapacity"
+
+	TruckID             = "truck.id"
+	TruckMake           = "truck.make"
+	TruckModel          = "truck.model"
+	TruckLicensePlate   = "truck.licensePlate"
+	TruckPersonCapacity = "truck.personCapacity"
 )

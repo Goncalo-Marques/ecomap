@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import OlMap from "ol/Map";
+	import GeoJSON from "ol/format/GeoJSON";
 	import Map from "../../../lib/components/map/Map.svelte";
 	import { MapHelper } from "../../../lib/components/map/mapUtils";
-	import OlMap from "ol/Map";
 
 	let map: OlMap;
 
@@ -10,7 +11,10 @@
 		const mapHelper = new MapHelper(map);
 
 		mapHelper.addClusterLayer(
-			"/json/containers.geojson",
+			{
+				url: "/json/containers.geojson",
+				format: new GeoJSON(),
+			},
 			"Containers",
 			"#15803D",
 		);
