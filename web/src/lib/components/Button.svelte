@@ -22,35 +22,22 @@
 	export let disabled: boolean = false;
 
 	/**
-	 * The name of the icon positioned at the beginning of the button.
-	 * @default null
-	 */
-	export let startIcon: string | null = null;
-
-	/**
 	 * Callback fired when button is clicked.
 	 * @default null
 	 */
 	export let onClick: MouseEventHandler<HTMLButtonElement> | null = null;
 
 	/**
-	 * Indicates if the button only contains an icon.
-	 * If `true`, the styles for the button differ from the standard ones.
-	 * @default false
+	 * The size of the button.
+	 * @default "medium"
 	 */
-	export let onlyIcon = false;
+	export let size: Size = "medium";
 
 	/**
 	 * The name of the icon positioned at the beginning of the button.
 	 * @default null
 	 */
 	export let startIcon: string | null = null;
-
-	/**
-	 * The size of the button.
-	 * @default "medium"
-	 */
-	export let size: Size = "medium";
 
 	/**
 	 * The type of the button.

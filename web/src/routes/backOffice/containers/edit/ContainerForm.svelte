@@ -13,7 +13,6 @@
 	import OlMap from "ol/Map";
 	import Select from "../../../../lib/components/Select.svelte";
 	import Option from "../../../../lib/components/Option.svelte";
-	import { categoryOptions } from "../../../../lib/constants/container";
 	import FormControl from "../../../../lib/components/FormControl.svelte";
 	import SelectLocation from "./SelectLocation.svelte";
 	import VectorLayer from "ol/layer/Vector";
@@ -25,6 +24,7 @@
 	import { Link } from "svelte-routing";
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
+	import { categoryOptions } from "../constants/category";
 
 	/**
 	 * Container.

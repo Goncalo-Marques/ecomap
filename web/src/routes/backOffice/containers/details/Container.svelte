@@ -107,8 +107,4 @@
 		justify-content: center;
 		align-items: center;
 	}
-
-	:global(.container-map-preview) {
-		flex: 1;
-	}
 </style>
