@@ -15,6 +15,10 @@ tags:
     description: Truck operations
   - name: Warehouse
     description: Warehouse operations
+  - name: Way
+    description: Way operations
+  - name: Municipality
+    description: Municipality operations
 servers:
   - url: https://server-7fzc7ivuwa-ew.a.run.app/api
     description: Production server.
@@ -366,12 +370,6 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         403:
           $ref: "#/components/responses/Forbidden"
-        404:
-          description: User not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
   /users/{userId}/bookmarks/containers/{containerId}:
@@ -437,12 +435,6 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         403:
           $ref: "#/components/responses/Forbidden"
-        404:
-          description: User or container not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         409:
           description: Bookmark does not exist.
           content:
@@ -451,6 +443,7 @@ paths:
                 $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
+
   /employees:
     post:
       summary: Create an employee.
@@ -1373,6 +1366,96 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /ways/reverse-geocoding:
+    get:
+      summary: Get a way by reverse geocoding.
+      operationId: getWayByReverseGeocoding
+      description: Returns the closest way to the specified coordinates.
+      tags:
+        - Way
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - name: coordinates
+          in: query
+          schema:
+            type: array
+            maxItems: 2
+            minItems: 2
+            items:
+              type: number
+              format: double
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Way"
+        400:
+          description: Invalid coordinates.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Way not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /municipalities/reverse-geocoding:
+    get:
+      summary: Get a municipality by reverse geocoding.
+      operationId: getMunicipalityByReverseGeocoding
+      description: Returns the municipality that contains the specified coordinates.
+      tags:
+        - Municipality
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - name: coordinates
+          in: query
+          schema:
+            type: array
+            maxItems: 2
+            minItems: 2
+            items:
+              type: number
+              format: double
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Municipality"
+        400:
+          description: Invalid coordinates.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Municipality not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -2050,6 +2133,89 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Warehouse"
+
+    Way:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+        osmId:
+          type: integer
+        osmName:
+          type: string
+        osmMeta:
+          type: string
+        osmSourceId:
+          type: integer
+        osmTargetId:
+          type: integer
+        clazz:
+          type: integer
+        flags:
+          type: integer
+        source:
+          type: integer
+        target:
+          type: integer
+        km:
+          type: number
+          format: double
+        kmh:
+          type: integer
+        cost:
+          type: number
+          format: double
+        reverseCost:
+          type: number
+          format: double
+        x1:
+          type: number
+          format: double
+        y1:
+          type: number
+          format: double
+        x2:
+          type: number
+          format: double
+        y2:
+          type: number
+          format: double
+
+    Municipality:
+      type: object
+      required:
+        - id
+        - featureId
+        - name
+        - district
+        - nuts1
+        - nuts2
+        - nuts3
+        - area
+        - perimeter
+      properties:
+        id:
+          type: integer
+        featureId:
+          type: integer
+        name:
+          type: string
+        district:
+          type: string
+        nuts1:
+          type: string
+        nuts2:
+          type: string
+        nuts3:
+          type: string
+        area:
+          type: number
+          format: double
+        perimeter:
+          type: number
+          format: double
 
   responses:
     Unauthorized:

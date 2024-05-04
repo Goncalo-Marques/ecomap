@@ -11,7 +11,7 @@ import (
 	"github.com/goncalo-marques/ecomap/server/internal/domain"
 )
 
-// GetMunicipalityByGeometry executes a query to return the municipality that is closest to the given geometry.
+// GetMunicipalityByGeometry executes a query to return the municipality that contains the given geometry.
 func (s *store) GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error) {
 	geoJSON, err := json.Marshal(geometry)
 	if err != nil {
