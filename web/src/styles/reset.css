@@ -54,3 +54,7 @@ input {
 	padding: 0;
 	border: unset;
 }
+
+button:not(:disabled) {
+	cursor: pointer;
+}

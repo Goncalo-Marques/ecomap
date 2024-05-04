@@ -91,6 +91,9 @@
 		"containers.update.success": {
 			"type": "string"
 		},
+		"containers.delete.success": {
+			"type": "string"
+		},
 		"error.requiredField": {
 			"type": "string"
 		},

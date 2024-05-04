@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Link } from "svelte-routing";
+	import { Link, navigate } from "svelte-routing";
 	import type { Container } from "../../../../domain/container";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import Button from "../../../../lib/components/Button.svelte";
@@ -14,11 +14,18 @@
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
 	import { getLocationName } from "../../../../lib/utils/location";
+	import { BackOfficeRoutes } from "../../../constants/routes";
+	import { getToastContext } from "../../../../lib/contexts/toast";
 
 	/**
 	 * Container ID.
 	 */
 	export let id: string;
+
+	/**
+	 * Toast context.
+	 */
+	const toast = getToastContext();
 
 	/**
 	 * Fetches container data.
@@ -35,6 +42,36 @@
 		return res.data;
 	}
 
+	/**
+	 * Deletes the container displayed on the page.
+	 */
+	async function deleteContainer() {
+		const res = await ecomapHttpClient.DELETE("/containers/{containerId}", {
+			params: {
+				path: {
+					containerId: id,
+				},
+			},
+		});
+
+		if (res.error) {
+			toast.show({
+				type: "error",
+				title: $t("error.unexpected.title"),
+				description: $t("error.unexpected.description"),
+			});
+			return;
+		}
+
+		toast.show({
+			type: "success",
+			title: $t("containers.delete.success"),
+			description: undefined,
+		});
+
+		navigate(BackOfficeRoutes.CONTAINERS);
+	}
+
 	const containerPromise = fetchContainer();
 </script>
 
@@ -49,12 +86,18 @@
 			container.geoJson.properties.municipalityName,
 		)}
 		<DetailsHeader to="" title={locationName}>
-			<Link to={`${container.id}/map`}>
+			<Button
+				startIcon="delete"
+				actionType="danger"
+				variant="secondary"
+				onClick={deleteContainer}
+			/>
+			<Link to={`${container.id}/map`} style="display:contents">
 				<Button variant="secondary" startIcon="map">
 					{$t("sidebar.map")}
 				</Button>
 			</Link>
-			<Link to={`${container.id}/edit`}>
+			<Link to={`${container.id}/edit`} style="display:contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
