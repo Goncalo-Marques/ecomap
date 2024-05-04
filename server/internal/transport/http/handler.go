@@ -81,6 +81,10 @@ type Service interface {
 	GetWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
 	PatchWarehouse(ctx context.Context, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch) (domain.Warehouse, error)
 	DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
+
+	GetRoadByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+
+	GetMunicipalityByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 }
 
 // handler defines the http handler structure.

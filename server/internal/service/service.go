@@ -75,6 +75,7 @@ type Store interface {
 	ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, id uuid.UUID) ([]domain.Truck, error)
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 
 	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)

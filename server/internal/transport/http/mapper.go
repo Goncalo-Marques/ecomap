@@ -69,7 +69,7 @@ func geoJSONFeaturePointToDomain(geoJSON *spec.GeoJSONFeaturePoint) (domain.GeoJ
 	}, nil
 }
 
-// geoJSONFeaturePointFromDomain returns standardized GeoJSON feature point based on the domain GeoJSON model.
+// geoJSONFeaturePointFromDomain returns a standardized GeoJSON feature point based on the domain GeoJSON model.
 func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeaturePoint, error) {
 	geoJSONFeature, ok := geoJSON.(domain.GeoJSONFeature)
 	if !ok {
@@ -91,6 +91,21 @@ func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeatureP
 			WayName:          geoJSONFeature.Properties.WayName(),
 			MunicipalityName: geoJSONFeature.Properties.MunicipalityName(),
 		},
+	}, nil
+}
+
+// coordinatesToDomain returns a domain GeoJSON geometry point based on the standardized coordinates.
+func coordinatesToDomain(coordinates *[]float64) (domain.GeoJSONGeometryPoint, error) {
+	if coordinates == nil {
+		return domain.GeoJSONGeometryPoint{}, nil
+	}
+
+	if len(*coordinates) != 2 {
+		return domain.GeoJSONGeometryPoint{}, &domain.ErrFieldValueInvalid{FieldName: domain.FieldParamCoordinates}
+	}
+
+	return domain.GeoJSONGeometryPoint{
+		Coordinates: [2]float64(*coordinates),
 	}, nil
 }
 
