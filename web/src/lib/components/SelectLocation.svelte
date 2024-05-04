@@ -16,6 +16,10 @@
 	import { t } from "../utils/i8n";
 	import ecomapHttpClient from "../clients/ecomap/http";
 	import { getLocationName } from "../utils/location";
+	import {
+		DEFAULT_ANIMATION_DURATION,
+		DEFAULT_MAX_ZOOM,
+	} from "../constants/map";
 
 	/**
 	 * Indicates if the modal is open.
@@ -91,8 +95,12 @@
 	/**
 	 * Adds a pin with the selected location to the map.
 	 * @param coordinate Coordinate where pin will be placed.
+	 * @param mode Map view mode.
 	 */
-	function addSelectedLocation(coordinate: Coordinate) {
+	function addSelectedLocation(
+		coordinate: Coordinate,
+		mode: "fit" | "animate",
+	) {
 		const source = layer.getSource();
 		if (!source) {
 			return;
@@ -107,6 +115,17 @@
 
 		source.addFeature(feature);
 		map.addLayer(layer);
+
+		const view = map.getView();
+		if (mode === "fit") {
+			view.fit(point);
+		} else {
+			view.animate({
+				center: coordinate,
+				duration: DEFAULT_ANIMATION_DURATION,
+				zoom: DEFAULT_MAX_ZOOM,
+			});
+		}
 
 		disabled = false;
 	}
@@ -169,7 +188,7 @@
 	 * @param e Click event.
 	 */
 	function handleMapClick(e: MapBrowserEvent<UIEvent>) {
-		addSelectedLocation(e.coordinate);
+		addSelectedLocation(e.coordinate, "animate");
 	}
 
 	/**
@@ -220,7 +239,7 @@
 	$: if (open) {
 		if (coordinate) {
 			const mapCoordinate = convertToMapProjection(coordinate);
-			addSelectedLocation(mapCoordinate);
+			addSelectedLocation(mapCoordinate, "fit");
 		} else {
 			removeSelectedLocation();
 		}

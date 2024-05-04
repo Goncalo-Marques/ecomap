@@ -45,7 +45,7 @@
 		mapHelper.addPointLayer({ features: [feature] }, "container");
 
 		const view = map.getView();
-		view.fit(point, { maxZoom: 18 });
+		view.fit(point);
 	}
 
 	/**

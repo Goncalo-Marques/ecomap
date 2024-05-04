@@ -16,7 +16,12 @@ export const mapLayerName = "mapLayer";
 /**
  * Default maximum zoom of the map.
  */
-export const DEFAULT_MAX_ZOOM = 20;
+export const DEFAULT_MAX_ZOOM = 18;
+
+/**
+ * Default duration of a map view animation in milliseconds.
+ */
+export const DEFAULT_ANIMATION_DURATION = 500;
 
 /**
  * Open Layers map projection.
