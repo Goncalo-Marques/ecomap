@@ -75,13 +75,13 @@
 	 * Indicates if save action is disabled.
 	 * @default true
 	 */
-	let disabled = true;
+	let isSaveActionDisabled = true;
 
 	/**
 	 * Removes the selected location from the map.
 	 */
 	function removeSelectedLocation() {
-		disabled = true;
+		isSaveActionDisabled = true;
 
 		const source = layer.getSource();
 		if (!source) {
@@ -127,7 +127,7 @@
 			});
 		}
 
-		disabled = false;
+		isSaveActionDisabled = false;
 	}
 
 	/**
@@ -255,7 +255,11 @@
 	<Map bind:map mapId="select-location-map" --height="32rem" --width="60rem" />
 	<svelte:fragment slot="actions">
 		<Button variant="tertiary" onClick={handleCancel}>{$t("cancel")}</Button>
-		<Button startIcon="check" {disabled} onClick={handleSave}>
+		<Button
+			startIcon="check"
+			disabled={isSaveActionDisabled}
+			onClick={handleSave}
+		>
 			{$t("save")}
 		</Button>
 	</svelte:fragment>
