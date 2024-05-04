@@ -22,6 +22,12 @@
 	export let disabled: boolean = false;
 
 	/**
+	 * The name of the icon positioned at the beginning of the button.
+	 * @default null
+	 */
+	export let startIcon: string | null = null;
+
+	/**
 	 * Callback fired when button is clicked.
 	 * @default null
 	 */
@@ -57,6 +63,12 @@
 	 * @default "primary"
 	 */
 	export let variant: Variant = "primary";
+
+	/**
+	 * Indicates if the button only contains an icon.
+	 * When the button doesn't contain a slot, the styles for the button differ from the standard ones.
+	 */
+	let onlyIcon = !$$props.$$slots;
 </script>
 
 <button

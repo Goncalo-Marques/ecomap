@@ -14,6 +14,8 @@
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
 	import { getContainerLocation } from "../utils/location";
+	import { formatDate } from "../../../../lib/utils/date";
+	import { DateFormats } from "../../../../lib/constants/date";
 
 	/**
 	 * Container ID.
@@ -33,7 +35,7 @@
 
 	/**
 	 * Adds a container to the map.
-	 * @param coordinates Container coordinates
+	 * @param coordinates Container coordinates.
 	 */
 	function addContainerToMap(coordinates: number[]) {
 		const point = new Point(coordinates);
@@ -84,13 +86,21 @@
 		{@const { wayName, municipalityName } = container.geoJson.properties}
 		<Link to={container.id}>
 			<div class="back">
-				<Button onlyIcon startIcon="arrow_back" variant="tertiary" />
+				<Button startIcon="arrow_back" variant="tertiary" />
 			</div>
 		</Link>
 		<BottomSheet title={getContainerLocation(wayName, municipalityName)}>
 			<Field
 				label={$t("containers.category")}
 				value={$t(`containers.category.${container.category}`)}
+			/>
+			<Field
+				label={$t("createdAt")}
+				value={formatDate(container.createdAt, DateFormats.shortDateTime)}
+			/>
+			<Field
+				label={$t("modifiedAt")}
+				value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
 			/>
 		</BottomSheet>
 	{:catch}

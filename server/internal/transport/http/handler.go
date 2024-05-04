@@ -66,6 +66,12 @@ type Service interface {
 	PatchContainer(ctx context.Context, id uuid.UUID, editableContainer domain.EditableContainerPatch) (domain.Container, error)
 	DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
 
+	CreateTruck(ctx context.Context, editableTruck domain.EditableTruck) (domain.Truck, error)
+	ListTrucks(ctx context.Context, filter domain.TrucksPaginatedFilter) (domain.PaginatedResponse[domain.Truck], error)
+	GetTruckByID(ctx context.Context, id uuid.UUID) (domain.Truck, error)
+	PatchTruck(ctx context.Context, id uuid.UUID, editableTruck domain.EditableTruckPatch) (domain.Truck, error)
+	DeleteTruckByID(ctx context.Context, id uuid.UUID) (domain.Truck, error)
+
 	CreateWarehouse(ctx context.Context, editableWarehouse domain.EditableWarehouse) (domain.Warehouse, error)
 	ListWarehouses(ctx context.Context, filter domain.WarehousesPaginatedFilter) (domain.PaginatedResponse[domain.Warehouse], error)
 	GetWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
