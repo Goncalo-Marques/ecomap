@@ -181,11 +181,17 @@ CREATE TABLE routes (
     departure_warehouse_id  uuid        NOT NULL,
     arrival_warehouse_id    uuid        NOT NULL,
     created_at              timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at             timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_pkey                          PRIMARY KEY (id),
     CONSTRAINT routes_truck_id_fkey                 FOREIGN KEY (truck_id)                  REFERENCES trucks (id),
     CONSTRAINT routes_departure_warehouse_id_fkey   FOREIGN KEY (departure_warehouse_id)    REFERENCES warehouses (id),
     CONSTRAINT routes_arrival_warehouse_id_fkey     FOREIGN KEY (arrival_warehouse_id)      REFERENCES warehouses (id)
 );
+
+CREATE TRIGGER routes_update_modified_at
+    BEFORE UPDATE ON routes
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_modified_at();
 
 -- Route containers.
 CREATE TABLE routes_containers (
