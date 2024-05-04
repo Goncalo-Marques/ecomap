@@ -1,9 +1,6 @@
 <script lang="ts">
-	import { Link, navigate } from "svelte-routing";
-	import type {
-		Container,
-		ContainerCategory,
-	} from "../../../../domain/container";
+	import { Link } from "svelte-routing";
+	import type { Container } from "../../../../domain/container";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import Button from "../../../../lib/components/Button.svelte";
 	import Card from "../../components/Card.svelte";
@@ -58,7 +55,7 @@
 				</Button>
 			</Link>
 			<Link to={`${container.id}/edit`}>
-				<Button startIcon="edit">Editar informação</Button>
+				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
 		<DetailsContent>

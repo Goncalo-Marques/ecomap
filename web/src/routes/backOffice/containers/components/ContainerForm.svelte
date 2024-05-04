@@ -14,35 +14,55 @@
 	import Select from "../../../../lib/components/Select.svelte";
 	import Option from "../../../../lib/components/Option.svelte";
 	import FormControl from "../../../../lib/components/FormControl.svelte";
-	import SelectLocation from "./SelectLocation.svelte";
+	import SelectLocation from "../../../../lib/components/SelectLocation.svelte";
 	import VectorLayer from "ol/layer/Vector";
 	import VectorSource from "ol/source/Vector";
 	import { Point } from "ol/geom";
 	import { Feature } from "ol";
 	import type { Coordinate } from "ol/coordinate";
-	import { transform } from "ol/proj";
 	import { Link } from "svelte-routing";
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
 	import { categoryOptions } from "../constants/category";
+	import {
+		convertToMapProjection,
+		convertToResourceProjection,
+	} from "../../../../lib/utils/map";
+	import { isValidContainerCategory } from "../utils/category";
+	import { formatContainerCoordinate } from "../utils/location";
 
 	/**
-	 * Container.
-	 * @default null
+	 * The back route.
 	 */
-	export let container: Container | null = null;
+	export let back: string;
 
-	export let to: string;
-
+	/**
+	 * The title in the form.
+	 */
 	export let title: string;
 
+	/**
+	 * Callback fired when save action is triggered.
+	 */
 	export let onSave: (
 		category: ContainerCategory,
 		location: GeoJSONFeaturePoint,
 	) => void;
 
-	let map: OlMap;
+	/**
+	 * Container data.
+	 * @default null
+	 */
+	export let container: Container | null = null;
 
+	/**
+	 * The map which displays the selected container location.
+	 */
+	let mapPreview: OlMap;
+
+	/**
+	 * The map layer which displays the container location.
+	 */
 	const layer = new VectorLayer({
 		source: new VectorSource<Feature<Point>>({ features: [] }),
 		style: {
@@ -50,38 +70,16 @@
 		},
 	});
 
+	/**
+	 * The select location open modal state.
+	 * @default false
+	 */
 	let openSelectLocation = false;
 
+	/**
+	 * The selected container location coordinate.
+	 */
 	let selectedCoordinate = container?.geoJson.geometry.coordinates;
-
-	function addContainerToMap(coordinate: Coordinate) {
-		const source = layer.getSource();
-		if (!source) {
-			return;
-		}
-
-		source.clear();
-		map.removeLayer(layer);
-
-		const point = new Point(coordinate);
-		const feature = new Feature(point);
-
-		source.addFeature(feature);
-		map.addLayer(layer);
-
-		const view = map.getView();
-		view.fit(point, { maxZoom: 18 });
-	}
-
-	function getContainerCoordinate(coordinate: Coordinate | null | undefined) {
-		if (!coordinate) {
-			return null;
-		}
-
-		const [lon, lat] = coordinate;
-
-		return `${lat}, ${lon}`;
-	}
 
 	/**
 	 * Error messages of the form fields.
@@ -90,6 +88,29 @@
 		category: "",
 		location: "",
 	};
+
+	/**
+	 * Adds the container to the map preview given a coordinate.
+	 * @param coordinate Container coordinate.
+	 */
+	function addContainerToMap(coordinate: Coordinate) {
+		const source = layer.getSource();
+		if (!source) {
+			return;
+		}
+
+		source.clear();
+		mapPreview.removeLayer(layer);
+
+		const point = new Point(coordinate);
+		const feature = new Feature(point);
+
+		source.addFeature(feature);
+		mapPreview.addLayer(layer);
+
+		const view = mapPreview.getView();
+		view.fit(point);
+	}
 
 	/**
 	 * Validates the form and sets error messages on the form fields
@@ -127,37 +148,32 @@
 
 		validateForm(category, location);
 
-		// Check if either fields are not filled to prevent making a server request.
+		// Check if fields are not filled to prevent making a server request.
 		if (!category || !location || !selectedCoordinate) {
 			return;
 		}
 
-		switch (category) {
-			case "general":
-			case "paper":
-			case "plastic":
-			case "metal":
-			case "glass":
-			case "organic":
-			case "hazardous":
-				onSave(category, {
-					type: "Feature",
-					geometry: {
-						type: "Point",
-						coordinates: selectedCoordinate,
-					},
-					properties: {},
-				});
+		if (!isValidContainerCategory(category)) {
+			return;
 		}
+
+		onSave(category, {
+			type: "Feature",
+			geometry: {
+				type: "Point",
+				coordinates: selectedCoordinate,
+			},
+			properties: {},
+		});
 	}
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
-	<DetailsHeader {to} {title}>
-		<Link {to} style="display:contents">
-			<Button variant="tertiary">Cancelar</Button>
+	<DetailsHeader to={back} {title}>
+		<Link to={back} style="display:contents">
+			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
-		<Button type="submit" startIcon="check">Guardar</Button>
+		<Button type="submit" startIcon="check">{$t("save")}</Button>
 	</DetailsHeader>
 	<DetailsContent>
 		<DetailsSection label={$t("generalInfo")}>
@@ -179,7 +195,7 @@
 					<Input
 						readonly
 						name="location"
-						value={getContainerCoordinate(
+						value={formatContainerCoordinate(
 							selectedCoordinate ?? container?.geoJson.geometry.coordinates,
 						)}
 						error={!!formErrorMessages.location}
@@ -190,36 +206,27 @@
 				</FormControl>
 			</DetailsFields>
 		</DetailsSection>
-		<DetailsSection class="container-map-preview" label={"Pré-visualização"}>
+		<DetailsSection class="container-map-preview" label={$t("preview")}>
 			<Map
-				bind:map
+				bind:map={mapPreview}
 				onInit={() => {
-					if (!container) {
+					const containerCoordinate = container?.geoJson.geometry.coordinates;
+					if (!containerCoordinate) {
 						return;
 					}
-					addContainerToMap(
-						transform(
-							container.geoJson.geometry.coordinates,
-							"EPSG:4326",
-							"EPSG:3857",
-						),
-					);
+
+					const mapCoordinate = convertToMapProjection(containerCoordinate);
+					addContainerToMap(mapCoordinate);
 				}}
 			/>
 		</DetailsSection>
 		<SelectLocation
 			open={openSelectLocation}
 			coordinate={selectedCoordinate}
-			onOpenChange={open => {
-				openSelectLocation = open;
-			}}
-			onCancel={() => {
-				openSelectLocation = false;
-			}}
-			onSave={coordinates => {
-				addContainerToMap(coordinates);
-				selectedCoordinate = transform(coordinates, "EPSG:3857", "EPSG:4326");
-				openSelectLocation = false;
+			onOpenChange={open => (openSelectLocation = open)}
+			onSave={coordinate => {
+				addContainerToMap(coordinate);
+				selectedCoordinate = convertToResourceProjection(coordinate);
 			}}
 		/>
 	</DetailsContent>

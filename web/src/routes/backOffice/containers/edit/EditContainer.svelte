@@ -10,13 +10,19 @@
 	import { t } from "../../../../lib/utils/i8n";
 	import { getContainerLocation } from "../utils/location";
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
-	import ContainerForm from "./ContainerForm.svelte";
+	import ContainerForm from "../components/ContainerForm.svelte";
 	import { BackOfficeRoutes } from "../../../constants/routes";
+	import { getToastContext } from "../../../../lib/contexts/toast";
 
 	/**
 	 * Container ID.
 	 */
 	export let id: string;
+
+	/**
+	 * Toast context.
+	 */
+	const toast = getToastContext();
 
 	/**
 	 * Fetches container data.
@@ -54,6 +60,21 @@
 			},
 		});
 
+		if (res.error) {
+			toast.show({
+				type: "error",
+				title: $t("error.unexpected.title"),
+				description: $t("error.unexpected.description"),
+			});
+			return;
+		}
+
+		toast.show({
+			type: "success",
+			title: $t("containers.update.success"),
+			description: undefined,
+		});
+
 		navigate(`${BackOfficeRoutes.CONTAINERS}/${id}`);
 	}
 
@@ -72,7 +93,7 @@
 		)}
 		<ContainerForm
 			{container}
-			to={container.id}
+			back={container.id}
 			title={locationName}
 			onSave={updateContainer}
 		/>

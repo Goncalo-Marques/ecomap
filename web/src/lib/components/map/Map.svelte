@@ -58,6 +58,8 @@
 
 	/**
 	 * Callback fired when map is initialized.
+	 *
+	 * @default null
 	 */
 	export let onInit: ((map: Map) => void) | null = null;
 

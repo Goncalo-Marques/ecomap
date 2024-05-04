@@ -2,24 +2,53 @@
 	import { onMount } from "svelte";
 	import IconButton from "../components/IconButton.svelte";
 
+	/**
+	 * Indicates if modal is open.
+	 */
 	export let open: boolean;
 
+	/**
+	 * The modal title.
+	 */
 	export let title: string;
 
+	/**
+	 * Indicates whether the modal content is automatically configured with gutters.
+	 * @default false
+	 */
 	export let gutters: boolean = false;
 
+	/**
+	 * Callback fired when open state changes.
+	 * @param open Modal open state.
+	 */
 	export let onOpenChange: (open: boolean) => void;
 
+	/**
+	 * Callback fired when backdrop is clicked.
+	 * @default null
+	 */
 	export let onClickOutside: (() => void) | null = null;
 
+	/**
+	 * Dialog element.
+	 */
 	let dialog: HTMLDialogElement;
 
+	/**
+	 * Closes the modal.
+	 */
 	function closeModal() {
 		onOpenChange(false);
 		dialog.close();
 	}
 
-	function handleClick(e: Event) {
+	/**
+	 * Handles the click event of the dialog element.
+	 * @param e Click event.
+	 */
+	function handleDialogClick(e: Event) {
+		// Check if the element that was pressed is the dialog. If it is, it means that the click was performed outside the modal.
 		if (e.target === dialog) {
 			closeModal();
 			onClickOutside?.();
@@ -27,9 +56,10 @@
 	}
 
 	onMount(() => {
-		dialog.addEventListener("click", handleClick);
+		dialog.addEventListener("click", handleDialogClick);
 	});
 
+	// Watch for changes in the modal open state to show or hide the modal.
 	$: if (!dialog?.open && open) {
 		onOpenChange(true);
 		dialog.showModal();
@@ -64,7 +94,7 @@
 	}
 
 	dialog::backdrop {
-		background-color: black;
+		background-color: var(--black);
 		opacity: 0.5;
 	}
 

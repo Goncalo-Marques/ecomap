@@ -19,6 +19,7 @@
 	} from "./routes/constants/routes";
 	import url from "./lib/stores/url";
 	import ContainersRouter from "./routes/backOffice/containers/ContainersRouter.svelte";
+	import Toast from "./lib/components/Toast.svelte";
 
 	onMount(() => {
 		if ($url.pathname === "/") {
@@ -27,26 +28,31 @@
 	});
 </script>
 
-<Router>
-	<Route path={`/${backOfficeBasename}/*`}>
-		<Router>
-			<BackOfficeLayout>
-				<Route path={BackOfficeRouterPaths.EMPLOYEES} component={Employees} />
-				<Route path={BackOfficeRouterPaths.REPORTS} component={Reports} />
-				<Route path={BackOfficeRouterPaths.TRUCKS} component={Trucks} />
-				<Route path={BackOfficeRouterPaths.WAREHOUSES} component={Warehouses} />
-				<Route path={`${BackOfficeRouterPaths.CONTAINERS}/*`}>
-					<ContainersRouter />
-				</Route>
-				<Route path={BackOfficeRouterPaths.ROUTES} component={Routes} />
-				<Route path={BackOfficeRouterPaths.MAP} component={Map} />
-				<Route path={BackOfficeRouterPaths.DASHBOARD} component={Dashboard} />
-				<Route path={BackOfficeRouterPaths.DASHBOARD} component={NotFound} />
-				<Route component={NotFound} />
-			</BackOfficeLayout>
-		</Router>
-	</Route>
-	<Route path={CommonRoutes.SIGN_IN} component={SignIn} />
-	<Route path={CommonRoutes.FORBIDDEN} component={Forbidden} />
-	<Route component={NotFound} />
-</Router>
+<Toast>
+	<Router>
+		<Route path={`/${backOfficeBasename}/*`}>
+			<Router>
+				<BackOfficeLayout>
+					<Route path={BackOfficeRouterPaths.EMPLOYEES} component={Employees} />
+					<Route path={BackOfficeRouterPaths.REPORTS} component={Reports} />
+					<Route path={BackOfficeRouterPaths.TRUCKS} component={Trucks} />
+					<Route
+						path={BackOfficeRouterPaths.WAREHOUSES}
+						component={Warehouses}
+					/>
+					<Route path={`${BackOfficeRouterPaths.CONTAINERS}/*`}>
+						<ContainersRouter />
+					</Route>
+					<Route path={BackOfficeRouterPaths.ROUTES} component={Routes} />
+					<Route path={BackOfficeRouterPaths.MAP} component={Map} />
+					<Route path={BackOfficeRouterPaths.DASHBOARD} component={Dashboard} />
+					<Route path={BackOfficeRouterPaths.DASHBOARD} component={NotFound} />
+					<Route component={NotFound} />
+				</BackOfficeLayout>
+			</Router>
+		</Route>
+		<Route path={CommonRoutes.SIGN_IN} component={SignIn} />
+		<Route path={CommonRoutes.FORBIDDEN} component={Forbidden} />
+		<Route component={NotFound} />
+	</Router>
+</Toast>
