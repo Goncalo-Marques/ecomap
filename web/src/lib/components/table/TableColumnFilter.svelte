@@ -65,6 +65,7 @@
 		const radioButton = e.currentTarget as HTMLInputElement;
 		const value = radioButton.value as TValue;
 		updatedSelectedValue(value);
+		popover.hidePopover();
 	}
 </script>
 

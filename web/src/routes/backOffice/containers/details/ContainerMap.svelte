@@ -84,9 +84,9 @@
 		</div>
 	{:then container}
 		{@const { wayName, municipalityName } = container.geoJson.properties}
-		<Link to={container.id}>
+		<Link to={container.id} style="display:contents">
 			<div class="back">
-				<Button startIcon="arrow_back" variant="tertiary" />
+				<Button startIcon="arrow_back" size="large" variant="tertiary" />
 			</div>
 		</Link>
 		<BottomSheet title={getLocationName(wayName, municipalityName)}>

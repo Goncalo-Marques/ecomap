@@ -81,6 +81,7 @@
 		box-shadow: var(--shadow-lg);
 		border-style: solid;
 		border-width: 1px;
+		max-width: 36rem;
 
 		&[data-type="success"] {
 			background-color: var(--green-50);
