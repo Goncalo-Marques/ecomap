@@ -46,6 +46,12 @@
 		"containers.notFound.description": {
 			"type": "string"
 		},
+		"containers.create.title": {
+			"type": "string"
+		},
+		"containers.create.success": {
+			"type": "string"
+		},
 		"containers.search": {
 			"type": "string"
 		},
@@ -53,6 +59,9 @@
 			"type": "string"
 		},
 		"containers.location": {
+			"type": "string"
+		},
+		"containers.location.placeholder": {
 			"type": "string"
 		},
 		"containers.category.general": {
@@ -74,6 +83,9 @@
 			"type": "string"
 		},
 		"containers.category.hazardous": {
+			"type": "string"
+		},
+		"containers.category.placeholder": {
 			"type": "string"
 		},
 		"containers.update.success": {

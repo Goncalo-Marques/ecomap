@@ -9,3 +9,9 @@
 <option {value}>
 	<slot />
 </option>
+
+<style>
+	option {
+		color: var(--gray-900);
+	}
+</style>
