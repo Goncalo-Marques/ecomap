@@ -31,6 +31,8 @@
 	"containers.category.placeholder": "Select a category",
 	"containers.update.success": "Container updated successfully",
 	"containers.delete.success": "Container deleted successfully",
+	"containers.delete.conflict.title": "Conflict",
+	"containers.delete.conflict.description": "This container cannot be deleted because it's associated with a report, bookmark, or route.",
 	"error.requiredField": "Required field",
 	"error.unexpected": "An unexpected error occurred. Please try again later or contact the support team.",
 	"error.unexpected.title": "Oops! An unexpected error occurred",

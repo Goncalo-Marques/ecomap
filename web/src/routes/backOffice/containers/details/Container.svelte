@@ -55,11 +55,20 @@
 		});
 
 		if (res.error) {
-			toast.show({
-				type: "error",
-				title: $t("error.unexpected.title"),
-				description: $t("error.unexpected.description"),
-			});
+			if (res.error.code === "conflict") {
+				toast.show({
+					type: "error",
+					title: $t("containers.delete.conflict.title"),
+					description: $t("containers.delete.conflict.description"),
+				});
+			} else {
+				toast.show({
+					type: "error",
+					title: $t("error.unexpected.title"),
+					description: $t("error.unexpected.description"),
+				});
+			}
+
 			return;
 		}
 

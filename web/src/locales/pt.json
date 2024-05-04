@@ -31,6 +31,8 @@
 	"containers.category.placeholder": "Selecione uma categoria",
 	"containers.update.success": "Contentor atualizado com sucesso",
 	"containers.delete.success": "Contentor eliminado com sucesso",
+	"containers.delete.conflict.title": "Conflito",
+	"containers.delete.conflict.description": "Este contentor não pode ser eliminado porque está associado a um reporte, marcador ou rota.",
 	"error.requiredField": "Campo obrigatório",
 	"error.unexpected": "Ocorreu um erro inesperado. Tente novamente mais tarde ou contacte a equipa de apoio.",
 	"error.unexpected.title": "Oops! Ocorreu um erro inesperado",
