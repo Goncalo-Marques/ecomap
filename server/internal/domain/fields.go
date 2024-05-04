@@ -2,8 +2,9 @@ package domain
 
 // Field names.
 const (
-	FieldParamEmployeeID = "employeeId"
-	FieldParamUserID     = "userId"
+	FieldParamEmployeeID  = "employeeId"
+	FieldParamUserID      = "userId"
+	FieldParamCoordinates = "coordinates"
 
 	FieldUsername       = "username"
 	FieldPassword       = "password"
