@@ -1702,6 +1702,123 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /routes/{routeId}/employees:
+    get:
+      summary: List route employees.
+      operationId: listRouteEmployees
+      description: Returns the route employees with the specified filter.
+      tags:
+        - Route Employee
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - name: employeeRole
+          in: query
+          description: Employee role to filter by.
+          schema:
+            $ref: "#/components/schemas/RouteEmployeeRole"
+        - $ref: "#/components/parameters/RouteEmployeeSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeesPaginated"
+        400:
+          description: Invalid route ID or filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /routes/{routeId}/employees/{employeeId}:
+    post:
+      summary: Create a route employee association.
+      operationId: createRouteEmployee
+      description: Creates a route employee association.
+      tags:
+        - Route Employee
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteEmployeePost"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID, employee ID, or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route or employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Association already exists or truck does not have more passenger capacity.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a route employee association.
+      operationId: deleteRouteEmployee
+      description: Deletes the route employee association.
+      tags:
+        - Route Employee
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID or employee ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Association does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
   /ways/reverse-geocoding:
     get:
       summary: Get a way by reverse geocoding.
@@ -1856,8 +1973,8 @@ components:
         type: string
         enum:
           - containerCategory
-          - wayName
-          - municipalityName
+          - containerWayName
+          - containerMunicipalityName
           - createdAt
         default: createdAt
     EmployeeSortQueryParam:
@@ -1943,8 +2060,18 @@ components:
         type: string
         enum:
           - containerCategory
-          - wayName
-          - municipalityName
+          - containerWayName
+          - containerMunicipalityName
+          - createdAt
+        default: createdAt
+    RouteEmployeeSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the route employee field to sort by.
+      schema:
+        type: string
+        enum:
+          - employeeRole
           - createdAt
         default: createdAt
 
@@ -2124,6 +2251,11 @@ components:
     RouteName:
       type: string
       maximum: 50
+    RouteEmployeeRole:
+      type: string
+      enum:
+        - driver
+        - collector
 
     SignIn:
       type: object
@@ -2571,6 +2703,14 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Route"
+
+    RouteEmployeePost:
+      type: object
+      required:
+        - employeeRole
+      properties:
+        employeeRole:
+          $ref: "#/components/schemas/RouteEmployeeRole"
 
     Way:
       type: object
