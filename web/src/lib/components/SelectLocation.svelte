@@ -21,7 +21,6 @@
 		DEFAULT_MAX_ZOOM,
 		DEFAULT_PIN_ICON_SRC,
 	} from "../constants/map";
-	import type { FlatStyle } from "ol/style/flat";
 
 	/**
 	 * Indicates if the modal is open.
