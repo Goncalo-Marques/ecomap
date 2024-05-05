@@ -6,7 +6,7 @@ import (
 	spec "github.com/goncalo-marques/ecomap/server/api/ecomap"
 )
 
-// h handles the http request to create a route.
+// CreateRoute handles the http request to create a route.
 func (h *handler) CreateRoute(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 }
