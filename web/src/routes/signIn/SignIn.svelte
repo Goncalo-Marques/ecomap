@@ -1,11 +1,19 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import { navigate } from "svelte-routing";
 	import { BackOfficeRoutes } from "../constants/routes";
 	import Button from "../../lib/components/Button.svelte";
 	import Input from "../../lib/components/Input.svelte";
 	import { t } from "../../lib/utils/i8n";
-	import { storeToken } from "../../lib/utils/auth";
+	import {
+		decodeTokenPayload,
+		getToken,
+		storeToken,
+	} from "../../lib/utils/auth";
 	import ecomapHttpClient from "../../lib/clients/ecomap/http";
+	import { SubjectRole } from "../../domain/role";
+	import type { TokenPayload } from "../../domain/jwt";
+	import FormControl from "../../lib/components/FormControl.svelte";
 
 	/**
 	 * Error message displayed after an error occurs with the server.
@@ -80,15 +88,49 @@
 			return;
 		}
 
-		try {
-			storeToken(res.data.token);
-		} catch {
+		const { token } = res.data;
+
+		const payload = decodeTokenPayload(token);
+		if (!payload) {
 			responseErrorMessage = $t("error.unexpected");
 			return;
 		}
 
-		navigate(BackOfficeRoutes.DASHBOARD);
+		if (payload.roles.includes(SubjectRole.MANAGER)) {
+			storeToken(token, payload.exp);
+
+			// Redirect to back office dashboard page if user is a manager.
+			navigate(BackOfficeRoutes.DASHBOARD, { replace: true });
+		} else {
+			responseErrorMessage = $t("error.unexpected");
+		}
 	}
+
+	/**
+	 * Retrieves user roles.
+	 * @returns User roles.
+	 */
+	function getUserRoles(): TokenPayload["roles"] {
+		const token = getToken();
+		if (!token) {
+			return [];
+		}
+
+		const payload = decodeTokenPayload(token);
+		if (!payload) {
+			return [];
+		}
+
+		return payload.roles;
+	}
+
+	onMount(() => {
+		const roles = getUserRoles();
+		if (roles.includes(SubjectRole.MANAGER)) {
+			// Redirect to back office dashboard page if user is a manager.
+			navigate(BackOfficeRoutes.DASHBOARD, { replace: true });
+		}
+	});
 </script>
 
 <main>
@@ -97,24 +139,32 @@
 
 		<form method="post" on:submit|preventDefault={handleSubmit}>
 			<div class="container">
-				<Input
-					type="text"
-					name="username"
+				<FormControl
 					error={!!formErrorMessages.username}
-					helperText={formErrorMessages.username}
-					autocomplete="off"
 					label={$t("signin.username.label")}
-					placeholder={$t("signin.username.placeholder")}
-				/>
+					helperText={formErrorMessages.username}
+				>
+					<Input
+						type="text"
+						name="username"
+						error={!!formErrorMessages.username}
+						autocomplete="off"
+						placeholder={$t("signin.username.placeholder")}
+					/>
+				</FormControl>
 
-				<Input
-					type="password"
-					name="password"
+				<FormControl
 					error={!!formErrorMessages.password}
-					helperText={formErrorMessages.password}
 					label={$t("signin.password.label")}
-					placeholder={$t("signin.password.placeholder")}
-				/>
+					helperText={formErrorMessages.password}
+				>
+					<Input
+						type="password"
+						name="password"
+						error={!!formErrorMessages.password}
+						placeholder={$t("signin.password.placeholder")}
+					/>
+				</FormControl>
 
 				{#if responseErrorMessage}
 					<p class="error">{responseErrorMessage}</p>

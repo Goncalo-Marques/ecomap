@@ -9,13 +9,21 @@ import (
 
 // Common fault messages.
 const (
-	errRequestBodyInvalid   = "invalid request body"
-	errIncorrectCredentials = "incorrect credentials"
+	errAuthorizationHeaderInvalid = "invalid authorization header"
+	errJWTInvalid                 = "invalid jwt"
+	errRolesInvalid               = "invalid subject roles"
+	errAuthorizationInvalid       = "unauthorized subject"
+	errParamInvalidFormat         = "invalid parameter format"
+	errRequestBodyInvalid         = "invalid request body"
+	errFieldValueInvalid          = "invalid field value"
+	errFilterValueInvalid         = "invalid filter value"
+	errCredentialsIncorrect       = "incorrect credentials"
 )
 
 // Common fault descriptions.
 const (
 	descriptionFailedToMarshalResponseBody = "http: failed to marshal response body"
+	descriptionFailedToMapResponseBody     = "http: failed to map response body"
 )
 
 // badRequest writes an error response and sets the header with the bad request status code.
@@ -36,6 +44,11 @@ func forbidden(w http.ResponseWriter, message string) {
 // notFound writes an error response and sets the header with the not found status code.
 func notFound(w http.ResponseWriter, message string) {
 	_ = fault(w, http.StatusNotFound, spec.ErrorCodeNotFound, &message)
+}
+
+// conflict writes an error response and sets the header with the conflict status code.
+func conflict(w http.ResponseWriter, message string) {
+	_ = fault(w, http.StatusConflict, spec.ErrorCodeConflict, &message)
 }
 
 // internalServerError sets the header with the internal server error status code.

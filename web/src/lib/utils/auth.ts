@@ -3,7 +3,7 @@ import type { TokenPayload } from "../../domain/jwt";
 /**
  * Cookie name for the JWT token.
  */
-const TOKEN_COOKIE_NAME = "token" as const;
+const TOKEN_COOKIE_NAME = "token";
 
 /**
  * Retrieves subject token.
@@ -44,16 +44,18 @@ export function decodeTokenPayload(token: string): TokenPayload | null {
 /**
  * Stores token in cookies.
  * @param token JWT token.
- * @throws {Error} Invalid token payload.
+ * @param expirationTime JWT expiration time.
  */
-export function storeToken(token: string) {
-	const payload = decodeTokenPayload(token);
-	if (!payload) {
-		throw new Error("Couldn't decode token payload");
-	}
-
-	const expireTimeInMs = payload.exp * 1000;
-	const expireDate = new Date(expireTimeInMs);
+export function storeToken(token: string, expirationTime: number) {
+	const expireTimeInMs = expirationTime * 1000;
+	const expireDate = new Date(expireTimeInMs).toUTCString();
 
 	document.cookie = `token=${token}; Path=/; Expires=${expireDate}; SameSite=Strict; Secure`;
+}
+
+/**
+ * Clears token in cookies.
+ */
+export function clearToken() {
+	document.cookie = `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 }

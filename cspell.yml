@@ -8,32 +8,44 @@ ignoreWords:
   - appcompat
   - Avenir
   - buildx
+  - clazz
   - cloudrun
   - codegen
   - Compat
   - constraintlayout
   - deepmap
   - ecomap
+  - EPSG
   - fkey
   - golangci
   - goncalo
   - GOPATH
   - gradlew
   - healthcheck
+  - ILIKE
   - isready
   - jackc
   - ldflags
   - libboost
+  - LINESTRING
   - mipmap
+  - nolint
+  - nutsi
+  - nutsii
+  - nutsiii
   - oapi
   - oapitypes
   - openapi
   - Parens
+  - pgconn
   - pgrouting
   - PGUSER
   - pgxpool
   - pkey
   - plpgsql
+  - psql
+  - popovertarget
+  - Português
   - postgis
   - proguard
   - sharedpref
@@ -42,6 +54,8 @@ ignoreWords:
   - temurin
   - testcontainers
   - transporthttp
+  - trgm
+  - unparam
 ignorePaths:
   - "*.svg"
   - .golangci.yml
@@ -54,10 +68,13 @@ ignorePaths:
   - gradlew.bat
   - proguard-rules.pro
   - server/api/swagger/ui
+  - server/database/scripts
   - server/deployments
   - server/config.yml
+  - web/public
   - web/src/locales
 ignoreRegExpList:
   - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.
   - "import\\s*.*\".*?\"" # Ignore go single line imports.
   - "//\\s*go:generate.*" # Ignore go generate directive.
+  - "url(.*)" # Ignore CSS url function.

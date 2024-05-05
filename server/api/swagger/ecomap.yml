@@ -4,7 +4,21 @@ info:
   title: EcoMap Rest API
 tags:
   - name: User
+    description: User operations
+  - name: User Container Bookmark
+    description: User container bookmark operations
   - name: Employee
+    description: Employee operations
+  - name: Container
+    description: Container operations
+  - name: Truck
+    description: Truck operations
+  - name: Warehouse
+    description: Warehouse operations
+  - name: Way
+    description: Way operations
+  - name: Municipality
+    description: Municipality operations
 servers:
   - url: https://server-7fzc7ivuwa-ew.a.run.app/api
     description: Production server.
@@ -12,6 +26,277 @@ servers:
     description: Local server.
 
 paths:
+  /users:
+    post:
+      summary: Create a user.
+      operationId: createUser
+      description: Creates a new user with the specified data.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Username already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List users.
+      operationId: listUsers
+      description: Returns the users with the specified filter.
+      tags:
+        - User
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - name: username
+          in: query
+          description: Username to filter by.
+          schema:
+            $ref: "#/components/schemas/Username"
+        - name: firstName
+          in: query
+          description: First name to filter by.
+          schema:
+            $ref: "#/components/schemas/Name"
+        - name: lastName
+          in: query
+          description: Last name to filter by.
+          schema:
+            $ref: "#/components/schemas/Name"
+        - $ref: "#/components/parameters/UserSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/{userId}:
+    get:
+      summary: Get a user by ID.
+      operationId: getUserByID
+      description: Returns the user with the specified identifier.
+      tags:
+        - User
+      security:
+        - BearerAuth: [user, manager]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid user ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a user by ID.
+      operationId: patchUserByID
+      description: Modifies the user with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - User
+      security:
+        - BearerAuth: [user, manager]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid user ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Username already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a user by ID.
+      operationId: deleteUserByID
+      description: Deletes the user with the specified identifier.
+      tags:
+        - User
+      security:
+        - BearerAuth: [user, manager]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Invalid user ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: User is associated with a report or a bookmark.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/password:
+    put:
+      summary: Update a user password.
+      operationId: updateUserPassword
+      description: Updates the password of the user with the specified username.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Incorrect credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/password-reset:
+    put:
+      summary: Reset a user password.
+      operationId: resetUserPassword
+      description: Resets the password of the user with the specified username.
+      tags:
+        - User
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordReset"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
   /users/signin:
     post:
       summary: Sign in a user.
@@ -47,6 +332,421 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /users/{userId}/bookmarks/containers:
+    get:
+      summary: List user container bookmarks.
+      operationId: listUserContainerBookmarks
+      description: Returns the user container bookmarks with the specified filter.
+      tags:
+        - User Container Bookmark
+      security:
+        - BearerAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+        - name: containerCategory
+          in: query
+          description: Container category to filter by.
+          schema:
+            $ref: "#/components/schemas/ContainerCategory"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/UserContainerBookmarkSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainersPaginated"
+        400:
+          description: Invalid user ID or filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/{userId}/bookmarks/containers/{containerId}:
+    post:
+      summary: Create a user container bookmark.
+      operationId: createUserContainerBookmark
+      description: Creates a new user container bookmark.
+      tags:
+        - User Container Bookmark
+      security:
+        - BearerAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid user ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: User or container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Bookmark already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a user container bookmark.
+      operationId: deleteUserContainerBookmark
+      description: Deletes the user container bookmark.
+      tags:
+        - User Container Bookmark
+      security:
+        - BearerAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/UserIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid user ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Bookmark does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /employees:
+    post:
+      summary: Create an employee.
+      operationId: createEmployee
+      description: Creates a new employee with the specified data.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeePost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Username already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List employees.
+      operationId: listEmployees
+      description: Returns the employees with the specified filter.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - name: username
+          in: query
+          description: Username to filter by.
+          schema:
+            $ref: "#/components/schemas/Username"
+        - name: firstName
+          in: query
+          description: First name to filter by.
+          schema:
+            $ref: "#/components/schemas/Name"
+        - name: lastName
+          in: query
+          description: Last name to filter by.
+          schema:
+            $ref: "#/components/schemas/Name"
+        - name: role
+          in: query
+          description: Employee role to filter by.
+          schema:
+            $ref: "#/components/schemas/EmployeeRole"
+        - name: dateOfBirth
+          in: query
+          description: Date of birth to filter by.
+          schema:
+            $ref: "#/components/schemas/Date"
+        - name: phoneNumber
+          in: query
+          description: Phone number to filter by.
+          schema:
+            $ref: "#/components/schemas/PhoneNumber"
+        - name: scheduleStart
+          in: query
+          description: Start schedule to filter by.
+          schema:
+            $ref: "#/components/schemas/Time"
+        - name: scheduleEnd
+          in: query
+          description: End schedule to filter by.
+          schema:
+            $ref: "#/components/schemas/Time"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/EmployeeSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeesPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /employees/{employeeId}:
+    get:
+      summary: Get an employee by ID.
+      operationId: getEmployeeByID
+      description: Returns the employee with the specified identifier.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        400:
+          description: Invalid employee ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify an employee by ID.
+      operationId: patchEmployeeByID
+      description: Modifies the employee with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeePatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        400:
+          description: Invalid employee ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Username already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete an employee by ID.
+      operationId: deleteEmployeeByID
+      description: Deletes the employee with the specified identifier.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        400:
+          description: Invalid employee ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Employee is associated with a report or a route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /employees/password:
+    put:
+      summary: Update an employee password.
+      operationId: updateEmployeePassword
+      description: Updates the password of the employee with the specified username.
+      tags:
+        - Employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Incorrect credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /employees/password-reset:
+    put:
+      summary: Reset an employee password.
+      operationId: resetEmployeePassword
+      description: Resets the password of the employee with the specified username.
+      tags:
+        - Employee
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordReset"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
   /employees/signin:
     post:
       summary: Sign in an employee.
@@ -81,26 +781,99 @@ paths:
                 $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
-  /employees/{employeeId}:
-    get:
-      summary: Get an employee by ID.
-      operationId: getEmployeeByID
-      description: Returns the employee with the specified identifier.
+
+  /containers:
+    post:
+      summary: Create a container.
+      operationId: createContainer
+      description: Creates a new container with the specified data.
       tags:
-        - Employee
+        - Container
       security:
-        - BearerAuth: [waste_operator, manager]
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContainerPost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List containers.
+      operationId: listContainers
+      description: Returns the containers with the specified filter.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [user, wasteOperator, manager]
       parameters:
-        - $ref: "#/components/parameters/EmployeeIdParam"
+        - name: category
+          in: query
+          description: Container category to filter by.
+          schema:
+            $ref: "#/components/schemas/ContainerCategory"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/ContainerSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
       responses:
         200:
           description: Successful operation.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Employee"
+                $ref: "#/components/schemas/ContainersPaginated"
         400:
-          description: Invalid employee ID.
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /containers/{containerId}:
+    get:
+      summary: Get a container by ID.
+      operationId: getContainerByID
+      description: Returns the container with the specified identifier.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [user, wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid container ID.
           content:
             application/json:
               schema:
@@ -110,7 +883,572 @@ paths:
         403:
           $ref: "#/components/responses/Forbidden"
         404:
-          description: Employee not found.
+          description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a container by ID.
+      operationId: patchContainerByID
+      description: Modifies the container with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContainerPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid container ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a container by ID.
+      operationId: deleteContainerByID
+      description: Deletes the container with the specified identifier.
+      tags:
+        - Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+        400:
+          description: Invalid container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Container is associated with a report, bookmark, or route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /trucks:
+    post:
+      summary: Create a truck.
+      operationId: createTruck
+      description: Creates a new truck with the specified data.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TruckPost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List trucks.
+      operationId: listTrucks
+      description: Returns the trucks with the specified filter.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - name: make
+          in: query
+          description: Truck make to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckMake"
+        - name: model
+          in: query
+          description: Truck model to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckModel"
+        - name: licensePlate
+          in: query
+          description: Truck license plate to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckLicensePlate"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/TruckSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrucksPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /trucks/{truckId}:
+    get:
+      summary: Get a truck by ID.
+      operationId: getTruckByID
+      description: Returns the truck with the specified identifier.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid truck ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Truck not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a truck by ID.
+      operationId: patchTruckByID
+      description: Modifies the truck with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TruckPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid truck ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Truck not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a truck by ID.
+      operationId: deleteTruckByID
+      description: Deletes the truck with the specified identifier.
+      tags:
+        - Truck
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+        400:
+          description: Invalid truck ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Truck not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Truck is associated with a warehouse or a route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /warehouses:
+    post:
+      summary: Create a warehouse.
+      operationId: createWarehouse
+      description: Creates a new warehouse with the specified data.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarehousePost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List warehouses.
+      operationId: listWarehouses
+      description: Returns the warehouses with the specified filter.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/WarehouseSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarehousesPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /warehouses/{warehouseId}:
+    get:
+      summary: Get a warehouse by ID.
+      operationId: getWarehouseByID
+      description: Returns the warehouse with the specified identifier.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid warehouse ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Warehouse not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a warehouse by ID.
+      operationId: patchWarehouseByID
+      description: Modifies the warehouse with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarehousePatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid warehouse ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Warehouse not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Warehouse already has more trucks than the new capacity.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a warehouse by ID.
+      operationId: deleteWarehouseByID
+      description: Deletes the warehouse with the specified identifier.
+      tags:
+        - Warehouse
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warehouse"
+        400:
+          description: Invalid warehouse ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Warehouse not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Warehouse is associated with a truck or a route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /ways/reverse-geocoding:
+    get:
+      summary: Get a way by reverse geocoding.
+      operationId: getWayByReverseGeocoding
+      description: Returns the closest way to the specified coordinates.
+      tags:
+        - Way
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - name: coordinates
+          in: query
+          schema:
+            type: array
+            maxItems: 2
+            minItems: 2
+            items:
+              type: number
+              format: double
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Way"
+        400:
+          description: Invalid coordinates.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Way not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /municipalities/reverse-geocoding:
+    get:
+      summary: Get a municipality by reverse geocoding.
+      operationId: getMunicipalityByReverseGeocoding
+      description: Returns the municipality that contains the specified coordinates.
+      tags:
+        - Municipality
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - name: coordinates
+          in: query
+          schema:
+            type: array
+            maxItems: 2
+            minItems: 2
+            items:
+              type: number
+              format: double
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Municipality"
+        400:
+          description: Invalid coordinates.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Municipality not found.
           content:
             application/json:
               schema:
@@ -126,19 +1464,163 @@ components:
       bearerFormat: JWT
 
   parameters:
-    EmployeeIdParam:
+    LocationNameFilterQueryParam:
+      name: locationName
+      in: query
+      description: Name of the location to filter by. It considers the name of the way and the name of the municipality.
+      schema:
+        type: string
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Amount of resources to get for the provided filter.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 100
+    OffsetQueryParam:
+      name: offset
+      in: query
+      description: Amount of resources to skip for the provided filter.
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    OrderQueryParam:
+      name: order
+      in: query
+      description: Order to sort by.
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+
+    UserSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the user field to sort by.
+      schema:
+        type: string
+        enum:
+          - username
+          - firstName
+          - lastName
+          - createdAt
+          - modifiedAt
+        default: createdAt
+    UserContainerBookmarkSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the container bookmark field to sort by.
+      schema:
+        type: string
+        enum:
+          - containerCategory
+          - wayName
+          - municipalityName
+          - createdAt
+        default: createdAt
+    EmployeeSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the employee field to sort by.
+      schema:
+        type: string
+        enum:
+          - username
+          - firstName
+          - lastName
+          - role
+          - dateOfBirth
+          - scheduleStart
+          - scheduleEnd
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
+    ContainerSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the container field to sort by.
+      schema:
+        type: string
+        enum:
+          - category
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
+    TruckSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the truck field to sort by.
+      schema:
+        type: string
+        enum:
+          - make
+          - model
+          - licensePlate
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
+    WarehouseSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the warehouse field to sort by.
+      schema:
+        type: string
+        enum:
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
+
+    UserIdPathParam:
+      name: userId
+      in: path
+      description: User identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    EmployeeIdPathParam:
       name: employeeId
       in: path
       description: Employee identifier.
       required: true
       schema:
         $ref: "#/components/schemas/UUID"
+    ContainerIdPathParam:
+      name: containerId
+      in: path
+      description: Container identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    TruckIdPathParam:
+      name: truckId
+      in: path
+      description: Truck identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    WarehouseIdPathParam:
+      name: warehouseId
+      in: path
+      description: Warehouse identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
 
   schemas:
-    UUID:
-      type: string
-      format: uuid
-      example: "9e3a65b0-0579-4203-8112-d09ab3c6b1ff"
     Error:
       type: object
       required:
@@ -151,9 +1633,123 @@ components:
             - unauthorized
             - forbidden
             - not_found
+            - conflict
             - internal_server_error
         message:
           type: string
+    UUID:
+      type: string
+      format: uuid
+      example: "9e3a65b0-0579-4203-8112-d09ab3c6b1ff"
+    Date:
+      type: string
+      format: date
+      example: "2017-07-21"
+    Time:
+      type: string
+      format: time
+      example: "17:32:28"
+    DateTime:
+      type: string
+      format: date-time
+      example: "2017-07-21T17:32:28Z"
+    Username:
+      type: string
+      minLength: 1
+      maxLength: 50
+      example: john-doe
+    Password:
+      type: string
+      format: password
+      description: In addition to the length restrictions, the password should contain at least one regular character, one special character, and one number.
+      minLength: 14
+      maxLength: 72
+      example: ReallySecurePassword$123
+    Name:
+      type: string
+      minLength: 1
+      maxLength: 50
+      example: John
+    PhoneNumber:
+      type: string
+      maxLength: 20
+      example: 351 912 345 678
+
+    GeoJSONGeometryPoint:
+      type: object
+      description: Geometry point using the EPSG:4326 coordinate system.
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Point
+        coordinates:
+          type: array
+          maxItems: 2
+          minItems: 2
+          items:
+            type: number
+            format: double
+    GeoJSONFeatureProperties:
+      type: object
+      description: GeoJSON feature properties.
+      properties:
+        wayName:
+          type: string
+          readOnly: true
+        municipalityName:
+          type: string
+          readOnly: true
+    GeoJSONFeaturePoint:
+      type: object
+      description: GeoJSON feature with geometry point.
+      required:
+        - type
+        - geometry
+        - properties
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          $ref: "#/components/schemas/GeoJSONGeometryPoint"
+        properties:
+          $ref: "#/components/schemas/GeoJSONFeatureProperties"
+
+    EmployeeRole:
+      type: string
+      enum:
+        - wasteOperator
+        - manager
+    ContainerCategory:
+      type: string
+      enum:
+        - general
+        - paper
+        - plastic
+        - metal
+        - glass
+        - organic
+        - hazardous
+    TruckMake:
+      type: string
+      maximum: 50
+    TruckModel:
+      type: string
+      maximum: 50
+    TruckLicensePlate:
+      type: string
+      maximum: 30
+    TruckPersonCapacity:
+      type: integer
+      minimum: 1
+    WarehouseTruckCapacity:
+      type: integer
+      minimum: 0
 
     SignIn:
       type: object
@@ -162,9 +1758,9 @@ components:
         - password
       properties:
         username:
-          type: string
+          $ref: "#/components/schemas/Username"
         password:
-          type: string
+          $ref: "#/components/schemas/Password"
     JWT:
       type: object
       required:
@@ -173,29 +1769,453 @@ components:
         token:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVcJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiWiBmFtZSI6IkPvaG4gRG9lIiWiaWF0IjOxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssW5c
-
-    EditableEmployee:
+    PasswordChange:
       type: object
       required:
-        - name
-        - dateOfBirth
+        - username
+        - oldPassword
+        - newPassword
       properties:
-        name:
-          type: string
-          example: "John Doe"
-        dateOfBirth:
-          type: string
-          format: date
-          example: "2006-01-02"
-    Employee:
+        username:
+          $ref: "#/components/schemas/Username"
+        oldPassword:
+          $ref: "#/components/schemas/Password"
+        newPassword:
+          $ref: "#/components/schemas/Password"
+    PasswordReset:
+      type: object
+      required:
+        - username
+        - newPassword
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        newPassword:
+          $ref: "#/components/schemas/Password"
+    PaginatedResponse:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+          description: The total amount of resources available for the provided filter.
+          minimum: 0
+
+    UserPost:
+      type: object
+      required:
+        - username
+        - password
+        - firstName
+        - lastName
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+    UserPatch:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - firstName
+        - lastName
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        username:
+          $ref: "#/components/schemas/Username"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    UsersPaginated:
       allOf:
-        - $ref: "#/components/schemas/EditableEmployee"
+        - $ref: "#/components/schemas/PaginatedResponse"
         - type: object
           required:
-            - id
+            - users
           properties:
-            id:
-              $ref: "#/components/schemas/UUID"
+            users:
+              type: array
+              items:
+                $ref: "#/components/schemas/User"
+
+    EmployeePost:
+      type: object
+      required:
+        - username
+        - password
+        - firstName
+        - lastName
+        - role
+        - dateOfBirth
+        - phoneNumber
+        - geoJson
+        - scheduleStart
+        - scheduleEnd
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        role:
+          $ref: "#/components/schemas/EmployeeRole"
+        dateOfBirth:
+          $ref: "#/components/schemas/Date"
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        scheduleStart:
+          $ref: "#/components/schemas/Time"
+        scheduleEnd:
+          $ref: "#/components/schemas/Time"
+    EmployeePatch:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        dateOfBirth:
+          $ref: "#/components/schemas/Date"
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        scheduleStart:
+          $ref: "#/components/schemas/Time"
+        scheduleEnd:
+          $ref: "#/components/schemas/Time"
+    Employee:
+      type: object
+      required:
+        - id
+        - username
+        - firstName
+        - lastName
+        - role
+        - dateOfBirth
+        - phoneNumber
+        - geoJson
+        - scheduleStart
+        - scheduleEnd
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        username:
+          $ref: "#/components/schemas/Username"
+        firstName:
+          $ref: "#/components/schemas/Name"
+        lastName:
+          $ref: "#/components/schemas/Name"
+        role:
+          $ref: "#/components/schemas/EmployeeRole"
+        dateOfBirth:
+          $ref: "#/components/schemas/Date"
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        scheduleStart:
+          $ref: "#/components/schemas/Time"
+        scheduleEnd:
+          $ref: "#/components/schemas/Time"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    EmployeesPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - employees
+          properties:
+            employees:
+              type: array
+              items:
+                $ref: "#/components/schemas/Employee"
+
+    ContainerPost:
+      type: object
+      required:
+        - category
+        - geoJson
+      properties:
+        category:
+          $ref: "#/components/schemas/ContainerCategory"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    ContainerPatch:
+      type: object
+      properties:
+        category:
+          $ref: "#/components/schemas/ContainerCategory"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    Container:
+      type: object
+      required:
+        - id
+        - category
+        - geoJson
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        category:
+          $ref: "#/components/schemas/ContainerCategory"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    ContainersPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - containers
+          properties:
+            containers:
+              type: array
+              items:
+                $ref: "#/components/schemas/Container"
+
+    TruckPost:
+      type: object
+      required:
+        - make
+        - model
+        - licensePlate
+        - personCapacity
+        - geoJson
+      properties:
+        make:
+          $ref: "#/components/schemas/TruckMake"
+        model:
+          $ref: "#/components/schemas/TruckModel"
+        licensePlate:
+          $ref: "#/components/schemas/TruckLicensePlate"
+        personCapacity:
+          $ref: "#/components/schemas/TruckPersonCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    TruckPatch:
+      type: object
+      properties:
+        make:
+          $ref: "#/components/schemas/TruckMake"
+        model:
+          $ref: "#/components/schemas/TruckModel"
+        licensePlate:
+          $ref: "#/components/schemas/TruckLicensePlate"
+        personCapacity:
+          $ref: "#/components/schemas/TruckPersonCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    Truck:
+      type: object
+      required:
+        - id
+        - make
+        - model
+        - licensePlate
+        - personCapacity
+        - geoJson
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        make:
+          $ref: "#/components/schemas/TruckMake"
+        model:
+          $ref: "#/components/schemas/TruckModel"
+        licensePlate:
+          $ref: "#/components/schemas/TruckLicensePlate"
+        personCapacity:
+          $ref: "#/components/schemas/TruckPersonCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    TrucksPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - trucks
+          properties:
+            trucks:
+              type: array
+              items:
+                $ref: "#/components/schemas/Truck"
+
+    WarehousePost:
+      type: object
+      required:
+        - truckCapacity
+        - geoJson
+      properties:
+        truckCapacity:
+          $ref: "#/components/schemas/WarehouseTruckCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    WarehousePatch:
+      type: object
+      properties:
+        truckCapacity:
+          $ref: "#/components/schemas/WarehouseTruckCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    Warehouse:
+      type: object
+      required:
+        - id
+        - truckCapacity
+        - geoJson
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        truckCapacity:
+          $ref: "#/components/schemas/WarehouseTruckCapacity"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    WarehousesPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - warehouses
+          properties:
+            warehouses:
+              type: array
+              items:
+                $ref: "#/components/schemas/Warehouse"
+
+    Way:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+        osmId:
+          type: integer
+        osmName:
+          type: string
+        osmMeta:
+          type: string
+        osmSourceId:
+          type: integer
+        osmTargetId:
+          type: integer
+        clazz:
+          type: integer
+        flags:
+          type: integer
+        source:
+          type: integer
+        target:
+          type: integer
+        km:
+          type: number
+          format: double
+        kmh:
+          type: integer
+        cost:
+          type: number
+          format: double
+        reverseCost:
+          type: number
+          format: double
+        x1:
+          type: number
+          format: double
+        y1:
+          type: number
+          format: double
+        x2:
+          type: number
+          format: double
+        y2:
+          type: number
+          format: double
+
+    Municipality:
+      type: object
+      required:
+        - id
+        - featureId
+        - name
+        - district
+        - nuts1
+        - nuts2
+        - nuts3
+        - area
+        - perimeter
+      properties:
+        id:
+          type: integer
+        featureId:
+          type: integer
+        name:
+          type: string
+        district:
+          type: string
+        nuts1:
+          type: string
+        nuts2:
+          type: string
+        nuts3:
+          type: string
+        area:
+          type: number
+          format: double
+        perimeter:
+          type: number
+          format: double
 
   responses:
     Unauthorized:

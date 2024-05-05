@@ -33,12 +33,6 @@ const (
 const (
 	requestHeaderKeyAccept       = "Accept"
 	requestHeaderValueAcceptHTML = "text/html"
-
-	errAuthorizationHeaderInvalid = "invalid authorization header"
-	errJWTInvalid                 = "invalid jwt"
-	errRolesInvalid               = "invalid subject roles"
-	errAuthorizationInvalid       = "unauthorized subject"
-	errParamInvalidFormat         = "invalid parameter format"
 )
 
 // AuthorizationService defines the authorization service interface.
@@ -48,10 +42,49 @@ type AuthorizationService interface {
 
 // Service defines the service interface.
 type Service interface {
-	SignInUser(ctx context.Context, username string, password string) (string, error)
+	CreateUser(ctx context.Context, editableUser domain.EditableUserWithPassword) (domain.User, error)
+	ListUsers(ctx context.Context, filter domain.UsersPaginatedFilter) (domain.PaginatedResponse[domain.User], error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (domain.User, error)
+	PatchUser(ctx context.Context, id uuid.UUID, editableUser domain.EditableUserPatch) (domain.User, error)
+	UpdateUserPassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error
+	ResetUserPassword(ctx context.Context, username domain.Username, newPassword domain.Password) error
+	DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User, error)
+	SignInUser(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 
-	SignInEmployee(ctx context.Context, username string, password string) (string, error)
+	CreateUserContainerBookmark(ctx context.Context, userID, containerID uuid.UUID) error
+	ListUserContainerBookmarks(ctx context.Context, userID uuid.UUID, filter domain.UserContainerBookmarksPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteUserContainerBookmark(ctx context.Context, userID, containerID uuid.UUID) error
+
+	CreateEmployee(ctx context.Context, editableEmployee domain.EditableEmployeeWithPassword) (domain.Employee, error)
+	ListEmployees(ctx context.Context, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
+	PatchEmployee(ctx context.Context, id uuid.UUID, editableEmployee domain.EditableEmployeePatch) (domain.Employee, error)
+	UpdateEmployeePassword(ctx context.Context, username domain.Username, oldPassword, newPassword domain.Password) error
+	ResetEmployeePassword(ctx context.Context, username domain.Username, newPassword domain.Password) error
+	DeleteEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
+	SignInEmployee(ctx context.Context, username domain.Username, password domain.Password) (string, error)
+
+	CreateContainer(ctx context.Context, editableContainer domain.EditableContainer) (domain.Container, error)
+	ListContainers(ctx context.Context, filter domain.ContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	GetContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
+	PatchContainer(ctx context.Context, id uuid.UUID, editableContainer domain.EditableContainerPatch) (domain.Container, error)
+	DeleteContainerByID(ctx context.Context, id uuid.UUID) (domain.Container, error)
+
+	CreateTruck(ctx context.Context, editableTruck domain.EditableTruck) (domain.Truck, error)
+	ListTrucks(ctx context.Context, filter domain.TrucksPaginatedFilter) (domain.PaginatedResponse[domain.Truck], error)
+	GetTruckByID(ctx context.Context, id uuid.UUID) (domain.Truck, error)
+	PatchTruck(ctx context.Context, id uuid.UUID, editableTruck domain.EditableTruckPatch) (domain.Truck, error)
+	DeleteTruckByID(ctx context.Context, id uuid.UUID) (domain.Truck, error)
+
+	CreateWarehouse(ctx context.Context, editableWarehouse domain.EditableWarehouse) (domain.Warehouse, error)
+	ListWarehouses(ctx context.Context, filter domain.WarehousesPaginatedFilter) (domain.PaginatedResponse[domain.Warehouse], error)
+	GetWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
+	PatchWarehouse(ctx context.Context, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch) (domain.Warehouse, error)
+	DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
+
+	GetRoadByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+
+	GetMunicipalityByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 }
 
 // handler defines the http handler structure.
@@ -112,11 +145,11 @@ func New(authzService AuthorizationService, service Service) *handler {
 		BaseRouter:  router,
 		Middlewares: []spec.MiddlewareFunc{authzMiddleware},
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
-			var invalidParamFormatError *spec.InvalidParamFormatError
+			var specInvalidParamFormatError *spec.InvalidParamFormatError
 
 			switch {
-			case errors.As(err, &invalidParamFormatError):
-				badRequest(w, fmt.Sprintf("%s: %s", errParamInvalidFormat, invalidParamFormatError.ParamName))
+			case errors.As(err, &specInvalidParamFormatError):
+				badRequest(w, fmt.Sprintf("%s: %s", errParamInvalidFormat, specInvalidParamFormatError.ParamName))
 			default:
 				badRequest(w, err.Error())
 			}

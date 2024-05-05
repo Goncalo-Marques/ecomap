@@ -1,5 +1,10 @@
 <script lang="ts">
-	import type { HTMLInputAttributes } from "svelte/elements";
+	import type {
+		ChangeEventHandler,
+		HTMLInputAttributes,
+		MouseEventHandler,
+	} from "svelte/elements";
+	import Icon from "./Icon.svelte";
 
 	/**
 	 * The hint for form autofill feature.
@@ -8,23 +13,16 @@
 	export let autocomplete: HTMLInputAttributes["autocomplete"] = "off";
 
 	/**
-	 * A space-separated list of the classes of the element.
-	 * @default ""
+	 * The name of the icon placed at the end of the input.
+	 * @default null
 	 */
-	let className: string = "";
-	export { className as class };
+	export let endIcon: string | null = null;
 
 	/**
 	 * Indicates if the input contains an error.
 	 * @default false
 	 */
 	export let error: boolean = false;
-
-	/**
-	 * The text below the input that contains additional information about how the input will be used.
-	 * @default null
-	 */
-	export let helperText: string | null = null;
 
 	/**
 	 * Global attribute valid for all elements, including all the input types, it defines a unique identifier (ID) which must be unique in the whole document.
@@ -39,10 +37,28 @@
 	export let name: HTMLInputAttributes["name"] = null;
 
 	/**
+	 * Callback fired when input element is clicked.
+	 * @default null
+	 */
+	export let onClick: MouseEventHandler<HTMLInputElement> | null = null;
+
+	/**
+	 * Callback fired when input value changes.
+	 * @default null
+	 */
+	export let onInput: ChangeEventHandler<HTMLInputElement> | null = null;
+
+	/**
 	 * The text that appears in the form control when it has no value set.
 	 * @default null
 	 */
 	export let placeholder: HTMLInputAttributes["placeholder"] = null;
+
+	/**
+	 * Indicates if input is not mutable.
+	 * @default false
+	 */
+	export let readonly: boolean = false;
 
 	/**
 	 * The type of control to render.
@@ -51,33 +67,36 @@
 	export let type: HTMLInputAttributes["type"] = null;
 
 	/**
-	 * The label for the input.
+	 * The value of the input.
 	 * @default null
 	 */
-	export let label: string | null = null;
+	export let value: string | null = null;
 </script>
 
-<label>
-	{#if label}
-		{label}
-	{/if}
+<div class="input-container">
 	<input
 		{autocomplete}
-		class={`${error ? "error" : ""} ${className}`}
+		class={error ? "error" : ""}
 		{id}
 		{name}
 		{placeholder}
 		{type}
+		{value}
+		{readonly}
+		on:input={onInput}
+		on:click={onClick}
+		data-endIcon={endIcon}
 	/>
-	{#if helperText}
-		<span class={`helper-text ${error ? "error" : ""}`}>{helperText}</span>
+	{#if endIcon}
+		<div class="end-icon">
+			<Icon name={endIcon} size="small" />
+		</div>
 	{/if}
-</label>
+</div>
 
 <style>
-	label {
-		display: block;
-		color: var(--gray-500);
+	.input-container {
+		position: relative;
 	}
 
 	input {
@@ -87,8 +106,12 @@
 		border-radius: 0.25rem;
 		color: var(--gray-900);
 
-		&::placeholder {
-			color: var(--gray-400);
+		&[data-endIcon] {
+			padding-right: 2rem;
+		}
+
+		&:read-only {
+			cursor: default;
 		}
 
 		&.error {
@@ -98,14 +121,20 @@
 				outline-color: var(--red-500);
 			}
 		}
+
+		&::placeholder {
+			color: var(--gray-400);
+		}
 	}
 
-	.helper-text {
-		font: var(--text-xs-regular);
-		color: var(--gray-400);
-
-		&.error {
-			color: var(--red-500);
-		}
+	.end-icon {
+		pointer-events: none;
+		display: flex;
+		align-items: center;
+		color: var(--gray-900);
+		position: absolute;
+		top: 50%;
+		right: 0.5rem;
+		transform: translateY(-50%);
 	}
 </style>
