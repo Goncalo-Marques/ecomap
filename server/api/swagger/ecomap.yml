@@ -15,6 +15,12 @@ tags:
     description: Truck operations
   - name: Warehouse
     description: Warehouse operations
+  - name: Route
+    description: Route operations
+  - name: Route Container
+    description: Route container operations
+  - name: Route Employee
+    description: Route employee operations
   - name: Way
     description: Way operations
   - name: Municipality
@@ -1366,6 +1372,453 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /routes:
+    post:
+      summary: Create a route.
+      operationId: createRoute
+      description: Creates a new route with the specified data.
+      tags:
+        - Route
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoutePost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Truck or warehouse does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List routes.
+      operationId: listRoutes
+      description: Returns the routes with the specified filter.
+      tags:
+        - Route
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - name: name
+          in: query
+          description: Route name to filter by.
+          schema:
+            $ref: "#/components/schemas/RouteName"
+        - name: truckId
+          in: query
+          description: Route truck identifier to filter by.
+          schema:
+            $ref: "#/components/schemas/RouteName"
+        - name: departureWarehouseId
+          in: query
+          description: Route departure warehouse identifier to filter by.
+          schema:
+            $ref: "#/components/schemas/RouteName"
+        - name: arrivalWarehouseId
+          in: query
+          description: Route arrival warehouse identifier to filter by.
+          schema:
+            $ref: "#/components/schemas/RouteName"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/RouteSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutesPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /routes/{routeId}:
+    get:
+      summary: Get a route by ID.
+      operationId: getRouteByID
+      description: Returns the route with the specified identifier.
+      tags:
+        - Route
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        400:
+          description: Invalid route ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a route by ID.
+      operationId: patchRouteByID
+      description: Modifies the route with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Route
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoutePatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        400:
+          description: Invalid route ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Truck or warehouse does not exist or route already has more employees associated with it than the new truck has capacity.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a route by ID.
+      operationId: deleteRouteByID
+      description: Deletes the route with the specified identifier.
+      tags:
+        - Route
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        400:
+          description: Invalid route ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Route is associated with a container or employee.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /routes/{routeId}/containers:
+    get:
+      summary: List route containers.
+      operationId: listRouteContainers
+      description: Returns the route containers with the specified filter.
+      tags:
+        - Route Container
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - name: containerCategory
+          in: query
+          description: Container category to filter by.
+          schema:
+            $ref: "#/components/schemas/ContainerCategory"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/RouteContainerSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainersPaginated"
+        400:
+          description: Invalid route ID or filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /routes/{routeId}/containers/{containerId}:
+    post:
+      summary: Create a route container association.
+      operationId: createRouteContainer
+      description: Creates a route container association.
+      tags:
+        - Route Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route or container not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Association already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a route container association.
+      operationId: deleteRouteContainer
+      description: Deletes the route container association.
+      tags:
+        - Route Container
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/ContainerIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID or container ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Association does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /routes/{routeId}/employees:
+    get:
+      summary: List route employees.
+      operationId: listRouteEmployees
+      description: Returns the route employees with the specified filter.
+      tags:
+        - Route Employee
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - name: employeeRole
+          in: query
+          description: Employee role to filter by.
+          schema:
+            $ref: "#/components/schemas/RouteEmployeeRole"
+        - $ref: "#/components/parameters/RouteEmployeeSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeesPaginated"
+        400:
+          description: Invalid route ID or filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /routes/{routeId}/employees/{employeeId}:
+    post:
+      summary: Create a route employee association.
+      operationId: createRouteEmployee
+      description: Creates a route employee association.
+      tags:
+        - Route Employee
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteEmployeePost"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID, employee ID, or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route or employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Association already exists or truck does not have more passenger capacity.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a route employee association.
+      operationId: deleteRouteEmployee
+      description: Deletes the route employee association.
+      tags:
+        - Route Employee
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+        - $ref: "#/components/parameters/EmployeeIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid route ID or employee ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Association does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
   /ways/reverse-geocoding:
     get:
       summary: Get a way by reverse geocoding.
@@ -1515,13 +1968,13 @@ components:
     UserContainerBookmarkSortQueryParam:
       name: sort
       in: query
-      description: Name of the container bookmark field to sort by.
+      description: Name of the user container bookmark field to sort by.
       schema:
         type: string
         enum:
           - containerCategory
-          - wayName
-          - municipalityName
+          - containerWayName
+          - containerMunicipalityName
           - createdAt
         default: createdAt
     EmployeeSortQueryParam:
@@ -1583,6 +2036,44 @@ components:
           - createdAt
           - modifiedAt
         default: createdAt
+    RouteSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the route field to sort by.
+      schema:
+        type: string
+        enum:
+          - name
+          - truckId
+          - departureWarehouseId
+          - arrivalWarehouseId
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
+    RouteContainerSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the route container field to sort by.
+      schema:
+        type: string
+        enum:
+          - containerCategory
+          - containerWayName
+          - containerMunicipalityName
+          - createdAt
+        default: createdAt
+    RouteEmployeeSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the route employee field to sort by.
+      schema:
+        type: string
+        enum:
+          - employeeRole
+          - createdAt
+        default: createdAt
 
     UserIdPathParam:
       name: userId
@@ -1616,6 +2107,13 @@ components:
       name: warehouseId
       in: path
       description: Warehouse identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    RouteIdPathParam:
+      name: routeId
+      in: path
+      description: Route identifier.
       required: true
       schema:
         $ref: "#/components/schemas/UUID"
@@ -1750,6 +2248,14 @@ components:
     WarehouseTruckCapacity:
       type: integer
       minimum: 0
+    RouteName:
+      type: string
+      maximum: 50
+    RouteEmployeeRole:
+      type: string
+      enum:
+        - driver
+        - collector
 
     SignIn:
       type: object
@@ -2133,6 +2639,78 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Warehouse"
+
+    RoutePost:
+      type: object
+      required:
+        - name
+        - truckId
+        - departureWarehouseId
+        - arrivalWarehouseId
+      properties:
+        name:
+          $ref: "#/components/schemas/RouteName"
+        truckId:
+          $ref: "#/components/schemas/UUID"
+        departureWarehouseId:
+          $ref: "#/components/schemas/UUID"
+        arrivalWarehouseId:
+          $ref: "#/components/schemas/UUID"
+    RoutePatch:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/RouteName"
+        truckId:
+          $ref: "#/components/schemas/UUID"
+        departureWarehouseId:
+          $ref: "#/components/schemas/UUID"
+        arrivalWarehouseId:
+          $ref: "#/components/schemas/UUID"
+    Route:
+      type: object
+      required:
+        - id
+        - name
+        - truckId
+        - departureWarehouseId
+        - arrivalWarehouseId
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          $ref: "#/components/schemas/RouteName"
+        truckId:
+          $ref: "#/components/schemas/UUID"
+        departureWarehouseId:
+          $ref: "#/components/schemas/UUID"
+        arrivalWarehouseId:
+          $ref: "#/components/schemas/UUID"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    RoutesPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - routes
+          properties:
+            routes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Route"
+
+    RouteEmployeePost:
+      type: object
+      required:
+        - employeeRole
+      properties:
+        employeeRole:
+          $ref: "#/components/schemas/RouteEmployeeRole"
 
     Way:
       type: object

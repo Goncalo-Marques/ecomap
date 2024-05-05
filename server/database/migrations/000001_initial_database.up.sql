@@ -181,33 +181,27 @@ CREATE TABLE routes (
     departure_warehouse_id  uuid        NOT NULL,
     arrival_warehouse_id    uuid        NOT NULL,
     created_at              timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    modified_at             timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_pkey                          PRIMARY KEY (id),
     CONSTRAINT routes_truck_id_fkey                 FOREIGN KEY (truck_id)                  REFERENCES trucks (id),
     CONSTRAINT routes_departure_warehouse_id_fkey   FOREIGN KEY (departure_warehouse_id)    REFERENCES warehouses (id),
     CONSTRAINT routes_arrival_warehouse_id_fkey     FOREIGN KEY (arrival_warehouse_id)      REFERENCES warehouses (id)
 );
 
+CREATE TRIGGER routes_update_modified_at
+    BEFORE UPDATE ON routes
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_modified_at();
+
 -- Route containers.
 CREATE TABLE routes_containers (
     route_id        uuid        NOT NULL,
     container_id    uuid        NOT NULL,
-    emptied         boolean,
-    washed          boolean,
-    responsible_id  uuid,
     created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    modified_at     timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT routes_containers_pkey                   PRIMARY KEY (route_id, container_id),
-    CONSTRAINT routes_containers_route_id_fkey          FOREIGN KEY (route_id)                  REFERENCES routes (id),
-    CONSTRAINT routes_containers_container_id_fkey      FOREIGN KEY (container_id)              REFERENCES containers (id),
-    CONSTRAINT routes_containers_responsible_id_fkey    FOREIGN KEY (responsible_id)            REFERENCES employees (id)
+    CONSTRAINT routes_containers_pkey               PRIMARY KEY (route_id, container_id),
+    CONSTRAINT routes_containers_route_id_fkey      FOREIGN KEY (route_id)                  REFERENCES routes (id),
+    CONSTRAINT routes_containers_container_id_fkey  FOREIGN KEY (container_id)              REFERENCES containers (id)
 );
-
-CREATE TRIGGER routes_containers_update_modified_at
-    BEFORE UPDATE ON routes_containers
-    FOR EACH ROW
-    EXECUTE PROCEDURE update_modified_at();
-
-CREATE INDEX routes_containers_created_at_idx ON routes_containers (created_at);
 
 -- Route employees.
 CREATE TYPE routes_employees_employee_role AS ENUM ('driver', 'collector');

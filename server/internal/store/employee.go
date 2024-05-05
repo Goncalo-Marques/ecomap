@@ -340,8 +340,6 @@ func (s *store) DeleteEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID)
 		switch constraintNameFromError(err) {
 		case constraintContainersReportsResolverIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithContainerReportAsResolver)
-		case constraintRoutesContainersResponsibleIDFkey:
-			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithRouteContainerAsResponsible)
 		case constraintRoutesEmployeesEmployeeIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeAssociatedWithRouteEmployee)
 		}

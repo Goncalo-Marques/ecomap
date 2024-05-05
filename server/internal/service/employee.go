@@ -414,7 +414,6 @@ func (s *service) DeleteEmployeeByID(ctx context.Context, id uuid.UUID) (domain.
 		switch {
 		case errors.Is(err, domain.ErrEmployeeNotFound),
 			errors.Is(err, domain.ErrEmployeeAssociatedWithContainerReportAsResolver),
-			errors.Is(err, domain.ErrEmployeeAssociatedWithRouteContainerAsResponsible),
 			errors.Is(err, domain.ErrEmployeeAssociatedWithRouteEmployee):
 			return domain.Employee{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteEmployeeByID, logAttrs...)
 		default:
