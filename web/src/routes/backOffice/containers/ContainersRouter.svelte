@@ -3,10 +3,20 @@
 	import Containers from "./list/Containers.svelte";
 	import Container from "./details/Container.svelte";
 	import ContainerMap from "./details/ContainerMap.svelte";
+	import EditContainer from "./edit/EditContainer.svelte";
+	import CreateContainer from "./create/CreateContainer.svelte";
 </script>
 
 <Router>
+	<Route path="/create">
+		<CreateContainer />
+	</Route>
 	<Route path="/:id/map" component={ContainerMap} />
-	<Route path="/:id" component={Container} />
+	<Route path="/:id/edit" let:params>
+		<EditContainer id={params.id} />
+	</Route>
+	<Route path="/:id" let:params>
+		<Container id={params.id} />
+	</Route>
 	<Route path="/" component={Containers} />
 </Router>

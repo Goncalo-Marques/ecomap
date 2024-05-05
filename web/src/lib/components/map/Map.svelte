@@ -57,6 +57,13 @@
 	export let mapId: string = "map_id";
 
 	/**
+	 * Callback fired when map is initialized.
+	 *
+	 * @default null
+	 */
+	export let onInit: ((map: Map) => void) | null = null;
+
+	/**
 	 * Map layers.
 	 */
 	let layers: Layer[] = [];
@@ -68,6 +75,8 @@
 		map.getLayers().on("add", () => {
 			layers = map.getAllLayers();
 		});
+
+		onInit?.(map);
 	});
 </script>
 
@@ -101,8 +110,8 @@
 	}
 
 	.map {
-		width: 100%;
-		height: 100%;
+		width: var(--width, 100%);
+		height: var(--height, 100%);
 		position: relative;
 	}
 

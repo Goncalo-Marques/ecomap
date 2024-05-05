@@ -25,3 +25,8 @@ export interface ContainersFilters {
 	location: string;
 	category?: Container["category"];
 }
+
+/**
+ * Category of a container.
+ */
+export type ContainerCategory = components["schemas"]["ContainerCategory"];

@@ -19,6 +19,24 @@
 		"additionalInfo": {
 			"type": "string"
 		},
+		"editInfo": {
+			"type": "string"
+		},
+		"cancel": {
+			"type": "string"
+		},
+		"save": {
+			"type": "string"
+		},
+		"preview": {
+			"type": "string"
+		},
+		"selectLocation": {
+			"type": "string"
+		},
+		"location.unknownWay": {
+			"type": "string"
+		},
 		"containers.title": {
 			"type": "string"
 		},
@@ -26,6 +44,12 @@
 			"type": "string"
 		},
 		"containers.notFound.description": {
+			"type": "string"
+		},
+		"containers.create.title": {
+			"type": "string"
+		},
+		"containers.create.success": {
 			"type": "string"
 		},
 		"containers.search": {
@@ -37,7 +61,7 @@
 		"containers.location": {
 			"type": "string"
 		},
-		"containers.location.unknownWay": {
+		"containers.location.placeholder": {
 			"type": "string"
 		},
 		"containers.category.general": {
@@ -61,10 +85,31 @@
 		"containers.category.hazardous": {
 			"type": "string"
 		},
+		"containers.category.placeholder": {
+			"type": "string"
+		},
+		"containers.update.success": {
+			"type": "string"
+		},
+		"containers.delete.success": {
+			"type": "string"
+		},
+		"containers.delete.conflict.title": {
+			"type": "string"
+		},
+		"containers.delete.conflict.description": {
+			"type": "string"
+		},
 		"error.requiredField": {
 			"type": "string"
 		},
 		"error.unexpected": {
+			"type": "string"
+		},
+		"error.unexpected.title": {
+			"type": "string"
+		},
+		"error.unexpected.description": {
 			"type": "string"
 		},
 		"signin.title": {

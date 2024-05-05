@@ -41,6 +41,10 @@ type Store interface {
 	UpdateUserPassword(ctx context.Context, tx pgx.Tx, username domain.Username, password domain.Password) error
 	DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
+	CreateUserContainerBookmark(ctx context.Context, tx pgx.Tx, userID, containerID uuid.UUID) error
+	ListUserContainerBookmarks(ctx context.Context, tx pgx.Tx, userID uuid.UUID, filter domain.UserContainerBookmarksPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteUserContainerBookmark(ctx context.Context, tx pgx.Tx, userID, containerID uuid.UUID) error
+
 	CreateEmployee(ctx context.Context, tx pgx.Tx, editableEmployee domain.EditableEmployeeWithPassword, roadID, municipalityID *int) (uuid.UUID, error)
 	ListEmployees(ctx context.Context, tx pgx.Tx, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error)
 	GetEmployeeByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Employee, error)
@@ -71,6 +75,7 @@ type Store interface {
 	ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, id uuid.UUID) ([]domain.Truck, error)
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 
 	NewTx(ctx context.Context, isoLevel pgx.TxIsoLevel, accessMode pgx.TxAccessMode) (pgx.Tx, error)

@@ -51,6 +51,10 @@ type Service interface {
 	DeleteUserByID(ctx context.Context, id uuid.UUID) (domain.User, error)
 	SignInUser(ctx context.Context, username domain.Username, password domain.Password) (string, error)
 
+	CreateUserContainerBookmark(ctx context.Context, userID, containerID uuid.UUID) error
+	ListUserContainerBookmarks(ctx context.Context, userID uuid.UUID, filter domain.UserContainerBookmarksPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteUserContainerBookmark(ctx context.Context, userID, containerID uuid.UUID) error
+
 	CreateEmployee(ctx context.Context, editableEmployee domain.EditableEmployeeWithPassword) (domain.Employee, error)
 	ListEmployees(ctx context.Context, filter domain.EmployeesPaginatedFilter) (domain.PaginatedResponse[domain.Employee], error)
 	GetEmployeeByID(ctx context.Context, id uuid.UUID) (domain.Employee, error)
@@ -77,6 +81,10 @@ type Service interface {
 	GetWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
 	PatchWarehouse(ctx context.Context, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch) (domain.Warehouse, error)
 	DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
+
+	GetRoadByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+
+	GetMunicipalityByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 }
 
 // handler defines the http handler structure.

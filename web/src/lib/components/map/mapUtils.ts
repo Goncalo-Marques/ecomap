@@ -19,7 +19,12 @@ import type { FeatureLike } from "ol/Feature";
 import type { Options as OptionsLayer } from "ol/layer/Layer";
 import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
 import type { WebGLStyle } from "ol/style/webgl";
-import { mapLayerName, colorLayerKey, nameLayerKey } from "../../constants/map";
+import {
+	mapLayerName,
+	colorLayerKey,
+	nameLayerKey,
+	DEFAULT_MAX_ZOOM,
+} from "../../constants/map";
 import type { Geometry } from "ol/geom";
 import type Feature from "ol/Feature";
 import type { Options } from "ol/source/Vector";
@@ -270,6 +275,7 @@ export function createMap(
 		view: new View({
 			center: fromLonLat([lon, lat]),
 			zoom: zoom,
+			maxZoom: DEFAULT_MAX_ZOOM,
 			projection: projection,
 			// Locks the map on the iberian peninsula
 			extent: [

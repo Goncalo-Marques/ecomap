@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Link } from "svelte-routing";
+	import { Link, navigate } from "svelte-routing";
 	import type { Container } from "../../../../domain/container";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import Button from "../../../../lib/components/Button.svelte";
@@ -13,12 +13,19 @@
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
-	import { getContainerLocation } from "../utils/location";
+	import { getLocationName } from "../../../../lib/utils/location";
+	import { BackOfficeRoutes } from "../../../constants/routes";
+	import { getToastContext } from "../../../../lib/contexts/toast";
 
 	/**
 	 * Container ID.
 	 */
 	export let id: string;
+
+	/**
+	 * Toast context.
+	 */
+	const toast = getToastContext();
 
 	/**
 	 * Fetches container data.
@@ -35,6 +42,45 @@
 		return res.data;
 	}
 
+	/**
+	 * Deletes the container displayed on the page.
+	 */
+	async function deleteContainer() {
+		const res = await ecomapHttpClient.DELETE("/containers/{containerId}", {
+			params: {
+				path: {
+					containerId: id,
+				},
+			},
+		});
+
+		if (res.error) {
+			if (res.error.code === "conflict") {
+				toast.show({
+					type: "error",
+					title: $t("containers.delete.conflict.title"),
+					description: $t("containers.delete.conflict.description"),
+				});
+			} else {
+				toast.show({
+					type: "error",
+					title: $t("error.unexpected.title"),
+					description: $t("error.unexpected.description"),
+				});
+			}
+
+			return;
+		}
+
+		toast.show({
+			type: "success",
+			title: $t("containers.delete.success"),
+			description: undefined,
+		});
+
+		navigate(BackOfficeRoutes.CONTAINERS);
+	}
+
 	const containerPromise = fetchContainer();
 </script>
 
@@ -44,13 +90,24 @@
 			<Spinner />
 		</div>
 	{:then container}
-		{@const locationName = getContainerLocation(
+		{@const locationName = getLocationName(
 			container.geoJson.properties.wayName,
 			container.geoJson.properties.municipalityName,
 		)}
-		<DetailsHeader title={locationName}>
-			<Link to={`${container.id}/map`}>
-				<Button variant="secondary" startIcon="map">{$t("sidebar.map")}</Button>
+		<DetailsHeader to="" title={locationName}>
+			<Button
+				startIcon="delete"
+				actionType="danger"
+				variant="secondary"
+				onClick={deleteContainer}
+			/>
+			<Link to={`${container.id}/map`} style="display:contents">
+				<Button variant="secondary" startIcon="map">
+					{$t("sidebar.map")}
+				</Button>
+			</Link>
+			<Link to={`${container.id}/edit`} style="display:contents">
+				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
 		<DetailsContent>
