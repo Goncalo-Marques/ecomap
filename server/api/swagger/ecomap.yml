@@ -1428,7 +1428,7 @@ paths:
             $ref: "#/components/schemas/RouteName"
         - name: truckId
           in: query
-          description: Route tuck identifier to filter by.
+          description: Route truck identifier to filter by.
           schema:
             $ref: "#/components/schemas/RouteName"
         - name: departureWarehouseId
@@ -1438,7 +1438,7 @@ paths:
             $ref: "#/components/schemas/RouteName"
         - name: arrivalWarehouseId
           in: query
-          description: Route arrival  warehouse identifier to filter by.
+          description: Route arrival warehouse identifier to filter by.
           schema:
             $ref: "#/components/schemas/RouteName"
         - $ref: "#/components/parameters/LocationNameFilterQueryParam"
