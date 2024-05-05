@@ -34,6 +34,15 @@
 		"selectLocation": {
 			"type": "string"
 		},
+		"location": {
+			"type": "string"
+		},
+		"location.placeholder": {
+			"type": "string"
+		},
+		"location.search": {
+			"type": "string"
+		},
 		"location.unknownWay": {
 			"type": "string"
 		},
@@ -52,16 +61,7 @@
 		"containers.create.success": {
 			"type": "string"
 		},
-		"location.search": {
-			"type": "string"
-		},
 		"containers.category": {
-			"type": "string"
-		},
-		"location": {
-			"type": "string"
-		},
-		"location.placeholder": {
 			"type": "string"
 		},
 		"truckCapacity.placeholder": {
