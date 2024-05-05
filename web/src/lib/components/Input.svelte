@@ -31,6 +31,18 @@
 	export let id: HTMLInputAttributes["id"] = null;
 
 	/**
+	 * Defines the maximum value that is acceptable and valid for the input.
+	 * @default null
+	 */
+	export let max: HTMLInputAttributes["max"] = null;
+
+	/**
+	 * Defines the minimum value that is acceptable and valid for the input.
+	 * @default null
+	 */
+	export let min: HTMLInputAttributes["min"] = null;
+
+	/**
 	 * The name of the form control. Submitted with the form as part of a name/value pair.
 	 * @default null
 	 */
@@ -70,7 +82,7 @@
 	 * The value of the input.
 	 * @default null
 	 */
-	export let value: string | null = null;
+	export let value: number | string | null = null;
 </script>
 
 <div class="input-container">
@@ -83,6 +95,8 @@
 		{type}
 		{value}
 		{readonly}
+		{max}
+		{min}
 		on:input={onInput}
 		on:click={onClick}
 		data-endIcon={endIcon}

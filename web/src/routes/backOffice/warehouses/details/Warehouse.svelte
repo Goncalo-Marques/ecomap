@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Link, navigate } from "svelte-routing";
-	import type { Container } from "../../../../domain/container";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import Button from "../../../../lib/components/Button.svelte";
 	import Card from "../../components/Card.svelte";
@@ -16,9 +15,10 @@
 	import { getLocationName } from "../../../../lib/utils/location";
 	import { BackOfficeRoutes } from "../../../constants/routes";
 	import { getToastContext } from "../../../../lib/contexts/toast";
+	import type { Warehouse } from "../../../../domain/warehouse";
 
 	/**
-	 * Container ID.
+	 * Warehouse ID.
 	 */
 	export let id: string;
 
@@ -28,45 +28,49 @@
 	const toast = getToastContext();
 
 	/**
-	 * Fetches container data.
+	 * Fetches warehouse data.
 	 */
-	async function fetchContainer(): Promise<Container> {
-		const res = await ecomapHttpClient.GET("/containers/{containerId}", {
-			params: { path: { containerId: id } },
+	async function fetchWarehouse(): Promise<Warehouse> {
+		const res = await ecomapHttpClient.GET("/warehouses/{warehouseId}", {
+			params: { path: { warehouseId: id } },
 		});
 
 		if (res.error) {
-			throw new Error("Failed to retrieve container details");
+			throw new Error("Failed to retrieve warehouse details");
 		}
 
 		return res.data;
 	}
 
 	/**
-	 * Deletes the container displayed on the page.
+	 * Deletes the warehouse displayed on the page.
 	 */
-	async function deleteContainer() {
-		const res = await ecomapHttpClient.DELETE("/containers/{containerId}", {
+	async function deleteWarehouse() {
+		const res = await ecomapHttpClient.DELETE("/warehouses/{warehouseId}", {
 			params: {
 				path: {
-					containerId: id,
+					warehouseId: id,
 				},
 			},
 		});
 
 		if (res.error) {
-			if (res.error.code === "conflict") {
-				toast.show({
-					type: "error",
-					title: $t("containers.delete.conflict.title"),
-					description: $t("containers.delete.conflict.description"),
-				});
-			} else {
-				toast.show({
-					type: "error",
-					title: $t("error.unexpected.title"),
-					description: $t("error.unexpected.description"),
-				});
+			switch (res.error.code) {
+				case "conflict":
+					toast.show({
+						type: "error",
+						title: $t("warehouses.delete.conflict.title"),
+						description: $t("warehouses.delete.conflict.description"),
+					});
+					break;
+
+				default:
+					toast.show({
+						type: "error",
+						title: $t("error.unexpected.title"),
+						description: $t("error.unexpected.description"),
+					});
+					break;
 			}
 
 			return;
@@ -74,82 +78,79 @@
 
 		toast.show({
 			type: "success",
-			title: $t("containers.delete.success"),
+			title: $t("warehouses.delete.success"),
 			description: undefined,
 		});
 
-		navigate(BackOfficeRoutes.CONTAINERS);
+		navigate(BackOfficeRoutes.WAREHOUSES);
 	}
 
-	const containerPromise = fetchContainer();
+	const warehousePromise = fetchWarehouse();
 </script>
 
 <Card class="page-layout">
-	{#await containerPromise}
-		<div class="container-loading">
+	{#await warehousePromise}
+		<div class="warehouse-loading">
 			<Spinner />
 		</div>
-	{:then container}
+	{:then warehouse}
 		{@const locationName = getLocationName(
-			container.geoJson.properties.wayName,
-			container.geoJson.properties.municipalityName,
+			warehouse.geoJson.properties.wayName,
+			warehouse.geoJson.properties.municipalityName,
 		)}
 		<DetailsHeader to="" title={locationName}>
 			<Button
 				startIcon="delete"
 				actionType="danger"
 				variant="secondary"
-				onClick={deleteContainer}
+				onClick={deleteWarehouse}
 			/>
-			<Link to={`${container.id}/map`} style="display:contents">
+			<Link to={`${warehouse.id}/map`} style="display:contents">
 				<Button variant="secondary" startIcon="map">
 					{$t("sidebar.map")}
 				</Button>
 			</Link>
-			<Link to={`${container.id}/edit`} style="display:contents">
+			<Link to={`${warehouse.id}/edit`} style="display:contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
 		<DetailsContent>
 			<DetailsSection label={$t("generalInfo")}>
 				<DetailsFields>
-					<Field
-						label={$t("containers.category")}
-						value={$t(`containers.category.${container.category}`)}
-					/>
 					<Field label={$t("location")} value={locationName} />
+					<Field label={$t("truckCapacity")} value={warehouse.truckCapacity} />
 				</DetailsFields>
 			</DetailsSection>
 			<DetailsSection label={$t("additionalInfo")}>
 				<DetailsFields>
 					<Field
 						label={$t("createdAt")}
-						value={formatDate(container.createdAt, DateFormats.shortDateTime)}
+						value={formatDate(warehouse.createdAt, DateFormats.shortDateTime)}
 					/>
 					<Field
 						label={$t("modifiedAt")}
-						value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
+						value={formatDate(warehouse.modifiedAt, DateFormats.shortDateTime)}
 					/>
 				</DetailsFields>
 			</DetailsSection>
 		</DetailsContent>
 	{:catch}
-		<div class="container-not-found">
-			<h2>{$t("containers.notFound.title")}</h2>
-			<p>{$t("containers.notFound.description")}</p>
+		<div class="warehouse-not-found">
+			<h2>{$t("warehouses.notFound.title")}</h2>
+			<p>{$t("warehouses.notFound.description")}</p>
 		</div>
 	{/await}
 </Card>
 
 <style>
-	.container-loading {
+	.warehouse-loading {
 		height: 100%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 	}
 
-	.container-not-found {
+	.warehouse-not-found {
 		height: 50%;
 		display: flex;
 		flex-direction: column;

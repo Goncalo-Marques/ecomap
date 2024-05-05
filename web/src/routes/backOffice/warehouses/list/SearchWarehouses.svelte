@@ -2,9 +2,9 @@
 	import Search from "../../../../lib/components/Search.svelte";
 	import debounce from "../../../../lib/utils/debounce";
 	import { t } from "../../../../lib/utils/i8n";
-	import containersStore from "./containersStore";
+	import warehousesStore from "./warehousesStore";
 
-	const { filters } = containersStore;
+	const { filters } = warehousesStore;
 
 	/**
 	 * Handles the change of value of the search input.

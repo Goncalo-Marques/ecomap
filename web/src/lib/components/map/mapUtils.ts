@@ -24,6 +24,7 @@ import {
 	colorLayerKey,
 	nameLayerKey,
 	DEFAULT_MAX_ZOOM,
+	CONTAINER_ICON_SRC,
 } from "../../constants/map";
 import type { Geometry } from "ol/geom";
 import type Feature from "ol/Feature";
@@ -53,7 +54,7 @@ const defaultVectorStyle: VectorStyle = {
  * Default style for WebGl point layer.
  */
 const defaultIconStyle: WebGLStyle = {
-	"icon-src": "/images/logo.svg",
+	"icon-src": CONTAINER_ICON_SRC,
 };
 
 /**
@@ -61,7 +62,7 @@ const defaultIconStyle: WebGLStyle = {
  */
 const defaultClusterIcon = new Style({
 	image: new Icon({
-		src: "/images/logo.svg",
+		src: CONTAINER_ICON_SRC,
 	}),
 });
 
