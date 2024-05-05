@@ -89,9 +89,9 @@ func (s *store) ListUserContainerBookmarks(ctx context.Context, tx pgx.Tx, userI
 	switch domainSortField {
 	case domain.UserContainerBookmarkPaginatedSortContainerCategory:
 		sortField = "c.category"
-	case domain.UserContainerBookmarkPaginatedSortWayName:
+	case domain.UserContainerBookmarkPaginatedSortContainerWayName:
 		sortField = "rn.osm_name"
-	case domain.UserContainerBookmarkPaginatedSortMunicipalityName:
+	case domain.UserContainerBookmarkPaginatedSortContainerMunicipalityName:
 		sortField = "m.name"
 	case domain.UserContainerBookmarkPaginatedSortCreatedAt:
 		sortField = "ucb.created_at"

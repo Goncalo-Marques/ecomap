@@ -9,11 +9,10 @@ import (
 
 // Employee errors.
 var (
-	ErrEmployeeAlreadyExists                             = errors.New("username already exists")                                 // Returned when an employee already exists with the same username.
-	ErrEmployeeNotFound                                  = errors.New("employee not found")                                      // Returned when an employee is not found.
-	ErrEmployeeAssociatedWithContainerReportAsResolver   = errors.New("employee associated with container report as resolver")   // Returned when an employee is associated with a container report as a resolver.
-	ErrEmployeeAssociatedWithRouteContainerAsResponsible = errors.New("employee associated with route container as responsible") // Returned when an employee is associated with a route container as responsible.
-	ErrEmployeeAssociatedWithRouteEmployee               = errors.New("employee associated with route")                          // Returned when an employee is associated with a route.
+	ErrEmployeeAlreadyExists                           = errors.New("username already exists")                               // Returned when an employee already exists with the same username.
+	ErrEmployeeNotFound                                = errors.New("employee not found")                                    // Returned when an employee is not found.
+	ErrEmployeeAssociatedWithContainerReportAsResolver = errors.New("employee associated with container report as resolver") // Returned when an employee is associated with a container report as a resolver.
+	ErrEmployeeAssociatedWithRouteEmployee             = errors.New("employee associated with route")                        // Returned when an employee is associated with a route.
 )
 
 // EmployeeRole defines the role of the employee.
