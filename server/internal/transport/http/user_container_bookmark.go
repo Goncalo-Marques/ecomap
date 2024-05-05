@@ -102,10 +102,10 @@ func listUserContainerBookmarksParamsToDomain(params spec.ListUserContainerBookm
 		switch *params.Sort {
 		case spec.ListUserContainerBookmarksParamsSortContainerCategory:
 			domainSort = domain.UserContainerBookmarkPaginatedSortContainerCategory
-		case spec.ListUserContainerBookmarksParamsSortWayName:
-			domainSort = domain.UserContainerBookmarkPaginatedSortWayName
-		case spec.ListUserContainerBookmarksParamsSortMunicipalityName:
-			domainSort = domain.UserContainerBookmarkPaginatedSortMunicipalityName
+		case spec.ListUserContainerBookmarksParamsSortContainerWayName:
+			domainSort = domain.UserContainerBookmarkPaginatedSortContainerWayName
+		case spec.ListUserContainerBookmarksParamsSortContainerMunicipalityName:
+			domainSort = domain.UserContainerBookmarkPaginatedSortContainerMunicipalityName
 		case spec.ListUserContainerBookmarksParamsSortCreatedAt:
 			domainSort = domain.UserContainerBookmarkPaginatedSortCreatedAt
 		default:

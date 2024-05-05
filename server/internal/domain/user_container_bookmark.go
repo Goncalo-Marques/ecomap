@@ -12,10 +12,10 @@ var (
 type UserContainerBookmarkPaginatedSort string
 
 const (
-	UserContainerBookmarkPaginatedSortContainerCategory UserContainerBookmarkPaginatedSort = "containerCategory"
-	UserContainerBookmarkPaginatedSortWayName           UserContainerBookmarkPaginatedSort = "wayName"
-	UserContainerBookmarkPaginatedSortMunicipalityName  UserContainerBookmarkPaginatedSort = "municipalityName"
-	UserContainerBookmarkPaginatedSortCreatedAt         UserContainerBookmarkPaginatedSort = "createdAt"
+	UserContainerBookmarkPaginatedSortContainerCategory         UserContainerBookmarkPaginatedSort = "containerCategory"
+	UserContainerBookmarkPaginatedSortContainerWayName          UserContainerBookmarkPaginatedSort = "containerWayName"
+	UserContainerBookmarkPaginatedSortContainerMunicipalityName UserContainerBookmarkPaginatedSort = "containerMunicipalityName"
+	UserContainerBookmarkPaginatedSortCreatedAt                 UserContainerBookmarkPaginatedSort = "createdAt"
 )
 
 // Field returns the name of the field to sort by.
@@ -27,8 +27,8 @@ func (s UserContainerBookmarkPaginatedSort) Field() UserContainerBookmarkPaginat
 func (s UserContainerBookmarkPaginatedSort) Valid() bool {
 	switch s {
 	case UserContainerBookmarkPaginatedSortContainerCategory,
-		UserContainerBookmarkPaginatedSortWayName,
-		UserContainerBookmarkPaginatedSortMunicipalityName,
+		UserContainerBookmarkPaginatedSortContainerWayName,
+		UserContainerBookmarkPaginatedSortContainerMunicipalityName,
 		UserContainerBookmarkPaginatedSortCreatedAt:
 		return true
 	default:
