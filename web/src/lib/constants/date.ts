@@ -16,7 +16,6 @@ export const DateFormats: Record<DateFormat, Intl.DateTimeFormatOptions> = {
 		minute: "2-digit",
 	},
 	shortTime: {
-		hourCycle: "h24",
 		hour: "2-digit",
 		minute: "2-digit",
 	},
