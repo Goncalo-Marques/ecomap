@@ -1,17 +1,12 @@
 <script lang="ts">
-	import type {
-		Container,
-		ContainerCategory,
-	} from "../../../../domain/container";
 	import Button from "../../../../lib/components/Button.svelte";
 	import { t } from "../../../../lib/utils/i8n";
 	import DetailsFields from "../../../../lib/components/details/DetailsFields.svelte";
 	import DetailsSection from "../../../../lib/components/details/DetailsSection.svelte";
 	import DetailsContent from "../../../../lib/components/details/DetailsContent.svelte";
+	import Input from "../../../../lib/components/Input.svelte";
 	import Map from "../../../../lib/components/map/Map.svelte";
 	import OlMap from "ol/Map";
-	import Select from "../../../../lib/components/Select.svelte";
-	import Option from "../../../../lib/components/Option.svelte";
 	import FormControl from "../../../../lib/components/FormControl.svelte";
 	import SelectLocation from "../../../../lib/components/SelectLocation.svelte";
 	import VectorLayer from "ol/layer/Vector";
@@ -22,14 +17,13 @@
 	import { Link } from "svelte-routing";
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
-	import { categoryOptions } from "../constants/category";
 	import {
 		convertToMapProjection,
 		convertToResourceProjection,
 	} from "../../../../lib/utils/map";
-	import { isValidContainerCategory } from "../utils/category";
 	import { getLocationName } from "../../../../lib/utils/location";
-	import { CONTAINER_ICON_SRC } from "../../../../lib/constants/map";
+	import type { Warehouse } from "../../../../domain/warehouse";
+	import { WAREHOUSE_ICON_SRC } from "../../../../lib/constants/map";
 	import LocationInput from "../../../../lib/components/LocationInput.svelte";
 
 	/**
@@ -46,28 +40,38 @@
 	 * Callback fired when save action is triggered.
 	 */
 	export let onSave: (
-		category: ContainerCategory,
+		truckCapacity: number,
 		location: GeoJSONFeaturePoint,
 	) => void;
 
 	/**
-	 * Container data.
+	 * Warehouse data.
 	 * @default null
 	 */
-	export let container: Container | null = null;
+	export let warehouse: Warehouse | null = null;
 
 	/**
-	 * The map which displays the selected container location.
+	 * The minimum valid capacity for the truck capacity field.
+	 */
+	const TRUCK_CAPACITY_MIN_VALUE = 0;
+
+	/**
+	 * The maximum valid capacity for the truck capacity field.
+	 */
+	const TRUCK_CAPACITY_MAX_VALUE = 99;
+
+	/**
+	 * The map which displays the selected warehouse location.
 	 */
 	let mapPreview: OlMap;
 
 	/**
-	 * The map layer which displays the container location.
+	 * The map layer which displays the warehouse location.
 	 */
 	const layer = new VectorLayer({
 		source: new VectorSource<Feature<Point>>({ features: [] }),
 		style: {
-			"icon-src": CONTAINER_ICON_SRC,
+			"icon-src": WAREHOUSE_ICON_SRC,
 		},
 	});
 
@@ -78,33 +82,35 @@
 	let openSelectLocation = false;
 
 	/**
-	 * The selected container location coordinate.
+	 * The selected warehouse location coordinate.
 	 */
-	let selectedCoordinate = container?.geoJson.geometry.coordinates;
+	let selectedCoordinate = warehouse?.geoJson.geometry.coordinates;
 
 	/**
-	 * The location name of the container.
+	 * The location name of the warehouse.
 	 */
-	let locationName = container
+	let locationName = warehouse
 		? getLocationName(
-				container.geoJson.properties.wayName,
-				container.geoJson.properties.municipalityName,
+				warehouse.geoJson.properties.wayName,
+				warehouse.geoJson.properties.municipalityName,
 			)
 		: "";
+
+	let truckCapacity = warehouse?.truckCapacity;
 
 	/**
 	 * Error messages of the form fields.
 	 */
 	let formErrorMessages = {
-		category: "",
+		truckCapacity: "",
 		location: "",
 	};
 
 	/**
-	 * Adds the container to the map preview given a coordinate.
-	 * @param coordinate Container coordinate.
+	 * Adds the warehouse to the map preview given a coordinate.
+	 * @param coordinate Warehouse coordinate.
 	 */
-	function addContainerToMap(coordinate: Coordinate) {
+	function addWarehouseToMap(coordinate: Coordinate) {
 		const source = layer.getSource();
 		if (!source) {
 			return;
@@ -126,21 +132,43 @@
 	/**
 	 * Validates the form and sets error messages on the form fields
 	 * if they contain any errors.
-	 * @param category Category field value.
-	 * @param location Location field value.
+	 * @param truckCapacityValidity Truck capacity field validity state.
+	 * @param locationValidity Location field validity state.
+	 * @param coordinate Warehouse coordinate.
+	 * @returns `true` if form is valid, `false` otherwise.
 	 */
-	function validateForm(category: string, location: string) {
-		if (!category) {
-			formErrorMessages.category = $t("error.valueMissing");
+	function validateForm(
+		truckCapacityValidity: ValidityState,
+		locationValidity: ValidityState,
+		coordinate: number[] | undefined,
+	): coordinate is number[] {
+		if (truckCapacityValidity.badInput || truckCapacityValidity.stepMismatch) {
+			formErrorMessages.truckCapacity = $t("error.typeMismatch.number");
+		} else if (truckCapacityValidity.valueMissing) {
+			formErrorMessages.truckCapacity = $t("error.valueMissing");
+		} else if (truckCapacityValidity.rangeUnderflow) {
+			formErrorMessages.truckCapacity = $t("error.rangeUnderflow", {
+				min: TRUCK_CAPACITY_MIN_VALUE,
+			});
+		} else if (truckCapacityValidity.rangeOverflow) {
+			formErrorMessages.truckCapacity = $t("error.rangeOverflow", {
+				max: TRUCK_CAPACITY_MAX_VALUE,
+			});
 		} else {
-			formErrorMessages.category = "";
+			formErrorMessages.truckCapacity = "";
 		}
 
-		if (!location) {
+		if (locationValidity.valueMissing) {
 			formErrorMessages.location = $t("error.valueMissing");
 		} else {
 			formErrorMessages.location = "";
 		}
+
+		return (
+			!formErrorMessages.truckCapacity &&
+			!formErrorMessages.location &&
+			!!coordinate
+		);
 	}
 
 	/**
@@ -148,27 +176,36 @@
 	 * @param e Submit event.
 	 */
 	function handleSubmit(e: SubmitEvent) {
-		const formData = new FormData(e.currentTarget as HTMLFormElement);
-		const category = formData.get("category") ?? "";
+		const form = e.currentTarget as HTMLFormElement;
+		const formData = new FormData(form);
+
+		const truckCapacity = formData.get("truckCapacity") ?? "";
 		const location = formData.get("location") ?? "";
 
-		// Check if category and location are both strings.
-		if (typeof category !== "string" || typeof location !== "string") {
+		// Check if truck capacity and location are both strings.
+		if (typeof truckCapacity !== "string" || typeof location !== "string") {
 			return;
 		}
 
-		validateForm(category, location);
+		const truckCapacityInput = form.elements.namedItem(
+			"truckCapacity",
+		) as HTMLInputElement;
+		const locationInput = form.elements.namedItem(
+			"location",
+		) as HTMLInputElement;
 
-		// Check if fields are not filled to prevent making a server request.
-		if (!category || !location || !selectedCoordinate) {
+		// Check if form is valid to prevent making a server request.
+		if (
+			!validateForm(
+				truckCapacityInput.validity,
+				locationInput.validity,
+				selectedCoordinate,
+			)
+		) {
 			return;
 		}
 
-		if (!isValidContainerCategory(category)) {
-			return;
-		}
-
-		onSave(category, {
+		onSave(Number(truckCapacity), {
 			type: "Feature",
 			geometry: {
 				type: "Point",
@@ -190,25 +227,6 @@
 		<DetailsSection label={$t("generalInfo")}>
 			<DetailsFields>
 				<FormControl
-					label={$t("containers.category")}
-					error={!!formErrorMessages.category}
-					helperText={formErrorMessages.category}
-				>
-					<Select
-						required
-						name="category"
-						error={!!formErrorMessages.category}
-						placeholder={$t("containers.category.placeholder")}
-						value={container?.category}
-					>
-						{#each categoryOptions as category}
-							<Option value={category}>
-								{$t(`containers.category.${category}`)}
-							</Option>
-						{/each}
-					</Select>
-				</FormControl>
-				<FormControl
 					label={$t("location")}
 					error={!!formErrorMessages.location}
 					helperText={formErrorMessages.location}
@@ -216,35 +234,51 @@
 					<LocationInput
 						required
 						name="location"
+						placeholder={$t("location.placeholder")}
 						value={locationName}
 						error={!!formErrorMessages.location}
-						placeholder={$t("location.placeholder")}
 						onClick={() => (openSelectLocation = true)}
+					/>
+				</FormControl>
+				<FormControl
+					label={$t("truckCapacity")}
+					error={!!formErrorMessages.truckCapacity}
+					helperText={formErrorMessages.truckCapacity}
+				>
+					<Input
+						required
+						name="truckCapacity"
+						value={truckCapacity}
+						error={!!formErrorMessages.truckCapacity}
+						placeholder={$t("truckCapacity.placeholder")}
+						type="number"
+						min={TRUCK_CAPACITY_MIN_VALUE}
+						max={TRUCK_CAPACITY_MAX_VALUE}
 					/>
 				</FormControl>
 			</DetailsFields>
 		</DetailsSection>
-		<DetailsSection class="container-map-preview" label={$t("preview")}>
+		<DetailsSection class="warehouse-map-preview" label={$t("preview")}>
 			<Map
 				bind:map={mapPreview}
 				onInit={() => {
-					const containerCoordinate = container?.geoJson.geometry.coordinates;
-					if (!containerCoordinate) {
+					const warehouseCoordinate = warehouse?.geoJson.geometry.coordinates;
+					if (!warehouseCoordinate) {
 						return;
 					}
 
-					const mapCoordinate = convertToMapProjection(containerCoordinate);
-					addContainerToMap(mapCoordinate);
+					const mapCoordinate = convertToMapProjection(warehouseCoordinate);
+					addWarehouseToMap(mapCoordinate);
 				}}
 			/>
 		</DetailsSection>
 		<SelectLocation
 			open={openSelectLocation}
 			coordinate={selectedCoordinate}
-			iconSrc={CONTAINER_ICON_SRC}
+			iconSrc={WAREHOUSE_ICON_SRC}
 			onOpenChange={open => (openSelectLocation = open)}
 			onSave={(coordinate, name) => {
-				addContainerToMap(coordinate);
+				addWarehouseToMap(coordinate);
 				selectedCoordinate = convertToResourceProjection(coordinate);
 				locationName = name;
 			}}
@@ -253,7 +287,7 @@
 </form>
 
 <style>
-	:global(.container-map-preview) {
+	:global(.warehouse-map-preview) {
 		flex: 1;
 	}
 
