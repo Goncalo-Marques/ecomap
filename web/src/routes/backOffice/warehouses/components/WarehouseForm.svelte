@@ -24,6 +24,7 @@
 	import { getLocationName } from "../../../../lib/utils/location";
 	import type { Warehouse } from "../../../../domain/warehouse";
 	import { WAREHOUSE_ICON_SRC } from "../../../../lib/constants/map";
+	import LocationInput from "../../../../lib/components/LocationInput.svelte";
 
 	/**
 	 * The back route.
@@ -48,6 +49,16 @@
 	 * @default null
 	 */
 	export let warehouse: Warehouse | null = null;
+
+	/**
+	 * The minimum valid capacity for the truck capacity field.
+	 */
+	const TRUCK_CAPACITY_MIN_VALUE = 0;
+
+	/**
+	 * The maximum valid capacity for the truck capacity field.
+	 */
+	const TRUCK_CAPACITY_MAX_VALUE = 99;
 
 	/**
 	 * The map which displays the selected warehouse location.
@@ -123,19 +134,41 @@
 	 * if they contain any errors.
 	 * @param truckCapacity Truck capacity field value.
 	 * @param location Location field value.
+	 * @param coordinate Warehouse coordinate.
+	 * @returns `true` if form is valid, `false` otherwise.
 	 */
-	function validateForm(truckCapacity: string, location: string) {
+	function validateForm(
+		truckCapacity: string,
+		location: string,
+		coordinate: number[] | undefined,
+	): coordinate is number[] {
 		if (!truckCapacity) {
-			formErrorMessages.truckCapacity = $t("error.requiredField");
+			formErrorMessages.truckCapacity = $t("error.valueMissing");
+		} else if (!Number.isInteger(Number(truckCapacity))) {
+			formErrorMessages.truckCapacity = $t("error.typeMismatch.number");
+		} else if (Number(truckCapacity) < TRUCK_CAPACITY_MIN_VALUE) {
+			formErrorMessages.truckCapacity = $t("error.rangeUnderflow", {
+				min: TRUCK_CAPACITY_MIN_VALUE,
+			});
+		} else if (Number(truckCapacity) > TRUCK_CAPACITY_MAX_VALUE) {
+			formErrorMessages.truckCapacity = $t("error.rangeOverflow", {
+				max: TRUCK_CAPACITY_MAX_VALUE,
+			});
 		} else {
 			formErrorMessages.truckCapacity = "";
 		}
 
 		if (!location) {
-			formErrorMessages.location = $t("error.requiredField");
+			formErrorMessages.location = $t("error.valueMissing");
 		} else {
 			formErrorMessages.location = "";
 		}
+
+		return (
+			!formErrorMessages.truckCapacity &&
+			!formErrorMessages.location &&
+			!!coordinate
+		);
 	}
 
 	/**
@@ -152,10 +185,8 @@
 			return;
 		}
 
-		validateForm(truckCapacity, location);
-
-		// Check if fields are not filled to prevent making a server request.
-		if (!truckCapacity || !location || !selectedCoordinate) {
+		// Check if form is valid to prevent making a server request.
+		if (!validateForm(truckCapacity, location, selectedCoordinate)) {
 			return;
 		}
 
@@ -170,7 +201,7 @@
 	}
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
+<form novalidate on:submit|preventDefault={handleSubmit}>
 	<DetailsHeader to={back} {title}>
 		<Link to={back} style="display:contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
@@ -185,13 +216,12 @@
 					error={!!formErrorMessages.location}
 					helperText={formErrorMessages.location}
 				>
-					<Input
-						readonly
+					<LocationInput
+						required
 						name="location"
+						placeholder={$t("location.placeholder")}
 						value={locationName}
 						error={!!formErrorMessages.location}
-						placeholder={$t("location.placeholder")}
-						endIcon="location_on"
 						onClick={() => (openSelectLocation = true)}
 					/>
 				</FormControl>
@@ -201,13 +231,14 @@
 					helperText={formErrorMessages.truckCapacity}
 				>
 					<Input
+						required
 						name="truckCapacity"
 						value={truckCapacity}
 						error={!!formErrorMessages.truckCapacity}
 						placeholder={$t("truckCapacity.placeholder")}
 						type="number"
-						min={0}
-						max={99}
+						min={TRUCK_CAPACITY_MIN_VALUE}
+						max={TRUCK_CAPACITY_MAX_VALUE}
 					/>
 				</FormControl>
 			</DetailsFields>

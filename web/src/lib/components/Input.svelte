@@ -2,6 +2,7 @@
 	import type {
 		ChangeEventHandler,
 		HTMLInputAttributes,
+		KeyboardEventHandler,
 		MouseEventHandler,
 	} from "svelte/elements";
 	import Icon from "./Icon.svelte";
@@ -61,6 +62,12 @@
 	export let onInput: ChangeEventHandler<HTMLInputElement> | null = null;
 
 	/**
+	 * Callback fired when a key is pressed.
+	 * @default null
+	 */
+	export let onKeyDown: KeyboardEventHandler<HTMLInputElement> | null = null;
+
+	/**
 	 * The text that appears in the form control when it has no value set.
 	 * @default null
 	 */
@@ -71,6 +78,18 @@
 	 * @default false
 	 */
 	export let readonly: boolean = false;
+
+	/**
+	 * Indicates that the user must specify a value for the input before the owning form can be submitted.
+	 * @default false
+	 */
+	export let required: boolean = false;
+
+	/**
+	 * CSS styling declarations to be applied to the element.
+	 * @default null
+	 */
+	export let style: string | null = null;
 
 	/**
 	 * The type of control to render.
@@ -95,8 +114,11 @@
 		{type}
 		{value}
 		{readonly}
+		{required}
 		{max}
 		{min}
+		{style}
+		on:keydown={onKeyDown}
 		on:input={onInput}
 		on:click={onClick}
 		data-endIcon={endIcon}

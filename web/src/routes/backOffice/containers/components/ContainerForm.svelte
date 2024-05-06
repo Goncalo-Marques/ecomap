@@ -8,7 +8,6 @@
 	import DetailsFields from "../../../../lib/components/details/DetailsFields.svelte";
 	import DetailsSection from "../../../../lib/components/details/DetailsSection.svelte";
 	import DetailsContent from "../../../../lib/components/details/DetailsContent.svelte";
-	import Input from "../../../../lib/components/Input.svelte";
 	import Map from "../../../../lib/components/map/Map.svelte";
 	import OlMap from "ol/Map";
 	import Select from "../../../../lib/components/Select.svelte";
@@ -31,6 +30,7 @@
 	import { isValidContainerCategory } from "../utils/category";
 	import { getLocationName } from "../../../../lib/utils/location";
 	import { CONTAINER_ICON_SRC } from "../../../../lib/constants/map";
+	import LocationInput from "../../../../lib/components/LocationInput.svelte";
 
 	/**
 	 * The back route.
@@ -131,13 +131,13 @@
 	 */
 	function validateForm(category: string, location: string) {
 		if (!category) {
-			formErrorMessages.category = $t("error.requiredField");
+			formErrorMessages.category = $t("error.valueMissing");
 		} else {
 			formErrorMessages.category = "";
 		}
 
 		if (!location) {
-			formErrorMessages.location = $t("error.requiredField");
+			formErrorMessages.location = $t("error.valueMissing");
 		} else {
 			formErrorMessages.location = "";
 		}
@@ -179,7 +179,7 @@
 	}
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
+<form novalidate on:submit|preventDefault={handleSubmit}>
 	<DetailsHeader to={back} {title}>
 		<Link to={back} style="display:contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
@@ -195,6 +195,7 @@
 					helperText={formErrorMessages.category}
 				>
 					<Select
+						required
 						name="category"
 						error={!!formErrorMessages.category}
 						placeholder={$t("containers.category.placeholder")}
@@ -212,13 +213,12 @@
 					error={!!formErrorMessages.location}
 					helperText={formErrorMessages.location}
 				>
-					<Input
-						readonly
+					<LocationInput
+						required
 						name="location"
 						value={locationName}
 						error={!!formErrorMessages.location}
 						placeholder={$t("location.placeholder")}
-						endIcon="location_on"
 						onClick={() => (openSelectLocation = true)}
 					/>
 				</FormControl>

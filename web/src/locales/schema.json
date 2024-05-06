@@ -139,7 +139,28 @@
 		"warehouses.delete.conflict.description": {
 			"type": "string"
 		},
-		"error.requiredField": {
+		"error.valueMissing": {
+			"type": "string"
+		},
+		"error.typeMismatch.number": {
+			"type": "string"
+		},
+		"error.patternMismatch": {
+			"type": "string"
+		},
+		"error.tooLong": {
+			"type": "string"
+		},
+		"error.tooShort": {
+			"type": "string"
+		},
+		"error.rangeUnderflow": {
+			"type": "string"
+		},
+		"error.rangeOverflow": {
+			"type": "string"
+		},
+		"error.stepMismatch": {
 			"type": "string"
 		},
 		"error.unexpected": {
