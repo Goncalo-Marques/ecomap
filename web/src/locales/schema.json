@@ -34,6 +34,15 @@
 		"selectLocation": {
 			"type": "string"
 		},
+		"location": {
+			"type": "string"
+		},
+		"location.placeholder": {
+			"type": "string"
+		},
+		"location.search": {
+			"type": "string"
+		},
 		"location.unknownWay": {
 			"type": "string"
 		},
@@ -52,16 +61,10 @@
 		"containers.create.success": {
 			"type": "string"
 		},
-		"containers.search": {
-			"type": "string"
-		},
 		"containers.category": {
 			"type": "string"
 		},
-		"containers.location": {
-			"type": "string"
-		},
-		"containers.location.placeholder": {
+		"truckCapacity.placeholder": {
 			"type": "string"
 		},
 		"containers.category.general": {
@@ -100,7 +103,64 @@
 		"containers.delete.conflict.description": {
 			"type": "string"
 		},
-		"error.requiredField": {
+		"warehouses": {
+			"type": "string"
+		},
+		"truckCapacity": {
+			"type": "string"
+		},
+		"warehouses.create.title": {
+			"type": "string"
+		},
+		"warehouses.create.success": {
+			"type": "string"
+		},
+		"warehouses.update.success": {
+			"type": "string"
+		},
+		"warehouses.update.conflict.title": {
+			"type": "string"
+		},
+		"warehouses.update.conflict.description": {
+			"type": "string"
+		},
+		"warehouses.notFound.title": {
+			"type": "string"
+		},
+		"warehouses.notFound.description": {
+			"type": "string"
+		},
+		"warehouses.delete.success": {
+			"type": "string"
+		},
+		"warehouses.delete.conflict.title": {
+			"type": "string"
+		},
+		"warehouses.delete.conflict.description": {
+			"type": "string"
+		},
+		"error.valueMissing": {
+			"type": "string"
+		},
+		"error.typeMismatch.number": {
+			"type": "string"
+		},
+		"error.patternMismatch": {
+			"type": "string"
+		},
+		"error.tooLong": {
+			"type": "string"
+		},
+		"error.tooShort": {
+			"type": "string"
+		},
+		"error.rangeUnderflow": {
+			"type": "string"
+		},
+		"error.rangeOverflow": {
+			"type": "string"
+		},
+		"error.stepMismatch": {
 			"type": "string"
 		},
 		"error.unexpected": {

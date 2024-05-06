@@ -19,6 +19,7 @@
 	import {
 		DEFAULT_ANIMATION_DURATION,
 		DEFAULT_MAX_ZOOM,
+		DEFAULT_PIN_ICON_SRC,
 	} from "../constants/map";
 
 	/**
@@ -52,6 +53,12 @@
 	export let onCancel: (() => void) | null = null;
 
 	/**
+	 * Map layer style.
+	 * @default "/images/pin.svg"
+	 */
+	export let iconSrc: string = DEFAULT_PIN_ICON_SRC;
+
+	/**
 	 * Open Layers map.
 	 */
 	let map: OlMap;
@@ -67,7 +74,7 @@
 	const layer = new VectorLayer({
 		source: new VectorSource<Feature<Point>>({ features: [] }),
 		style: {
-			"icon-src": "/images/pin.svg",
+			"icon-src": iconSrc,
 		},
 	});
 
