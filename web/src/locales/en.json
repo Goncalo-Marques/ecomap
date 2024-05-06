@@ -52,7 +52,7 @@
 	"error.tooLong": "Value must be {{maxLength}} characters or less",
 	"error.tooShort": "Value must be {{minLength}} characters or more",
 	"error.rangeUnderflow": "Value must not be less than {{min}}",
-	"error.rangeOverflow": "Value must not be more than {{max}}",
+	"error.rangeOverflow": "Value must not be greater than {{max}}",
 	"error.stepMismatch": "Invalid value",
 	"error.unexpected": "An unexpected error occurred. Please try again later or contact the support team.",
 	"error.unexpected.title": "Oops! An unexpected error occurred",
