@@ -73,6 +73,10 @@ CREATE TRIGGER employees_update_modified_at
     FOR EACH ROW
     EXECUTE PROCEDURE update_modified_at();
 
+-- Insert default admin manager employee with 'admin' password.
+INSERT INTO employees(username, password, first_name, last_name, role, date_of_birth, phone_number, geom, schedule_start, schedule_end)
+    VALUES ('admin', '$2a$14$3YbWepKf4uralK8RS4Gi5eiIwKOrUU0dHWXaTCGpEmWfr.gdjEu96', 'Super', 'Admin', 'manager', '1970-01-01', '', ST_GeomFromGeoJSON('{"coordinates": [0, 0], "type": "Point"}'), '00:00:00', '00:00:00');
+
 -- Containers.
 CREATE TYPE containers_category AS ENUM ('general', 'paper', 'plastic', 'metal', 'glass', 'organic', 'hazardous');
 
