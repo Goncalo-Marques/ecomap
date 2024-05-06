@@ -132,25 +132,25 @@
 	/**
 	 * Validates the form and sets error messages on the form fields
 	 * if they contain any errors.
-	 * @param truckCapacity Truck capacity field value.
-	 * @param location Location field value.
+	 * @param truckCapacityValidity Truck capacity field validity state.
+	 * @param locationValidity Location field validity state.
 	 * @param coordinate Warehouse coordinate.
 	 * @returns `true` if form is valid, `false` otherwise.
 	 */
 	function validateForm(
-		truckCapacity: string,
-		location: string,
+		truckCapacityValidity: ValidityState,
+		locationValidity: ValidityState,
 		coordinate: number[] | undefined,
 	): coordinate is number[] {
-		if (!truckCapacity) {
-			formErrorMessages.truckCapacity = $t("error.valueMissing");
-		} else if (!Number.isInteger(Number(truckCapacity))) {
+		if (truckCapacityValidity.badInput || truckCapacityValidity.stepMismatch) {
 			formErrorMessages.truckCapacity = $t("error.typeMismatch.number");
-		} else if (Number(truckCapacity) < TRUCK_CAPACITY_MIN_VALUE) {
+		} else if (truckCapacityValidity.valueMissing) {
+			formErrorMessages.truckCapacity = $t("error.valueMissing");
+		} else if (truckCapacityValidity.rangeUnderflow) {
 			formErrorMessages.truckCapacity = $t("error.rangeUnderflow", {
 				min: TRUCK_CAPACITY_MIN_VALUE,
 			});
-		} else if (Number(truckCapacity) > TRUCK_CAPACITY_MAX_VALUE) {
+		} else if (truckCapacityValidity.rangeOverflow) {
 			formErrorMessages.truckCapacity = $t("error.rangeOverflow", {
 				max: TRUCK_CAPACITY_MAX_VALUE,
 			});
@@ -158,7 +158,7 @@
 			formErrorMessages.truckCapacity = "";
 		}
 
-		if (!location) {
+		if (locationValidity.valueMissing) {
 			formErrorMessages.location = $t("error.valueMissing");
 		} else {
 			formErrorMessages.location = "";
@@ -176,7 +176,9 @@
 	 * @param e Submit event.
 	 */
 	function handleSubmit(e: SubmitEvent) {
-		const formData = new FormData(e.currentTarget as HTMLFormElement);
+		const form = e.currentTarget as HTMLFormElement;
+		const formData = new FormData(form);
+
 		const truckCapacity = formData.get("truckCapacity") ?? "";
 		const location = formData.get("location") ?? "";
 
@@ -185,8 +187,21 @@
 			return;
 		}
 
+		const truckCapacityInput = form.elements.namedItem(
+			"truckCapacity",
+		) as HTMLInputElement;
+		const locationInput = form.elements.namedItem(
+			"location",
+		) as HTMLInputElement;
+
 		// Check if form is valid to prevent making a server request.
-		if (!validateForm(truckCapacity, location, selectedCoordinate)) {
+		if (
+			!validateForm(
+				truckCapacityInput.validity,
+				locationInput.validity,
+				selectedCoordinate,
+			)
+		) {
 			return;
 		}
 
