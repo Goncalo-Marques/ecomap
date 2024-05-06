@@ -32,3 +32,18 @@ export const OL_PROJECTION = "EPSG:3857";
  * Resource geometry projection.
  */
 export const RESOURCE_PROJECTION = "EPSG:4326";
+
+/**
+ * Source location of the default pin icon.
+ */
+export const DEFAULT_PIN_ICON_SRC = "/images/pin.svg";
+
+/**
+ * Source location of the container pin icon.
+ */
+export const CONTAINER_ICON_SRC = "/images/logo.svg";
+
+/**
+ * Source location of the warehouse pin icon.
+ */
+export const WAREHOUSE_ICON_SRC = "/images/warehouse-pin.svg";

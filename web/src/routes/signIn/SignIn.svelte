@@ -36,13 +36,13 @@
 	 */
 	function validateForm(username: string, password: string) {
 		if (!username) {
-			formErrorMessages.username = $t("error.requiredField");
+			formErrorMessages.username = $t("error.valueMissing");
 		} else {
 			formErrorMessages.username = "";
 		}
 
 		if (!password) {
-			formErrorMessages.password = $t("error.requiredField");
+			formErrorMessages.password = $t("error.valueMissing");
 		} else {
 			formErrorMessages.password = "";
 		}
@@ -137,7 +137,7 @@
 	<article>
 		<h1>{$t("signin.title")}</h1>
 
-		<form method="post" on:submit|preventDefault={handleSubmit}>
+		<form novalidate method="post" on:submit|preventDefault={handleSubmit}>
 			<div class="container">
 				<FormControl
 					error={!!formErrorMessages.username}
@@ -145,6 +145,7 @@
 					helperText={formErrorMessages.username}
 				>
 					<Input
+						required
 						type="text"
 						name="username"
 						error={!!formErrorMessages.username}
@@ -159,6 +160,7 @@
 					helperText={formErrorMessages.password}
 				>
 					<Input
+						required
 						type="password"
 						name="password"
 						error={!!formErrorMessages.password}

@@ -39,6 +39,12 @@
 	export let placeholder: string | null = null;
 
 	/**
+	 * Indicates that the user must specify a value for the input before the owning form can be submitted.
+	 * @default false
+	 */
+	export let required: boolean = false;
+
+	/**
 	 * The value of the select.
 	 * @default ""
 	 */
@@ -50,6 +56,7 @@
 	{name}
 	{value}
 	{placeholder}
+	{required}
 	on:change={onChange}
 	class={`${className} ${error ? "error" : ""}`}
 >

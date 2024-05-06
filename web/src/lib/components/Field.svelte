@@ -10,7 +10,7 @@
 	 * The value of the field.
 	 * @default null
 	 */
-	export let value: string | null = null;
+	export let value: number | string | null = null;
 </script>
 
 <div>
