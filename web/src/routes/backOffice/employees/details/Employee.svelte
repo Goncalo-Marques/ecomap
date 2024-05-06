@@ -97,9 +97,6 @@
 				variant="secondary"
 				onClick={deleteEmployee}
 			/>
-			<Link to="" style="display:contents">
-				<Button startIcon="edit">{$t("editInfo")}</Button>
-			</Link>
 		</DetailsHeader>
 		<DetailsContent>
 			<DetailsSection label={$t("personalInfo")}>
@@ -119,11 +116,17 @@
 				<DetailsFields>
 					<Field
 						label={$t("employees.scheduleStart")}
-						value={employee.scheduleStart}
+						value={formatDate(
+							`1970-01-01 ${employee.scheduleStart}`,
+							DateFormats.shortTime,
+						)}
 					/>
 					<Field
 						label={$t("employees.scheduleEnd")}
-						value={employee.scheduleEnd}
+						value={formatDate(
+							`1970-01-01 ${employee.scheduleEnd}`,
+							DateFormats.shortTime,
+						)}
 					/>
 					<Field
 						label={$t("employees.role")}

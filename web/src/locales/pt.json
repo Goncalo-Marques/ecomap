@@ -84,7 +84,7 @@
 	"employees.username": "Nome de utilizador",
 	"employees.name": "Nome",
 	"employees.schedule": "Horário",
-	"employees.role": "Categoria",
+	"employees.role": "Cargo",
 	"employees.role.manager": "Gerente",
 	"employees.role.wasteOperator": "Operador de resíduos",
 	"employees.firstName": "Primeiro nome",
