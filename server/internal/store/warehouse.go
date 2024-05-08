@@ -76,6 +76,8 @@ func (s *store) ListWarehouses(ctx context.Context, tx pgx.Tx, filter domain.War
 
 	sortField := "w.created_at"
 	switch domainSortField {
+	case domain.WarehousePaginatedSortTruckCapacity:
+		sortField = "w.truck_capacity"
 	case domain.WarehousePaginatedSortWayName:
 		sortField = "rn.osm_name"
 	case domain.WarehousePaginatedSortMunicipalityName:
