@@ -48,7 +48,7 @@
 	"model": "Model",
 	"model.placeholder": "Enter the model",
 	"licensePlate": "License plate",
-	"licensePlate.placeholder": "Enter the license plate",
+	"licensePlate.placeholder": "Enter the license plate (XX-XX-XX)",
 	"licensePlate.search": "Search by license plate",
 	"personCapacity": "Person capacity",
 	"personCapacity.placeholder": "Enter the person capacity",

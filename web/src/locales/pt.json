@@ -48,7 +48,7 @@
 	"model": "Modelo",
 	"model.placeholder": "Introduza o modelo",
 	"licensePlate": "Matrícula",
-	"licensePlate.placeholder": "Introduza a matrícula",
+	"licensePlate.placeholder": "Introduza a matrícula (XX-XX-XX)",
 	"licensePlate.search": "Pesquise por matrícula",
 	"personCapacity": "N.º de lugares",
 	"personCapacity.placeholder": "Introduza o n.º de lugares",
