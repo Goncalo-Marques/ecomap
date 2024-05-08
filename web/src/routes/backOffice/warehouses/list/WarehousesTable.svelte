@@ -2,12 +2,18 @@
 	import type { ComponentProps } from "svelte";
 	import Table from "../../../../lib/components/table/Table.svelte";
 	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
-	import type { Columns } from "../../../../lib/components/table/types";
+	import type {
+		Columns,
+		SortingDirection,
+	} from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
 	import warehousesStore from "./warehousesStore";
 	import { getLocationName } from "../../../../lib/utils/location";
-	import type { Warehouse } from "../../../../domain/warehouse";
+	import type {
+		Warehouse,
+		WarehouseSortableFields,
+	} from "../../../../domain/warehouse";
 
 	const { loading, data, filters } = warehousesStore;
 
@@ -28,7 +34,7 @@
 			type: "accessor",
 			field: "truckCapacity",
 			header: $t("truckCapacity"),
-			enableSorting: false,
+			enableSorting: true,
 			enableFiltering: false,
 			cell(truckCapacity) {
 				return truckCapacity.toString();
@@ -64,12 +70,33 @@
 			};
 		});
 	}
+
+	/**
+	 * Handles changes of the warehouses table sorting state.
+	 * @param field Sorting field.
+	 * @param direction Sorting direction.
+	 */
+	function handleSortingChange(
+		field: WarehouseSortableFields,
+		direction: SortingDirection,
+	) {
+		filters.update(store => {
+			return {
+				...store,
+				sort: field,
+				order: direction,
+			};
+		});
+	}
 </script>
 
 <Table
 	{columns}
 	loading={$loading}
 	rows={$data.warehouses}
+	sortingField={$filters.sort}
+	sortingOrder={$filters.order}
+	onSortingChange={handleSortingChange}
 	pagination={{
 		name: $t("warehouses").toLowerCase(),
 		pageIndex: $filters.pageIndex,

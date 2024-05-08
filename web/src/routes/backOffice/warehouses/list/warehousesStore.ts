@@ -12,6 +12,8 @@ import { BackOfficeRoutes } from "../../../constants/routes";
  */
 const FILTERS_PARAMS_NAMES: Record<keyof WarehousesFilters, string> = {
 	pageIndex: "pageIndex",
+	sort: "sort",
+	order: "order",
 	location: "location",
 };
 
@@ -28,6 +30,8 @@ const initialData: PaginatedWarehouses = {
  */
 export const initialFilters: WarehousesFilters = {
 	pageIndex: 0,
+	sort: "createdAt",
+	order: "desc",
 	location: "",
 };
 
@@ -40,16 +44,39 @@ function searchParamsToFilters(
 	searchParams: URLSearchParams,
 ): WarehousesFilters {
 	let pageIndex = initialFilters.pageIndex;
+	let sort = initialFilters.sort;
+	let order = initialFilters.order;
 	let location = initialFilters.location;
 
 	const pageIndexParam = Number(
 		searchParams.get(FILTERS_PARAMS_NAMES.pageIndex),
 	);
+	const sortParam = searchParams.get(FILTERS_PARAMS_NAMES.sort);
+	const orderParam = searchParams.get(FILTERS_PARAMS_NAMES.order);
 	const locationParam = searchParams.get(FILTERS_PARAMS_NAMES.location);
 
 	// Update page index when it's a valid number.
 	if (!Number.isNaN(pageIndexParam)) {
 		pageIndex = pageIndexParam;
+	}
+
+	// Update sort when it's a valid warehouse sortable field.
+	switch (sortParam) {
+		case "createdAt":
+		case "truckCapacity":
+		case "wayName":
+		case "municipalityName":
+		case "modifiedAt":
+			sort = sortParam;
+			break;
+	}
+
+	// Update order when it's a valid direction.
+	switch (orderParam) {
+		case "asc":
+		case "desc":
+			order = orderParam;
+			break;
 	}
 
 	// Update location when it's a non empty value.
@@ -59,6 +86,8 @@ function searchParamsToFilters(
 
 	return {
 		pageIndex,
+		sort,
+		order,
 		location,
 	};
 }
@@ -69,10 +98,22 @@ function searchParamsToFilters(
  * @returns URL search params.
  */
 function filtersToSearchParams(filters: WarehousesFilters): URLSearchParams {
-	const { pageIndex, location } = filters;
+	const { pageIndex, sort, order, location } = filters;
 
 	const searchParams = new URLSearchParams(window.location.search);
 	searchParams.set(FILTERS_PARAMS_NAMES.pageIndex, pageIndex.toString());
+
+	if (sort) {
+		searchParams.set(FILTERS_PARAMS_NAMES.sort, sort);
+	} else {
+		searchParams.delete(FILTERS_PARAMS_NAMES.sort);
+	}
+
+	if (order) {
+		searchParams.set(FILTERS_PARAMS_NAMES.order, order);
+	} else {
+		searchParams.delete(FILTERS_PARAMS_NAMES.order);
+	}
 
 	if (location) {
 		searchParams.set(FILTERS_PARAMS_NAMES.location, location);
@@ -91,15 +132,15 @@ function filtersToSearchParams(filters: WarehousesFilters): URLSearchParams {
 async function getWarehouses(
 	filters: WarehousesFilters,
 ): Promise<PaginatedWarehouses> {
-	const { pageIndex, location } = filters;
+	const { pageIndex, sort, order, location } = filters;
 
 	const res = await ecomapHttpClient.GET("/warehouses", {
 		params: {
 			query: {
 				offset: pageIndex * DEFAULT_PAGE_SIZE,
 				limit: DEFAULT_PAGE_SIZE,
-				sort: "createdAt",
-				order: "desc",
+				sort,
+				order,
 				locationName: location,
 			},
 		},
