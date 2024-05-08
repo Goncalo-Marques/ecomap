@@ -106,7 +106,7 @@
 			max: 30,
 		},
 		personCapacity: {
-			min: 0,
+			min: 1,
 			max: 10,
 		},
 	};
