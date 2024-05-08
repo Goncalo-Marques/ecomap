@@ -287,6 +287,8 @@ func listWarehousesParamsToDomain(params spec.ListWarehousesParams) domain.Wareh
 	domainSort := domain.WarehousePaginatedSortCreatedAt
 	if params.Sort != nil {
 		switch *params.Sort {
+		case spec.ListWarehousesParamsSortTruckCapacity:
+			domainSort = domain.WarehousePaginatedSortTruckCapacity
 		case spec.ListWarehousesParamsSortWayName:
 			domainSort = domain.WarehousePaginatedSortWayName
 		case spec.ListWarehousesParamsSortMunicipalityName:
