@@ -103,6 +103,60 @@
 		"containers.delete.conflict.description": {
 			"type": "string"
 		},
+		"trucks": {
+			"type": "string"
+		},
+		"trucks.create.title": {
+			"type": "string"
+		},
+		"trucks.create.success": {
+			"type": "string"
+		},
+		"trucks.update.success": {
+			"type": "string"
+		},
+		"trucks.notFound.title": {
+			"type": "string"
+		},
+		"trucks.notFound.description": {
+			"type": "string"
+		},
+		"trucks.delete.success": {
+			"type": "string"
+		},
+		"trucks.delete.conflict.title": {
+			"type": "string"
+		},
+		"trucks.delete.conflict.description": {
+			"type": "string"
+		},
+		"make": {
+			"type": "string"
+		},
+		"make.placeholder": {
+			"type": "string"
+		},
+		"model": {
+			"type": "string"
+		},
+		"model.placeholder": {
+			"type": "string"
+		},
+		"licensePlate": {
+			"type": "string"
+		},
+		"licensePlate.placeholder": {
+			"type": "string"
+		},
+		"licensePlate.search": {
+			"type": "string"
+		},
+		"personCapacity": {
+			"type": "string"
+		},
+		"personCapacity.placeholder": {
+			"type": "string"
+		},
 		"warehouses": {
 			"type": "string"
 		},
