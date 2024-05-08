@@ -10,22 +10,22 @@
 	import { MapHelper } from "../../../../lib/components/map/mapUtils";
 	import Field from "../../../../lib/components/Field.svelte";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
-	import type { Container } from "../../../../domain/container";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
 	import { formatDate } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
 	import { getLocationName } from "../../../../lib/utils/location";
-	import { CONTAINER_ICON_SRC } from "../../../../lib/constants/map";
+	import type { Warehouse } from "../../../../domain/warehouse";
+	import { WAREHOUSE_ICON_SRC } from "../../../../lib/constants/map";
 
 	/**
-	 * Container ID.
+	 * Warehouse ID.
 	 */
 	export let id: string;
 
 	/**
 	 * Indicates if map is visible.
-	 * The map is hidden when container details are being loaded or container details are not found.
+	 * The map is hidden when warehouse details are being loaded or warehouse details are not found.
 	 */
 	let isMapVisible = true;
 
@@ -35,81 +35,83 @@
 	let map: OlMap;
 
 	/**
-	 * Adds a container to the map.
-	 * @param coordinates Container coordinates.
+	 * Adds a warehouse to the map.
+	 * @param coordinates Warehouse coordinates.
 	 */
-	function addContainerToMap(coordinates: number[]) {
+	function addWarehouseToMap(coordinates: number[]) {
 		const point = new Point(coordinates);
 		const feature = new Feature(point);
 
 		const mapHelper = new MapHelper(map);
-		mapHelper.addPointLayer({ features: [feature] }, "container", "#fff", {
-			"icon-src": CONTAINER_ICON_SRC,
-		});
+		mapHelper.addPointLayer(
+			{
+				features: [feature],
+			},
+			"warehouse",
+			"#fff",
+			{ "icon-src": WAREHOUSE_ICON_SRC },
+		);
 
 		const view = map.getView();
 		view.fit(point);
 	}
 
 	/**
-	 * Fetches container data and adds container to the map.
+	 * Fetches warehouse data and adds warehouse to the map.
 	 */
-	async function fetchContainer(): Promise<Container> {
-		const res = await ecomapHttpClient.GET("/containers/{containerId}", {
-			params: { path: { containerId: id } },
+	async function fetchWarehouse(): Promise<Warehouse> {
+		const res = await ecomapHttpClient.GET("/warehouses/{warehouseId}", {
+			params: { path: { warehouseId: id } },
 		});
 
 		if (res.error) {
 			isMapVisible = false;
-			throw new Error("Failed to retrieve container details");
+			throw new Error("Failed to retrieve warehouse details");
 		}
 
-		const container = res.data;
-		const containerCoordinates = fromLonLat(
-			container.geoJson.geometry.coordinates,
+		const warehouse = res.data;
+		const warehouseCoordinates = fromLonLat(
+			warehouse.geoJson.geometry.coordinates,
 		);
-		addContainerToMap(containerCoordinates);
+		addWarehouseToMap(warehouseCoordinates);
 
 		isMapVisible = true;
 
-		return container;
+		return warehouse;
 	}
 
-	let containerPromise = fetchContainer();
+	let warehousePromise = fetchWarehouse();
 </script>
 
 <main class="map" data-mapVisible={isMapVisible}>
 	<Map bind:map />
 
-	{#await containerPromise}
-		<div class="container-loading">
+	{#await warehousePromise}
+		<div class="warehouse-loading">
 			<Spinner />
 		</div>
-	{:then container}
-		{@const { wayName, municipalityName } = container.geoJson.properties}
-		<Link to={container.id} style="display:contents">
+	{:then warehouse}
+		{@const { wayName, municipalityName } = warehouse.geoJson.properties}
+		<Link to={warehouse.id} style="display:contents">
 			<div class="back">
 				<Button startIcon="arrow_back" size="large" variant="tertiary" />
 			</div>
 		</Link>
 		<BottomSheet title={getLocationName(wayName, municipalityName)}>
-			<Field
-				label={$t("containers.category")}
-				value={$t(`containers.category.${container.category}`)}
-			/>
+			<Field label={$t("truckCapacity")} value={warehouse.truckCapacity} />
 			<Field
 				label={$t("createdAt")}
-				value={formatDate(container.createdAt, DateFormats.shortDateTime)}
+				value={formatDate(warehouse.createdAt, DateFormats.shortDateTime)}
 			/>
 			<Field
 				label={$t("modifiedAt")}
-				value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
+				value={formatDate(warehouse.modifiedAt, DateFormats.shortDateTime)}
 			/>
 		</BottomSheet>
 	{:catch}
-		<div class="container-not-found">
-			<h2>{$t("containers.notFound.title")}</h2>
-			<p>{$t("containers.notFound.description")}</p>
+		<div class="warehouse-not-found">
+			<h2>{$t("warehouses.notFound.title")}</h2>
+			<p>{$t("warehouses.notFound.description")}</p>
 		</div>
 	{/await}
 </main>
@@ -137,14 +139,14 @@
 		}
 	}
 
-	.container-loading {
+	.warehouse-loading {
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
 	}
 
-	.container-not-found {
+	.warehouse-not-found {
 		position: absolute;
 		left: 50%;
 		top: 50%;

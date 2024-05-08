@@ -2,6 +2,7 @@
 	import type {
 		ChangeEventHandler,
 		HTMLInputAttributes,
+		KeyboardEventHandler,
 		MouseEventHandler,
 	} from "svelte/elements";
 	import Icon from "./Icon.svelte";
@@ -31,6 +32,18 @@
 	export let id: HTMLInputAttributes["id"] = null;
 
 	/**
+	 * Defines the maximum value that is acceptable and valid for the input.
+	 * @default null
+	 */
+	export let max: HTMLInputAttributes["max"] = null;
+
+	/**
+	 * Defines the minimum value that is acceptable and valid for the input.
+	 * @default null
+	 */
+	export let min: HTMLInputAttributes["min"] = null;
+
+	/**
 	 * The name of the form control. Submitted with the form as part of a name/value pair.
 	 * @default null
 	 */
@@ -49,6 +62,12 @@
 	export let onInput: ChangeEventHandler<HTMLInputElement> | null = null;
 
 	/**
+	 * Callback fired when a key is pressed.
+	 * @default null
+	 */
+	export let onKeyDown: KeyboardEventHandler<HTMLInputElement> | null = null;
+
+	/**
 	 * The text that appears in the form control when it has no value set.
 	 * @default null
 	 */
@@ -61,6 +80,18 @@
 	export let readonly: boolean = false;
 
 	/**
+	 * Indicates that the user must specify a value for the input before the owning form can be submitted.
+	 * @default false
+	 */
+	export let required: boolean = false;
+
+	/**
+	 * CSS styling declarations to be applied to the element.
+	 * @default null
+	 */
+	export let style: string | null = null;
+
+	/**
 	 * The type of control to render.
 	 * @default null
 	 */
@@ -70,7 +101,7 @@
 	 * The value of the input.
 	 * @default null
 	 */
-	export let value: string | null = null;
+	export let value: number | string | null = null;
 </script>
 
 <div class="input-container">
@@ -83,6 +114,11 @@
 		{type}
 		{value}
 		{readonly}
+		{required}
+		{max}
+		{min}
+		{style}
+		on:keydown={onKeyDown}
 		on:input={onInput}
 		on:click={onClick}
 		data-endIcon={endIcon}

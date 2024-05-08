@@ -1,44 +1,17 @@
 <script lang="ts">
 	import type { ComponentProps } from "svelte";
-	import type { Container } from "../../../../domain/container";
 	import Table from "../../../../lib/components/table/Table.svelte";
 	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
 	import type { Columns } from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
-	import { categoryOptions } from "../constants/category";
-	import containersStore from "./containersStore";
+	import warehousesStore from "./warehousesStore";
 	import { getLocationName } from "../../../../lib/utils/location";
+	import type { Warehouse } from "../../../../domain/warehouse";
 
-	const { loading, data, filters } = containersStore;
+	const { loading, data, filters } = warehousesStore;
 
-	const columns: Columns<Container> = [
-		{
-			type: "accessor",
-			field: "category",
-			header: $t("containers.category"),
-			enableSorting: false,
-			enableFiltering: true,
-			filterOptions: categoryOptions.map(category => {
-				return {
-					value: category,
-					label: $t(`containers.category.${category}`),
-				};
-			}),
-			filterInitialValue: $filters.category,
-			cell(category) {
-				return $t(`containers.category.${category}`);
-			},
-			onFilterChange(category) {
-				filters.update(filters => {
-					return {
-						...filters,
-						pageIndex: 0,
-						category,
-					};
-				});
-			},
-		},
+	const columns: Columns<Warehouse> = [
 		{
 			type: "accessor",
 			field: "geoJson",
@@ -49,6 +22,16 @@
 				const { municipalityName, wayName } = geoJson.properties;
 
 				return getLocationName(wayName, municipalityName);
+			},
+		},
+		{
+			type: "accessor",
+			field: "truckCapacity",
+			header: $t("truckCapacity"),
+			enableSorting: false,
+			enableFiltering: false,
+			cell(truckCapacity) {
+				return truckCapacity.toString();
 			},
 		},
 		{
@@ -70,7 +53,7 @@
 	];
 
 	/**
-	 * Handles changes of the containers table pages.
+	 * Handles changes of the warehouses table pages.
 	 * @param pageIndex New page index.
 	 */
 	function handlePageChange(pageIndex: number) {
@@ -86,9 +69,9 @@
 <Table
 	{columns}
 	loading={$loading}
-	rows={$data.containers}
+	rows={$data.warehouses}
 	pagination={{
-		name: $t("containers.title").toLowerCase(),
+		name: $t("warehouses").toLowerCase(),
 		pageIndex: $filters.pageIndex,
 		pageSize: DEFAULT_PAGE_SIZE,
 		total: $data.total,

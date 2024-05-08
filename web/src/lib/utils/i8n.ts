@@ -73,6 +73,9 @@ function _locale(): Writable<string> {
 
 	localStorage.setItem("locale", supportedLocale);
 
+	// Set the supported locale in the lang attribute of the HTML element.
+	document.documentElement.setAttribute("lang", supportedLocale);
+
 	const store = writable(supportedLocale);
 	const { subscribe, set } = store;
 
@@ -81,6 +84,9 @@ function _locale(): Writable<string> {
 		set(locale) {
 			const supportedLocale = getSupportedLocale(locale);
 			localStorage.setItem("locale", supportedLocale);
+
+			// Set the supported locale in the lang attribute of the HTML element.
+			document.documentElement.setAttribute("lang", supportedLocale);
 
 			// Refresh current page when switching locales.
 			location.reload();
@@ -92,6 +98,9 @@ function _locale(): Writable<string> {
 
 			const supportedLocale = getSupportedLocale(updatedLocale);
 			localStorage.setItem("locale", supportedLocale);
+
+			// Set the supported locale in the lang attribute of the HTML element.
+			document.documentElement.setAttribute("lang", supportedLocale);
 
 			// Refresh current page when switching locales.
 			location.reload();
