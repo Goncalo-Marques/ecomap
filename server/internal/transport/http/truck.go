@@ -293,6 +293,8 @@ func listTrucksParamsToDomain(params spec.ListTrucksParams) domain.TrucksPaginat
 			domainSort = domain.TruckPaginatedSortModel
 		case spec.ListTrucksParamsSortLicensePlate:
 			domainSort = domain.TruckPaginatedSortLicensePlate
+		case spec.ListTrucksParamsSortPersonCapacity:
+			domainSort = domain.TruckPaginatedSortPersonCapacity
 		case spec.ListTrucksParamsSortWayName:
 			domainSort = domain.TruckPaginatedSortWayName
 		case spec.ListTrucksParamsSortMunicipalityName:
