@@ -16,6 +16,16 @@
 	const columns: Columns<Truck> = [
 		{
 			type: "accessor",
+			field: "licensePlate",
+			header: $t("licensePlate"),
+			enableSorting: true,
+			enableFiltering: false,
+			cell(licensePlate) {
+				return licensePlate;
+			},
+		},
+		{
+			type: "accessor",
 			field: "make",
 			header: $t("make"),
 			enableSorting: true,
@@ -36,19 +46,9 @@
 		},
 		{
 			type: "accessor",
-			field: "licensePlate",
-			header: $t("licensePlate"),
-			enableSorting: false,
-			enableFiltering: false,
-			cell(licensePlate) {
-				return licensePlate;
-			},
-		},
-		{
-			type: "accessor",
 			field: "personCapacity",
 			header: $t("personCapacity"),
-			enableSorting: false,
+			enableSorting: true,
 			enableFiltering: false,
 			cell(personCapacity) {
 				return personCapacity.toString();

@@ -61,6 +61,7 @@ function searchParamsToFilters(searchParams: URLSearchParams): TrucksFilters {
 		case "createdAt":
 		case "make":
 		case "model":
+		case "personCapacity":
 		case "wayName":
 		case "municipalityName":
 		case "modifiedAt":
