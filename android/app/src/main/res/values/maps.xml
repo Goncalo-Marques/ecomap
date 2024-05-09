@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="camera_bound_southwest_latitude">38</integer>
-    <integer name="camera_bound_southwest_longitude">-10</integer>
-    <integer name="camera_bound_northeast_latitude">41</integer>
-    <integer name="camera_bound_northeast_longitude">-6</integer>
-</resources>

@@ -2,10 +2,8 @@ package com.ecomap.ecomap
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -22,25 +20,24 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+    /**
+     * Defines the Google Map instance.
+     * It is set when the map is ready.
+     */
     private var map: GoogleMap? = null
 
-    private lateinit var mapLatLngBound: LatLngBounds
-
-    // The entry point to the Places API.
-    private lateinit var placesClient: PlacesClient
-
-    // The entry point to the Fused Location Provider.
+    /**
+     * The entry point to the Fused Location Provider.
+     */
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    // Set Lisbon as the default location.
-    // TODO: Check if coordinates are correct.
-    private val defaultLocation = LatLng(38.72158286729078, -9.13913643581083)
+    /**
+     * Defines whether the location permission is granted.
+     */
     private var locationPermissionGranted = false
-    private var lastKnownLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,33 +49,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
 
-        // Construct a place client.
-        // For more information, see: https://developers.google.com/maps/documentation/places/android-sdk/overview.
-        Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
-        placesClient = Places.createClient(this)
-
-        // Construct the main entry point for Android location services.
+        // Construct the main entry point for the Android location services.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Google Map configurations.
-        mapLatLngBound = LatLngBounds(
-            LatLng(
-                resources.getInteger(R.integer.camera_bound_southwest_latitude).toDouble(),
-                resources.getInteger(R.integer.camera_bound_southwest_longitude).toDouble()
-            ),
-            LatLng(
-                resources.getInteger(R.integer.camera_bound_northeast_latitude).toDouble(),
-                resources.getInteger(R.integer.camera_bound_northeast_longitude).toDouble()
-            )
+        val mapLatLngBounds = LatLngBounds(
+            LatLng(MAP_CAMERA_BOUND_SW_LAT, MAP_CAMERA_BOUND_SW_LNG),
+            LatLng(MAP_CAMERA_BOUND_NE_LAT, MAP_CAMERA_BOUND_NE_LNG)
         )
-
-        val button: Button = findViewById(R.id.button)
-        button.setOnClickListener { getDeviceLocation() }
 
         val googleMapOptions = GoogleMapOptions()
         googleMapOptions
             .mapType(GoogleMap.MAP_TYPE_NORMAL)
-            .latLngBoundsForCameraTarget(mapLatLngBound)
+            .latLngBoundsForCameraTarget(mapLatLngBounds)
 
         // Add support map fragment to the map container.
         val mapFragment = SupportMapFragment.newInstance(googleMapOptions)
@@ -89,24 +72,30 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Register the map callback.
         mapFragment.getMapAsync(this)
+
+        // Get activity views.
+        val buttonMyLocation: FloatingActionButton = findViewById(R.id.button_my_location)
+
+        // Set button functions.
+        buttonMyLocation.setOnClickListener { focusMyLocation() }
     }
 
+    /**
+     * Function called when the Google Map is ready.
+     */
     override fun onMapReady(googleMap: GoogleMap) {
         this.map = googleMap
 
         // Prompt the user for permission.
         getLocationPermission()
 
-        // Turn on the My Location layer and the related control on the map.
+        // Turn on the My Location layer.
         updateLocationUI()
 
         // Get the current location of the device and set the position of the map.
-        getDeviceLocation()
+        focusMyLocation()
 
-        googleMap.moveCamera(
-            CameraUpdateFactory.newLatLngBounds(mapLatLngBound, 0)
-        )
-
+        // TODO: Add the containers using the server.
         googleMap.addMarker(
             MarkerOptions()
                 .position(LatLng(40.0, -9.0))
@@ -119,20 +108,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * The result of the permission request is handled by the onRequestPermissionsResult callback.
      */
     private fun getLocationPermission() {
-        when {
+        when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(
                 this.applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            )
-                    == PackageManager.PERMISSION_GRANTED -> {
+            ) -> {
                 locationPermissionGranted = true
             }
 
             ContextCompat.checkSelfPermission(
                 this.applicationContext,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-                    == PackageManager.PERMISSION_GRANTED -> {
+            ) -> {
                 locationPermissionGranted = true
             }
 
@@ -149,6 +136,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Function called when the user responds to the permissions request.
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -162,6 +152,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
                 ) {
+                    // Location was successfully granted.
                     locationPermissionGranted = true
                 }
             }
@@ -170,75 +161,73 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         updateLocationUI()
+        focusMyLocation()
     }
 
     /**
      * Updates the map's UI settings based on whether the user has granted location permission.
+     * If the location permission is granted, enable the Google Map My Location layer.
      */
-    private fun updateLocationUI() {
+    private fun updateLocationUI(enableMyLocationLayer: Boolean = locationPermissionGranted) {
         if (map == null) {
             return
         }
 
         try {
-            if (locationPermissionGranted) {
-                map?.isMyLocationEnabled = true
-//                map?.uiSettings?.isMyLocationButtonEnabled = true
-            } else {
-                map?.isMyLocationEnabled = false
-//                map?.uiSettings?.isMyLocationButtonEnabled = false
-                lastKnownLocation = null
-//                getLocationPermission()
-            }
+            // Enable/disable the My Location layer based on the location permission.
+            map?.isMyLocationEnabled = locationPermissionGranted
+
+            // Disable the default My Location button because buttonMyLocation already performs the
+            // same function.
+            map?.uiSettings?.isMyLocationButtonEnabled = false
         } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
+            Log.e(LOG_TAG, e.message, e)
         }
     }
 
     /**
-     * Use the fused location provider to find the device's last-known location, then use that location to position the map.
+     * Update the Google Map camera to focus on the user last-known location.
      */
-    private fun getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
+    private fun focusMyLocation() {
+        if (!locationPermissionGranted) {
+            return
+        }
+
         try {
-            if (locationPermissionGranted) {
-                val locationResult = fusedLocationProviderClient.lastLocation
-                locationResult.addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Set the map's camera position to the current location of the device.
-                        lastKnownLocation = task.result
-                        if (lastKnownLocation != null) {
-                            map?.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
-                                    ), DEFAULT_ZOOM.toFloat()
-                                )
-                            )
-                        }
-                    } else {
-                        Log.d(TAG, "Current location is null. Using defaults.")
-                        Log.e(TAG, "Exception: %s", task.exception)
+            val locationResult = fusedLocationProviderClient.lastLocation
+            locationResult.addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Set the map's camera position to the current location of the device.
+                    val lastKnownLocation = task.result
+                    if (lastKnownLocation != null) {
                         map?.animateCamera(
-                            CameraUpdateFactory
-                                .newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat())
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    lastKnownLocation.latitude,
+                                    lastKnownLocation.longitude
+                                ), MAP_CAMERA_ZOOM_DEFAULT.toFloat()
+                            )
                         )
-                        map?.uiSettings?.isMyLocationButtonEnabled = false
                     }
+                } else {
+                    Log.e(LOG_TAG, task.exception?.message, task.exception)
                 }
             }
         } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
+            Log.e(LOG_TAG, e.message, e)
         }
     }
 
     companion object {
-        private val TAG = MainActivity::class.java.simpleName
-        private const val DEFAULT_ZOOM = 15
+        private val LOG_TAG = MainActivity::class.java.simpleName
+
         private const val PERMISSIONS_REQUEST_ACCESS_LOCATION = 1
+
+        private const val MAP_CAMERA_ZOOM_DEFAULT = 15.0
+
+        private const val MAP_CAMERA_BOUND_SW_LAT = 38.0
+        private const val MAP_CAMERA_BOUND_SW_LNG = -10.0
+        private const val MAP_CAMERA_BOUND_NE_LAT = 41.0
+        private const val MAP_CAMERA_BOUND_NE_LNG = -6.0
     }
 }

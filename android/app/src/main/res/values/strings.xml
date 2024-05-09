@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">EcoMap</string>
+    <string name="map_find_nearest_container">Encontrar mais próximo</string>
+    <string name="content_description_button_my_location">Ir para minha localização</string>
 </resources>
