@@ -38,10 +38,22 @@
 	export let max: HTMLInputAttributes["max"] = null;
 
 	/**
+	 * Defines the maximum length that the user can enter into the input.
+	 * @default null
+	 */
+	export let maxLength: HTMLInputAttributes["maxlength"] = null;
+
+	/**
 	 * Defines the minimum value that is acceptable and valid for the input.
 	 * @default null
 	 */
 	export let min: HTMLInputAttributes["min"] = null;
+
+	/**
+	 * Defines the minimum length that the user can enter into the input.
+	 * @default null
+	 */
+	export let minLength: HTMLInputAttributes["minlength"] = null;
 
 	/**
 	 * The name of the form control. Submitted with the form as part of a name/value pair.
@@ -66,6 +78,12 @@
 	 * @default null
 	 */
 	export let onKeyDown: KeyboardEventHandler<HTMLInputElement> | null = null;
+
+	/**
+	 * Specifies a regular expression the input value should match.
+	 * @default null
+	 */
+	export let pattern: HTMLInputAttributes["pattern"] = null;
 
 	/**
 	 * The text that appears in the form control when it has no value set.
@@ -110,6 +128,7 @@
 		class={error ? "error" : ""}
 		{id}
 		{name}
+		{pattern}
 		{placeholder}
 		{type}
 		{value}
@@ -118,6 +137,8 @@
 		{max}
 		{min}
 		{style}
+		maxlength={maxLength}
+		minlength={minLength}
 		on:keydown={onKeyDown}
 		on:input={onInput}
 		on:click={onClick}

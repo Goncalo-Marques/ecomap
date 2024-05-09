@@ -5,7 +5,6 @@
 	import Dashboard from "./routes/backOffice/dashboard/Dashboard.svelte";
 	import Map from "./routes/backOffice/map/Map.svelte";
 	import Routes from "./routes/backOffice/routes/Routes.svelte";
-	import Trucks from "./routes/backOffice/trucks/Trucks.svelte";
 	import Reports from "./routes/backOffice/reports/Reports.svelte";
 	import Employees from "./routes/backOffice/employees/Employees.svelte";
 	import Forbidden from "./routes/clientErrors/Forbidden.svelte";
@@ -20,6 +19,7 @@
 	import ContainersRouter from "./routes/backOffice/containers/ContainersRouter.svelte";
 	import Toast from "./lib/components/Toast.svelte";
 	import WarehousesRouter from "./routes/backOffice/warehouses/WarehousesRouter.svelte";
+	import TrucksRouter from "./routes/backOffice/trucks/TrucksRouter.svelte";
 
 	onMount(() => {
 		if ($url.pathname === "/") {
@@ -35,7 +35,9 @@
 				<BackOfficeLayout>
 					<Route path={BackOfficeRouterPaths.EMPLOYEES} component={Employees} />
 					<Route path={BackOfficeRouterPaths.REPORTS} component={Reports} />
-					<Route path={BackOfficeRouterPaths.TRUCKS} component={Trucks} />
+					<Route path={`${BackOfficeRouterPaths.TRUCKS}/*`}>
+						<TrucksRouter />
+					</Route>
 					<Route path={`${BackOfficeRouterPaths.WAREHOUSES}/*`}>
 						<WarehousesRouter />
 					</Route>

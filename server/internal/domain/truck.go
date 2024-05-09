@@ -87,6 +87,7 @@ const (
 	TruckPaginatedSortMake             TruckPaginatedSort = "make"
 	TruckPaginatedSortModel            TruckPaginatedSort = "model"
 	TruckPaginatedSortLicensePlate     TruckPaginatedSort = "licensePlate"
+	TruckPaginatedSortPersonCapacity   TruckPaginatedSort = "personCapacity"
 	TruckPaginatedSortWayName          TruckPaginatedSort = "wayName"
 	TruckPaginatedSortMunicipalityName TruckPaginatedSort = "municipalityName"
 	TruckPaginatedSortCreatedAt        TruckPaginatedSort = "createdAt"
@@ -104,6 +105,7 @@ func (s TruckPaginatedSort) Valid() bool {
 	case TruckPaginatedSortMake,
 		TruckPaginatedSortModel,
 		TruckPaginatedSortLicensePlate,
+		TruckPaginatedSortPersonCapacity,
 		TruckPaginatedSortWayName,
 		TruckPaginatedSortMunicipalityName,
 		TruckPaginatedSortCreatedAt,

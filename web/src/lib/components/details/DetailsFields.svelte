@@ -5,7 +5,7 @@
 <style>
 	dl {
 		--column-count: 2;
-		--column-gap: 2rem;
+		--column-gap: 0.5rem;
 		--column-min-width: 13rem;
 
 		display: grid;

@@ -32,7 +32,7 @@ vendor:
 
 ## generate-oapi: install oapi-codegen and generate the golang types, client and server based on the swagger specification in api/swagger
 generate-oapi:
-	command -v oapi-codegen || go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@$(OAPI_CODEGEN_VERSION)
+	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@$(OAPI_CODEGEN_VERSION)
 	mkdir -p $(API_SWAGGER_GEN_DIR)
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate types $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/models.gen.go
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate client $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/client.gen.go

@@ -53,6 +53,7 @@ type Warehouse struct {
 type WarehousePaginatedSort string
 
 const (
+	WarehousePaginatedSortTruckCapacity    WarehousePaginatedSort = "truckCapacity"
 	WarehousePaginatedSortWayName          WarehousePaginatedSort = "wayName"
 	WarehousePaginatedSortMunicipalityName WarehousePaginatedSort = "municipalityName"
 	WarehousePaginatedSortCreatedAt        WarehousePaginatedSort = "createdAt"
@@ -67,7 +68,8 @@ func (s WarehousePaginatedSort) Field() WarehousePaginatedSort {
 // Valid returns true if the field is valid, false otherwise.
 func (s WarehousePaginatedSort) Valid() bool {
 	switch s {
-	case WarehousePaginatedSortWayName,
+	case WarehousePaginatedSortTruckCapacity,
+		WarehousePaginatedSortWayName,
 		WarehousePaginatedSortMunicipalityName,
 		WarehousePaginatedSortCreatedAt,
 		WarehousePaginatedSortModifiedAt:

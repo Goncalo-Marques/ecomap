@@ -2019,6 +2019,7 @@ components:
           - make
           - model
           - licensePlate
+          - personCapacity
           - wayName
           - municipalityName
           - createdAt
@@ -2031,6 +2032,7 @@ components:
       schema:
         type: string
         enum:
+          - truckCapacity
           - wayName
           - municipalityName
           - createdAt
