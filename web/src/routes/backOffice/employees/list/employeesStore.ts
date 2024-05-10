@@ -32,8 +32,8 @@ const initialData: PaginatedEmployees = {
 export const initialFilters: EmployeesFilters = {
 	pageIndex: 0,
 	username: "",
-	sort: "username",
-	order: "asc",
+	sort: "createdAt",
+	order: "desc",
 	role: undefined,
 };
 
@@ -81,6 +81,7 @@ function searchParamsToFilters(
 		case "username":
 		case "firstName":
 		case "lastName":
+		case "createdAt":
 			sort = sortParam;
 	}
 
