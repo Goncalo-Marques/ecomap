@@ -98,6 +98,8 @@ func (s *store) ListTrucks(ctx context.Context, tx pgx.Tx, filter domain.TrucksP
 		sortField = "t.model"
 	case domain.TruckPaginatedSortLicensePlate:
 		sortField = "t.license_plate"
+	case domain.TruckPaginatedSortPersonCapacity:
+		sortField = "t.person_capacity"
 	case domain.TruckPaginatedSortWayName:
 		sortField = "rn.osm_name"
 	case domain.TruckPaginatedSortMunicipalityName:
