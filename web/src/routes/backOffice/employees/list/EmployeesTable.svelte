@@ -22,22 +22,32 @@
 	const columns: Columns<Employee> = [
 		{
 			type: "accessor",
-			field: "firstName",
-			header: $t("employees.name"),
-			enableSorting: false,
-			enableFiltering: false,
-			cell(firstName, row) {
-				return `${firstName} ${row.lastName}`;
-			},
-		},
-		{
-			type: "accessor",
 			field: "username",
 			header: $t("employees.username"),
 			enableSorting: true,
 			enableFiltering: false,
 			cell(username) {
 				return username;
+			},
+		},
+		{
+			type: "accessor",
+			field: "firstName",
+			header: $t("employees.firstName"),
+			enableSorting: true,
+			enableFiltering: false,
+			cell(firstName) {
+				return firstName;
+			},
+		},
+		{
+			type: "accessor",
+			field: "lastName",
+			header: $t("employees.lastName"),
+			enableSorting: true,
+			enableFiltering: false,
+			cell(lastName) {
+				return lastName;
 			},
 		},
 		{

@@ -47,3 +47,8 @@ export const CONTAINER_ICON_SRC = "/images/logo.svg";
  * Source location of the warehouse pin icon.
  */
 export const WAREHOUSE_ICON_SRC = "/images/warehouse-pin.svg";
+
+/**
+ * Source location of the truck pin icon.
+ */
+export const TRUCK_ICON_SRC = "/images/truck-pin.svg";

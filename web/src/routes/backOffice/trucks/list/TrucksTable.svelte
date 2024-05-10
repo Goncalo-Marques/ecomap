@@ -8,36 +8,50 @@
 	} from "../../../../lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "../../../../lib/constants/pagination";
 	import { t } from "../../../../lib/utils/i8n";
-	import warehousesStore from "./warehousesStore";
-	import { getLocationName } from "../../../../lib/utils/location";
-	import type {
-		Warehouse,
-		WarehouseSortableFields,
-	} from "../../../../domain/warehouse";
+	import trucksStore from "./trucksStore";
+	import type { Truck, TruckSortableFields } from "../../../../domain/truck";
 
-	const { loading, data, filters } = warehousesStore;
+	const { loading, data, filters } = trucksStore;
 
-	const columns: Columns<Warehouse> = [
+	const columns: Columns<Truck> = [
 		{
 			type: "accessor",
-			field: "geoJson",
-			header: $t("location"),
-			enableSorting: false,
+			field: "licensePlate",
+			header: $t("licensePlate"),
+			enableSorting: true,
 			enableFiltering: false,
-			cell(geoJson) {
-				const { municipalityName, wayName } = geoJson.properties;
-
-				return getLocationName(wayName, municipalityName);
+			cell(licensePlate) {
+				return licensePlate;
 			},
 		},
 		{
 			type: "accessor",
-			field: "truckCapacity",
-			header: $t("truckCapacity"),
+			field: "make",
+			header: $t("make"),
 			enableSorting: true,
 			enableFiltering: false,
-			cell(truckCapacity) {
-				return truckCapacity.toString();
+			cell(make) {
+				return make;
+			},
+		},
+		{
+			type: "accessor",
+			field: "model",
+			header: $t("model"),
+			enableSorting: true,
+			enableFiltering: false,
+			cell(model) {
+				return model;
+			},
+		},
+		{
+			type: "accessor",
+			field: "personCapacity",
+			header: $t("personCapacity"),
+			enableSorting: true,
+			enableFiltering: false,
+			cell(personCapacity) {
+				return personCapacity.toString();
 			},
 		},
 		{
@@ -59,7 +73,7 @@
 	];
 
 	/**
-	 * Handles changes of the warehouses table pages.
+	 * Handles changes of the trucks table pages.
 	 * @param pageIndex New page index.
 	 */
 	function handlePageChange(pageIndex: number) {
@@ -72,12 +86,12 @@
 	}
 
 	/**
-	 * Handles changes of the warehouses table sorting state.
+	 * Handles changes of the trucks table sorting state.
 	 * @param field Sorting field.
 	 * @param direction Sorting direction.
 	 */
 	function handleSortingChange(
-		field: WarehouseSortableFields,
+		field: TruckSortableFields,
 		direction: SortingDirection,
 	) {
 		filters.update(store => {
@@ -93,12 +107,12 @@
 <Table
 	{columns}
 	loading={$loading}
-	rows={$data.warehouses}
+	rows={$data.trucks}
 	sortingField={$filters.sort}
 	sortingOrder={$filters.order}
 	onSortingChange={handleSortingChange}
 	pagination={{
-		name: $t("warehouses").toLowerCase(),
+		name: $t("trucks").toLowerCase(),
 		pageIndex: $filters.pageIndex,
 		pageSize: DEFAULT_PAGE_SIZE,
 		total: $data.total,

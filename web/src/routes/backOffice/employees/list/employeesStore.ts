@@ -79,6 +79,8 @@ function searchParamsToFilters(
 	// Update sort when sortParam is username.
 	switch (sortParam) {
 		case "username":
+		case "firstName":
+		case "lastName":
 			sort = sortParam;
 	}
 
