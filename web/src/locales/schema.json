@@ -295,7 +295,10 @@
 		"employees.username": {
 			"type": "string"
 		},
-		"employees.name": {
+		"employees.firstName": {
+			"type": "string"
+		},
+		"employees.lastName": {
 			"type": "string"
 		},
 		"employees.schedule": {

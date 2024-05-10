@@ -98,9 +98,10 @@
 	"employees.title": "Colaboradores",
 	"employees.search": "Pesquise por nome de utilizador",
 	"employees.username": "Nome de utilizador",
-	"employees.name": "Nome",
+	"employees.firstName": "Primeiro nome",
+	"employees.lastName": "Último nome",
 	"employees.schedule": "Horário",
-	"employees.role": "Categoria",
+	"employees.role": "Função",
 	"employees.role.manager": "Gerente",
 	"employees.role.wasteOperator": "Operador de resíduos"
 }
