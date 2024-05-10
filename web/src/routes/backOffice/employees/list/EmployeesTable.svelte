@@ -76,7 +76,7 @@
 		},
 		{
 			type: "accessor",
-			field: "scheduleEnd",
+			field: "scheduleStart",
 			header: $t("employees.schedule"),
 			enableSorting: false,
 			enableFiltering: false,
