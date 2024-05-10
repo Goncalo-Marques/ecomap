@@ -12,8 +12,7 @@
 	import { t } from "../../../../lib/utils/i8n";
 	import { rolesOptions } from "../constants/roles";
 	import employeesStore from "./employeesStore";
-	import { formatDate } from "../../../../lib/utils/date";
-	import { DateFormats } from "../../../../lib/constants/date";
+	import { formatTime } from "../../../../lib/utils/date";
 	import type { ComponentProps } from "svelte";
 	import TableDetailsAction from "../../../../lib/components/table/TableDetailsAction.svelte";
 
@@ -83,8 +82,7 @@
 			enableSorting: false,
 			enableFiltering: false,
 			cell(scheduleStart, row) {
-				// The date 1970-01-01, date when Unix time started, is used here to format scheduleStart and scheduleEnd. This is needed because the formatDate() helper uses Intl.DateTimeFormat to format dates, without this date the helper will not work.
-				return `${formatDate(`1970-01-01 ${scheduleStart}`, DateFormats.shortTime)} - ${formatDate(`1970-01-01 ${row.scheduleEnd}`, DateFormats.shortTime)}`;
+				return `${formatTime(scheduleStart)} - ${formatTime(row.scheduleEnd)}`;
 			},
 		},
 		{

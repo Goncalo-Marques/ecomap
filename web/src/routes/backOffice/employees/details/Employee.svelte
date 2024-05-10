@@ -12,7 +12,7 @@
 	import { getLocationName } from "../../../../lib/utils/location";
 	import DetailsFields from "../../../../lib/components/details/DetailsFields.svelte";
 	import Field from "../../../../lib/components/Field.svelte";
-	import { formatDate } from "../../../../lib/utils/date";
+	import { formatDate, formatTime } from "../../../../lib/utils/date";
 	import { DateFormats } from "../../../../lib/constants/date";
 	import { getToastContext } from "../../../../lib/contexts/toast";
 	import { BackOfficeRoutes } from "../../../constants/routes";
@@ -116,17 +116,11 @@
 				<DetailsFields>
 					<Field
 						label={$t("employees.scheduleStart")}
-						value={formatDate(
-							`1970-01-01 ${employee.scheduleStart}`,
-							DateFormats.shortTime,
-						)}
+						value={formatTime(employee.scheduleStart)}
 					/>
 					<Field
 						label={$t("employees.scheduleEnd")}
-						value={formatDate(
-							`1970-01-01 ${employee.scheduleEnd}`,
-							DateFormats.shortTime,
-						)}
+						value={formatTime(employee.scheduleEnd)}
 					/>
 					<Field
 						label={$t("employees.role")}
