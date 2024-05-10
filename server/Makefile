@@ -1,6 +1,6 @@
 GOPATH=$(shell go env GOPATH)
 
-BUILD_GIT_HASH = $(shell git describe --always --dirty)
+BUILD_GIT_HASH = $(shell git describe --always)
 BUILD_TIMESTAMP = $(shell TZ="GMT" LC_TIME="en_US.utf8" date)
 
 LINTER_VERSION=v1.56.2
