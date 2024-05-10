@@ -285,6 +285,33 @@
 		},
 		"map.layers": {
 			"type": "string"
+		},
+		"employees.title": {
+			"type": "string"
+		},
+		"employees.search": {
+			"type": "string"
+		},
+		"employees.username": {
+			"type": "string"
+		},
+		"employees.firstName": {
+			"type": "string"
+		},
+		"employees.lastName": {
+			"type": "string"
+		},
+		"employees.schedule": {
+			"type": "string"
+		},
+		"employees.role": {
+			"type": "string"
+		},
+		"employees.role.manager": {
+			"type": "string"
+		},
+		"employees.role.wasteOperator": {
+			"type": "string"
 		}
 	}
 }
