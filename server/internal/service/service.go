@@ -74,6 +74,14 @@ type Store interface {
 
 	ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, id uuid.UUID) ([]domain.Truck, error)
 
+	CreateRoute(ctx context.Context, tx pgx.Tx, editableRoute domain.EditableRoute) (uuid.UUID, error)
+	ListRoutes(ctx context.Context, tx pgx.Tx, filter domain.RoutesPaginatedFilter) (domain.PaginatedResponse[domain.Route], error)
+	GetRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Route, error)
+	PatchRoute(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableRoute domain.EditableRoutePatch) error
+	DeleteRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+
+	ListRouteEmployees(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteEmployeesPaginatedFilter) (domain.PaginatedResponse[domain.RouteEmployee], error)
+
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)

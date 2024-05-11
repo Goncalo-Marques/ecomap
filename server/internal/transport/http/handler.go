@@ -82,6 +82,12 @@ type Service interface {
 	PatchWarehouse(ctx context.Context, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch) (domain.Warehouse, error)
 	DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
 
+	CreateRoute(ctx context.Context, editableRoute domain.EditableRoute) (domain.Route, error)
+	ListRoutes(ctx context.Context, filter domain.RoutesPaginatedFilter) (domain.PaginatedResponse[domain.Route], error)
+	GetRouteByID(ctx context.Context, id uuid.UUID) (domain.Route, error)
+	PatchRoute(ctx context.Context, id uuid.UUID, editableRoute domain.EditableRoutePatch) (domain.Route, error)
+	DeleteRouteByID(ctx context.Context, id uuid.UUID) (domain.Route, error)
+
 	GetRoadByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
