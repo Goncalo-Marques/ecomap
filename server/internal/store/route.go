@@ -60,15 +60,15 @@ func (s *store) ListRoutes(ctx context.Context, tx pgx.Tx, filter domain.RoutesP
 		argsWhere = append(argsWhere, *filter.Name)
 	}
 	if filter.TruckID != nil {
-		filterFields = append(filterFields, "r.truck_id")
+		filterFields = append(filterFields, "r.truck_id::text")
 		argsWhere = append(argsWhere, *filter.TruckID)
 	}
 	if filter.DepartureWarehouseID != nil {
-		filterFields = append(filterFields, "r.departure_warehouse_id")
+		filterFields = append(filterFields, "r.departure_warehouse_id::text")
 		argsWhere = append(argsWhere, *filter.DepartureWarehouseID)
 	}
 	if filter.ArrivalWarehouseID != nil {
-		filterFields = append(filterFields, "r.arrival_warehouse_id")
+		filterFields = append(filterFields, "r.arrival_warehouse_id::text")
 		argsWhere = append(argsWhere, *filter.ArrivalWarehouseID)
 	}
 
