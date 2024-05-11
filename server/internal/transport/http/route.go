@@ -16,7 +16,7 @@ const (
 	errRouteNotFound                     = "route not found"
 	errRouteDepartureWarehouseNotFound   = "route departure warehouse not found"
 	errRouteArrivalWarehouseNotFound     = "route arrival warehouse not found"
-	errRouteTruckPersonCapacityMinLimit  = "route truck person capacity below minimum limit"
+	errRouteTruckPersonCapacityMinLimit  = "route already has more people than the new truck has capacity"
 	errRouteAssociatedWithRouteContainer = "route associated with container"
 	errRouteAssociatedWithRouteEmployee  = "route associated with employee"
 )
