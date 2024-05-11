@@ -7,6 +7,11 @@ import (
 	"github.com/google/uuid"
 )
 
+// Field constraints.
+const (
+	routeNameMaxLength = 50
+)
+
 // Route errors.
 var (
 	ErrRouteNotFound                     = errors.New("route not found")                                 // Returned when a route is not found.
@@ -17,9 +22,17 @@ var (
 	ErrRouteAssociatedWithRouteEmployee  = errors.New("route associated with employee")                  // Returned when a route is associated with an employee.
 )
 
+// RouteName defines the route name type.
+type RouteName string
+
+// Valid returns true if the name is valid, false otherwise.
+func (n RouteName) Valid() bool {
+	return len(n) <= routeNameMaxLength
+}
+
 // EditableRoute defines the editable route structure.
 type EditableRoute struct {
-	Name                 string
+	Name                 RouteName
 	TruckID              uuid.UUID
 	DepartureWarehouseID uuid.UUID
 	ArrivalWarehouseID   uuid.UUID
@@ -27,7 +40,7 @@ type EditableRoute struct {
 
 // EditableRoutePatch defines the patchable route structure.
 type EditableRoutePatch struct {
-	Name                 *string
+	Name                 *RouteName
 	TruckID              *uuid.UUID
 	DepartureWarehouseID *uuid.UUID
 	ArrivalWarehouseID   *uuid.UUID
@@ -76,7 +89,7 @@ func (s RoutePaginatedSort) Valid() bool {
 // RoutesPaginatedFilter defines the routes filter structure.
 type RoutesPaginatedFilter struct {
 	PaginatedRequest[RoutePaginatedSort]
-	Name                 *string
+	Name                 *RouteName
 	TruckID              *uuid.UUID
 	DepartureWarehouseID *uuid.UUID
 	ArrivalWarehouseID   *uuid.UUID

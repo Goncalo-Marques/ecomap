@@ -24,10 +24,14 @@ const (
 func (s *service) CreateRoute(ctx context.Context, editableRoute domain.EditableRoute) (domain.Route, error) {
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "CreateRoute"),
-		slog.String(logging.RouteName, editableRoute.Name),
+		slog.String(logging.RouteName, string(editableRoute.Name)),
 		slog.String(logging.RouteTruckID, editableRoute.TruckID.String()),
 		slog.String(logging.RouteDepartureWarehouseID, editableRoute.DepartureWarehouseID.String()),
 		slog.String(logging.RouteArrivalWarehouseID, editableRoute.ArrivalWarehouseID.String()),
+	}
+
+	if !editableRoute.Name.Valid() {
+		return domain.Route{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
 	var route domain.Route
@@ -123,6 +127,10 @@ func (s *service) PatchRoute(ctx context.Context, id uuid.UUID, editableRoute do
 	logAttrs := []any{
 		slog.String(logging.ServiceMethod, "PatchRoute"),
 		slog.String(logging.RouteID, id.String()),
+	}
+
+	if editableRoute.Name != nil && !editableRoute.Name.Valid() {
+		return domain.Route{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldName}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
 	var route domain.Route

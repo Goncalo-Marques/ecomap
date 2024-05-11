@@ -41,7 +41,11 @@ func (h *handler) CreateRoute(w http.ResponseWriter, r *http.Request) {
 	domainEditableRoute := routePostToDomain(routePost)
 	domainRoute, err := h.service.CreateRoute(ctx, domainEditableRoute)
 	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
 		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
 		case errors.Is(err, domain.ErrTruckNotFound):
 			conflict(w, errTruckNotFound)
 		case errors.Is(err, domain.ErrRouteDepartureWarehouseNotFound):
@@ -143,7 +147,11 @@ func (h *handler) PatchRouteByID(w http.ResponseWriter, r *http.Request, routeID
 	domainEditableRoute := routePatchToDomain(routePatch)
 	domainRoute, err := h.service.PatchRoute(ctx, routeID, domainEditableRoute)
 	if err != nil {
+		var domainErrFieldValueInvalid *domain.ErrFieldValueInvalid
+
 		switch {
+		case errors.As(err, &domainErrFieldValueInvalid):
+			badRequest(w, fmt.Sprintf("%s: %s", errFieldValueInvalid, domainErrFieldValueInvalid.FieldName))
 		case errors.Is(err, domain.ErrRouteNotFound):
 			notFound(w, errRouteNotFound)
 		case errors.Is(err, domain.ErrTruckNotFound):
@@ -206,7 +214,7 @@ func (h *handler) DeleteRouteByID(w http.ResponseWriter, r *http.Request, routeI
 // routePostToDomain returns a domain editable route based on the standardized route post.
 func routePostToDomain(routePost spec.RoutePost) domain.EditableRoute {
 	return domain.EditableRoute{
-		Name:                 routePost.Name,
+		Name:                 domain.RouteName(routePost.Name),
 		TruckID:              routePost.TruckId,
 		DepartureWarehouseID: routePost.DepartureWarehouseId,
 		ArrivalWarehouseID:   routePost.ArrivalWarehouseId,
@@ -216,7 +224,7 @@ func routePostToDomain(routePost spec.RoutePost) domain.EditableRoute {
 // routePatchToDomain returns a domain patchable route based on the standardized route patch.
 func routePatchToDomain(routePatch spec.RoutePatch) domain.EditableRoutePatch {
 	return domain.EditableRoutePatch{
-		Name:                 routePatch.Name,
+		Name:                 (*domain.RouteName)(routePatch.Name),
 		TruckID:              routePatch.TruckId,
 		DepartureWarehouseID: routePatch.DepartureWarehouseId,
 		ArrivalWarehouseID:   routePatch.ArrivalWarehouseId,
@@ -252,7 +260,7 @@ func listRoutesParamsToDomain(params spec.ListRoutesParams) domain.RoutesPaginat
 			params.Limit,
 			params.Offset,
 		),
-		Name:                 params.Name,
+		Name:                 (*domain.RouteName)(params.Name),
 		TruckID:              params.TruckId,
 		DepartureWarehouseID: params.DepartureWarehouseId,
 		ArrivalWarehouseID:   params.ArrivalWarehouseId,
@@ -263,7 +271,7 @@ func listRoutesParamsToDomain(params spec.ListRoutesParams) domain.RoutesPaginat
 func routeFromDomain(route domain.Route) spec.Route {
 	return spec.Route{
 		Id:                   route.ID,
-		Name:                 route.Name,
+		Name:                 string(route.Name),
 		TruckId:              route.TruckID,
 		DepartureWarehouseId: route.DepartureWarehouseID,
 		ArrivalWarehouseId:   route.ArrivalWarehouseID,
