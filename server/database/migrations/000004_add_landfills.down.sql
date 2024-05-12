@@ -1,0 +1,2 @@
+-- Landfills.
+DROP TABLE landfills;
