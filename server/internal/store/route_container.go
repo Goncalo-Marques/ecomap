@@ -12,8 +12,8 @@ import (
 
 const (
 	constraintRoutesContainersPkey            = "routes_containers_pkey"
-	constraintRoutesContainersContainerIDFkey = "routes_containers_container_id_fkey"
 	constraintRoutesContainersRouteIDFkey     = "routes_containers_route_id_fkey"
+	constraintRoutesContainersContainerIDFkey = "routes_containers_container_id_fkey"
 )
 
 // CreateRouteContainer executes a query to create a route container association with the specified identifiers.
@@ -29,9 +29,9 @@ func (s *store) CreateRouteContainer(ctx context.Context, tx pgx.Tx, routeID, co
 		switch constraintNameFromError(err) {
 		case constraintRoutesContainersPkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteContainerAlreadyExists)
-		case constraintRoutesContainersContainerIDFkey:
-			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteNotFound)
 		case constraintRoutesContainersRouteIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteNotFound)
+		case constraintRoutesContainersContainerIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrContainerNotFound)
 		}
 
