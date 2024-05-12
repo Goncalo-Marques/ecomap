@@ -1,13 +1,28 @@
 <script lang="ts">
+	import { Link } from "svelte-routing";
+	import Button from "./Button.svelte";
+
 	/**
 	 * The title of the bottom sheet.
 	 */
 	export let title: string;
+
+	/**
+	 * The page link with the resource details.
+	 */
+	export let resourceLink: string | null = null;
 </script>
 
 <div class="layout">
 	<div class="sheet">
-		<h2>{title}</h2>
+		<div class="top-bar">
+			<h2>{title}</h2>
+			{#if resourceLink}
+				<Link to={resourceLink} style="display: contents">
+					<Button variant="tertiary" startIcon="open_in_new" />
+				</Link>
+			{/if}
+		</div>
 		<div class="details">
 			<slot />
 		</div>
@@ -29,7 +44,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		padding: 2rem;
+		max-height: 20rem;
 		border-top-left-radius: 0.25rem;
 		border-top-right-radius: 0.25rem;
 		background-color: var(--white);
@@ -40,11 +55,22 @@
 		}
 	}
 
+	.top-bar {
+		display: flex;
+		padding: 2rem 2rem 0 2rem;
+
+		& h2 {
+			flex: 1;
+		}
+	}
+
 	.details {
 		--column-count: 4;
 		--column-gap: 0.5rem;
 		--column-min-width: 13rem;
 
+		overflow: auto;
+		padding: 0 2rem 2rem 2rem;
 		display: grid;
 		grid-template-columns: repeat(
 			auto-fill,

@@ -6,7 +6,7 @@
 </script>
 
 <Card class="page-layout">
-	<h1>{$t("sidebar.employees")}</h1>
+	<h1>{$t("employees")}</h1>
 	<SearchEmployees />
 	<EmployeesTable />
 </Card>

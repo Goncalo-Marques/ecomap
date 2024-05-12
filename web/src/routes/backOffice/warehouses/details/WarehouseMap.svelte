@@ -5,18 +5,14 @@
 	import { fromLonLat } from "ol/proj";
 	import { Link } from "svelte-routing";
 	import Button from "../../../../lib/components/Button.svelte";
-	import BottomSheet from "../../../../lib/components/BottomSheet.svelte";
 	import Map from "../../../../lib/components/map/Map.svelte";
 	import { MapHelper } from "../../../../lib/components/map/mapUtils";
-	import Field from "../../../../lib/components/Field.svelte";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
-	import { formatDate } from "../../../../lib/utils/date";
-	import { DateFormats } from "../../../../lib/constants/date";
-	import { getLocationName } from "../../../../lib/utils/location";
 	import type { Warehouse } from "../../../../domain/warehouse";
 	import { WAREHOUSE_ICON_SRC } from "../../../../lib/constants/map";
+	import WarehouseBottomSheet from "../../components/WarehouseBottomSheet.svelte";
 
 	/**
 	 * Warehouse ID.
@@ -91,23 +87,12 @@
 			<Spinner />
 		</div>
 	{:then warehouse}
-		{@const { wayName, municipalityName } = warehouse.geoJson.properties}
 		<Link to={warehouse.id} style="display:contents">
 			<div class="back">
 				<Button startIcon="arrow_back" size="large" variant="tertiary" />
 			</div>
 		</Link>
-		<BottomSheet title={getLocationName(wayName, municipalityName)}>
-			<Field label={$t("truckCapacity")} value={warehouse.truckCapacity} />
-			<Field
-				label={$t("createdAt")}
-				value={formatDate(warehouse.createdAt, DateFormats.shortDateTime)}
-			/>
-			<Field
-				label={$t("modifiedAt")}
-				value={formatDate(warehouse.modifiedAt, DateFormats.shortDateTime)}
-			/>
-		</BottomSheet>
+		<WarehouseBottomSheet {warehouse} />
 	{:catch}
 		<div class="warehouse-not-found">
 			<h2>{$t("warehouses.notFound.title")}</h2>

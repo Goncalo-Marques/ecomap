@@ -2,4 +2,4 @@
 	import { t } from "../../../lib/utils/i8n";
 </script>
 
-<main>{$t("sidebar.routes")}</main>
+<main>{$t("routes")}</main>

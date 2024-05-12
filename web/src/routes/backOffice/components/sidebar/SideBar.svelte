@@ -16,7 +16,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.DASHBOARD}/`)}
 			>
 				<Icon name="dashboard" />
-				<span>{$t("sidebar.dashboard")}</span>
+				<span>{$t("dashboard")}</span>
 			</Link>
 		</li>
 		<li>
@@ -26,7 +26,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.MAP}/`)}
 			>
 				<Icon name="map" />
-				<span>{$t("sidebar.map")}</span>
+				<span>{$t("map")}</span>
 			</Link>
 		</li>
 		<li>
@@ -36,7 +36,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.ROUTES}/`)}
 			>
 				<Icon name="route" />
-				<span>{$t("sidebar.routes")}</span>
+				<span>{$t("routes")}</span>
 			</Link>
 		</li>
 		<li>
@@ -46,7 +46,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.CONTAINERS}/`)}
 			>
 				<Icon name="delete" />
-				<span>{$t("sidebar.containers")}</span>
+				<span>{$t("containers")}</span>
 			</Link>
 		</li>
 		<li>
@@ -56,7 +56,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.WAREHOUSES}/`)}
 			>
 				<Icon name="warehouse" />
-				<span>{$t("sidebar.warehouses")}</span>
+				<span>{$t("warehouses")}</span>
 			</Link>
 		</li>
 		<li>
@@ -66,7 +66,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.TRUCKS}/`)}
 			>
 				<Icon name="local_shipping" />
-				<span>{$t("sidebar.trucks")}</span>
+				<span>{$t("trucks")}</span>
 			</Link>
 		</li>
 		<li>
@@ -76,7 +76,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.REPORTS}/`)}
 			>
 				<Icon name="description" />
-				<span>{$t("sidebar.reports")}</span>
+				<span>{$t("reports")}</span>
 			</Link>
 		</li>
 		<li>
@@ -86,7 +86,7 @@
 					$url.pathname.startsWith(`${BackOfficeRoutes.EMPLOYEES}/`)}
 			>
 				<Icon name="group" />
-				<span>{$t("sidebar.employees")}</span>
+				<span>{$t("employees")}</span>
 			</Link>
 		</li>
 	</ul>

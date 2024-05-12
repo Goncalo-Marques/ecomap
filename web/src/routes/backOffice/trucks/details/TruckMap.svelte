@@ -5,18 +5,14 @@
 	import { fromLonLat } from "ol/proj";
 	import { Link } from "svelte-routing";
 	import Button from "../../../../lib/components/Button.svelte";
-	import BottomSheet from "../../../../lib/components/BottomSheet.svelte";
 	import Map from "../../../../lib/components/map/Map.svelte";
 	import { MapHelper } from "../../../../lib/components/map/mapUtils";
-	import Field from "../../../../lib/components/Field.svelte";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
-	import { formatDate } from "../../../../lib/utils/date";
-	import { DateFormats } from "../../../../lib/constants/date";
-	import { getLocationName } from "../../../../lib/utils/location";
 	import type { Truck } from "../../../../domain/truck";
 	import { TRUCK_ICON_SRC } from "../../../../lib/constants/map";
+	import TruckBottomSheet from "../../components/TruckBottomSheet.svelte";
 
 	/**
 	 * Truck ID.
@@ -89,26 +85,12 @@
 			<Spinner />
 		</div>
 	{:then truck}
-		{@const { wayName, municipalityName } = truck.geoJson.properties}
 		<Link to={truck.id} style="display:contents">
 			<div class="back">
 				<Button startIcon="arrow_back" size="large" variant="tertiary" />
 			</div>
 		</Link>
-		<BottomSheet title={getLocationName(wayName, municipalityName)}>
-			<Field label={$t("make")} value={truck.make} />
-			<Field label={$t("model")} value={truck.model} />
-			<Field label={$t("licensePlate")} value={truck.licensePlate} />
-			<Field label={$t("personCapacity")} value={truck.personCapacity} />
-			<Field
-				label={$t("createdAt")}
-				value={formatDate(truck.createdAt, DateFormats.shortDateTime)}
-			/>
-			<Field
-				label={$t("modifiedAt")}
-				value={formatDate(truck.modifiedAt, DateFormats.shortDateTime)}
-			/>
-		</BottomSheet>
+		<TruckBottomSheet {truck} />
 	{:catch}
 		<div class="truck-not-found">
 			<h2>{$t("trucks.notFound.title")}</h2>

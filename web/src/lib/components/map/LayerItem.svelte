@@ -11,10 +11,8 @@
 
 	/**
 	 * Indicates if layers is visible.
-	 *
-	 * @default true
 	 */
-	let visible: boolean = true;
+	let visible: boolean = layer.isVisible();
 
 	/**
 	 * Changes layer visibility based on {@link visible} value.

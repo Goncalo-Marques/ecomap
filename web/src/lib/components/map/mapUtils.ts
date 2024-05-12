@@ -1,7 +1,5 @@
 import Map from "ol/Map";
 import View from "ol/View";
-import SimpleGeometry from "ol/geom/SimpleGeometry";
-import { type Coordinate } from "ol/coordinate";
 
 import { Vector as VectorSource, Cluster, OSM } from "ol/source";
 import { WebGLTile as TileLayer, Layer } from "ol/layer";
@@ -9,8 +7,6 @@ import { fromLonLat } from "ol/proj";
 
 import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer";
 import WebGLPointsLayer from "ol/layer/WebGLPoints";
-
-import { boundingExtent, type Extent } from "ol/extent";
 
 import { Circle, Fill, Icon, Stroke, Style, Text } from "ol/style";
 import { Vector as VectorLayer } from "ol/layer";
@@ -24,22 +20,26 @@ import {
 	colorLayerKey,
 	nameLayerKey,
 	DEFAULT_MAX_ZOOM,
-	CONTAINER_ICON_SRC,
+	DEFAULT_PIN_ICON_SRC,
+	DEFAULT_MIN_ZOOM,
+	OL_PROJECTION,
 } from "../../constants/map";
 import type { Geometry } from "ol/geom";
 import type Feature from "ol/Feature";
 import type { Options } from "ol/source/Vector";
 import Rotate from "ol/control/Rotate";
-
-const docElement = document.documentElement;
-const style = getComputedStyle(docElement);
+import { getCssVariable } from "../../utils/cssVars";
+import type {
+	CreateMapOptions,
+	MapHelperClusterLayerOptions,
+} from "../../../domain/components/map";
 
 /**
  * Variables retrieved from css vars.
  */
 const cssVars = {
-	text_sm_semibold: style.getPropertyValue("--text-sm-semibold"),
-	indigo_400: style.getPropertyValue("--indigo-400"),
+	text_sm_semibold: getCssVariable("--text-sm-semibold"),
+	indigo_400: getCssVariable("--indigo-400"),
 };
 
 /**
@@ -54,22 +54,13 @@ const defaultVectorStyle: VectorStyle = {
  * Default style for WebGl point layer.
  */
 const defaultIconStyle: WebGLStyle = {
-	"icon-src": CONTAINER_ICON_SRC,
+	"icon-src": DEFAULT_PIN_ICON_SRC,
 };
 
 /**
- * Default style for cluster point layer.
+ * Style for cluster symbol.
  */
-const defaultClusterIcon = new Style({
-	image: new Icon({
-		src: CONTAINER_ICON_SRC,
-	}),
-});
-
-/**
- * Default style for cluster symbol.
- */
-const defaultClusterSymbol: Style = new Style({
+const clusterStyle = new Style({
 	image: new Circle({
 		radius: 20,
 		stroke: new Stroke({
@@ -163,77 +154,66 @@ export class MapHelper {
 	}
 
 	/**
-	 * Add a clusterLayer into map.
+	 * Add a cluster layer into map.
 	 *
-	 * @param sourceOptions Options of the cluster layer source.
-	 * @param layerName Name for layer.
-	 * @param [layerColor="#15803D"] Color that identifies the layer.
-	 * @param [clusterStyle=defaultClusterSymbol] Style for the cluster nodes.
-	 * @param [iconStyle=defaultClusterIcon] Style for each independent node.
+	 * @param features Layer features.
+	 * @param options Layer options.
 	 */
 	public addClusterLayer(
-		sourceOptions: Options<Feature<Geometry>>,
-		layerName: string,
-		layerColor: string = "#15803D",
-		clusterStyle: Style = defaultClusterSymbol,
-		iconStyle: Style = defaultClusterIcon,
+		features: Feature<Geometry>[],
+		options?: MapHelperClusterLayerOptions,
 	) {
+		const iconStyle = new Style({
+			image: new Icon({
+				src: options?.iconSrc ?? DEFAULT_PIN_ICON_SRC,
+			}),
+		});
+		const selectedIconStyle = new Style({
+			image: new Icon({
+				src: options?.selectedIconSrc ?? DEFAULT_PIN_ICON_SRC,
+			}),
+		});
+
 		const cluster = new VectorLayer({
-			zIndex: this.map.getAllLayers().length,
+			zIndex: 100,
 			source: new Cluster({
 				distance: 50,
 				minDistance: 10,
-				source: new VectorSource(sourceOptions),
+				source: new VectorSource({
+					features,
+				}),
 			}),
-			style: (feature: FeatureLike) => {
-				const size = feature.get("features").length;
+			style(feature: FeatureLike) {
+				const features: Feature[] = feature.get("features");
+				const size = features.length;
 
-				clusterStyle.getText()?.setText(size.toString());
+				if (size >= 2) {
+					clusterStyle.getText()?.setText(size.toString());
+					return clusterStyle;
+				}
 
-				return size >= 2 ? clusterStyle : iconStyle;
+				if (features[0].get("selected")) {
+					return selectedIconStyle;
+				}
+
+				return iconStyle;
 			},
 		});
 
-		cluster.set(nameLayerKey, layerName);
-		cluster.set(colorLayerKey, layerColor);
+		if (options?.layerName) {
+			cluster.set(nameLayerKey, options?.layerName);
+		}
+
+		if (options?.layerColor) {
+			cluster.set(colorLayerKey, options?.layerColor);
+		}
 
 		this.map.addLayer(cluster);
-
-		this.map.on("click", e => {
-			cluster.getFeatures(e.pixel).then(clickedFeatures => {
-				if (clickedFeatures.length) {
-					const features: FeatureLike[] = clickedFeatures[0].get("features");
-					if (features.length > 1) {
-						const coordinates: Coordinate[] = [];
-
-						for (const feature of features) {
-							const geom = feature.getGeometry();
-							if (!(geom instanceof SimpleGeometry)) {
-								continue;
-							}
-
-							const coord = geom.getCoordinates();
-							if (!coord) {
-								continue;
-							}
-
-							coordinates.push(coord);
-						}
-
-						const extent: Extent = boundingExtent(coordinates);
-
-						this.map
-							.getView()
-							.fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
-					}
-				}
-			});
-		});
 
 		let hoverFeature: FeatureLike;
 		this.map.on("pointermove", e => {
 			cluster.getFeatures(e.pixel).then(features => {
-				if (features[0] !== hoverFeature) {
+				if (cluster.isVisible() && features[0] !== hoverFeature) {
 					hoverFeature = features[0];
 
 					this.map.getTargetElement().style.cursor = hoverFeature
@@ -256,12 +236,7 @@ export class MapHelper {
  * @param projection Projection used, ex: EPSG:3857.
  * @returns Map.
  */
-export function createMap(
-	lon: number,
-	lat: number,
-	zoom: number,
-	projection: string = "EPSG:3857",
-): Map {
+export function createMap(options: CreateMapOptions): Map {
 	const baseLayer = new TileLayer({
 		source: new OSM(),
 		visible: true,
@@ -270,14 +245,24 @@ export function createMap(
 
 	baseLayer.set(nameLayerKey, mapLayerName);
 
+	const {
+		lon,
+		lat,
+		zoom,
+		maxZoom = DEFAULT_MAX_ZOOM,
+		minZoom = DEFAULT_MIN_ZOOM,
+		projection = OL_PROJECTION,
+	} = options;
+
 	return new Map({
 		controls: [new Rotate()],
 		layers: [baseLayer],
 		view: new View({
 			center: fromLonLat([lon, lat]),
-			zoom: zoom,
-			maxZoom: DEFAULT_MAX_ZOOM,
-			projection: projection,
+			zoom,
+			maxZoom,
+			minZoom,
+			projection,
 			// Locks the map on the iberian peninsula
 			extent: [
 				-2159435.3010021457, 3990778.5878774817, 863857.4518866497,

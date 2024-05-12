@@ -88,7 +88,7 @@
 	loading={$loading}
 	rows={$data.containers}
 	pagination={{
-		name: $t("containers.title").toLowerCase(),
+		name: $t("containers").toLowerCase(),
 		pageIndex: $filters.pageIndex,
 		pageSize: DEFAULT_PAGE_SIZE,
 		total: $data.total,
