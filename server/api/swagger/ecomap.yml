@@ -15,6 +15,8 @@ tags:
     description: Truck operations
   - name: Warehouse
     description: Warehouse operations
+  - name: Landfill
+    description: Landfill operations
   - name: Route
     description: Route operations
   - name: Route Container
@@ -1372,6 +1374,186 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /landfills:
+    post:
+      summary: Create a landfill.
+      operationId: createLandfill
+      description: Creates a new landfill with the specified data.
+      tags:
+        - Landfill
+      security:
+        - BearerAuth: [manager]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LandfillPost"
+      responses:
+        201:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Landfill"
+        400:
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List landfills.
+      operationId: listLandfills
+      description: Returns the landfills with the specified filter.
+      tags:
+        - Landfill
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/LandfillSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LandfillsPaginated"
+        400:
+          description: Invalid filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /landfills/{landfillId}:
+    get:
+      summary: Get a landfill by ID.
+      operationId: getLandfillByID
+      description: Returns the landfill with the specified identifier.
+      tags:
+        - Landfill
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/LandfillIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Landfill"
+        400:
+          description: Invalid landfill ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Landfill not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Modify a landfill by ID.
+      operationId: patchLandfillByID
+      description: Modifies the landfill with the specified identifier. Only the specified fields in the request body are updated.
+      tags:
+        - Landfill
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/LandfillIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LandfillPatch"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Landfill"
+        400:
+          description: Invalid landfill ID or request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Landfill not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a landfill by ID.
+      operationId: deleteLandfillByID
+      description: Deletes the landfill with the specified identifier.
+      tags:
+        - Landfill
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/LandfillIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Landfill"
+        400:
+          description: Invalid landfill ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Landfill not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
   /routes:
     post:
       summary: Create a route.
@@ -2037,6 +2219,18 @@ components:
           - createdAt
           - modifiedAt
         default: createdAt
+    LandfillSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the landfill field to sort by.
+      schema:
+        type: string
+        enum:
+          - wayName
+          - municipalityName
+          - createdAt
+          - modifiedAt
+        default: createdAt
     RouteSortQueryParam:
       name: sort
       in: query
@@ -2106,6 +2300,13 @@ components:
       name: warehouseId
       in: path
       description: Warehouse identifier.
+      required: true
+      schema:
+        $ref: "#/components/schemas/UUID"
+    LandfillIdPathParam:
+      name: landfillId
+      in: path
+      description: Landfill identifier.
       required: true
       schema:
         $ref: "#/components/schemas/UUID"
@@ -2638,6 +2839,46 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Warehouse"
+
+    LandfillPost:
+      type: object
+      required:
+        - geoJson
+      properties:
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    LandfillPatch:
+      type: object
+      properties:
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+    Landfill:
+      type: object
+      required:
+        - id
+        - geoJson
+        - createdAt
+        - modifiedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        geoJson:
+          $ref: "#/components/schemas/GeoJSONFeaturePoint"
+        createdAt:
+          $ref: "#/components/schemas/DateTime"
+        modifiedAt:
+          $ref: "#/components/schemas/DateTime"
+    LandfillsPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - landfills
+          properties:
+            landfills:
+              type: array
+              items:
+                $ref: "#/components/schemas/Landfill"
 
     RoutePost:
       type: object
