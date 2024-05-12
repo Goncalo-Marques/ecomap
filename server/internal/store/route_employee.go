@@ -33,7 +33,7 @@ func (s *store) ListRouteEmployees(ctx context.Context, tx pgx.Tx, routeID uuid.
 	// Get the total number of rows for the given filter.
 	var total int
 	row := tx.QueryRow(ctx, `
-		SELECT count(e.id) 
+		SELECT count(re.route_id) 
 		FROM routes_employees AS re
 		INNER JOIN employees AS e ON re.employee_id = e.id
 		LEFT JOIN road_network AS rn ON e.road_id = rn.id
