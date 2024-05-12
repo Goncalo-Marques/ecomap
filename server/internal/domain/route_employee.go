@@ -1,5 +1,13 @@
 package domain
 
+import "errors"
+
+// Route employee errors.
+var (
+	ErrRouteEmployeeAlreadyExists = errors.New("route employee already exists") // Returned when a route employee association already exists.
+	ErrRouteEmployeeNotFound      = errors.New("route employee not found")      // Returned when a route employee association is not found.
+)
+
 // RouteEmployeeRole defines the role of the route employee.
 type RouteEmployeeRole string
 
@@ -19,10 +27,15 @@ func (r RouteEmployeeRole) Valid() bool {
 	}
 }
 
+// EditableRouteEmployee defines the editable route employee structure.
+type EditableRouteEmployee struct {
+	RouteRole RouteEmployeeRole
+}
+
 // RouteEmployee defines the route employee structure.
 type RouteEmployee struct {
 	Employee
-	RouteRole RouteEmployeeRole
+	EditableRouteEmployee
 }
 
 // RouteEmployeePaginatedSort defines the field of the route employee to sort.

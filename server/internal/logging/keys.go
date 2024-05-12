@@ -41,4 +41,6 @@ const (
 	RouteTruckID              = "route.truckID"
 	RouteDepartureWarehouseID = "route.departureWarehouseID"
 	RouteArrivalWarehouseID   = "route.arrivalWarehouseID"
+
+	RouteEmployeeEmployeeRole = "routeEmployee.employeeRole"
 )

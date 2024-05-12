@@ -2711,12 +2711,14 @@ components:
         routeRole:
           $ref: "#/components/schemas/RouteEmployeeRole"
     RouteEmployee:
-      type: object
-      required:
-        - routeRole
-      properties:
-        routeRole:
-          $ref: "#/components/schemas/RouteEmployeeRole"
+      allOf:
+        - $ref: "#/components/schemas/Employee"
+        - type: object
+          required:
+            - routeRole
+          properties:
+            routeRole:
+              $ref: "#/components/schemas/RouteEmployeeRole"
     RouteEmployeesPaginated:
       allOf:
         - $ref: "#/components/schemas/PaginatedResponse"
@@ -2727,9 +2729,7 @@ components:
             employees:
               type: array
               items:
-                allOf:
-                  - $ref: "#/components/schemas/Employee"
-                  - $ref: "#/components/schemas/RouteEmployee"
+                $ref: "#/components/schemas/RouteEmployee"
 
     Way:
       type: object

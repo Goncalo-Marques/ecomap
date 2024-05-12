@@ -11,9 +11,36 @@ import (
 )
 
 const (
-	constraintRoutesEmployeesEmployeeIDFkey = "routes_employees_employee_id_fkey"
+	constraintRoutesEmployeesPkey           = "routes_employees_pkey"
 	constraintRoutesEmployeesRouteIDFkey    = "routes_employees_route_id_fkey"
+	constraintRoutesEmployeesEmployeeIDFkey = "routes_employees_employee_id_fkey"
 )
+
+// CreateRouteEmployee executes a query to create a route employee association with the specified identifiers.
+func (s *store) CreateRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID, editableRouteEmployee domain.EditableRouteEmployee) error {
+	_, err := tx.Exec(ctx, `
+		INSERT INTO routes_employees (route_id, employee_id, employee_role)
+		VALUES ($1, $2, $3)
+	`,
+		routeID,
+		employeeID,
+		routeEmployeeRoleFromDomain(editableRouteEmployee.RouteRole),
+	)
+	if err != nil {
+		switch constraintNameFromError(err) {
+		case constraintRoutesEmployeesPkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteEmployeeAlreadyExists)
+		case constraintRoutesEmployeesRouteIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteNotFound)
+		case constraintRoutesEmployeesEmployeeIDFkey:
+			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrEmployeeNotFound)
+		}
+
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	return nil
+}
 
 // ListRouteEmployees executes a query to return the route employees for the specified filter.
 func (s *store) ListRouteEmployees(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteEmployeesPaginatedFilter) (domain.PaginatedResponse[domain.RouteEmployee], error) {
@@ -86,6 +113,26 @@ func (s *store) ListRouteEmployees(ctx context.Context, tx pgx.Tx, routeID uuid.
 		Total:   total,
 		Results: routeEmployees,
 	}, nil
+}
+
+// DeleteRouteEmployee executes a query to delete the route employee association with the specified identifiers.
+func (s *store) DeleteRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID) error {
+	commandTag, err := tx.Exec(ctx, `
+		DELETE FROM routes_employees
+		WHERE route_id = $1 AND employee_id = $2
+	`,
+		routeID,
+		employeeID,
+	)
+	if err != nil {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteEmployeeNotFound)
+	}
+
+	return nil
 }
 
 // routeEmployeeRoleFromDomain returns a store route employee role based on the domain model.

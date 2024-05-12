@@ -84,7 +84,9 @@ type Store interface {
 	ListRouteContainers(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
 	DeleteRouteContainer(ctx context.Context, tx pgx.Tx, routeID, containerID uuid.UUID) error
 
+	CreateRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID, editableRouteEmployee domain.EditableRouteEmployee) error
 	ListRouteEmployees(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteEmployeesPaginatedFilter) (domain.PaginatedResponse[domain.RouteEmployee], error)
+	DeleteRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID) error
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 
