@@ -12,7 +12,7 @@
 	import { t } from "../../../../lib/utils/i8n";
 	import type { Truck } from "../../../../domain/truck";
 	import { TRUCK_ICON_SRC } from "../../../../lib/constants/map";
-	import TruckBottomSheet from "../../components/TruckBottomSheet.svelte";
+	import TruckBottomSheet from "./TruckBottomSheet.svelte";
 
 	/**
 	 * Truck ID.

@@ -12,7 +12,7 @@
 	import { t } from "../../../../lib/utils/i8n";
 	import type { Warehouse } from "../../../../domain/warehouse";
 	import { WAREHOUSE_ICON_SRC } from "../../../../lib/constants/map";
-	import WarehouseBottomSheet from "../../components/WarehouseBottomSheet.svelte";
+	import WarehouseBottomSheet from "./WarehouseBottomSheet.svelte";
 
 	/**
 	 * Warehouse ID.

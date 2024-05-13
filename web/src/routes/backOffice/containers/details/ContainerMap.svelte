@@ -12,7 +12,7 @@
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
 	import { CONTAINER_ICON_SRC } from "../../../../lib/constants/map";
-	import ContainerBottomSheet from "../../components/ContainerBottomSheet.svelte";
+	import ContainerBottomSheet from "./ContainerBottomSheet.svelte";
 
 	/**
 	 * Container ID.

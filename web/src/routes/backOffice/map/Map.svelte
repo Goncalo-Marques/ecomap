@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import OlMap from "ol/Map";
-	import Map from "../../../lib/components/map/Map.svelte";
+	import MapComponent from "../../../lib/components/map/Map.svelte";
 	import { MapHelper } from "../../../lib/components/map/mapUtils";
 	import ecomapHttpClient from "../../../lib/clients/ecomap/http";
 	import { Point, SimpleGeometry } from "ol/geom";
@@ -19,14 +19,12 @@
 	import type { Container } from "../../../domain/container";
 	import type { Truck } from "../../../domain/truck";
 	import type { Warehouse } from "../../../domain/warehouse";
-	import ContainerBottomSheet from "../components/ContainerBottomSheet.svelte";
-	import TruckBottomSheet from "../components/TruckBottomSheet.svelte";
-	import WarehouseBottomSheet from "../components/WarehouseBottomSheet.svelte";
 	import { getCssVariable } from "../../../lib/utils/cssVars";
 	import type { Coordinate } from "ol/coordinate";
 	import { type Extent, boundingExtent } from "ol/extent";
-	import ResourceGroupBottomSheet from "../components/ResourceGroupBottomSheet.svelte";
-	import type { ResourceGroupLocation } from "../../../domain/map";
+	import MapBottomSheet from "./MapBottomSheet.svelte";
+	import { getBatchPaginatedResponse } from "../../../lib/utils/request";
+	import Button from "../../../lib/components/Button.svelte";
 
 	/**
 	 * The Open Layers map.
@@ -34,9 +32,9 @@
 	let map: OlMap;
 
 	/**
-	 * The container selected in the map.
+	 * The containers selected in the map.
 	 */
-	let selectedContainer: Container | null = null;
+	let selectedContainers: Container[] = [];
 
 	/**
 	 * The truck selected in the map.
@@ -49,11 +47,6 @@
 	let selectedWarehouse: Warehouse | null = null;
 
 	/**
-	 * The feature group selected in the map.
-	 */
-	let selectedGroup: ResourceGroupLocation | null = null;
-
-	/**
 	 * The selected feature in the map.
 	 */
 	let selectedFeature: Feature | null = null;
@@ -62,15 +55,21 @@
 	 * Retrieves truck features to display in the map.
 	 */
 	async function getTruckFeatures(): Promise<Feature<Point>[]> {
-		const res = await ecomapHttpClient.GET("/trucks");
+		const trucks = await getBatchPaginatedResponse(async (limit, offset) => {
+			const res = await ecomapHttpClient.GET("/trucks", {
+				params: { query: { limit, offset } },
+			});
 
-		const features: Feature<Point>[] = [];
+			if (res.error) {
+				return { total: 0, items: [] };
+			}
 
-		if (res.error) {
-			return features;
-		}
+			return { total: res.data.total, items: res.data.trucks };
+		});
 
-		for (const truck of res.data.trucks) {
+		const truckFeatures: Feature<Point>[] = [];
+
+		for (const truck of trucks) {
 			const {
 				id,
 				make,
@@ -99,25 +98,33 @@
 				geoJson,
 			});
 
-			features.push(feature);
+			truckFeatures.push(feature);
 		}
 
-		return features;
+		return truckFeatures;
 	}
 
 	/**
 	 * Retrieves warehouse features to display in the map.
 	 */
-	async function getWarehouseFeatures(): Promise<Feature<Point>[]> {
-		const res = await ecomapHttpClient.GET("/warehouses");
+	async function getWarehouseFeatures(): Promise<Feature[]> {
+		const warehouses = await getBatchPaginatedResponse(
+			async (limit, offset) => {
+				const res = await ecomapHttpClient.GET("/warehouses", {
+					params: { query: { limit, offset } },
+				});
 
-		const features: Feature<Point>[] = [];
+				if (res.error) {
+					return { total: 0, items: [] };
+				}
 
-		if (res.error) {
-			return features;
-		}
+				return { total: res.data.total, items: res.data.warehouses };
+			},
+		);
 
-		for (const warehouse of res.data.warehouses) {
+		const warehouseFeatures: Feature<Point>[] = [];
+
+		for (const warehouse of warehouses) {
 			const { id, truckCapacity, createdAt, modifiedAt, geoJson } = warehouse;
 			const transformedCoordinate = convertToMapProjection(
 				geoJson.geometry.coordinates,
@@ -134,62 +141,70 @@
 				geoJson,
 			});
 
-			features.push(feature);
+			warehouseFeatures.push(feature);
 		}
 
-		return features;
+		return warehouseFeatures;
 	}
 
 	/**
 	 * Retrieves container features to display in the map.
 	 */
 	async function getContainerFeatures(): Promise<Feature<Point>[]> {
-		const res = await ecomapHttpClient.GET("/containers");
+		const containers = await getBatchPaginatedResponse(
+			async (limit, offset) => {
+				const res = await ecomapHttpClient.GET("/containers", {
+					params: { query: { limit, offset } },
+				});
 
-		const features: Feature<Point>[] = [];
+				if (res.error) {
+					return { total: 0, items: [] };
+				}
 
-		if (res.error) {
-			return features;
-		}
+				return { total: res.data.total, items: res.data.containers };
+			},
+		);
 
-		for (const container of res.data.containers) {
+		const containerMap = new Map<string, Feature<Point>>();
+
+		for (const container of containers) {
 			const { id, category, createdAt, modifiedAt, geoJson } = container;
-			const transformedCoordinate = convertToMapProjection(
-				geoJson.geometry.coordinates,
-			);
-			const point = new Point(transformedCoordinate);
-			const feature = new Feature(point);
-			feature.setId(id);
-			feature.setProperties({
-				type: "container",
+
+			const key = `${geoJson.geometry.coordinates[0]},${geoJson.geometry.coordinates[1]}`;
+
+			if (!containerMap.has(key)) {
+				const transformedCoordinate = convertToMapProjection(
+					geoJson.geometry.coordinates,
+				);
+				const point = new Point(transformedCoordinate);
+				const feature = new Feature(point);
+
+				feature.setProperties({ type: "container", geoJson, items: [] });
+
+				containerMap.set(key, feature);
+			}
+
+			const containerFeature = containerMap.get(key)!;
+			containerFeature.get("items").push({
 				id,
 				category,
 				createdAt,
 				modifiedAt,
 				geoJson,
 			});
-
-			features.push(feature);
 		}
 
-		return features;
+		return Array.from(containerMap.values());
 	}
 
 	/**
 	 * Retrieves a container from a container feature.
 	 * @param feature Container feature.
 	 */
-	function getContainerFromFeature(feature: Feature): Container {
-		const { id, category, createdAt, modifiedAt, geoJson } =
-			feature.getProperties();
+	function getContainersFromFeature(feature: Feature): Container[] {
+		const containers: Container[] = feature.get("items");
 
-		return {
-			id,
-			category,
-			createdAt,
-			modifiedAt,
-			geoJson,
-		};
+		return containers;
 	}
 
 	/**
@@ -315,7 +330,7 @@
 		// Determine which type of feature it is.
 		switch (feature.get("type")) {
 			case "container":
-				selectedContainer = getContainerFromFeature(feature);
+				selectedContainers = getContainersFromFeature(feature);
 				break;
 
 			case "truck":
@@ -329,45 +344,14 @@
 	}
 
 	/**
-	 * Selects a group of features.
-	 * @param features Features.
-	 */
-	function selectGroupedFeatures(features: Feature[]) {
-		selectedGroup = {
-			wayName: features[0].get("geoJson").properties.wayName,
-			municipalityName: features[0].get("geoJson").properties.municipalityName,
-			containers: [],
-			trucks: [],
-			warehouses: [],
-		};
-
-		for (const feature of features) {
-			switch (feature.get("type")) {
-				case "container":
-					selectedGroup.containers.push(getContainerFromFeature(feature));
-					break;
-
-				case "truck":
-					selectedGroup.trucks.push(getTruckFromFeature(feature));
-					break;
-
-				case "warehouse":
-					selectedGroup.warehouses.push(getWarehouseFromFeature(feature));
-					break;
-			}
-		}
-	}
-
-	/**
 	 * Handles the click event on the map.
 	 * @param e Click event.
 	 */
 	function handleMapClick(e: MapBrowserEvent<UIEvent>) {
 		// Reset all previously selected features.
-		selectedContainer = null;
+		selectedContainers = [];
 		selectedTruck = null;
 		selectedWarehouse = null;
-		selectedGroup = null;
 		selectedFeature?.set("selected", false);
 
 		// Get features that were clicked.
@@ -375,6 +359,7 @@
 
 		// Check if the click was not performed on any feature.
 		if (!clickedFeatures.length) {
+			selectedFeature = null;
 			return;
 		}
 
@@ -383,13 +368,6 @@
 
 		const selectedFeatures: Feature[] = clickedFeatures[0].get("features");
 		if (selectedFeatures.length > 1) {
-			// When the map zoom is at maximum and there are still grouped features, select them.
-			if (mapView.getZoom() === mapView.getMaxZoom()) {
-				selectGroupedFeatures(selectedFeatures);
-				return;
-			}
-
-			// Otherwise, retrieve the map extent of the features.
 			extent = getExtentFromSelectedFeatures(selectedFeatures);
 		} else {
 			const feature = selectedFeatures[0];
@@ -419,22 +397,31 @@
 </script>
 
 <main>
-	<Map
-		bind:map
-		showLayers={!selectedWarehouse &&
-			!selectedContainer &&
-			!selectedTruck &&
-			!selectedGroup}
-	/>
+	<MapComponent bind:map showLayers={!selectedFeature} />
 
-	{#if selectedGroup}
-		<ResourceGroupBottomSheet group={selectedGroup} />
-	{:else if selectedContainer}
-		<ContainerBottomSheet container={selectedContainer} />
-	{:else if selectedTruck}
-		<TruckBottomSheet truck={selectedTruck} />
-	{:else if selectedWarehouse}
-		<WarehouseBottomSheet warehouse={selectedWarehouse} />
+	{#if selectedFeature}
+		<div class="close-selected-feature">
+			<Button
+				variant="tertiary"
+				startIcon="close"
+				size="large"
+				onClick={() => {
+					selectedFeature?.set("selected", false);
+					selectedFeature = null;
+				}}
+			/>
+		</div>
+	{/if}
+
+	{#if selectedFeature && (selectedContainers.length || selectedTruck || selectedWarehouse)}
+		<MapBottomSheet
+			wayName={selectedFeature.get("geoJson").properties.wayName}
+			municipalityName={selectedFeature.get("geoJson").properties
+				.municipalityName}
+			warehouse={selectedWarehouse}
+			containers={selectedContainers}
+			truck={selectedTruck}
+		/>
 	{/if}
 </main>
 
@@ -442,5 +429,15 @@
 	main {
 		position: relative;
 		width: 100%;
+	}
+
+	.close-selected-feature {
+		position: absolute;
+		top: 2.5rem;
+		left: 2.5rem;
+
+		& > button {
+			box-shadow: var(--shadow-md);
+		}
 	}
 </style>
