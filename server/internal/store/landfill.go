@@ -114,7 +114,7 @@ func (s *store) ListLandfills(ctx context.Context, tx pgx.Tx, filter domain.Land
 func (s *store) GetLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Landfill, error) {
 	row := tx.QueryRow(ctx, `
 		SELECT l.id, ST_AsGeoJSON(l.geom)::jsonb, rn.osm_name, m.name, l.created_at, l.modified_at 
-		FROM landfills AS w
+		FROM landfills AS l
 		LEFT JOIN road_network AS rn ON l.road_id = rn.id
 		LEFT JOIN municipalities AS m ON l.municipality_id = m.id
 		WHERE l.id = $1 
