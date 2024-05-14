@@ -15,6 +15,18 @@
 	const columns: Columns<Container> = [
 		{
 			type: "accessor",
+			field: "geoJson",
+			header: $t("location"),
+			enableSorting: false,
+			enableFiltering: false,
+			cell(geoJson) {
+				const { municipalityName, wayName } = geoJson.properties;
+
+				return getLocationName(wayName, municipalityName);
+			},
+		},
+		{
+			type: "accessor",
 			field: "category",
 			header: $t("containers.category"),
 			enableSorting: false,
@@ -37,18 +49,6 @@
 						category,
 					};
 				});
-			},
-		},
-		{
-			type: "accessor",
-			field: "geoJson",
-			header: $t("location"),
-			enableSorting: false,
-			enableFiltering: false,
-			cell(geoJson) {
-				const { municipalityName, wayName } = geoJson.properties;
-
-				return getLocationName(wayName, municipalityName);
 			},
 		},
 		{
@@ -88,7 +88,7 @@
 	loading={$loading}
 	rows={$data.containers}
 	pagination={{
-		name: $t("containers.title").toLowerCase(),
+		name: $t("containers").toLowerCase(),
 		pageIndex: $filters.pageIndex,
 		pageSize: DEFAULT_PAGE_SIZE,
 		total: $data.total,

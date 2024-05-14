@@ -82,6 +82,26 @@ type Service interface {
 	PatchWarehouse(ctx context.Context, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch) (domain.Warehouse, error)
 	DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
 
+	CreateLandfill(ctx context.Context, editableLandfill domain.EditableLandfill) (domain.Landfill, error)
+	ListLandfills(ctx context.Context, filter domain.LandfillsPaginatedFilter) (domain.PaginatedResponse[domain.Landfill], error)
+	GetLandfillByID(ctx context.Context, id uuid.UUID) (domain.Landfill, error)
+	PatchLandfill(ctx context.Context, id uuid.UUID, editableLandfill domain.EditableLandfillPatch) (domain.Landfill, error)
+	DeleteLandfillByID(ctx context.Context, id uuid.UUID) (domain.Landfill, error)
+
+	CreateRoute(ctx context.Context, editableRoute domain.EditableRoute) (domain.Route, error)
+	ListRoutes(ctx context.Context, filter domain.RoutesPaginatedFilter) (domain.PaginatedResponse[domain.Route], error)
+	GetRouteByID(ctx context.Context, id uuid.UUID) (domain.Route, error)
+	PatchRoute(ctx context.Context, id uuid.UUID, editableRoute domain.EditableRoutePatch) (domain.Route, error)
+	DeleteRouteByID(ctx context.Context, id uuid.UUID) (domain.Route, error)
+
+	CreateRouteContainer(ctx context.Context, routeID, containerID uuid.UUID) error
+	ListRouteContainers(ctx context.Context, routeID uuid.UUID, filter domain.RouteContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteRouteContainer(ctx context.Context, routeID, containerID uuid.UUID) error
+
+	CreateRouteEmployee(ctx context.Context, routeID, employeeID uuid.UUID, editableRouteEmployee domain.EditableRouteEmployee) error
+	ListRouteEmployees(ctx context.Context, routeID uuid.UUID, filter domain.RouteEmployeesPaginatedFilter) (domain.PaginatedResponse[domain.RouteEmployee], error)
+	DeleteRouteEmployee(ctx context.Context, routeID, employeeID uuid.UUID) error
+
 	GetRoadByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)

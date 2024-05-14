@@ -275,15 +275,15 @@ func getTruckFromRow(row pgx.Row) (domain.Truck, error) {
 
 // getTrucksFromRows returns the trucks by scanning the given rows.
 func getTrucksFromRows(rows pgx.Rows) ([]domain.Truck, error) {
-	var Trucks []domain.Truck
+	var trucks []domain.Truck
 	for rows.Next() {
 		truck, err := getTruckFromRow(rows)
 		if err != nil {
 			return nil, err
 		}
 
-		Trucks = append(Trucks, truck)
+		trucks = append(trucks, truck)
 	}
 
-	return Trucks, nil
+	return trucks, nil
 }

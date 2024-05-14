@@ -95,7 +95,7 @@ func (h *handler) DeleteUserContainerBookmark(w http.ResponseWriter, r *http.Req
 }
 
 // listUserContainerBookmarksParamsToDomain returns a domain user container bookmarks paginated filter based on the
-// standardized list containers parameters.
+// standardized list user container bookmarks parameters.
 func listUserContainerBookmarksParamsToDomain(params spec.ListUserContainerBookmarksParams) domain.UserContainerBookmarksPaginatedFilter {
 	domainSort := domain.UserContainerBookmarkPaginatedSortCreatedAt
 	if params.Sort != nil {
