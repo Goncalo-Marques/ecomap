@@ -22,6 +22,8 @@ ignoreWords:
   - healthcheck
   - isready
   - jackc
+  - kotlinx
+  - lateinit
   - ldflags
   - libboost
   - mipmap
@@ -53,6 +55,7 @@ ignorePaths:
   - gradlew
   - gradlew.bat
   - proguard-rules.pro
+  - android/app/src/main/res/values-pt
   - server/api/swagger/ui
   - server/deployments
   - server/config.yml
