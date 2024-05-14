@@ -94,5 +94,14 @@
 	"notFound.description": "The page you are looking for does not exist.",
 	"forbidden.title": "Access forbidden",
 	"forbidden.description": "You do not have permission to access this page.",
-	"map.layers": "Layers"
+	"map.layers": "Layers",
+	"employees.title": "Employees",
+	"employees.search": "Search by username",
+	"employees.username": "Username",
+	"employees.firstName": "First name",
+	"employees.lastName": "Last name",
+	"employees.schedule": "Schedule",
+	"employees.role": "Role",
+	"employees.role.manager": "Manager",
+	"employees.role.wasteOperator": "Waste operator"
 }
