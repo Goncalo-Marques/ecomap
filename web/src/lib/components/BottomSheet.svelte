@@ -8,7 +8,7 @@
 	export let title: string;
 
 	/**
-	 * The page to with the resource details.
+	 * The page to the resource details.
 	 */
 	export let resourceLink: string | null = null;
 </script>
