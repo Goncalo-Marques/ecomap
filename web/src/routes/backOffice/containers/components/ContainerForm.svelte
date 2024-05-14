@@ -190,6 +190,20 @@
 		<DetailsSection label={$t("generalInfo")}>
 			<DetailsFields>
 				<FormControl
+					label={$t("location")}
+					error={!!formErrorMessages.location}
+					helperText={formErrorMessages.location}
+				>
+					<LocationInput
+						required
+						name="location"
+						value={locationName}
+						error={!!formErrorMessages.location}
+						placeholder={$t("location.placeholder")}
+						onClick={() => (openSelectLocation = true)}
+					/>
+				</FormControl>
+				<FormControl
 					label={$t("containers.category")}
 					error={!!formErrorMessages.category}
 					helperText={formErrorMessages.category}
@@ -207,20 +221,6 @@
 							</Option>
 						{/each}
 					</Select>
-				</FormControl>
-				<FormControl
-					label={$t("location")}
-					error={!!formErrorMessages.location}
-					helperText={formErrorMessages.location}
-				>
-					<LocationInput
-						required
-						name="location"
-						value={locationName}
-						error={!!formErrorMessages.location}
-						placeholder={$t("location.placeholder")}
-						onClick={() => (openSelectLocation = true)}
-					/>
 				</FormControl>
 			</DetailsFields>
 		</DetailsSection>

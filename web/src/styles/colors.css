@@ -49,4 +49,28 @@
 	--indigo-800: #3730a3;
 	--indigo-900: #312e81;
 	--indigo-950: #1e1b4b;
+
+	--amber-50: #fffbeb;
+	--amber-100: #fef3c7;
+	--amber-200: #fde68a;
+	--amber-300: #fcd34d;
+	--amber-400: #fbbf24;
+	--amber-500: #f59e0b;
+	--amber-600: #d97706;
+	--amber-700: #b45309;
+	--amber-800: #92400e;
+	--amber-900: #78350f;
+	--amber-950: #451a03;
+
+	--cyan-50: #ecfeff;
+	--cyan-100: #cffafe;
+	--cyan-200: #a5f3fc;
+	--cyan-300: #67e8f9;
+	--cyan-400: #22d3ee;
+	--cyan-500: #06b6d4;
+	--cyan-600: #0891b2;
+	--cyan-700: #0e7490;
+	--cyan-800: #155e75;
+	--cyan-900: #164e63;
+	--cyan-950: #083344;
 }

@@ -103,7 +103,7 @@
 			/>
 			<Link to={`${container.id}/map`} style="display:contents">
 				<Button variant="secondary" startIcon="map">
-					{$t("sidebar.map")}
+					{$t("map")}
 				</Button>
 			</Link>
 			<Link to={`${container.id}/edit`} style="display:contents">
@@ -113,11 +113,11 @@
 		<DetailsContent>
 			<DetailsSection label={$t("generalInfo")}>
 				<DetailsFields>
+					<Field label={$t("location")} value={locationName} />
 					<Field
 						label={$t("containers.category")}
 						value={$t(`containers.category.${container.category}`)}
 					/>
-					<Field label={$t("location")} value={locationName} />
 				</DetailsFields>
 			</DetailsSection>
 			<DetailsSection label={$t("additionalInfo")}>
