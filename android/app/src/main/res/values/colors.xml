@@ -1,38 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="gray_50">#f9fafb</color>
-    <color name="gray_100">#f3f4f6</color>
-    <color name="gray_200">#e5e7eb</color>
-    <color name="gray_300">#d1d5db</color>
-    <color name="gray_400">#9ca3af</color>
-    <color name="gray_500">#6b7280</color>
-    <color name="gray_600">#4b5563</color>
-    <color name="gray_700">#374151</color>
-    <color name="gray_800">#1f2937</color>
-    <color name="gray_900">#111827</color>
-    <color name="gray_950">#030712</color>
-
-    <color name="green_50">#f0fdf4</color>
-    <color name="green_100">#dcfce7</color>
-    <color name="green_200">#bbf7d0</color>
-    <color name="green_300">#86efac</color>
-    <color name="green_400">#4ade80</color>
-    <color name="green_500">#22c55e</color>
-    <color name="green_600">#16a34a</color>
     <color name="green_700">#15803d</color>
-    <color name="green_800">#166534</color>
-    <color name="green_900">#14532d</color>
-    <color name="green_950">#052e16</color>
-
-    <color name="red_50">#fef2f2</color>
-    <color name="red_100">#fee2e2</color>
-    <color name="red_200">#fecaca</color>
-    <color name="red_300">#fca5a5</color>
-    <color name="red_400">#f87171</color>
-    <color name="red_500">#ef4444</color>
-    <color name="red_600">#dc2626</color>
-    <color name="red_700">#b91c1c</color>
-    <color name="red_800">#991b1b</color>
-    <color name="red_900">#7f1d1d</color>
-    <color name="red_950">#450a0a</color>
 </resources>
