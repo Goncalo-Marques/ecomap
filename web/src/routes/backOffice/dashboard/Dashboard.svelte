@@ -2,4 +2,4 @@
 	import { t } from "../../../lib/utils/i8n";
 </script>
 
-<main>{$t("sidebar.dashboard")}</main>
+<main>{$t("dashboard")}</main>
