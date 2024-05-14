@@ -14,6 +14,7 @@ const (
 	constraintRoutesContainersPkey            = "routes_containers_pkey"
 	constraintRoutesContainersRouteIDFkey     = "routes_containers_route_id_fkey"
 	constraintRoutesContainersContainerIDFkey = "routes_containers_container_id_fkey"
+	constraintRoutesContainersRouteIDFkey     = "routes_containers_route_id_fkey"
 )
 
 // CreateRouteContainer executes a query to create a route container association with the specified identifiers.
