@@ -80,6 +80,10 @@ type Store interface {
 	PatchRoute(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableRoute domain.EditableRoutePatch) error
 	DeleteRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
+	CreateRouteContainer(ctx context.Context, tx pgx.Tx, routeID, containerID uuid.UUID) error
+	ListRouteContainers(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteRouteContainer(ctx context.Context, tx pgx.Tx, routeID, containerID uuid.UUID) error
+
 	ListRouteEmployees(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteEmployeesPaginatedFilter) (domain.PaginatedResponse[domain.RouteEmployee], error)
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)

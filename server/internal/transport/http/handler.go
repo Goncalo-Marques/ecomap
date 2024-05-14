@@ -88,6 +88,10 @@ type Service interface {
 	PatchRoute(ctx context.Context, id uuid.UUID, editableRoute domain.EditableRoutePatch) (domain.Route, error)
 	DeleteRouteByID(ctx context.Context, id uuid.UUID) (domain.Route, error)
 
+	CreateRouteContainer(ctx context.Context, routeID, containerID uuid.UUID) error
+	ListRouteContainers(ctx context.Context, routeID uuid.UUID, filter domain.RouteContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteRouteContainer(ctx context.Context, routeID, containerID uuid.UUID) error
+
 	GetRoadByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
