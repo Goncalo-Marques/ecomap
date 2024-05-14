@@ -2,6 +2,7 @@ package com.ecomap.ecomap
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -21,6 +22,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.ecomap.ecomap.data.UserStore
+import com.ecomap.ecomap.signin.SignInActivity
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
@@ -47,6 +52,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        store = UserStore(this.applicationContext)
+
+        // User token validation.
+        val intent = Intent(this, SignInActivity::class.java)
+
+        // Flags the intent to mark the activity as the root in the history stack,
+        // clearing out any other tasks.
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+        runBlocking {
+            val token = store.getToken().first()
+            if (token == null) {
+                // Open SignIn Activity if token is not found.
+                startActivity(intent)
+            }
         }
 
         // Construct the main entry point for the Android location services.

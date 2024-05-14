@@ -1,5 +1,6 @@
 [versions]
 agp = "8.4.0"
+datastorePreferencesCore = "1.1.1"
 kotlin = "1.9.22"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -12,9 +13,11 @@ constraintlayout = "2.1.4"
 playServicesMaps = "18.2.0"
 secretsGradlePlugin = "2.0.1"
 playServicesLocation = "21.2.0"
+volley = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferencesCore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -25,6 +28,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+volley = { module = "com.android.volley:volley", version.ref = "volley" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

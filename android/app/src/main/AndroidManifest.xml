@@ -24,6 +24,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".signin.SignInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".signin.CreateAccountActivity"
+            android:parentActivityName=".signin.SignInActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

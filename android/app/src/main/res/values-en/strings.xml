@@ -1,7 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EcoMap</string>
-    <string name="map_find_nearest_container">Encontrar mais próximo</string>
-    <string name="content_description_button_my_location">Ir para minha localização</string>
     <string name="sign_in_username">Username</string>
     <string name="sign_in_logo_description">EcoMap logo</string>
     <string name="sign_in_password">Password</string>
