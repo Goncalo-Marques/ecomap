@@ -175,7 +175,6 @@ export class MapHelper {
 		});
 
 		const cluster = new VectorLayer({
-			zIndex: 100,
 			source: new Cluster({
 				distance: 50,
 				minDistance: 10,
@@ -201,11 +200,11 @@ export class MapHelper {
 		});
 
 		if (options?.layerName) {
-			cluster.set(nameLayerKey, options?.layerName);
+			cluster.set(nameLayerKey, options.layerName);
 		}
 
 		if (options?.layerColor) {
-			cluster.set(colorLayerKey, options?.layerColor);
+			cluster.set(colorLayerKey, options.layerColor);
 		}
 
 		this.map.addLayer(cluster);

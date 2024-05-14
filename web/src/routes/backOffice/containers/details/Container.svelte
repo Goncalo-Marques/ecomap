@@ -113,11 +113,11 @@
 		<DetailsContent>
 			<DetailsSection label={$t("generalInfo")}>
 				<DetailsFields>
+					<Field label={$t("location")} value={locationName} />
 					<Field
 						label={$t("containers.category")}
 						value={$t(`containers.category.${container.category}`)}
 					/>
-					<Field label={$t("location")} value={locationName} />
 				</DetailsFields>
 			</DetailsSection>
 			<DetailsSection label={$t("additionalInfo")}>

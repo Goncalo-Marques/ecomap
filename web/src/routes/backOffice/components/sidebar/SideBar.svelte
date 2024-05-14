@@ -51,22 +51,22 @@
 		</li>
 		<li>
 			<Link
-				to={BackOfficeRoutes.WAREHOUSES}
-				data-selected={$url.pathname === BackOfficeRoutes.WAREHOUSES ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.WAREHOUSES}/`)}
-			>
-				<Icon name="warehouse" />
-				<span>{$t("warehouses")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
 				to={BackOfficeRoutes.TRUCKS}
 				data-selected={$url.pathname === BackOfficeRoutes.TRUCKS ||
 					$url.pathname.startsWith(`${BackOfficeRoutes.TRUCKS}/`)}
 			>
 				<Icon name="local_shipping" />
 				<span>{$t("trucks")}</span>
+			</Link>
+		</li>
+		<li>
+			<Link
+				to={BackOfficeRoutes.WAREHOUSES}
+				data-selected={$url.pathname === BackOfficeRoutes.WAREHOUSES ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.WAREHOUSES}/`)}
+			>
+				<Icon name="warehouse" />
+				<span>{$t("warehouses")}</span>
 			</Link>
 		</li>
 		<li>

@@ -91,20 +91,7 @@
 			label={$t("modifiedAt")}
 			value={formatDate(warehouse.modifiedAt, DateFormats.shortDateTime)}
 		/>
-	{:else if containers.length > 1}
-		{#each containers as container}
-			<FeatureCard
-				icon="delete"
-				title={$t("container")}
-				resourceLink={`${BackOfficeRoutes.CONTAINERS}/${container.id}`}
-			>
-				<Field
-					label={$t("containers.category")}
-					value={$t(`containers.category.${container.category}`)}
-				/>
-			</FeatureCard>
-		{/each}
-	{:else}
+	{:else if containers.length === 1}
 		{@const container = containers[0]}
 		<Field
 			label={$t("containers.category")}
@@ -118,5 +105,18 @@
 			label={$t("modifiedAt")}
 			value={formatDate(container.modifiedAt, DateFormats.shortDateTime)}
 		/>
+	{:else}
+		{#each containers as container}
+			<FeatureCard
+				icon="delete"
+				title={$t("container")}
+				resourceLink={`${BackOfficeRoutes.CONTAINERS}/${container.id}`}
+			>
+				<Field
+					label={$t("containers.category")}
+					value={$t(`containers.category.${container.category}`)}
+				/>
+			</FeatureCard>
+		{/each}
 	{/if}
 </BottomSheet>

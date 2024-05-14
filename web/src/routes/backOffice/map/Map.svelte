@@ -85,7 +85,6 @@
 			);
 			const point = new Point(transformedCoordinate);
 			const feature = new Feature(point);
-			feature.setId(id);
 			feature.setProperties({
 				type: "truck",
 				id,
@@ -131,7 +130,6 @@
 			);
 			const point = new Point(transformedCoordinate);
 			const feature = new Feature(point);
-			feature.setId(id);
 			feature.setProperties({
 				type: "warehouse",
 				id,
@@ -198,8 +196,9 @@
 	}
 
 	/**
-	 * Retrieves a container from a container feature.
+	 * Retrieves the containers from a container feature.
 	 * @param feature Container feature.
+	 * @returns Containers.
 	 */
 	function getContainersFromFeature(feature: Feature): Container[] {
 		const containers: Container[] = feature.get("items");
@@ -210,6 +209,7 @@
 	/**
 	 * Retrieves a truck from a container feature.
 	 * @param feature Truck feature.
+	 * @returns Truck.
 	 */
 	function getTruckFromFeature(feature: Feature): Truck {
 		const {
@@ -238,6 +238,7 @@
 	/**
 	 * Retrieves a warehouse from a container feature.
 	 * @param feature Warehouse feature.
+	 * @returns Warehouse.
 	 */
 	function getWarehouseFromFeature(feature: Feature): Warehouse {
 		const { id, truckCapacity, createdAt, modifiedAt, geoJson } =
@@ -295,6 +296,7 @@
 	/**
 	 * Retrieves the extent from a list of features.
 	 * @param features Features to retrieve the extent from.
+	 * @returns Extent.
 	 */
 	function getExtentFromSelectedFeatures(features: Feature[]): Extent {
 		const coordinates: Coordinate[] = [];
