@@ -1430,18 +1430,17 @@ paths:
           in: query
           description: Route truck identifier to filter by.
           schema:
-            $ref: "#/components/schemas/RouteName"
+            $ref: "#/components/schemas/UUID"
         - name: departureWarehouseId
           in: query
           description: Route departure warehouse identifier to filter by.
           schema:
-            $ref: "#/components/schemas/RouteName"
+            $ref: "#/components/schemas/UUID"
         - name: arrivalWarehouseId
           in: query
           description: Route arrival warehouse identifier to filter by.
           schema:
-            $ref: "#/components/schemas/RouteName"
-        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+            $ref: "#/components/schemas/UUID"
         - $ref: "#/components/parameters/RouteSortQueryParam"
         - $ref: "#/components/parameters/OrderQueryParam"
         - $ref: "#/components/parameters/LimitQueryParam"
@@ -1713,9 +1712,9 @@ paths:
         - BearerAuth: [wasteOperator, manager]
       parameters:
         - $ref: "#/components/parameters/RouteIdPathParam"
-        - name: employeeRole
+        - name: routeRole
           in: query
-          description: Employee role to filter by.
+          description: Route employee role to filter by.
           schema:
             $ref: "#/components/schemas/RouteEmployeeRole"
         - $ref: "#/components/parameters/RouteEmployeeSortQueryParam"
@@ -1728,7 +1727,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EmployeesPaginated"
+                $ref: "#/components/schemas/RouteEmployeesPaginated"
         400:
           description: Invalid route ID or filter value.
           content:
@@ -2049,8 +2048,6 @@ components:
           - truckId
           - departureWarehouseId
           - arrivalWarehouseId
-          - wayName
-          - municipalityName
           - createdAt
           - modifiedAt
         default: createdAt
@@ -2073,7 +2070,7 @@ components:
       schema:
         type: string
         enum:
-          - employeeRole
+          - routeRole
           - createdAt
         default: createdAt
 
@@ -2709,10 +2706,30 @@ components:
     RouteEmployeePost:
       type: object
       required:
-        - employeeRole
+        - routeRole
       properties:
-        employeeRole:
+        routeRole:
           $ref: "#/components/schemas/RouteEmployeeRole"
+    RouteEmployee:
+      type: object
+      required:
+        - routeRole
+      properties:
+        routeRole:
+          $ref: "#/components/schemas/RouteEmployeeRole"
+    RouteEmployeesPaginated:
+      allOf:
+        - $ref: "#/components/schemas/PaginatedResponse"
+        - type: object
+          required:
+            - employees
+          properties:
+            employees:
+              type: array
+              items:
+                allOf:
+                  - $ref: "#/components/schemas/Employee"
+                  - $ref: "#/components/schemas/RouteEmployee"
 
     Way:
       type: object

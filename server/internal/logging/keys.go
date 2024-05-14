@@ -35,4 +35,10 @@ const (
 	TruckModel          = "truck.model"
 	TruckLicensePlate   = "truck.licensePlate"
 	TruckPersonCapacity = "truck.personCapacity"
+
+	RouteID                   = "route.id"
+	RouteName                 = "route.name"
+	RouteTruckID              = "route.truckID"
+	RouteDepartureWarehouseID = "route.departureWarehouseID"
+	RouteArrivalWarehouseID   = "route.arrivalWarehouseID"
 )

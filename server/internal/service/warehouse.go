@@ -162,13 +162,15 @@ func (s *service) PatchWarehouse(ctx context.Context, id uuid.UUID, editableWare
 	var warehouse domain.Warehouse
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
-		trucks, err := s.store.ListWarehouseTrucks(ctx, tx, id)
-		if err != nil {
-			return err
-		}
+		if editableWarehouse.TruckCapacity != nil {
+			trucks, err := s.store.ListWarehouseTrucks(ctx, tx, id)
+			if err != nil {
+				return err
+			}
 
-		if editableWarehouse.TruckCapacity != nil && int(*editableWarehouse.TruckCapacity) < len(trucks) {
-			return domain.ErrWarehouseTruckCapacityMinLimit
+			if int(*editableWarehouse.TruckCapacity) < len(trucks) {
+				return domain.ErrWarehouseTruckCapacityMinLimit
+			}
 		}
 
 		var roadID *int
@@ -194,7 +196,7 @@ func (s *service) PatchWarehouse(ctx context.Context, id uuid.UUID, editableWare
 			}
 		}
 
-		err = s.store.PatchWarehouse(ctx, tx, id, editableWarehouse, roadID, municipalityID)
+		err := s.store.PatchWarehouse(ctx, tx, id, editableWarehouse, roadID, municipalityID)
 		if err != nil {
 			return err
 		}
