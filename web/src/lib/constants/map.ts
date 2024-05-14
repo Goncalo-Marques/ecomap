@@ -14,6 +14,11 @@ export const colorLayerKey = "layerColor";
 export const mapLayerName = "mapLayer";
 
 /**
+ * Default minimum zoom of the map.
+ */
+export const DEFAULT_MIN_ZOOM = 2;
+
+/**
  * Default maximum zoom of the map.
  */
 export const DEFAULT_MAX_ZOOM = 18;
@@ -44,11 +49,26 @@ export const DEFAULT_PIN_ICON_SRC = "/images/pin.svg";
 export const CONTAINER_ICON_SRC = "/images/logo.svg";
 
 /**
+ * Source location of the selected container pin icon.
+ */
+export const SELECTED_CONTAINER_ICON_SRC = "/images/container-pin-selected.svg";
+
+/**
  * Source location of the warehouse pin icon.
  */
 export const WAREHOUSE_ICON_SRC = "/images/warehouse-pin.svg";
 
 /**
+ * Source location of the selected warehouse pin icon.
+ */
+export const SELECTED_WAREHOUSE_ICON_SRC = "/images/warehouse-pin-selected.svg";
+
+/**
  * Source location of the truck pin icon.
  */
 export const TRUCK_ICON_SRC = "/images/truck-pin.svg";
+
+/**
+ * Source location of the selected truck pin icon.
+ */
+export const SELECTED_TRUCK_ICON_SRC = "/images/truck-pin-selected.svg";

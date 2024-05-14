@@ -8,7 +8,7 @@
 </script>
 
 <Card class="page-layout">
-	<h1>{$t("sidebar.containers")}</h1>
+	<h1>{$t("containers")}</h1>
 	<div class="top-bar">
 		<SearchContainers />
 		<Link to="create" style="display:contents">
