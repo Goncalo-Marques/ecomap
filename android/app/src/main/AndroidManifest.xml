@@ -16,15 +16,6 @@
         android:theme="@style/Theme.EcoMap"
         tools:targetApi="31">
         <activity
-            android:name=".SignInActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -33,6 +24,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".signin.SignInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".signin.CreateAccountActivity"
+            android:parentActivityName=".signin.SignInActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
