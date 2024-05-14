@@ -10,18 +10,10 @@
 	export let layer: Layer;
 
 	/**
-	 * Indicates if layers is visible.
-	 *
-	 * @default true
-	 */
-	let visible: boolean = true;
-
-	/**
-	 * Changes layer visibility based on {@link visible} value.
+	 * Toggles the layer visibility.
 	 */
 	function toggleVisibility() {
-		visible = !visible;
-		layer.setVisible(visible);
+		layer.setVisible(!layer.getVisible());
 	}
 </script>
 
@@ -36,7 +28,7 @@
 		<h2>{layer.get(nameLayerKey)}</h2>
 	{/if}
 
-	<Switch checked={visible} onClick={toggleVisibility} />
+	<Switch checked={layer.getVisible()} onClick={toggleVisibility} />
 </div>
 
 <style>

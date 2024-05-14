@@ -107,7 +107,7 @@
 			/>
 			<Link to={`${truck.id}/map`} style="display:contents">
 				<Button variant="secondary" startIcon="map">
-					{$t("sidebar.map")}
+					{$t("map")}
 				</Button>
 			</Link>
 			<Link to={`${truck.id}/edit`} style="display:contents">
