@@ -26,6 +26,8 @@ ignoreWords:
   - ILIKE
   - isready
   - jackc
+  - kotlinx
+  - lateinit
   - ldflags
   - libboost
   - LINESTRING
@@ -68,6 +70,7 @@ ignorePaths:
   - gradlew
   - gradlew.bat
   - proguard-rules.pro
+  - android/app/src/main/res/values-pt
   - server/api/swagger/ui
   - server/database/scripts
   - server/deployments
