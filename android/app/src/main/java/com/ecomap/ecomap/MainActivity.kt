@@ -1,8 +1,8 @@
 package com.ecomap.ecomap
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +11,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ecomap.ecomap.data.UserStore
+import com.ecomap.ecomap.signin.SignInActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -22,8 +24,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.ecomap.ecomap.data.UserStore
-import com.ecomap.ecomap.signin.SignInActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -54,8 +54,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
 
-        store = UserStore(this.applicationContext)
-
         // User token validation.
         val intent = Intent(this, SignInActivity::class.java)
 
@@ -63,10 +61,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // clearing out any other tasks.
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
+        // Check whether the user store contains the login token.
+        // If not, start the SignIn Activity.
+        val store = UserStore(this.applicationContext)
         runBlocking {
             val token = store.getToken().first()
             if (token == null) {
-                // Open SignIn Activity if token is not found.
                 startActivity(intent)
             }
         }

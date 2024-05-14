@@ -15,4 +15,5 @@
     <string name="error_create_account">Erro ao criar conta</string>
     <string name="error_sign_in">Erro ao iniciar sessão</string>
     <string name="password_constraints">A palavra-passe deve conter pelo menos 14 caracteres, incluindo um carácter regular, um carácter especial e um número</string>
+    <string name="content_description_button_my_location">Ir para minha localização</string>
 </resources>

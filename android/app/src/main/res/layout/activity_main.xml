@@ -22,26 +22,13 @@
         android:id="@+id/button_my_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
         android:clickable="true"
         android:contentDescription="@string/content_description_button_my_location"
         android:focusable="true"
-        app:layout_constraintBottom_toTopOf="@+id/button_find_nearest_container"
-        app:layout_constraintEnd_toEndOf="@+id/button_find_nearest_container"
-        app:srcCompat="@drawable/my_location" />
-
-    <Button
-        android:id="@+id/button_find_nearest_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
-        android:height="56dp"
-        android:text="@string/map_find_nearest_container"
-        android:textSize="14sp"
-        app:icon="@drawable/recycling"
-        app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/my_location" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
