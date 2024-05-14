@@ -92,6 +92,10 @@ type Service interface {
 	ListRouteContainers(ctx context.Context, routeID uuid.UUID, filter domain.RouteContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
 	DeleteRouteContainer(ctx context.Context, routeID, containerID uuid.UUID) error
 
+	CreateRouteEmployee(ctx context.Context, routeID, employeeID uuid.UUID, editableRouteEmployee domain.EditableRouteEmployee) error
+	ListRouteEmployees(ctx context.Context, routeID uuid.UUID, filter domain.RouteEmployeesPaginatedFilter) (domain.PaginatedResponse[domain.RouteEmployee], error)
+	DeleteRouteEmployee(ctx context.Context, routeID, employeeID uuid.UUID) error
+
 	GetRoadByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)

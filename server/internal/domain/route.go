@@ -18,6 +18,7 @@ var (
 	ErrRouteDepartureWarehouseNotFound   = errors.New("route departure warehouse not found")             // Returned when a route departure warehouse is not found.
 	ErrRouteArrivalWarehouseNotFound     = errors.New("route arrival warehouse not found")               // Returned when a route arrival warehouse is not found.
 	ErrRouteTruckPersonCapacityMinLimit  = errors.New("route truck person capacity below minimum limit") // Returned when a route truck person capacity is below the minimum limit.
+	ErrRouteTruckPersonCapacityMaxLimit  = errors.New("route truck person capacity above maximum limit") // Returned when a route truck person capacity is above the maximum limit.
 	ErrRouteAssociatedWithRouteContainer = errors.New("route associated with container")                 // Returned when a route is associated with a container.
 	ErrRouteAssociatedWithRouteEmployee  = errors.New("route associated with employee")                  // Returned when a route is associated with an employee.
 )
