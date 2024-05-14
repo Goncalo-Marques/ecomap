@@ -74,6 +74,12 @@ type Store interface {
 
 	ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, id uuid.UUID) ([]domain.Truck, error)
 
+	CreateLandfill(ctx context.Context, tx pgx.Tx, editableLandfill domain.EditableLandfill, roadID, municipalityID *int) (uuid.UUID, error)
+	ListLandfills(ctx context.Context, tx pgx.Tx, filter domain.LandfillsPaginatedFilter) (domain.PaginatedResponse[domain.Landfill], error)
+	GetLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Landfill, error)
+	PatchLandfill(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableLandfill domain.EditableLandfillPatch, roadID, municipalityID *int) error
+	DeleteLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+
 	CreateRoute(ctx context.Context, tx pgx.Tx, editableRoute domain.EditableRoute) (uuid.UUID, error)
 	ListRoutes(ctx context.Context, tx pgx.Tx, filter domain.RoutesPaginatedFilter) (domain.PaginatedResponse[domain.Route], error)
 	GetRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Route, error)
