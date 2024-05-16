@@ -27,12 +27,22 @@ const (
 	ContainerID       = "container.id"
 	ContainerCategory = "container.category"
 
-	WarehouseID            = "warehouse.id"
-	WarehouseTruckCapacity = "warehouse.truckCapacity"
-
 	TruckID             = "truck.id"
 	TruckMake           = "truck.make"
 	TruckModel          = "truck.model"
 	TruckLicensePlate   = "truck.licensePlate"
 	TruckPersonCapacity = "truck.personCapacity"
+
+	WarehouseID            = "warehouse.id"
+	WarehouseTruckCapacity = "warehouse.truckCapacity"
+
+	LandfillID = "landfill.id"
+
+	RouteID                   = "route.id"
+	RouteName                 = "route.name"
+	RouteTruckID              = "route.truckID"
+	RouteDepartureWarehouseID = "route.departureWarehouseID"
+	RouteArrivalWarehouseID   = "route.arrivalWarehouseID"
+
+	RouteEmployeeEmployeeRole = "routeEmployee.employeeRole"
 )

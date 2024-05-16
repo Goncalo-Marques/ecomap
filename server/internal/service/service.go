@@ -74,6 +74,26 @@ type Store interface {
 
 	ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, id uuid.UUID) ([]domain.Truck, error)
 
+	CreateLandfill(ctx context.Context, tx pgx.Tx, editableLandfill domain.EditableLandfill, roadID, municipalityID *int) (uuid.UUID, error)
+	ListLandfills(ctx context.Context, tx pgx.Tx, filter domain.LandfillsPaginatedFilter) (domain.PaginatedResponse[domain.Landfill], error)
+	GetLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Landfill, error)
+	PatchLandfill(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableLandfill domain.EditableLandfillPatch, roadID, municipalityID *int) error
+	DeleteLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+
+	CreateRoute(ctx context.Context, tx pgx.Tx, editableRoute domain.EditableRoute) (uuid.UUID, error)
+	ListRoutes(ctx context.Context, tx pgx.Tx, filter domain.RoutesPaginatedFilter) (domain.PaginatedResponse[domain.Route], error)
+	GetRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Route, error)
+	PatchRoute(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableRoute domain.EditableRoutePatch) error
+	DeleteRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+
+	CreateRouteContainer(ctx context.Context, tx pgx.Tx, routeID, containerID uuid.UUID) error
+	ListRouteContainers(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)
+	DeleteRouteContainer(ctx context.Context, tx pgx.Tx, routeID, containerID uuid.UUID) error
+
+	CreateRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID, editableRouteEmployee domain.EditableRouteEmployee) error
+	ListRouteEmployees(ctx context.Context, tx pgx.Tx, routeID uuid.UUID, filter domain.RouteEmployeesPaginatedFilter) (domain.PaginatedResponse[domain.RouteEmployee], error)
+	DeleteRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID) error
+
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)

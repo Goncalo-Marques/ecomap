@@ -52,7 +52,10 @@
 		"location.unknownWay": {
 			"type": "string"
 		},
-		"containers.title": {
+		"container": {
+			"type": "string"
+		},
+		"containers": {
 			"type": "string"
 		},
 		"containers.notFound.title": {
@@ -109,6 +112,9 @@
 		"containers.delete.conflict.description": {
 			"type": "string"
 		},
+		"truck": {
+			"type": "string"
+		},
 		"trucks": {
 			"type": "string"
 		},
@@ -163,10 +169,13 @@
 		"personCapacity.placeholder": {
 			"type": "string"
 		},
-		"warehouses": {
+		"truckCapacity": {
 			"type": "string"
 		},
-		"truckCapacity": {
+		"warehouse": {
+			"type": "string"
+		},
+		"warehouses": {
 			"type": "string"
 		},
 		"warehouses.create.title": {
@@ -253,28 +262,16 @@
 		"signin.error.incorrectCredentials": {
 			"type": "string"
 		},
-		"sidebar.dashboard": {
+		"dashboard": {
 			"type": "string"
 		},
-		"sidebar.map": {
+		"map": {
 			"type": "string"
 		},
-		"sidebar.routes": {
+		"routes": {
 			"type": "string"
 		},
-		"sidebar.containers": {
-			"type": "string"
-		},
-		"sidebar.warehouses": {
-			"type": "string"
-		},
-		"sidebar.trucks": {
-			"type": "string"
-		},
-		"sidebar.reports": {
-			"type": "string"
-		},
-		"sidebar.employees": {
+		"reports": {
 			"type": "string"
 		},
 		"notFound.title": {
@@ -289,10 +286,13 @@
 		"forbidden.description": {
 			"type": "string"
 		},
-		"map.layers": {
+		"layers": {
 			"type": "string"
 		},
-		"employees.title": {
+		"employee": {
+			"type": "string"
+		},
+		"employees": {
 			"type": "string"
 		},
 		"employees.search": {

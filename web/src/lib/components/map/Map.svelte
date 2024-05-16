@@ -7,7 +7,12 @@
 	import Icon from "../Icon.svelte";
 	import { t } from "../../utils/i8n";
 	import Map from "ol/Map";
-	import { mapLayerName, nameLayerKey } from "../../constants/map";
+	import {
+		DEFAULT_MAX_ZOOM,
+		DEFAULT_MIN_ZOOM,
+		mapLayerName,
+		nameLayerKey,
+	} from "../../constants/map";
 
 	/**
 	 * Zoom value for map view.
@@ -15,6 +20,20 @@
 	 * @default 6.5
 	 */
 	export let zoom: number = 6.5;
+
+	/**
+	 * Minimum zoom value for map view.
+	 *
+	 * @default 2
+	 */
+	export let minZoom: number = DEFAULT_MIN_ZOOM;
+
+	/**
+	 * Maximum zoom value for map view.
+	 *
+	 * @default 18
+	 */
+	export let maxZoom: number = DEFAULT_MAX_ZOOM;
 
 	/**
 	 * Center latitude of map.
@@ -69,7 +88,14 @@
 	let layers: Layer[] = [];
 
 	onMount(() => {
-		map = createMap(lon, lat, zoom, projection);
+		map = createMap({
+			lon,
+			lat,
+			zoom,
+			projection,
+			maxZoom,
+			minZoom,
+		});
 
 		map.setTarget(mapId);
 		map.getLayers().on("add", () => {
@@ -85,7 +111,7 @@
 		<section class="layers">
 			<header>
 				<Icon name="layers" />
-				<h1>{$t("map.layers")}</h1>
+				<h1>{$t("layers")}</h1>
 			</header>
 			<div class="item-container">
 				{#each layers as layer}

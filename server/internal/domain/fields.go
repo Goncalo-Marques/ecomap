@@ -22,6 +22,8 @@ const (
 	FieldModel          = "model"
 	FieldLicensePlate   = "licensePlate"
 	FieldPersonCapacity = "personCapacity"
+	FieldName           = "name"
+	FieldRouteRole      = "routeRole"
 
 	FieldFilterSort   = "sort"
 	FieldFilterOrder  = "order"

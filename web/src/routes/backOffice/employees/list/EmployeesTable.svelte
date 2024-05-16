@@ -143,7 +143,7 @@
 	sortingOrder={$filters.order}
 	onSortingChange={handleSortingChange}
 	pagination={{
-		name: $t("employees.title").toLowerCase(),
+		name: $t("employees").toLowerCase(),
 		pageIndex: $filters.pageIndex,
 		pageSize: DEFAULT_PAGE_SIZE,
 		total: $data.total,
