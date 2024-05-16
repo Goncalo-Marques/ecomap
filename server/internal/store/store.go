@@ -12,6 +12,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/goncalo-marques/ecomap/server/internal/config"
@@ -80,6 +81,19 @@ func constraintNameFromError(err error) string {
 	}
 
 	return ""
+}
+
+// pgIntArray returns a postgres array for the given integer elements.
+func pgIntArray(elements []int) []pgtype.Int8 {
+	pgElements := make([]pgtype.Int8, len(elements))
+	for i, e := range elements {
+		pgElements[i] = pgtype.Int8{
+			Int64: int64(e),
+			Valid: true,
+		}
+	}
+
+	return pgElements
 }
 
 // jsonMarshalGeoJSONGeometryPoint marshals the given GeoJSON into geometry point JSON.
