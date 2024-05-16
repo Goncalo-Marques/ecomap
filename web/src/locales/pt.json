@@ -112,8 +112,8 @@
 	"employees.scheduleStart": "Hora de início",
 	"employees.scheduleEnd": "Hora de término",
 	"employees.notFound.title": "Colaborador não encontrado",
-	"employees.notFound.description": "O colaborador que está à procura não existe.",
-	"employees.delete.success": "Colaborador apagado com sucesso",
+	"employees.notFound.description": "O colaborador que procura não existe.",
+	"employees.delete.success": "Colaborador eliminado com sucesso",
 	"employees.delete.conflict.title": "Conflito",
-	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a um reporte ou uma rota."
+	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a um reporte ou a uma rota."
 }
