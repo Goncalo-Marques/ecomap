@@ -341,7 +341,9 @@ func (s *service) GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJS
 
 		// Replace the last vertex with the last actual point of the route.
 		// This is a blind replacement because the last vertex is always the same as the first.
-		seqVertexIDs[len(seqVertexIDs)-1] = arrivalVertexID
+		if len(seqVertexIDs) != 0 {
+			seqVertexIDs[len(seqVertexIDs)-1] = arrivalVertexID
+		}
 
 		// Compute the roads based on the sequential vertices.
 		roadsGeometry, err = s.store.GetRoadsGeometryAStar(ctx, tx, seqVertexIDs, true)

@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -118,27 +120,36 @@ func (s *store) GetContainerRoadsByRouteID(ctx context.Context, tx pgx.Tx, route
 // GetRoadVerticesTSP executes a query to return the sequential vertex identifiers using the TSP algorithm and the A*
 // cost matrix.
 func (s *store) GetRoadVerticesTSP(ctx context.Context, tx pgx.Tx, vertexIDs []int, startVertexID, endVertexID int, directed bool) ([]int, error) {
+	if len(vertexIDs) == 0 {
+		return nil, nil
+	}
+
+	strVertexIDs := make([]string, len(vertexIDs))
+	for i, id := range vertexIDs {
+		strVertexIDs[i] = strconv.Itoa(id)
+	}
+
+	sqlMatrix := fmt.Sprintf(`
+		$$SELECT * FROM pgr_aStarCostMatrix(
+			'SELECT id, source, target, cost, reverse_cost, x1, y1, x2, y2 FROM road_network',
+			'{%s}'::bigint[],
+			directed => %t
+		)$$
+	`,
+		strings.Join(strVertexIDs, ", "),
+		directed,
+	)
+
 	rows, err := tx.Query(ctx, `
-		WITH vertices AS (
-			SELECT $1::bigint[] AS id
-		), optional AS (
-			SELECT $4::boolean AS directed
-		)
 		SELECT node 
 		FROM pgr_TSP(
-			$$SELECT * FROM pgr_aStarCostMatrix(
-				'SELECT id, source, target, cost, reverse_cost, x1, y1, x2, y2 FROM road_network',
-				(SELECT id FROM vertices),
-				directed => (SELECT directed FROM optional)
-			)$$,
-			start_id => $2,
-			end_id => $3
+			`+sqlMatrix+`,
+			start_id => $1,
+			end_id => $2
 		)
 	`,
-		pgIntArray(vertexIDs),
 		startVertexID,
 		endVertexID,
-		directed,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", descriptionFailedQuery, err)
@@ -170,19 +181,19 @@ func (s *store) GetRoadsGeometryAStar(ctx context.Context, tx pgx.Tx, seqVertexI
 
 	prevVertexID := seqVertexIDs[0]
 	for i := 1; i < len(seqVertexIDs); i++ {
-		batch.Queue(`
+		batch.Queue(fmt.Sprintf(`
 			SELECT ST_AsGeoJSON(rn.geom_way)::jsonb
 			FROM pgr_aStar(
 				'SELECT id, source, target, cost, reverse_cost, x1, y1, x2, y2 FROM road_network',
-				$1, $2,
-				directed => $3
+				%d, %d,
+				directed => %t
 			) AS a
 			INNER JOIN road_network AS rn ON a.edge = rn.id
 		`,
 			prevVertexID,
 			seqVertexIDs[i],
 			directed,
-		)
+		))
 
 		prevVertexID = seqVertexIDs[i]
 	}
