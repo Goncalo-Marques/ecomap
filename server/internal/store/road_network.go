@@ -131,11 +131,17 @@ func (s *store) GetRoadVerticesTSP(ctx context.Context, tx pgx.Tx, vertexIDs []i
 
 	sqlMatrix := fmt.Sprintf(`
 		$$SELECT * FROM pgr_aStarCostMatrix(
-			'SELECT id, source, target, cost, reverse_cost, x1, y1, x2, y2 FROM road_network',
+			'WITH bounding_box AS (
+				SELECT ST_Buffer(ST_ConvexHull(ST_Collect(geom_vertex)), 0.3) FROM road_network_vertex WHERE id IN (%s)
+			)
+			SELECT id, source, target, cost, reverse_cost, x1, y1, x2, y2 
+				FROM road_network
+				WHERE ST_Contains((SELECT * FROM bounding_box), geom_way)',
 			'{%s}'::bigint[],
 			directed => %t
 		)$$
 	`,
+		strings.Join(strVertexIDs, ", "),
 		strings.Join(strVertexIDs, ", "),
 		directed,
 	)
@@ -179,17 +185,28 @@ func (s *store) GetRoadsGeometryAStar(ctx context.Context, tx pgx.Tx, seqVertexI
 
 	batch := new(pgx.Batch)
 
+	strSeqVertexIDs := make([]string, len(seqVertexIDs))
+	for i, id := range seqVertexIDs {
+		strSeqVertexIDs[i] = strconv.Itoa(id)
+	}
+
 	prevVertexID := seqVertexIDs[0]
 	for i := 1; i < len(seqVertexIDs); i++ {
 		batch.Queue(fmt.Sprintf(`
 			SELECT ST_AsGeoJSON(rn.geom_way)::jsonb
 			FROM pgr_aStar(
-				'SELECT id, source, target, cost, reverse_cost, x1, y1, x2, y2 FROM road_network',
+				'WITH bounding_box AS (
+					SELECT ST_Buffer(ST_ConvexHull(ST_Collect(geom_vertex)), 0.3) FROM road_network_vertex WHERE id IN (%s)
+				)
+				SELECT id, source, target, cost, reverse_cost, x1, y1, x2, y2 
+					FROM road_network
+					WHERE ST_Contains((SELECT * FROM bounding_box), geom_way)',
 				%d, %d,
 				directed => %t
 			) AS a
 			INNER JOIN road_network AS rn ON a.edge = rn.id
 		`,
+			strings.Join(strSeqVertexIDs, ", "),
 			prevVertexID,
 			seqVertexIDs[i],
 			directed,
