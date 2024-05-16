@@ -162,6 +162,10 @@ func (s *store) GetRoadVerticesTSP(ctx context.Context, tx pgx.Tx, vertexIDs []i
 // GetRoadsGeometryAStar executes a query to return the geometry of sequential roads using the shortest path A*
 // algorithm.
 func (s *store) GetRoadsGeometryAStar(ctx context.Context, tx pgx.Tx, seqVertexIDs []int, directed bool) ([]domain.GeoJSONGeometryLineString, error) {
+	if len(seqVertexIDs) == 0 {
+		return nil, nil
+	}
+
 	batch := new(pgx.Batch)
 
 	prevVertexID := seqVertexIDs[0]
