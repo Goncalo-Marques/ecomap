@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Warehouse } from "../../../../domain/warehouse";
+	import type { Landfill } from "../../../../domain/landfill";
 	import BottomSheet from "../../../../lib/components/BottomSheet.svelte";
 	import Field from "../../../../lib/components/Field.svelte";
 	import { DateFormats } from "../../../../lib/constants/date";
@@ -8,24 +8,23 @@
 	import { getLocationName } from "../../../../lib/utils/location";
 
 	/**
-	 * The warehouse whose information is displayed.
+	 * The landfill whose information is displayed.
 	 */
-	export let warehouse: Warehouse;
+	export let landfill: Landfill;
 </script>
 
 <BottomSheet
 	title={getLocationName(
-		warehouse.geoJson.properties.wayName,
-		warehouse.geoJson.properties.municipalityName,
+		landfill.geoJson.properties.wayName,
+		landfill.geoJson.properties.municipalityName,
 	)}
 >
-	<Field label={$t("truckCapacity")} value={warehouse.truckCapacity} />
 	<Field
 		label={$t("createdAt")}
-		value={formatDate(warehouse.createdAt, DateFormats.shortDateTime)}
+		value={formatDate(landfill.createdAt, DateFormats.shortDateTime)}
 	/>
 	<Field
 		label={$t("modifiedAt")}
-		value={formatDate(warehouse.modifiedAt, DateFormats.shortDateTime)}
+		value={formatDate(landfill.modifiedAt, DateFormats.shortDateTime)}
 	/>
 </BottomSheet>
