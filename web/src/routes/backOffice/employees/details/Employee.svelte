@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from "../../components/Card.svelte";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
-	import { navigate } from "svelte-routing";
+	import { Link, navigate } from "svelte-routing";
 	import Button from "../../../../lib/components/Button.svelte";
 	import { t } from "../../../../lib/utils/i8n";
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
@@ -97,6 +97,9 @@
 				variant="secondary"
 				onClick={deleteEmployee}
 			/>
+			<Link to={`${employee.id}/edit`} style="display:contents">
+				<Button startIcon="edit">{$t("editInfo")}</Button>
+			</Link>
 		</DetailsHeader>
 		<DetailsContent>
 			<DetailsSection label={$t("personalInfo")}>

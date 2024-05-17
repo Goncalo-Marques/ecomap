@@ -115,5 +115,13 @@
 	"employees.notFound.description": "O colaborador que procura não existe.",
 	"employees.delete.success": "Colaborador eliminado com sucesso",
 	"employees.delete.conflict.title": "Conflito",
-	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a um reporte ou a uma rota."
+	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a um reporte ou a uma rota.",
+	"employees.update.success": "Colaborador atualizado com sucesso",
+	"employees.username.placeholder": "Introduza o nome de utilizador",
+	"employees.firstName.placeholder": "Introduza o primeiro nome",
+	"employees.lastName.placeholder": "Introduza o último nome",
+	"employees.birthdate.placeholder": "Introduza a data de nascimento",
+	"employees.phone.placeholder": "Introduza número de telefone",
+	"employees.scheduleStart.placeholder": "Introduza a hora de início",
+	"employees.scheduleEnd.placeholder": "Introduza a hora de término"
 }

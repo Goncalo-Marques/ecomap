@@ -348,6 +348,30 @@
 		},
 		"employees.delete.conflict.description": {
 			"type": "string"
+		},
+		"employees.update.success": {
+			"type": "string"
+		},
+		"employees.username.placeholder": {
+			"type": "string"
+		},
+		"employees.firstName.placeholder": {
+			"type": "string"
+		},
+		"employees.lastName.placeholder": {
+			"type": "string"
+		},
+		"employees.birthdate.placeholder": {
+			"type": "string"
+		},
+		"employees.phone.placeholder": {
+			"type": "string"
+		},
+		"employees.scheduleStart.placeholder": {
+			"type": "string"
+		},
+		"employees.scheduleEnd.placeholder": {
+			"type": "string"
 		}
 	}
 }
