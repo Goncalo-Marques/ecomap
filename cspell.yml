@@ -40,6 +40,7 @@ ignoreWords:
   - Parens
   - pgconn
   - pgrouting
+  - pgtype
   - PGUSER
   - pgxpool
   - pkey
@@ -56,6 +57,7 @@ ignoreWords:
   - testcontainers
   - transporthttp
   - trgm
+  - unnest
   - unparam
 ignorePaths:
   - "*.svg"

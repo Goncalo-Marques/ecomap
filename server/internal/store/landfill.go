@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -120,6 +121,36 @@ func (s *store) GetLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (d
 		WHERE l.id = $1 
 	`,
 		id,
+	)
+
+	landfill, err := getLandfillFromRow(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.Landfill{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, domain.ErrLandfillNotFound)
+		}
+
+		return domain.Landfill{}, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	}
+
+	return landfill, nil
+}
+
+// GetLandfillClosestGeometry executes a query to return the landfill that is closest to the given geometry.
+func (s *store) GetLandfillClosestGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Landfill, error) {
+	geoJSON, err := json.Marshal(geometry)
+	if err != nil {
+		return domain.Landfill{}, fmt.Errorf("%s: %w", descriptionFailedMarshalGeoJSON, err)
+	}
+
+	row := tx.QueryRow(ctx, `
+		SELECT l.id, ST_AsGeoJSON(l.geom)::jsonb, rn.osm_name, m.name, l.created_at, l.modified_at 
+		FROM landfills AS l
+		LEFT JOIN road_network AS rn ON l.road_id = rn.id
+		LEFT JOIN municipalities AS m ON l.municipality_id = m.id
+		ORDER BY ST_Distance(l.geom, ST_GeomFromGeoJSON($1))
+		LIMIT 1
+	`,
+		string(geoJSON),
 	)
 
 	landfill, err := getLandfillFromRow(row)

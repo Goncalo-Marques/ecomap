@@ -1770,6 +1770,42 @@ paths:
                 $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
+  /routes/{routeId}/ways:
+    get:
+      summary: Get ways of a route.
+      operationId: getRouteWays
+      description: Returns the ways of the route with the specified identifier.
+      tags:
+        - Route
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/RouteIdPathParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeoJSONFeatureCollectionLineString"
+        400:
+          description: Invalid route ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Route not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
 
   /routes/{routeId}/containers:
     get:
@@ -2391,6 +2427,26 @@ components:
           items:
             type: number
             format: double
+    GeoJSONGeometryLineString:
+      type: object
+      description: Geometry line string using the EPSG:4326 coordinate system.
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - LineString
+        coordinates:
+          type: array
+          items:
+            type: array
+            maxItems: 2
+            minItems: 2
+            items:
+              type: number
+              format: double
     GeoJSONFeatureProperties:
       type: object
       description: GeoJSON feature properties.
@@ -2417,6 +2473,37 @@ components:
           $ref: "#/components/schemas/GeoJSONGeometryPoint"
         properties:
           $ref: "#/components/schemas/GeoJSONFeatureProperties"
+    GeoJSONFeatureLineString:
+      type: object
+      description: GeoJSON feature with geometry line string.
+      required:
+        - type
+        - geometry
+        - properties
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          $ref: "#/components/schemas/GeoJSONGeometryLineString"
+        properties:
+          $ref: "#/components/schemas/GeoJSONFeatureProperties"
+    GeoJSONFeatureCollectionLineString:
+      type: object
+      description: GeoJSON feature collection with geometry line string.
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoJSONFeatureLineString"
 
     EmployeeRole:
       type: string

@@ -93,6 +93,7 @@ type Service interface {
 	GetRouteByID(ctx context.Context, id uuid.UUID) (domain.Route, error)
 	PatchRoute(ctx context.Context, id uuid.UUID, editableRoute domain.EditableRoutePatch) (domain.Route, error)
 	DeleteRouteByID(ctx context.Context, id uuid.UUID) (domain.Route, error)
+	GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJSON, error)
 
 	CreateRouteContainer(ctx context.Context, routeID, containerID uuid.UUID) error
 	ListRouteContainers(ctx context.Context, routeID uuid.UUID, filter domain.RouteContainersPaginatedFilter) (domain.PaginatedResponse[domain.Container], error)

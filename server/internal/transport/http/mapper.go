@@ -82,7 +82,7 @@ func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeatureP
 	}
 
 	return spec.GeoJSONFeaturePoint{
-		Type: spec.Feature,
+		Type: spec.GeoJSONFeaturePointTypeFeature,
 		Geometry: spec.GeoJSONGeometryPoint{
 			Type:        spec.Point,
 			Coordinates: geoJSONGeometry.Coordinates[:],
@@ -91,6 +91,40 @@ func geoJSONFeaturePointFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeatureP
 			WayName:          geoJSONFeature.Properties.WayName(),
 			MunicipalityName: geoJSONFeature.Properties.MunicipalityName(),
 		},
+	}, nil
+}
+
+// geoJSONFeatureCollectionLineStringFromDomain returns a standardized GeoJSON feature collection line string based on
+// the domain GeoJSON model.
+func geoJSONFeatureCollectionLineStringFromDomain(geoJSON domain.GeoJSON) (spec.GeoJSONFeatureCollectionLineString, error) {
+	geoJSONFeatureCollection, ok := geoJSON.(domain.GeoJSONFeatureCollection)
+	if !ok {
+		return spec.GeoJSONFeatureCollectionLineString{}, errGeoJSONFeatureTypeUnexpected
+	}
+
+	specGeoJSONFeatureLineString := make([]spec.GeoJSONFeatureLineString, len(geoJSONFeatureCollection.Features))
+	for i, feature := range geoJSONFeatureCollection.Features {
+		geoJSONGeometry, ok := feature.Geometry.(domain.GeoJSONGeometryLineString)
+		if !ok {
+			return spec.GeoJSONFeatureCollectionLineString{}, errGeoJSONGeometryTypeUnexpected
+		}
+
+		specCoordinates := make([][]float64, len(geoJSONGeometry.Coordinates))
+		for j, coordinates := range geoJSONGeometry.Coordinates {
+			specCoordinates[j] = coordinates[:]
+		}
+
+		specGeoJSONFeatureLineString[i] = spec.GeoJSONFeatureLineString{
+			Geometry: spec.GeoJSONGeometryLineString{
+				Type:        spec.LineString,
+				Coordinates: specCoordinates,
+			},
+		}
+	}
+
+	return spec.GeoJSONFeatureCollectionLineString{
+		Type:     spec.FeatureCollection,
+		Features: specGeoJSONFeatureLineString,
 	}, nil
 }
 
