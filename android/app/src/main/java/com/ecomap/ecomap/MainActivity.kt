@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Check whether the user store contains the login token.
         // If not, start the SignIn Activity.
-        val store = UserStore(this.applicationContext)
+        val store = UserStore(applicationContext)
         runBlocking {
             val token = store.getToken().first()
             if (token == null) {
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Function called when the Google Map is ready.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-        this.map = googleMap
+        map = googleMap
 
         // Prompt the user for permission.
         getLocationPermission()
@@ -132,14 +132,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun getLocationPermission() {
         when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(
-                this.applicationContext,
+                applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) -> {
                 locationPermissionGranted = true
             }
 
             ContextCompat.checkSelfPermission(
-                this.applicationContext,
+                applicationContext,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) -> {
                 locationPermissionGranted = true
