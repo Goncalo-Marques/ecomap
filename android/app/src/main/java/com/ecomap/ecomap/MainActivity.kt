@@ -37,9 +37,8 @@ import kotlinx.coroutines.runBlocking
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * Defines the Google Map instance.
-     * It is set when the map is ready.
      */
-    private var map: GoogleMap? = null
+    private lateinit var map: GoogleMap
 
     /**
      * The entry point to the Fused Location Provider.
@@ -75,7 +74,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Check whether the user store contains the login token.
         // If not, start the SignIn Activity.
-        val store = UserStore(this.applicationContext)
+        val store = UserStore(applicationContext)
         runBlocking {
             val storeToken = store.getToken().first()
             if (storeToken == null) {
@@ -120,7 +119,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Function called when the Google Map is ready.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-        this.map = googleMap
+        map = googleMap
 
         // Prompt the user for permission.
         getLocationPermission()
@@ -142,14 +141,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun getLocationPermission() {
         when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(
-                this.applicationContext,
+                applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) -> {
                 locationPermissionGranted = true
             }
 
             ContextCompat.checkSelfPermission(
-                this.applicationContext,
+                applicationContext,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) -> {
                 locationPermissionGranted = true
@@ -201,17 +200,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * If the location permission is granted, enable the Google Map My Location layer.
      */
     private fun updateLocationUI() {
-        if (map == null) {
-            return
-        }
-
         try {
             // Enable/disable the My Location layer based on the location permission.
-            map?.isMyLocationEnabled = locationPermissionGranted
+            map.isMyLocationEnabled = locationPermissionGranted
 
             // Disable the default My Location button because buttonMyLocation already performs the
             // same function.
-            map?.uiSettings?.isMyLocationButtonEnabled = false
+            map.uiSettings.isMyLocationButtonEnabled = false
         } catch (e: SecurityException) {
             Log.e(LOG_TAG, e.message, e)
         }
@@ -232,7 +227,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     // Set the map's camera position to the current location of the device.
                     val lastKnownLocation = task.result
                     if (lastKnownLocation != null) {
-                        map?.animateCamera(
+                        map.animateCamera(
                             CameraUpdateFactory.newLatLngZoom(
                                 LatLng(
                                     lastKnownLocation.latitude,

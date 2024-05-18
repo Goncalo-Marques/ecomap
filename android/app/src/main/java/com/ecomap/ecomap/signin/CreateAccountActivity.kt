@@ -45,7 +45,7 @@ class CreateAccountActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Retrieve user store.
-        store = UserStore(this.applicationContext)
+        store = UserStore(applicationContext)
 
         // Get activity views.
         textInputEditTextFirstName = findViewById(R.id.text_input_edit_text_first_name)
@@ -116,7 +116,7 @@ class CreateAccountActivity : AppCompatActivity() {
                     ).show()
                 })
 
-        ApiRequestQueue.getInstance(this.applicationContext).add(request)
+        ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 
     /**
@@ -129,7 +129,7 @@ class CreateAccountActivity : AppCompatActivity() {
             { token ->
                 if (token.isEmpty()) {
                     Toast.makeText(
-                        this.applicationContext,
+                        applicationContext,
                         getString(R.string.error_create_account),
                         Toast.LENGTH_LONG
                     ).show()
@@ -152,12 +152,12 @@ class CreateAccountActivity : AppCompatActivity() {
                 progressBar.visibility = View.INVISIBLE
 
                 Toast.makeText(
-                    this.applicationContext,
+                    applicationContext,
                     getString(R.string.error_create_account),
                     Toast.LENGTH_LONG
                 ).show()
             })
 
-        ApiRequestQueue.getInstance(this.applicationContext).add(request)
+        ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 }

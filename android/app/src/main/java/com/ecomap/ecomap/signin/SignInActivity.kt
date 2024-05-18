@@ -35,7 +35,7 @@ class SignInActivity : AppCompatActivity() {
         }
 
         // Retrieve user store.
-        store = UserStore(this.applicationContext)
+        store = UserStore(applicationContext)
 
         // Get activity views.
         textInputEditTextUsername = findViewById(R.id.text_input_edit_text_username)
@@ -81,7 +81,7 @@ class SignInActivity : AppCompatActivity() {
                 { token ->
                     if (token.isEmpty()) {
                         Toast.makeText(
-                            this.applicationContext,
+                            applicationContext,
                             getString(R.string.error_sign_in),
                             Toast.LENGTH_LONG
                         )
@@ -102,12 +102,12 @@ class SignInActivity : AppCompatActivity() {
                 },
                 { _ ->
                     Toast.makeText(
-                        this.applicationContext,
+                        applicationContext,
                         getString(R.string.error_sign_in),
                         Toast.LENGTH_LONG
                     ).show()
                 })
 
-        ApiRequestQueue.getInstance(this.applicationContext).add(request)
+        ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 }
