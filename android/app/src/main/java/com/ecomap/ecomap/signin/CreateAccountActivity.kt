@@ -2,7 +2,6 @@ package com.ecomap.ecomap.signin
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -18,8 +17,6 @@ import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.runBlocking
-import org.json.JSONException
-import org.json.JSONObject
 
 class CreateAccountActivity : AppCompatActivity() {
     private lateinit var textInputEditTextFirstName: TextInputEditText
@@ -99,33 +96,20 @@ class CreateAccountActivity : AppCompatActivity() {
 
         // Create the request to create the user.
         val request =
-            ApiClient.createAccount(
-                firstName,
-                lastName,
-                username,
-                password,
+            ApiClient.createAccount(firstName, lastName, username, password,
                 { signInUser(username, password) },
                 { error ->
                     // Hide the progress bar when a network error occurs.
                     progressBar.visibility = View.INVISIBLE
 
-                    val body = String(error.networkResponse.data)
-                    val json = JSONObject(body)
+                    val errorResponse = ApiClient.getError(error)
 
-                    var message: String
-                    try {
-                        message = json.getString("message")
-                    } catch (e: JSONException) {
-                        Log.e(LOG_TAG, e.message, e)
-                        message = json.getString("code")
+                    var errorMessage = errorResponse.code
+                    if (errorResponse.message.isNotEmpty()) {
+                        errorMessage = errorResponse.message
                     }
 
-                    Toast.makeText(
-                        this.applicationContext,
-                        message,
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
+                    Toast.makeText(this.applicationContext, errorMessage, Toast.LENGTH_LONG).show()
                 })
 
         ApiRequestQueue.getInstance(this.applicationContext).add(request)
@@ -144,8 +128,7 @@ class CreateAccountActivity : AppCompatActivity() {
                         this.applicationContext,
                         getString(R.string.error_create_account),
                         Toast.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                     return@signIn
                 }
 
@@ -173,9 +156,5 @@ class CreateAccountActivity : AppCompatActivity() {
             })
 
         ApiRequestQueue.getInstance(this.applicationContext).add(request)
-    }
-
-    companion object {
-        private val LOG_TAG = CreateAccountActivity::class.java.simpleName
     }
 }

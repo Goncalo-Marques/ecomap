@@ -4,7 +4,9 @@ import android.util.Log
 import com.android.volley.Request
 import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
+import com.ecomap.ecomap.domain.Error
 import com.ecomap.ecomap.domain.User
 import org.json.JSONException
 import org.json.JSONObject
@@ -22,6 +24,10 @@ object ApiClient {
 
     // Authentication field names.
     private const val FIELD_NAME_TOKEN = "token"
+
+    // Error field names.
+    private const val FIELD_NAME_ERROR_CODE = "code"
+    private const val FIELD_NAME_ERROR_MESSAGE = "message"
 
     // User field names.
     private const val FIELD_NAME_ID = "id"
@@ -55,7 +61,7 @@ object ApiClient {
             { response ->
                 var token: String? = null
                 try {
-                    token = response.getString(FIELD_NAME_TOKEN)
+                    token = response.optString(FIELD_NAME_TOKEN)
                 } catch (e: JSONException) {
                     Log.e(LOG_TAG, e.message, e)
                 }
@@ -96,16 +102,31 @@ object ApiClient {
             { response ->
                 listener.onResponse(
                     User(
-                        response.getString(FIELD_NAME_ID),
-                        response.getString(FIELD_NAME_USERNAME),
-                        response.getString(FIELD_NAME_FIRST_NAME),
-                        response.getString(FIELD_NAME_LAST_NAME),
-                        response.getString(FIELD_NAME_CREATED_AT),
-                        response.getString(FIELD_NAME_MODIFIED_AT)
+                        response.optString(FIELD_NAME_ID),
+                        response.optString(FIELD_NAME_USERNAME),
+                        response.optString(FIELD_NAME_FIRST_NAME),
+                        response.optString(FIELD_NAME_LAST_NAME),
+                        response.optString(FIELD_NAME_CREATED_AT),
+                        response.optString(FIELD_NAME_MODIFIED_AT)
                     )
                 )
             },
             errorListener
+        )
+    }
+
+    /**
+     * Returns a domain Error object based on the given VolleyError.
+     * @param error Volley error.
+     * @return Domain Error data object.
+     */
+    fun getError(error: VolleyError): Error {
+        val body = String(error.networkResponse.data)
+        val json = JSONObject(body)
+
+        return Error(
+            json.optString(FIELD_NAME_ERROR_CODE),
+            json.optString(FIELD_NAME_ERROR_MESSAGE),
         )
     }
 }
