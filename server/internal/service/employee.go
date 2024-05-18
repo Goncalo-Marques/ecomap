@@ -63,9 +63,6 @@ func (s *service) CreateEmployee(ctx context.Context, editableEmployee domain.Ed
 	if !editableEmployee.PhoneNumber.Valid() {
 		return domain.Employee{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldPhoneNumber}, descriptionInvalidFieldValue, logAttrs...)
 	}
-	if editableEmployee.ScheduleStart.After(editableEmployee.ScheduleEnd) {
-		return domain.Employee{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleStart}, descriptionInvalidFieldValue, logAttrs...)
-	}
 
 	hashedPassword, err := s.authnService.HashPassword([]byte(editableEmployee.Password))
 	if err != nil {
@@ -265,14 +262,6 @@ func (s *service) PatchEmployee(ctx context.Context, id uuid.UUID, editableEmplo
 		employee, err = s.store.GetEmployeeByID(ctx, tx, id)
 		if err != nil {
 			return err
-		}
-
-		if employee.ScheduleStart.After(employee.ScheduleEnd) {
-			if editableEmployee.ScheduleStart != nil {
-				return &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleStart}
-			} else {
-				return &domain.ErrFieldValueInvalid{FieldName: domain.FieldScheduleEnd}
-			}
 		}
 
 		return nil

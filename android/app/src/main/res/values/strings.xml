@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">EcoMap</string>
+    <string name="sign_in_username">Username</string>
+    <string name="sign_in_logo_description">EcoMap logo</string>
+    <string name="sign_in_password">Password</string>
+    <string name="sign_in_sign_in_button">Sign in</string>
+    <string name="create_account">Create account</string>
+    <string name="sign_in_username_required_error">Username must be filled</string>
+    <string name="sign_in_password_required_error">Password must be filled</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="first_name_required_error">First name must be filled</string>
+    <string name="last_name_required_error">Last name must be filled</string>
+    <string name="error_create_account">Failed to create account</string>
+    <string name="error_sign_in">Failed to sign in</string>
+    <string name="password_constraints">Password must contain at least 14 characters, including one regular character, one special character, and one number</string>
 </resources>

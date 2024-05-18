@@ -6,7 +6,6 @@
 	import { formatDate } from "../../../../lib/utils/date";
 	import { t } from "../../../../lib/utils/i8n";
 	import { getLocationName } from "../../../../lib/utils/location";
-	import { BackOfficeRoutes } from "../../../constants/routes";
 
 	/**
 	 * The warehouse whose information is displayed.
@@ -19,7 +18,6 @@
 		warehouse.geoJson.properties.wayName,
 		warehouse.geoJson.properties.municipalityName,
 	)}
-	resourceLink={`${BackOfficeRoutes.WAREHOUSES}/${warehouse.id}`}
 >
 	<Field label={$t("truckCapacity")} value={warehouse.truckCapacity} />
 	<Field

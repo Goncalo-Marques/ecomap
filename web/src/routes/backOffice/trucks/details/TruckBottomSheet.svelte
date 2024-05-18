@@ -6,7 +6,6 @@
 	import { formatDate } from "../../../../lib/utils/date";
 	import { t } from "../../../../lib/utils/i8n";
 	import { getLocationName } from "../../../../lib/utils/location";
-	import { BackOfficeRoutes } from "../../../constants/routes";
 
 	/**
 	 * The truck whose information is displayed.
@@ -19,7 +18,6 @@
 		truck.geoJson.properties.wayName,
 		truck.geoJson.properties.municipalityName,
 	)}
-	resourceLink={`${BackOfficeRoutes.TRUCKS}/${truck.id}`}
 >
 	<Field label={$t("make")} value={truck.make} />
 	<Field label={$t("model")} value={truck.model} />
