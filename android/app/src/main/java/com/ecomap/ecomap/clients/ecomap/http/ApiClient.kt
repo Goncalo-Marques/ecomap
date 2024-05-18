@@ -49,8 +49,8 @@ object ApiClient {
             { response ->
                 var token: String? = null
                 try {
-                } catch (e: JSONException) {
                     token = response.getString("token")
+                } catch (e: JSONException) {
                     Log.e(LOG_TAG, e.message, e)
                 }
 
