@@ -97,7 +97,7 @@ class SignInActivity : AppCompatActivity() {
 
                     // Stores token in UserStore.
                     runBlocking { store.storeToken(token) }
-                    
+
                     startActivity(intent)
                 },
                 { _ ->
