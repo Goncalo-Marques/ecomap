@@ -72,3 +72,13 @@ export const TRUCK_ICON_SRC = "/images/truck-pin.svg";
  * Source location of the selected truck pin icon.
  */
 export const SELECTED_TRUCK_ICON_SRC = "/images/truck-pin-selected.svg";
+
+/**
+ * Source location of the landfill pin icon.
+ */
+export const LANDFILL_ICON_SRC = "/images/landfill-pin.svg";
+
+/**
+ * Source location of the selected landfill pin icon.
+ */
+export const SELECTED_LANDFILL_ICON_SRC = "/images/landfill-pin-selected.svg";

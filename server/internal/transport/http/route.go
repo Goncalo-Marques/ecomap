@@ -212,6 +212,39 @@ func (h *handler) DeleteRouteByID(w http.ResponseWriter, r *http.Request, routeI
 	writeResponseJSON(w, http.StatusOK, responseBody)
 }
 
+// GetRouteWays handles the http request to get ways of a route.
+func (h *handler) GetRouteWays(w http.ResponseWriter, r *http.Request, routeID spec.RouteIdPathParam) {
+	ctx := r.Context()
+
+	domainGeoJSON, err := h.service.GetRouteRoads(ctx, routeID)
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrRouteNotFound):
+			notFound(w, errRouteNotFound)
+		default:
+			internalServerError(w)
+		}
+
+		return
+	}
+
+	geoJSON, err := geoJSONFeatureCollectionLineStringFromDomain(domainGeoJSON)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	responseBody, err := json.Marshal(geoJSON)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
+	writeResponseJSON(w, http.StatusOK, responseBody)
+}
+
 // routePostToDomain returns a domain editable route based on the standardized route post.
 func routePostToDomain(routePost spec.RoutePost) domain.EditableRoute {
 	return domain.EditableRoute{

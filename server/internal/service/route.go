@@ -18,6 +18,7 @@ const (
 	descriptionFailedGetRouteByID    = "service: failed to get route by id"
 	descriptionFailedPatchRoute      = "service: failed to patch route"
 	descriptionFailedDeleteRouteByID = "service: failed to delete route by id"
+	descriptionFailedGetRouteRoads   = "service: failed to get route roads"
 )
 
 // CreateRoute creates a new route with the specified data.
@@ -216,4 +217,159 @@ func (s *service) DeleteRouteByID(ctx context.Context, id uuid.UUID) (domain.Rou
 	}
 
 	return route, nil
+}
+
+// GetRouteRoads returns the route roads using the TSP and A* algorithms. The route starts at the departure warehouse,
+// passes through all the route containers, and before terminating at the arrival warehouse, passes through the nearest
+// landfill to the arrival warehouse.
+func (s *service) GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJSON, error) {
+	logAttrs := []any{
+		slog.String(logging.ServiceMethod, "GetRouteRoads"),
+		slog.String(logging.RouteID, id.String()),
+	}
+
+	var roadsGeometry []domain.GeoJSONGeometryLineString
+
+	err := s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+		route, err := s.store.GetRouteByID(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+
+		routeContainerRoads, err := s.store.GetContainerRoadsByRouteID(ctx, tx, route.ID)
+		if err != nil {
+			return err
+		}
+
+		// Early return when the route does not contain any containers associated.
+		if len(routeContainerRoads) == 0 {
+			return nil
+		}
+
+		arrivalWarehouse, err := s.store.GetWarehouseByID(ctx, tx, route.ArrivalWarehouseID)
+		if err != nil {
+			return err
+		}
+
+		// Get essential roads.
+		var departureRoad *domain.Road
+		tempDepartureRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.DepartureWarehouseID)
+		if err != nil {
+			if !errors.Is(err, domain.ErrRoadNotFound) {
+				return err
+			}
+		} else {
+			departureRoad = &tempDepartureRoad
+		}
+
+		var arrivalRoad *domain.Road
+		tempArrivalRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.ArrivalWarehouseID)
+		if err != nil {
+			if !errors.Is(err, domain.ErrRoadNotFound) {
+				return err
+			}
+		} else {
+			arrivalRoad = &tempArrivalRoad
+		}
+
+		var arrivalWarehouseGeometry domain.GeoJSONGeometryPoint
+		if feature, ok := arrivalWarehouse.GeoJSON.(domain.GeoJSONFeature); ok {
+			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
+				arrivalWarehouseGeometry = g
+			}
+		}
+
+		var landfillID *uuid.UUID
+		landfill, err := s.store.GetLandfillClosestGeometry(ctx, tx, arrivalWarehouseGeometry)
+		if err != nil {
+			if !errors.Is(err, domain.ErrLandfillNotFound) {
+				return err
+			}
+		} else {
+			landfillID = &landfill.ID
+		}
+
+		var landfillRoad *domain.Road
+		if landfillID != nil {
+			tempLandfillRoad, err := s.store.GetRoadByLandfillID(ctx, tx, *landfillID)
+			if err != nil {
+				if !errors.Is(err, domain.ErrRoadNotFound) {
+					return err
+				}
+			} else {
+				landfillRoad = &tempLandfillRoad
+			}
+		}
+
+		// Compute the TSP for the route container vertices, starting at the departure warehouse and ending at the
+		// closest landfill to the arrival warehouse.
+		vertexIDs := make([]int, 0, len(routeContainerRoads)+2)
+
+		for _, road := range routeContainerRoads {
+			if road.Source == nil {
+				continue
+			}
+
+			vertexIDs = append(vertexIDs, *road.Source)
+		}
+		if departureRoad != nil && departureRoad.Source != nil {
+			vertexIDs = append(vertexIDs, *departureRoad.Source)
+		}
+		if landfillRoad != nil && landfillRoad.Source != nil {
+			vertexIDs = append(vertexIDs, *landfillRoad.Source)
+		}
+
+		departureVertexID := vertexIDs[0]
+		if departureRoad != nil && departureRoad.Source != nil {
+			departureVertexID = *departureRoad.Source
+		}
+
+		landfillVertexID := vertexIDs[0]
+		if landfillRoad != nil && landfillRoad.Source != nil {
+			landfillVertexID = *landfillRoad.Source
+		}
+
+		seqVertexIDs, err := s.store.GetRoadVerticesTSP(ctx, tx, vertexIDs, departureVertexID, landfillVertexID, true)
+		if err != nil {
+			return err
+		}
+
+		arrivalVertexID := departureVertexID
+		if arrivalRoad != nil && arrivalRoad.Source != nil {
+			arrivalVertexID = *arrivalRoad.Source
+		}
+
+		// Replace the last vertex with the last actual point of the route.
+		// This is a blind replacement because the last vertex is always the same as the first.
+		if len(seqVertexIDs) != 0 {
+			seqVertexIDs[len(seqVertexIDs)-1] = arrivalVertexID
+		}
+
+		// Compute the roads based on the sequential vertices.
+		roadsGeometry, err = s.store.GetRoadsGeometryAStar(ctx, tx, seqVertexIDs, true)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrRouteNotFound):
+			return nil, logInfoAndWrapError(ctx, err, descriptionFailedGetRouteRoads, logAttrs...)
+		default:
+			return nil, logAndWrapError(ctx, err, descriptionFailedGetRouteRoads, logAttrs...)
+		}
+	}
+
+	geoJSONFeature := make([]domain.GeoJSONFeature, len(roadsGeometry))
+	for i, geometry := range roadsGeometry {
+		geoJSONFeature[i] = domain.GeoJSONFeature{
+			Geometry: geometry,
+		}
+	}
+
+	return domain.GeoJSONFeatureCollection{
+		Features: geoJSONFeature,
+	}, nil
 }
