@@ -110,7 +110,7 @@ class CreateAccountActivity : AppCompatActivity() {
                     }
 
                     Toast.makeText(
-                        this.applicationContext,
+                        applicationContext,
                         errorMessage,
                         Toast.LENGTH_LONG
                     ).show()

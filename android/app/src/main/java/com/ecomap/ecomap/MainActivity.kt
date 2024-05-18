@@ -249,19 +249,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Updates the map UI by adding the containers as markers using the provided filter.
      */
     private fun updateContainersUI(containerCategoryFilter: ContainerCategory? = null) {
-        if (map == null) {
-            return
-        }
-
         // Clear the current markers.
-        map?.clear()
+        map.clear()
 
         // Helper function to handle a successful response.
         val handleSuccess = fun(paginatedContainers: ContainersPaginated) {
             val markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_icon)
             for (container in paginatedContainers.containers) {
                 val containerCoordinates = container.geoJSON.geometry.coordinates
-                map?.addMarker(
+                map.addMarker(
                     MarkerOptions()
                         .position(LatLng(containerCoordinates[1], containerCoordinates[0]))
                         .icon(markerIcon)
@@ -279,7 +275,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             Toast.makeText(
-                this.applicationContext,
+                applicationContext,
                 errorMessage,
                 Toast.LENGTH_LONG
             ).show()
@@ -294,7 +290,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             { paginatedContainers ->
                 val remainingRequest = paginatedContainers.total / REQUEST_LIST_CONTAINER_LIMIT
                 for (i in 1..remainingRequest) {
-                    ApiRequestQueue.getInstance(this.applicationContext).add(
+                    ApiRequestQueue.getInstance(applicationContext).add(
                         ApiClient.listContainers(
                             containerCategoryFilter,
                             REQUEST_LIST_CONTAINER_LIMIT,
@@ -310,7 +306,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             },
             { error -> handleError(error) })
 
-        ApiRequestQueue.getInstance(this.applicationContext).add(request)
+        ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 
     companion object {
