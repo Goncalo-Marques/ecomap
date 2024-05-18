@@ -6,7 +6,6 @@
 	import { formatDate } from "../../../../lib/utils/date";
 	import { t } from "../../../../lib/utils/i8n";
 	import { getLocationName } from "../../../../lib/utils/location";
-	import { BackOfficeRoutes } from "../../../constants/routes";
 
 	/**
 	 * The container whose information is displayed.
@@ -19,7 +18,6 @@
 		container.geoJson.properties.wayName,
 		container.geoJson.properties.municipalityName,
 	)}
-	resourceLink={`${BackOfficeRoutes.CONTAINERS}/${container.id}`}
 >
 	<Field
 		label={$t("containers.category")}

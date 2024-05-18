@@ -5,7 +5,7 @@
 	import Dashboard from "./routes/backOffice/dashboard/Dashboard.svelte";
 	import Map from "./routes/backOffice/map/Map.svelte";
 	import Routes from "./routes/backOffice/routes/Routes.svelte";
-	import Reports from "./routes/backOffice/reports/Reports.svelte";
+	import LandfillsRouter from "./routes/backOffice/landfills/LandfillsRouter.svelte";
 	import EmployeesRouter from "./routes/backOffice/employees/EmployeesRouter.svelte";
 	import Forbidden from "./routes/clientErrors/Forbidden.svelte";
 	import NotFound from "./routes/clientErrors/NotFound.svelte";
@@ -37,7 +37,9 @@
 						path={BackOfficeRouterPaths.EMPLOYEES}
 						component={EmployeesRouter}
 					/>
-					<Route path={BackOfficeRouterPaths.REPORTS} component={Reports} />
+					<Route path={`${BackOfficeRouterPaths.LANDFILLS}/*`}>
+						<LandfillsRouter />
+					</Route>
 					<Route path={`${BackOfficeRouterPaths.TRUCKS}/*`}>
 						<TrucksRouter />
 					</Route>
