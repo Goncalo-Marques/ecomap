@@ -263,12 +263,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Helper function to handle a successful response.
         val handleSuccess = fun(paginatedContainers: ContainersPaginated) {
+            val markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_icon)
             for (container in paginatedContainers.containers) {
                 val containerCoordinates = container.geoJSON.geometry.coordinates
                 map?.addMarker(
                     MarkerOptions()
                         .position(LatLng(containerCoordinates[1], containerCoordinates[0]))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_icon))
+                        .icon(markerIcon)
                 )
             }
         }
