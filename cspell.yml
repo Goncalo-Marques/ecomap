@@ -18,6 +18,8 @@ ignoreWords:
   - ecomap
   - EPSG
   - fkey
+  - floatingactionbutton
+  - focusable
   - golangci
   - goncalo
   - GOPATH

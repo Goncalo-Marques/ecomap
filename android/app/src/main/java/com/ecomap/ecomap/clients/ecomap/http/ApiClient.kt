@@ -15,6 +15,8 @@ const val BASE_API_URL = "https://server-7fzc7ivuwa-ew.a.run.app/api"
  * EcoMap HTTP API client.
  */
 object ApiClient {
+    private val LOG_TAG = ApiClient::class.java.simpleName
+
     /**
      * Retrieves the URL of the API.
      * @param endpoint API endpoint.
@@ -49,7 +51,7 @@ object ApiClient {
                 try {
                     token = response.getString("token")
                 } catch (e: JSONException) {
-                    Log.e(javaClass.name, e.message, e)
+                    Log.e(LOG_TAG, e.message, e)
                 }
 
                 listener.onResponse(token)
