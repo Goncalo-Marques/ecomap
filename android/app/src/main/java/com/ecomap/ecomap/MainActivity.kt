@@ -190,7 +190,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Updates the map's UI settings based on whether the user has granted location permission.
      * If the location permission is granted, enable the Google Map My Location layer.
      */
-    private fun updateLocationUI(enableMyLocationLayer: Boolean = locationPermissionGranted) {
+    private fun updateLocationUI() {
         if (map == null) {
             return
         }
