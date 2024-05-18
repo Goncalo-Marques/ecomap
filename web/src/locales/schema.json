@@ -208,6 +208,30 @@
 		"warehouses.delete.conflict.description": {
 			"type": "string"
 		},
+		"landfill": {
+			"type": "string"
+		},
+		"landfills": {
+			"type": "string"
+		},
+		"landfills.create.title": {
+			"type": "string"
+		},
+		"landfills.create.success": {
+			"type": "string"
+		},
+		"landfills.update.success": {
+			"type": "string"
+		},
+		"landfills.notFound.title": {
+			"type": "string"
+		},
+		"landfills.notFound.description": {
+			"type": "string"
+		},
+		"landfills.delete.success": {
+			"type": "string"
+		},
 		"error.valueMissing": {
 			"type": "string"
 		},
@@ -269,9 +293,6 @@
 			"type": "string"
 		},
 		"routes": {
-			"type": "string"
-		},
-		"reports": {
 			"type": "string"
 		},
 		"notFound.title": {

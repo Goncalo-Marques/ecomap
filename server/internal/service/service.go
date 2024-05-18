@@ -77,6 +77,7 @@ type Store interface {
 	CreateLandfill(ctx context.Context, tx pgx.Tx, editableLandfill domain.EditableLandfill, roadID, municipalityID *int) (uuid.UUID, error)
 	ListLandfills(ctx context.Context, tx pgx.Tx, filter domain.LandfillsPaginatedFilter) (domain.PaginatedResponse[domain.Landfill], error)
 	GetLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Landfill, error)
+	GetLandfillClosestGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Landfill, error)
 	PatchLandfill(ctx context.Context, tx pgx.Tx, id uuid.UUID, editableLandfill domain.EditableLandfillPatch, roadID, municipalityID *int) error
 	DeleteLandfillByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 
@@ -95,6 +96,11 @@ type Store interface {
 	DeleteRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID) error
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
+	GetRoadByWarehouseID(ctx context.Context, tx pgx.Tx, warehouseID uuid.UUID) (domain.Road, error)
+	GetRoadByLandfillID(ctx context.Context, tx pgx.Tx, landfillID uuid.UUID) (domain.Road, error)
+	GetContainerRoadsByRouteID(ctx context.Context, tx pgx.Tx, routeID uuid.UUID) ([]domain.Road, error)
+	GetRoadVerticesTSP(ctx context.Context, tx pgx.Tx, vertexIDs []int, startVertexID, endVertexID int, directed bool) ([]int, error)
+	GetRoadsGeometryAStar(ctx context.Context, tx pgx.Tx, seqVertexIDs []int, directed bool) ([]domain.GeoJSONGeometryLineString, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 

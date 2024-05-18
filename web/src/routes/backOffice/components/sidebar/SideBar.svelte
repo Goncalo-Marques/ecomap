@@ -71,12 +71,12 @@
 		</li>
 		<li>
 			<Link
-				to={BackOfficeRoutes.REPORTS}
-				data-selected={$url.pathname === BackOfficeRoutes.REPORTS ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.REPORTS}/`)}
+				to={BackOfficeRoutes.LANDFILLS}
+				data-selected={$url.pathname === BackOfficeRoutes.LANDFILLS ||
+					$url.pathname.startsWith(`${BackOfficeRoutes.LANDFILLS}/`)}
 			>
-				<Icon name="description" />
-				<span>{$t("reports")}</span>
+				<Icon name="landslide" />
+				<span>{$t("landfills")}</span>
 			</Link>
 		</li>
 		<li>

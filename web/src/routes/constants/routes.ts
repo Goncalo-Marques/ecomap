@@ -13,7 +13,7 @@ export enum BackOfficeRouterPaths {
 	CONTAINERS = "containers",
 	WAREHOUSES = "warehouses",
 	TRUCKS = "trucks",
-	REPORTS = "reports",
+	LANDFILLS = "landfills",
 	EMPLOYEES = "employees",
 }
 
@@ -27,7 +27,7 @@ export enum BackOfficeRoutes {
 	CONTAINERS = `/${backOfficeBasename}/${BackOfficeRouterPaths.CONTAINERS}`,
 	WAREHOUSES = `/${backOfficeBasename}/${BackOfficeRouterPaths.WAREHOUSES}`,
 	TRUCKS = `/${backOfficeBasename}/${BackOfficeRouterPaths.TRUCKS}`,
-	REPORTS = `/${backOfficeBasename}/${BackOfficeRouterPaths.REPORTS}`,
+	LANDFILLS = `/${backOfficeBasename}/${BackOfficeRouterPaths.LANDFILLS}`,
 	EMPLOYEES = `/${backOfficeBasename}/${BackOfficeRouterPaths.EMPLOYEES}`,
 }
 
