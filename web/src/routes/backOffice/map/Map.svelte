@@ -10,7 +10,9 @@
 	import { t } from "../../../lib/utils/i8n";
 	import {
 		CONTAINER_ICON_SRC,
+		LANDFILL_ICON_SRC,
 		SELECTED_CONTAINER_ICON_SRC,
+		SELECTED_LANDFILL_ICON_SRC,
 		SELECTED_TRUCK_ICON_SRC,
 		SELECTED_WAREHOUSE_ICON_SRC,
 		TRUCK_ICON_SRC,
@@ -25,6 +27,8 @@
 	import MapBottomSheet from "./MapBottomSheet.svelte";
 	import { getBatchPaginatedResponse } from "../../../lib/utils/request";
 	import Button from "../../../lib/components/Button.svelte";
+	import type { Landfill } from "../../../domain/landfill";
+	import Spinner from "../../../lib/components/Spinner.svelte";
 
 	/**
 	 * The Open Layers map.
@@ -47,9 +51,19 @@
 	let selectedWarehouse: Warehouse | null = null;
 
 	/**
+	 * The landfill selected in the map.
+	 */
+	let selectedLandfill: Landfill | null = null;
+
+	/**
 	 * The selected feature in the map.
 	 */
 	let selectedFeature: Feature | null = null;
+
+	/**
+	 * Indicates whether the map is loading features.
+	 */
+	let loading: boolean = false;
 
 	/**
 	 * Retrieves truck features to display in the map.
@@ -196,6 +210,45 @@
 	}
 
 	/**
+	 * Retrieves landfills features to display in the map.
+	 */
+	async function getLandfillFeatures(): Promise<Feature[]> {
+		const landfills = await getBatchPaginatedResponse(async (limit, offset) => {
+			const res = await ecomapHttpClient.GET("/landfills", {
+				params: { query: { limit, offset } },
+			});
+
+			if (res.error) {
+				return { total: 0, items: [] };
+			}
+
+			return { total: res.data.total, items: res.data.landfills };
+		});
+
+		const landfillFeatures: Feature<Point>[] = [];
+
+		for (const landfill of landfills) {
+			const { id, createdAt, modifiedAt, geoJson } = landfill;
+			const transformedCoordinate = convertToMapProjection(
+				geoJson.geometry.coordinates,
+			);
+			const point = new Point(transformedCoordinate);
+			const feature = new Feature(point);
+			feature.setProperties({
+				type: "landfill",
+				id,
+				createdAt,
+				modifiedAt,
+				geoJson,
+			});
+
+			landfillFeatures.push(feature);
+		}
+
+		return landfillFeatures;
+	}
+
+	/**
 	 * Retrieves the containers from a container feature.
 	 * @param feature Container feature.
 	 * @returns Containers.
@@ -207,7 +260,7 @@
 	}
 
 	/**
-	 * Retrieves a truck from a container feature.
+	 * Retrieves a truck from a truck feature.
 	 * @param feature Truck feature.
 	 * @returns Truck.
 	 */
@@ -236,7 +289,7 @@
 	}
 
 	/**
-	 * Retrieves a warehouse from a container feature.
+	 * Retrieves a warehouse from a warehouse feature.
 	 * @param feature Warehouse feature.
 	 * @returns Warehouse.
 	 */
@@ -254,16 +307,39 @@
 	}
 
 	/**
+	 * Retrieves a landfill from a landfill feature.
+	 * @param feature Landfill feature.
+	 * @returns Landfill.
+	 */
+	function getLandfillFromFeature(feature: Feature): Landfill {
+		const { id, createdAt, modifiedAt, geoJson } = feature.getProperties();
+
+		return {
+			id,
+			createdAt,
+			modifiedAt,
+			geoJson,
+		};
+	}
+
+	/**
 	 * Loads all features into the map.
 	 * @param mapHelper Map helper to add features to the map.
 	 */
 	async function loadFeatures(mapHelper: MapHelper) {
-		const [containerFeaturesRes, truckFeaturesRes, warehouseFeaturesRes] =
-			await Promise.allSettled([
-				getContainerFeatures(),
-				getTruckFeatures(),
-				getWarehouseFeatures(),
-			]);
+		loading = true;
+
+		const [
+			containerFeaturesRes,
+			truckFeaturesRes,
+			warehouseFeaturesRes,
+			landfillFeaturesRes,
+		] = await Promise.allSettled([
+			getContainerFeatures(),
+			getTruckFeatures(),
+			getWarehouseFeatures(),
+			getLandfillFeatures(),
+		]);
 
 		if (containerFeaturesRes.status === "fulfilled") {
 			mapHelper.addClusterLayer(containerFeaturesRes.value, {
@@ -286,11 +362,22 @@
 		if (warehouseFeaturesRes.status === "fulfilled") {
 			mapHelper.addClusterLayer(warehouseFeaturesRes.value, {
 				layerName: $t("warehouses"),
-				layerColor: getCssVariable("--amber-800"),
+				layerColor: getCssVariable("--indigo-400"),
 				iconSrc: WAREHOUSE_ICON_SRC,
 				selectedIconSrc: SELECTED_WAREHOUSE_ICON_SRC,
 			});
 		}
+
+		if (landfillFeaturesRes.status === "fulfilled") {
+			mapHelper.addClusterLayer(landfillFeaturesRes.value, {
+				layerName: $t("landfills"),
+				layerColor: getCssVariable("--yellow-900"),
+				iconSrc: LANDFILL_ICON_SRC,
+				selectedIconSrc: SELECTED_LANDFILL_ICON_SRC,
+			});
+		}
+
+		loading = false;
 	}
 
 	/**
@@ -342,6 +429,10 @@
 			case "warehouse":
 				selectedWarehouse = getWarehouseFromFeature(feature);
 				break;
+
+			case "landfill":
+				selectedLandfill = getLandfillFromFeature(feature);
+				break;
 		}
 	}
 
@@ -354,6 +445,7 @@
 		selectedContainers = [];
 		selectedTruck = null;
 		selectedWarehouse = null;
+		selectedLandfill = null;
 		selectedFeature?.set("selected", false);
 
 		// Get features that were clicked.
@@ -401,6 +493,12 @@
 <main>
 	<MapComponent bind:map showLayers={!selectedFeature} />
 
+	{#if loading}
+		<div class="landfill-loading">
+			<Spinner />
+		</div>
+	{/if}
+
 	{#if selectedFeature}
 		<div class="close-selected-feature">
 			<Button
@@ -415,7 +513,7 @@
 		</div>
 	{/if}
 
-	{#if selectedFeature && (selectedContainers.length || selectedTruck || selectedWarehouse)}
+	{#if selectedFeature && (selectedContainers.length || selectedTruck || selectedWarehouse || selectedLandfill)}
 		<MapBottomSheet
 			wayName={selectedFeature.get("geoJson").properties.wayName}
 			municipalityName={selectedFeature.get("geoJson").properties
@@ -423,6 +521,7 @@
 			warehouse={selectedWarehouse}
 			containers={selectedContainers}
 			truck={selectedTruck}
+			landfill={selectedLandfill}
 		/>
 	{/if}
 </main>
@@ -431,6 +530,14 @@
 	main {
 		position: relative;
 		width: 100%;
+	}
+
+	.landfill-loading {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 100;
 	}
 
 	.close-selected-feature {
