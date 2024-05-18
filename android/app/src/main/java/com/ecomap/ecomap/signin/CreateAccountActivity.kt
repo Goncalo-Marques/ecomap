@@ -102,7 +102,7 @@ class CreateAccountActivity : AppCompatActivity() {
                     // Hide the progress bar when a network error occurs.
                     progressBar.visibility = View.INVISIBLE
 
-                    val errorResponse = ApiClient.getError(error)
+                    val errorResponse = ApiClient.mapError(error)
 
                     var errorMessage = errorResponse.code
                     if (errorResponse.message.isNotEmpty()) {
@@ -123,7 +123,7 @@ class CreateAccountActivity : AppCompatActivity() {
     private fun signInUser(username: String, password: String) {
         val request = ApiClient.signIn(username, password,
             { token ->
-                if (token == null) {
+                if (token.isEmpty()) {
                     Toast.makeText(
                         this.applicationContext,
                         getString(R.string.error_create_account),
