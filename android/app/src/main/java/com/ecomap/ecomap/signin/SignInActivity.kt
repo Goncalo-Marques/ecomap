@@ -79,7 +79,7 @@ class SignInActivity : AppCompatActivity() {
                 username,
                 password,
                 { token ->
-                    if (token == null) {
+                    if (token.isEmpty()) {
                         Toast.makeText(
                             this.applicationContext,
                             getString(R.string.error_sign_in),
