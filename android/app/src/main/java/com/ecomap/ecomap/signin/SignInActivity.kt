@@ -66,7 +66,6 @@ class SignInActivity : AppCompatActivity() {
         if (username.isBlank()) {
             textInputEditTextUsername.error = getString(R.string.sign_in_username_required_error)
         }
-
         if (password.isBlank()) {
             textInputEditTextPassword.error = getString(R.string.sign_in_password_required_error)
         }
@@ -96,11 +95,10 @@ class SignInActivity : AppCompatActivity() {
                     // clearing out any other tasks.
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
-                    runBlocking {
-                        // Stores token in UserStore.
-                        store.storeToken(token)
-                        startActivity(intent)
-                    }
+                    // Stores token in UserStore.
+                    runBlocking { store.storeToken(token) }
+                    
+                    startActivity(intent)
                 },
                 { _ ->
                     Toast.makeText(
