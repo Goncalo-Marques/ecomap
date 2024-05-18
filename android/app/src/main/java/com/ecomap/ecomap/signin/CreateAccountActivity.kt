@@ -109,7 +109,11 @@ class CreateAccountActivity : AppCompatActivity() {
                         errorMessage = errorResponse.message
                     }
 
-                    Toast.makeText(this.applicationContext, errorMessage, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this.applicationContext,
+                        errorMessage,
+                        Toast.LENGTH_LONG
+                    ).show()
                 })
 
         ApiRequestQueue.getInstance(this.applicationContext).add(request)
@@ -151,8 +155,7 @@ class CreateAccountActivity : AppCompatActivity() {
                     this.applicationContext,
                     getString(R.string.error_create_account),
                     Toast.LENGTH_LONG
-                )
-                    .show()
+                ).show()
             })
 
         ApiRequestQueue.getInstance(this.applicationContext).add(request)

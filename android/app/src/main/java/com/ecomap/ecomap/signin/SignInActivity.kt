@@ -105,8 +105,7 @@ class SignInActivity : AppCompatActivity() {
                         this.applicationContext,
                         getString(R.string.error_sign_in),
                         Toast.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                 })
 
         ApiRequestQueue.getInstance(this.applicationContext).add(request)
