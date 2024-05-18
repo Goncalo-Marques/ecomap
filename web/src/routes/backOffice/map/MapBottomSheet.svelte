@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Container } from "../../../domain/container";
+	import type { Landfill } from "../../../domain/landfill";
 	import type { Truck } from "../../../domain/truck";
 	import type { Warehouse } from "../../../domain/warehouse";
 	import BottomSheet from "../../../lib/components/BottomSheet.svelte";
@@ -27,6 +28,11 @@
 	export let warehouse: Warehouse | null;
 
 	/**
+	 * The landfill in the location.
+	 */
+	export let landfill: Landfill | null;
+
+	/**
 	 * The way name of the location.
 	 */
 	export let wayName: string | undefined;
@@ -40,12 +46,14 @@
 	 * Retrieves the respective resource link to display in the bottom sheet.
 	 * @param truck Selected truck.
 	 * @param warehouse Selected warehouse.
+	 * @param landfill Selected landfill.
 	 * @param containers Selected containers.
 	 * @returns Resource link or `undefined` when bottom sheet displays multiple containers.
 	 */
 	function getResourceLink(
 		truck: Truck | null,
 		warehouse: Warehouse | null,
+		landfill: Landfill | null,
 		containers: Container[],
 	) {
 		if (truck) {
@@ -54,6 +62,10 @@
 
 		if (warehouse) {
 			return `${BackOfficeRoutes.WAREHOUSES}/${warehouse.id}`;
+		}
+
+		if (landfill) {
+			return `${BackOfficeRoutes.LANDFILLS}/${landfill.id}`;
 		}
 
 		if (containers.length === 1) {
@@ -66,7 +78,7 @@
 
 <BottomSheet
 	title={getLocationName(wayName, municipalityName)}
-	resourceLink={getResourceLink(truck, warehouse, containers)}
+	resourceLink={getResourceLink(truck, warehouse, landfill, containers)}
 >
 	{#if truck}
 		<Field label={$t("make")} value={truck.make} />
@@ -90,6 +102,15 @@
 		<Field
 			label={$t("modifiedAt")}
 			value={formatDate(warehouse.modifiedAt, DateFormats.shortDateTime)}
+		/>
+	{:else if landfill}
+		<Field
+			label={$t("createdAt")}
+			value={formatDate(landfill.createdAt, DateFormats.shortDateTime)}
+		/>
+		<Field
+			label={$t("modifiedAt")}
+			value={formatDate(landfill.modifiedAt, DateFormats.shortDateTime)}
 		/>
 	{:else if containers.length === 1}
 		{@const container = containers[0]}
