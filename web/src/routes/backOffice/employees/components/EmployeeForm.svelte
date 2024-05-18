@@ -71,8 +71,8 @@
 	 */
 	const formFieldsLengths = {
 		username: {
-			min: 5,
-			max: 50,
+			min: 0,
+			max: 30,
 		},
 		firstName: {
 			min: 0,
@@ -82,13 +82,9 @@
 			min: 0,
 			max: 30,
 		},
-		dateOfBirth: {
-			min: 10,
-			max: 10,
-		},
 		phoneNumber: {
-			min: 1,
-			max: 20,
+			min: 0,
+			max: 15,
 		},
 	};
 
@@ -107,8 +103,7 @@
 	};
 
 	/**
-	 * Validates form and sets error messages on the form fields
-	 * if they contain errors.
+	 * Validates form and sets error messages on the form fields if they contain errors.
 	 * @param usernameValidity
 	 * @param firstNameValidity
 	 * @param lastNameValidity
@@ -124,6 +119,8 @@
 		dateOfBirthValidity: ValidityState,
 		phoneNumberValidity: ValidityState,
 		locationValidity: ValidityState,
+		scheduleStart: ValidityState,
+		scheduleEnd: ValidityState,
 		coordinate: number[] | undefined,
 	): coordinate is number[] {
 		// Username Validation.
@@ -178,14 +175,6 @@
 			formErrorMessages.dateOfBirth = $t("error.valueMissing");
 		} else if (dateOfBirthValidity.patternMismatch) {
 			formErrorMessages.dateOfBirth = $t("error.patternMismatch");
-		} else if (dateOfBirthValidity.tooShort) {
-			formErrorMessages.dateOfBirth = $t("error.tooShort", {
-				minLength: formFieldsLengths.dateOfBirth.min,
-			});
-		} else if (dateOfBirthValidity.tooLong) {
-			formErrorMessages.dateOfBirth = $t("error.tooLong", {
-				maxLength: formFieldsLengths.dateOfBirth.max,
-			});
 		} else {
 			formErrorMessages.dateOfBirth = "";
 		}
@@ -205,6 +194,24 @@
 			});
 		} else {
 			formErrorMessages.phoneNumber = "";
+		}
+
+		// ScheduleStart Validation.
+		if (scheduleStart.valueMissing) {
+			formErrorMessages.scheduleStart = $t("error.valueMissing");
+		} else if (scheduleStart.patternMismatch) {
+			formErrorMessages.scheduleStart = $t("error.patternMismatch");
+		} else {
+			formErrorMessages.scheduleStart = "";
+		}
+
+		// ScheduleEnd Validation.
+		if (scheduleEnd.valueMissing) {
+			formErrorMessages.scheduleEnd = $t("error.valueMissing");
+		} else if (scheduleEnd.patternMismatch) {
+			formErrorMessages.scheduleEnd = $t("error.patternMismatch");
+		} else {
+			formErrorMessages.scheduleEnd = "";
 		}
 
 		// Location Validation.
@@ -275,6 +282,12 @@
 		const locationInput = form.elements.namedItem(
 			"location",
 		) as HTMLInputElement;
+		const scheduleStartInput = form.elements.namedItem(
+			"scheduleEnd",
+		) as HTMLInputElement;
+		const scheduleEndInput = form.elements.namedItem(
+			"scheduleStart",
+		) as HTMLInputElement;
 
 		// Check if form is valid to prevent making a server request.
 		if (
@@ -285,6 +298,8 @@
 				dateOfBirthInput.validity,
 				phoneNumberInput.validity,
 				locationInput.validity,
+				scheduleStartInput.validity,
+				scheduleEndInput.validity,
 				selectedCoordinate,
 			)
 		) {
@@ -385,8 +400,6 @@
 						error={!!formErrorMessages.dateOfBirth}
 						placeholder={$t("employees.birthdate.placeholder")}
 						type="date"
-						minLength={formFieldsLengths.dateOfBirth.min}
-						maxLength={formFieldsLengths.dateOfBirth.max}
 					/>
 				</FormControl>
 
