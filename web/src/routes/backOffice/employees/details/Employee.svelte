@@ -16,6 +16,7 @@
 	import { DateFormats } from "../../../../lib/constants/date";
 	import { getToastContext } from "../../../../lib/contexts/toast";
 	import { BackOfficeRoutes } from "../../../constants/routes";
+	import { isViewingSelf } from "../../../../lib/utils/auth";
 
 	/**
 	 * Employee ID.
@@ -91,12 +92,14 @@
 		)}
 
 		<DetailsHeader to="" title={`${employee.firstName} ${employee.lastName}`}>
-			<Button
-				startIcon="delete"
-				actionType="danger"
-				variant="secondary"
-				onClick={deleteEmployee}
-			/>
+			{#if !isViewingSelf(employee.id)}
+				<Button
+					startIcon="delete"
+					actionType="danger"
+					variant="secondary"
+					onClick={deleteEmployee}
+				/>
+			{/if}
 		</DetailsHeader>
 		<DetailsContent>
 			<DetailsSection label={$t("personalInfo")}>
