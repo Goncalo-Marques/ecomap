@@ -60,7 +60,13 @@ func (h *handler) CreateRoute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	route := routeFromDomain(domainRoute)
+	route, err := routeFromDomain(domainRoute)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
 	responseBody, err := json.Marshal(route)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -90,7 +96,13 @@ func (h *handler) ListRoutes(w http.ResponseWriter, r *http.Request, params spec
 		return
 	}
 
-	routesPaginated := routesPaginatedFromDomain(domainPaginatedRoutes)
+	routesPaginated, err := routesPaginatedFromDomain(domainPaginatedRoutes)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
 	responseBody, err := json.Marshal(routesPaginated)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -117,7 +129,13 @@ func (h *handler) GetRouteByID(w http.ResponseWriter, r *http.Request, routeID s
 		return
 	}
 
-	route := routeFromDomain(domainRoute)
+	route, err := routeFromDomain(domainRoute)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
 	responseBody, err := json.Marshal(route)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -170,7 +188,13 @@ func (h *handler) PatchRouteByID(w http.ResponseWriter, r *http.Request, routeID
 		return
 	}
 
-	route := routeFromDomain(domainRoute)
+	route, err := routeFromDomain(domainRoute)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
 	responseBody, err := json.Marshal(route)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -201,7 +225,13 @@ func (h *handler) DeleteRouteByID(w http.ResponseWriter, r *http.Request, routeI
 		return
 	}
 
-	route := routeFromDomain(domainRoute)
+	route, err := routeFromDomain(domainRoute)
+	if err != nil {
+		logging.Logger.ErrorContext(ctx, descriptionFailedToMapResponseBody, logging.Error(err))
+		internalServerError(w)
+		return
+	}
+
 	responseBody, err := json.Marshal(route)
 	if err != nil {
 		logging.Logger.ErrorContext(ctx, descriptionFailedToMarshalResponseBody, logging.Error(err))
@@ -302,32 +332,57 @@ func listRoutesParamsToDomain(params spec.ListRoutesParams) domain.RoutesPaginat
 }
 
 // routeFromDomain returns a standardized route based on the domain model.
-func routeFromDomain(route domain.Route) spec.Route {
-	return spec.Route{
-		Id:                   route.ID,
-		Name:                 string(route.Name),
-		TruckId:              route.TruckID,
-		DepartureWarehouseId: route.DepartureWarehouseID,
-		ArrivalWarehouseId:   route.ArrivalWarehouseID,
-		CreatedAt:            route.CreatedAt,
-		ModifiedAt:           route.ModifiedAt,
+func routeFromDomain(route domain.Route) (spec.Route, error) {
+	truck, err := truckFromDomain(route.Truck)
+	if err != nil {
+		return spec.Route{}, err
 	}
+
+	departureWarehouse, err := warehouseFromDomain(route.DepartureWarehouse)
+	if err != nil {
+		return spec.Route{}, err
+	}
+
+	arrivalWarehouse, err := warehouseFromDomain(route.ArrivalWarehouse)
+	if err != nil {
+		return spec.Route{}, err
+	}
+
+	return spec.Route{
+		Id:                 route.ID,
+		Name:               string(route.Name),
+		Truck:              truck,
+		DepartureWarehouse: departureWarehouse,
+		ArrivalWarehouse:   arrivalWarehouse,
+		CreatedAt:          route.CreatedAt,
+		ModifiedAt:         route.ModifiedAt,
+	}, nil
 }
 
 // routesFromDomain returns standardized routes based on the domain model.
-func routesFromDomain(routes []domain.Route) []spec.Route {
+func routesFromDomain(routes []domain.Route) ([]spec.Route, error) {
 	specRoutes := make([]spec.Route, len(routes))
+	var err error
+
 	for i, route := range routes {
-		specRoutes[i] = routeFromDomain(route)
+		specRoutes[i], err = routeFromDomain(route)
+		if err != nil {
+			return []spec.Route{}, err
+		}
 	}
 
-	return specRoutes
+	return specRoutes, nil
 }
 
 // routesPaginatedFromDomain returns a standardized routes paginated response based on the domain model.
-func routesPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.Route]) spec.RoutesPaginated {
+func routesPaginatedFromDomain(paginatedResponse domain.PaginatedResponse[domain.Route]) (spec.RoutesPaginated, error) {
+	routes, err := routesFromDomain(paginatedResponse.Results)
+	if err != nil {
+		return spec.RoutesPaginated{}, err
+	}
+
 	return spec.RoutesPaginated{
 		Total:  paginatedResponse.Total,
-		Routes: routesFromDomain(paginatedResponse.Results),
-	}
+		Routes: routes,
+	}, nil
 }
