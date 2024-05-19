@@ -1,5 +1,6 @@
 [versions]
 agp = "8.4.0"
+androidMapsUtils = "3.8.0"
 datastorePreferencesCore = "1.1.1"
 kotlin = "1.9.22"
 coreKtx = "1.13.1"
@@ -16,6 +17,7 @@ playServicesLocation = "21.2.0"
 volley = "1.2.1"
 
 [libraries]
+android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferencesCore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

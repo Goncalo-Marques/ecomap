@@ -1,6 +1,7 @@
 package com.ecomap.ecomap
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -18,6 +19,8 @@ import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
 import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
+import com.ecomap.ecomap.map.ContainerClusterRenderer
+import com.ecomap.ecomap.map.ContainerMarker
 import com.ecomap.ecomap.signin.SignInActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -26,13 +29,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -51,6 +53,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Defines whether the location permission is granted.
      */
     private var locationPermissionGranted = false
+
+    /**
+     * Defines the cluster manager of the container markers.
+     */
+    private lateinit var containerClusterManager: ClusterManager<ContainerMarker>
 
     /**
      * Defines the authentication token.
@@ -122,51 +129,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private fun populateChipGroupContainerFilter(chipGroup: ChipGroup) {
         for (category in ContainerCategory.entries) {
-            val chipIconResource: Int
-            val chipText: String
-
-            when (category) {
-                ContainerCategory.GENERAL -> {
-                    chipIconResource = R.drawable.general
-                    chipText = getString(R.string.container_category_general)
-                }
-
-                ContainerCategory.PAPER -> {
-                    chipIconResource = R.drawable.paper
-                    chipText = getString(R.string.container_category_paper)
-                }
-
-                ContainerCategory.PLASTIC -> {
-                    chipIconResource = R.drawable.plastic
-                    chipText = getString(R.string.container_category_plastic)
-                }
-
-                ContainerCategory.METAL -> {
-                    chipIconResource = R.drawable.metal
-                    chipText = getString(R.string.container_category_metal)
-                }
-
-                ContainerCategory.GLASS -> {
-                    chipIconResource = R.drawable.glass
-                    chipText = getString(R.string.container_category_glass)
-                }
-
-                ContainerCategory.ORGANIC -> {
-                    chipIconResource = R.drawable.organic
-                    chipText = getString(R.string.container_category_organic)
-                }
-
-                ContainerCategory.HAZARDOUS -> {
-                    chipIconResource = R.drawable.hazardous
-                    chipText = getString(R.string.container_category_hazardous)
-                }
-            }
-
             val chip = Chip(this)
 
             // Set the chip style.
-            chip.chipIcon = ContextCompat.getDrawable(this, chipIconResource)
-            chip.text = chipText
+            chip.chipIcon = ContextCompat.getDrawable(this, category.getIconResource())
+            chip.text = category.getStringResource(this)
             chip.isCheckable = true
 
             // Set the chip function.
@@ -189,9 +156,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * Function called when the Google Map is ready.
      */
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setPadding(MAP_PADDING_LEFT, MAP_PADDING_TOP, MAP_PADDING_RIGHT, MAP_PADDING_BOTTOM)
+
+        // Initialize the container cluster manager.
+        containerClusterManager = ClusterManager(this, map)
+        containerClusterManager.renderer =
+            ContainerClusterRenderer(this, map, containerClusterManager)
+        map.setOnCameraIdleListener(containerClusterManager)
+        map.setOnMarkerClickListener(containerClusterManager)
 
         // Prompt the user for permission.
         getLocationPermission()
@@ -289,19 +264,37 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private fun updateContainersUI(containerCategoryFilter: ContainerCategory? = null) {
         // Clear the current markers.
-        map.clear()
+        containerClusterManager.clearItems()
+
+        // Map containing the filtered containers, merging those that are in the same position to be
+        // contained in the same marker.
+        val filteredContainers = mutableMapOf<LatLng, ContainerMarker>()
 
         // Helper function to handle a successful response.
         val handleSuccess = fun(paginatedContainers: ContainersPaginated) {
-            val markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_icon)
             for (container in paginatedContainers.containers) {
                 val containerCoordinates = container.geoJSON.geometry.coordinates
-                map.addMarker(
-                    MarkerOptions()
-                        .position(LatLng(containerCoordinates[1], containerCoordinates[0]))
-                        .icon(markerIcon)
-                )
+                val containerPosition = LatLng(containerCoordinates[1], containerCoordinates[0])
+
+                // Add the marker if it is not currently in the Cluster Manager, otherwise append
+                // the container category to the existing marker.
+                val existingContainer = filteredContainers[containerPosition]
+                if (existingContainer == null) {
+                    val containerMarker = ContainerMarker(
+                        containerPosition,
+                        container.geoJSON.properties.getLocationName(this),
+                        arrayListOf(container.category.getStringResource(this))
+                    )
+
+                    containerClusterManager.addItem(containerMarker)
+                    filteredContainers[containerPosition] = containerMarker
+                } else {
+                    existingContainer.categories.add(container.category.getStringResource(this))
+                }
             }
+
+            // Force a re-cluster on the map.
+            containerClusterManager.cluster()
         }
 
         // Helper function to handle a failed response.

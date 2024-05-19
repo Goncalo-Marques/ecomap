@@ -22,4 +22,5 @@
     <string name="container_category_glass">Glass</string>
     <string name="container_category_organic">Organic</string>
     <string name="container_category_hazardous">Hazardous</string>
+    <string name="way_unknown">Unknown way</string>
 </resources>
