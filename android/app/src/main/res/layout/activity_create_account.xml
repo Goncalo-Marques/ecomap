@@ -33,6 +33,13 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="48dp" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="32dp" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_first_name"
         android:layout_width="0dp"
@@ -40,7 +47,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_create_account"
         app:layout_constraintVertical_bias="0.16">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -110,9 +117,8 @@
         android:id="@+id/button_create_account"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
         android:text="@string/create_account"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_bottom"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toStartOf="@+id/guideline_begin" />
 

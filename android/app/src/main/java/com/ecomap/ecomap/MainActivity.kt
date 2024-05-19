@@ -68,10 +68,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // User token validation.
         val intentSignInActivity = Intent(this, SignInActivity::class.java)
 
-        // Flags the intent to mark the activity as the root in the history stack,
-        // clearing out any other tasks.
-        intentSignInActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-
         // Check whether the user store contains the login token.
         // If not, start the SignIn Activity.
         val store = UserStore(applicationContext)
@@ -79,6 +75,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val storeToken = store.getToken().first()
             if (storeToken == null) {
                 startActivity(intentSignInActivity)
+                finish()
             }
 
             token = storeToken.toString()
