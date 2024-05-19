@@ -2,7 +2,7 @@
  * Date format.
  * Used as the key names for {@link DateFormats}.
  */
-type DateFormat = "shortDateTime" | "shortTime";
+type DateFormat = "shortDateTime" | "shortDate" | "shortTime";
 
 /**
  * Date formats.
@@ -14,6 +14,11 @@ export const DateFormats: Record<DateFormat, Intl.DateTimeFormatOptions> = {
 		year: "numeric",
 		hour: "2-digit",
 		minute: "2-digit",
+	},
+	shortDate: {
+		day: "2-digit",
+		month: "2-digit",
+		year: "numeric",
 	},
 	shortTime: {
 		hour: "2-digit",
