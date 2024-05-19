@@ -95,6 +95,8 @@
 	"signin.password.placeholder": "Digite a sua password",
 	"signin.button": "Iniciar sessão",
 	"signin.error.incorrectCredentials": "Credenciais inválidas. O nome de utilizador ou a palavra-passe estão incorrectos.",
+	"signOut": "Terminar sessão",
+	"myInformation": "Minha informação",
 	"dashboard": "Painel",
 	"map": "Mapa",
 	"routes": "Rotas",
