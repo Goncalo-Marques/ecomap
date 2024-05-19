@@ -21,7 +21,7 @@
 	let popover: HTMLElement;
 
 	/**
-	 * Signs out the employee.
+	 * Signs the employee out.
 	 */
 	function signOut() {
 		clearToken();
@@ -81,7 +81,7 @@
 			<MenuItem>
 				<button class="signOut" on:click={signOut}>
 					<Icon name="logout" size="small" />
-					{$t("signOut")}
+					{$t("signOut.button")}
 				</button>
 			</MenuItem>
 		</Menu>

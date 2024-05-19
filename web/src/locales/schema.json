@@ -286,7 +286,7 @@
 		"signin.error.incorrectCredentials": {
 			"type": "string"
 		},
-		"signOut": {
+		"signOut.button": {
 			"type": "string"
 		},
 		"myInformation": {
