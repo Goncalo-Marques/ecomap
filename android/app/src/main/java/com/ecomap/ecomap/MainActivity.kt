@@ -5,13 +5,19 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.android.volley.VolleyError
+import com.ecomap.ecomap.clients.ecomap.http.ApiClient
+import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
+import com.ecomap.ecomap.domain.ContainerCategory
+import com.ecomap.ecomap.domain.ContainersPaginated
 import com.ecomap.ecomap.signin.SignInActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -20,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
@@ -43,6 +50,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private var locationPermissionGranted = false
 
+    /**
+     * Defines the authentication token.
+     */
+    private lateinit var token: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -64,10 +76,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // If not, start the SignIn Activity.
         val store = UserStore(applicationContext)
         runBlocking {
-            val token = store.getToken().first()
-            if (token == null) {
+            val storeToken = store.getToken().first()
+            if (storeToken == null) {
                 startActivity(intentSignInActivity)
             }
+
+            token = storeToken.toString()
         }
 
         // Construct the main entry point for the Android location services.
@@ -116,12 +130,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Get the current location of the device and set the position of the map.
         focusMyLocation()
 
-        // TODO: Add the containers using the server.
-        googleMap.addMarker(
-            MarkerOptions()
-                .position(LatLng(40.0, -9.0))
-                .title("Marker")
-        )
+        // Adds the containers in the map.
+        updateContainersUI()
     }
 
     /**
@@ -235,6 +245,70 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Updates the map UI by adding the containers as markers using the provided filter.
+     */
+    private fun updateContainersUI(containerCategoryFilter: ContainerCategory? = null) {
+        // Clear the current markers.
+        map.clear()
+
+        // Helper function to handle a successful response.
+        val handleSuccess = fun(paginatedContainers: ContainersPaginated) {
+            val markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.marker_icon)
+            for (container in paginatedContainers.containers) {
+                val containerCoordinates = container.geoJSON.geometry.coordinates
+                map.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(containerCoordinates[1], containerCoordinates[0]))
+                        .icon(markerIcon)
+                )
+            }
+        }
+
+        // Helper function to handle a failed response.
+        val handleError = fun(error: VolleyError) {
+            val errorResponse = ApiClient.mapError(error)
+
+            var errorMessage = errorResponse.code
+            if (errorResponse.message.isNotEmpty()) {
+                errorMessage = errorResponse.message
+            }
+
+            Toast.makeText(
+                applicationContext,
+                errorMessage,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        // Execute the request to get all existing containers and mark them in the map.
+        val request = ApiClient.listContainers(
+            containerCategoryFilter,
+            REQUEST_LIST_CONTAINER_LIMIT,
+            0,
+            token,
+            { paginatedContainers ->
+                val remainingRequest = paginatedContainers.total / REQUEST_LIST_CONTAINER_LIMIT
+                for (i in 1..remainingRequest) {
+                    ApiRequestQueue.getInstance(applicationContext).add(
+                        ApiClient.listContainers(
+                            containerCategoryFilter,
+                            REQUEST_LIST_CONTAINER_LIMIT,
+                            REQUEST_LIST_CONTAINER_LIMIT * i,
+                            token,
+                            { handleSuccess(it) },
+                            { handleError(it) }
+                        )
+                    )
+                }
+
+                handleSuccess(paginatedContainers)
+            },
+            { error -> handleError(error) })
+
+        ApiRequestQueue.getInstance(applicationContext).add(request)
+    }
+
     companion object {
         private val LOG_TAG = MainActivity::class.java.simpleName
 
@@ -246,5 +320,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val MAP_CAMERA_BOUND_SW_LNG = -10.0
         private const val MAP_CAMERA_BOUND_NE_LAT = 41.0
         private const val MAP_CAMERA_BOUND_NE_LNG = -6.0
+
+        private const val REQUEST_LIST_CONTAINER_LIMIT = 100
     }
 }

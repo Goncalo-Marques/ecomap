@@ -79,7 +79,7 @@ class SignInActivity : AppCompatActivity() {
                 username,
                 password,
                 { token ->
-                    if (token == null) {
+                    if (token.isEmpty()) {
                         Toast.makeText(
                             applicationContext,
                             getString(R.string.error_sign_in),
@@ -105,8 +105,7 @@ class SignInActivity : AppCompatActivity() {
                         applicationContext,
                         getString(R.string.error_sign_in),
                         Toast.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                 })
 
         ApiRequestQueue.getInstance(applicationContext).add(request)
