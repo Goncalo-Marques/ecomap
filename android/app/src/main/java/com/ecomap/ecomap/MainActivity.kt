@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /**
      * Populates the given chip group with all the available container categories.
-     * */
+     */
     private fun populateChipGroupContainerFilter(chipGroup: ChipGroup) {
         for (category in ContainerCategory.entries) {
             val chipIconResource: Int
