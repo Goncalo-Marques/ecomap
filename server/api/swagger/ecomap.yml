@@ -2999,9 +2999,9 @@ components:
       required:
         - id
         - name
-        - truckId
-        - departureWarehouseId
-        - arrivalWarehouseId
+        - truck
+        - departureWarehouse
+        - arrivalWarehouse
         - createdAt
         - modifiedAt
       properties:
@@ -3009,12 +3009,12 @@ components:
           $ref: "#/components/schemas/UUID"
         name:
           $ref: "#/components/schemas/RouteName"
-        truckId:
-          $ref: "#/components/schemas/UUID"
-        departureWarehouseId:
-          $ref: "#/components/schemas/UUID"
-        arrivalWarehouseId:
-          $ref: "#/components/schemas/UUID"
+        truck:
+          $ref: "#/components/schemas/Truck"
+        departureWarehouse:
+          $ref: "#/components/schemas/Warehouse"
+        arrivalWarehouse:
+          $ref: "#/components/schemas/Warehouse"
         createdAt:
           $ref: "#/components/schemas/DateTime"
         modifiedAt:
