@@ -52,8 +52,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="@id/guideline_end"
-        app:layout_constraintStart_toStartOf="@+id/guideline_begin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/guideline_top">
 
         <com.google.android.material.chip.ChipGroup
@@ -61,6 +61,8 @@
             style="@style/Theme.EcoMap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             app:chipSpacingHorizontal="8dp"
             app:singleLine="true"
             app:singleSelection="true">

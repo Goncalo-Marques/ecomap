@@ -96,6 +96,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         googleMapOptions
             .mapType(GoogleMap.MAP_TYPE_NORMAL)
             .latLngBoundsForCameraTarget(mapLatLngBounds)
+            .mapToolbarEnabled(false)
 
         // Add support map fragment to the map container.
         val mapFragment = SupportMapFragment.newInstance(googleMapOptions)
@@ -112,21 +113,67 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val buttonMyLocation: FloatingActionButton = findViewById(R.id.button_my_location)
 
         // Set button functions.
+        populateChipGroupContainerFilter(chipGroupContainerFilter)
+        buttonMyLocation.setOnClickListener { focusMyLocation() }
+    }
+
+    /**
+     * Populates the given chip group with all the available container categories.
+     * */
+    private fun populateChipGroupContainerFilter(chipGroup: ChipGroup) {
         for (category in ContainerCategory.entries) {
-            val chipText = when (category) {
-                ContainerCategory.GENERAL -> getString(R.string.container_category_general)
-                ContainerCategory.PAPER -> getString(R.string.container_category_paper)
-                ContainerCategory.PLASTIC -> getString(R.string.container_category_plastic)
-                ContainerCategory.METAL -> getString(R.string.container_category_metal)
-                ContainerCategory.GLASS -> getString(R.string.container_category_glass)
-                ContainerCategory.ORGANIC -> getString(R.string.container_category_organic)
-                ContainerCategory.HAZARDOUS -> getString(R.string.container_category_hazardous)
+            val chipIconResource: Int
+            val chipText: String
+
+            when (category) {
+                ContainerCategory.GENERAL -> {
+                    chipIconResource = R.drawable.general
+                    chipText = getString(R.string.container_category_general)
+                }
+
+                ContainerCategory.PAPER -> {
+                    chipIconResource = R.drawable.paper
+                    chipText = getString(R.string.container_category_paper)
+                }
+
+                ContainerCategory.PLASTIC -> {
+                    chipIconResource = R.drawable.plastic
+                    chipText = getString(R.string.container_category_plastic)
+                }
+
+                ContainerCategory.METAL -> {
+                    chipIconResource = R.drawable.metal
+                    chipText = getString(R.string.container_category_metal)
+                }
+
+                ContainerCategory.GLASS -> {
+                    chipIconResource = R.drawable.glass
+                    chipText = getString(R.string.container_category_glass)
+                }
+
+                ContainerCategory.ORGANIC -> {
+                    chipIconResource = R.drawable.organic
+                    chipText = getString(R.string.container_category_organic)
+                }
+
+                ContainerCategory.HAZARDOUS -> {
+                    chipIconResource = R.drawable.hazardous
+                    chipText = getString(R.string.container_category_hazardous)
+                }
             }
 
             val chip = Chip(this)
+
+            // Set the chip style.
+            chip.chipIcon = ContextCompat.getDrawable(this, chipIconResource)
             chip.text = chipText
             chip.isCheckable = true
+
+            // Set the chip function.
             chip.setOnClickListener {
+                // Filter the current containers on the map based on the chip container category.
+                // If the chip is not checked, show all available containers regardless of their
+                // category.
                 if (chip.isChecked) {
                     updateContainersUI(category)
                 } else {
@@ -134,10 +181,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
 
-            chipGroupContainerFilter.addView(chip)
+            // Add the chip to the group.
+            chipGroup.addView(chip)
         }
-
-        buttonMyLocation.setOnClickListener { focusMyLocation() }
     }
 
     /**
