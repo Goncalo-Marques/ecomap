@@ -33,12 +33,11 @@
 		<Route path={`/${backOfficeBasename}/*`}>
 			<Router>
 				<BackOfficeLayout>
-					<Route
-						path={BackOfficeRouterPaths.EMPLOYEES}
-						component={EmployeesRouter}
-					/>
 					<Route path={`${BackOfficeRouterPaths.LANDFILLS}/*`}>
 						<LandfillsRouter />
+					</Route>
+					<Route path={`${BackOfficeRouterPaths.EMPLOYEES}/*`}>
+						<EmployeesRouter />
 					</Route>
 					<Route path={`${BackOfficeRouterPaths.TRUCKS}/*`}>
 						<TrucksRouter />

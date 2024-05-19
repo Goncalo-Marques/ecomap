@@ -1,5 +1,11 @@
 import { get } from "svelte/store";
 import { locale } from "./i8n";
+import { DateFormats } from "../constants/date";
+
+/**
+ * Date the Unix time 0.
+ */
+const UNIX_TIME_0_DATE = "1970-01-01";
 
 /**
  * Formats a date into a given format.
@@ -15,4 +21,13 @@ export function formatDate(
 	const dateFormat = new Intl.DateTimeFormat(selectedLocale, format);
 
 	return dateFormat.format(new Date(date));
+}
+
+/**
+ * Formats times to 2-digit hour and 2-digit minutes.
+ * @param time Time to be formatted.
+ * @returns Formatted time.
+ */
+export function formatTime(time: string): string {
+	return formatDate(`${UNIX_TIME_0_DATE} ${time}`, DateFormats.shortTime);
 }
