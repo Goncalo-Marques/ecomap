@@ -30,6 +30,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -106,9 +108,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         // Get activity views.
+        val chipGroupContainerFilter: ChipGroup = findViewById(R.id.chip_group_container_filter)
         val buttonMyLocation: FloatingActionButton = findViewById(R.id.button_my_location)
 
         // Set button functions.
+        for (category in ContainerCategory.entries) {
+            val chipText = when (category) {
+                ContainerCategory.GENERAL -> getString(R.string.container_category_general)
+                ContainerCategory.PAPER -> getString(R.string.container_category_paper)
+                ContainerCategory.PLASTIC -> getString(R.string.container_category_plastic)
+                ContainerCategory.METAL -> getString(R.string.container_category_metal)
+                ContainerCategory.GLASS -> getString(R.string.container_category_glass)
+                ContainerCategory.ORGANIC -> getString(R.string.container_category_organic)
+                ContainerCategory.HAZARDOUS -> getString(R.string.container_category_hazardous)
+            }
+
+            val chip = Chip(this)
+            chip.text = chipText
+            chip.isCheckable = true
+            chip.setOnClickListener {
+                if (chip.isChecked) {
+                    updateContainersUI(category)
+                } else {
+                    updateContainersUI()
+                }
+            }
+
+            chipGroupContainerFilter.addView(chip)
+        }
+
         buttonMyLocation.setOnClickListener { focusMyLocation() }
     }
 
@@ -117,6 +145,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map.setPadding(MAP_PADDING_LEFT, MAP_PADDING_TOP, MAP_PADDING_RIGHT, MAP_PADDING_BOTTOM)
 
         // Prompt the user for permission.
         getLocationPermission()
@@ -124,11 +153,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Turn on the My Location layer.
         updateLocationUI()
 
-        // Get the current location of the device and set the position of the map.
-        focusMyLocation()
-
         // Adds the containers in the map.
         updateContainersUI()
+
+        // Get the current location of the device and set the position of the map.
+        focusMyLocation()
     }
 
     /**
@@ -210,39 +239,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     /**
-     * Update the Google Map camera to focus on the user last-known location.
-     */
-    private fun focusMyLocation() {
-        if (!locationPermissionGranted) {
-            return
-        }
-
-        try {
-            val locationResult = fusedLocationProviderClient.lastLocation
-            locationResult.addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Set the map's camera position to the current location of the device.
-                    val lastKnownLocation = task.result
-                    if (lastKnownLocation != null) {
-                        map.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    lastKnownLocation.latitude,
-                                    lastKnownLocation.longitude
-                                ), MAP_CAMERA_ZOOM_DEFAULT.toFloat()
-                            )
-                        )
-                    }
-                } else {
-                    Log.e(LOG_TAG, task.exception?.message, task.exception)
-                }
-            }
-        } catch (e: SecurityException) {
-            Log.e(LOG_TAG, e.message, e)
-        }
-    }
-
-    /**
      * Updates the map UI by adding the containers as markers using the provided filter.
      */
     private fun updateContainersUI(containerCategoryFilter: ContainerCategory? = null) {
@@ -306,17 +302,55 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 
+    /**
+     * Update the Google Map camera to focus on the user last-known location.
+     */
+    private fun focusMyLocation() {
+        if (!locationPermissionGranted) {
+            return
+        }
+
+        try {
+            val locationResult = fusedLocationProviderClient.lastLocation
+            locationResult.addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Set the map's camera position to the current location of the device.
+                    val lastKnownLocation = task.result
+                    if (lastKnownLocation != null) {
+                        map.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    lastKnownLocation.latitude,
+                                    lastKnownLocation.longitude
+                                ), MAP_CAMERA_ZOOM_DEFAULT
+                            )
+                        )
+                    }
+                } else {
+                    Log.e(LOG_TAG, task.exception?.message, task.exception)
+                }
+            }
+        } catch (e: SecurityException) {
+            Log.e(LOG_TAG, e.message, e)
+        }
+    }
+
     companion object {
         private val LOG_TAG = MainActivity::class.java.simpleName
 
         private const val PERMISSIONS_REQUEST_ACCESS_LOCATION = 1
 
-        private const val MAP_CAMERA_ZOOM_DEFAULT = 15.0
-
         private const val MAP_CAMERA_BOUND_SW_LAT = 38.0
         private const val MAP_CAMERA_BOUND_SW_LNG = -10.0
         private const val MAP_CAMERA_BOUND_NE_LAT = 41.0
         private const val MAP_CAMERA_BOUND_NE_LNG = -6.0
+
+        private const val MAP_PADDING_LEFT = 16
+        private const val MAP_PADDING_TOP = 144
+        private const val MAP_PADDING_RIGHT = 16
+        private const val MAP_PADDING_BOTTOM = 224
+
+        private const val MAP_CAMERA_ZOOM_DEFAULT = 15.0F
 
         private const val REQUEST_LIST_CONTAINER_LIMIT = 100
     }
