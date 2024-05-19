@@ -59,3 +59,21 @@ export function storeToken(token: string, expirationTime: number) {
 export function clearToken() {
 	document.cookie = `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 }
+
+/**
+ * Indicates whether the employee is viewing himself/herself.
+ * @param employeeId The employee ID.
+ */
+export function isViewingSelf(employeeId: string): boolean {
+	const token = getToken();
+	if (!token) {
+		throw new Error("Failed to retrieve employee token");
+	}
+
+	const tokenPayload = decodeTokenPayload(token);
+	if (!tokenPayload) {
+		throw new Error("Failed to decode token payload");
+	}
+
+	return employeeId === tokenPayload.sub;
+}

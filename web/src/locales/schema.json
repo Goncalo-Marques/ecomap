@@ -286,6 +286,12 @@
 		"signin.error.incorrectCredentials": {
 			"type": "string"
 		},
+		"signOut.button": {
+			"type": "string"
+		},
+		"myInformation": {
+			"type": "string"
+		},
 		"dashboard": {
 			"type": "string"
 		},

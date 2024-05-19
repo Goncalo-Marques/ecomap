@@ -119,6 +119,7 @@
 		flex-direction: column;
 		gap: 1rem;
 		min-width: 8rem;
+		padding: 1rem;
 	}
 
 	.actions {
