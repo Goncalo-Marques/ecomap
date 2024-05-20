@@ -124,5 +124,18 @@
 	"employees.notFound.description": "The employee you are looking for does not exist.",
 	"employees.delete.success": "Employee deleted successfully",
 	"employees.delete.conflict.title": "Conflict",
-	"employees.delete.conflict.description": "This employee cannot be deleted because it's associated with a report or a route."
+	"employees.delete.conflict.description": "This employee cannot be deleted because it's associated with a report or a route.",
+	"employees.updatePassword.title": "Change password",
+	"employees.updatePassword.currentPassword.label": "Current password",
+	"employees.updatePassword.newPassword.label": "New password",
+	"employees.updatePassword.confirmPassword.label": "Confirm password",
+	"employees.updatePassword.currentPassword.placeholder": "Enter the current password",
+	"employees.updatePassword.newPassword.placeholder": "Enter the new password",
+	"employees.updatePassword.confirmPassword.placeholder": "Repeat the new password",
+	"employees.updatePassword.success": "Password changed successfully",
+	"employees.updatePassword.error.title": "Invalid password",
+	"employees.updatePassword.error.description": "The password must contain at least 14 characters, including one regular character, one special character, and one number",
+	"employees.error.passwordMismatch": "The password doesn't match the new password",
+	"employees.passwordConstraints": "Password must contain at least 14 characters, including one regular character, one special character, and one number",
+	"confirm": "Confirm"
 }

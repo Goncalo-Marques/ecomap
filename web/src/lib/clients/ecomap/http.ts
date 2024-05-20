@@ -14,7 +14,7 @@ const middleware: Middleware = {
 		return request;
 	},
 	async onResponse(response) {
-		let body = await response.text();
+		let body = (await response.text()) || null;
 
 		switch (response.status) {
 			case 401:
