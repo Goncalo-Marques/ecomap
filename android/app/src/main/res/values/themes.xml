@@ -3,6 +3,8 @@
     <style name="Base.Theme.EcoMap" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/green_700</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="colorPrimaryContainer">@color/white</item>
+        <item name="colorOnPrimaryContainer">@color/green_700</item>
     </style>
 
     <style name="Theme.EcoMap" parent="Base.Theme.EcoMap" />

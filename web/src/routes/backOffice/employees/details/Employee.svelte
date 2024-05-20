@@ -16,6 +16,7 @@
 	import { DateFormats } from "../../../../lib/constants/date";
 	import { getToastContext } from "../../../../lib/contexts/toast";
 	import { BackOfficeRoutes } from "../../../constants/routes";
+	import { isViewingSelf } from "../../../../lib/utils/auth";
 
 	/**
 	 * Employee ID.
@@ -97,7 +98,15 @@
 				variant="secondary"
 				onClick={deleteEmployee}
 			/>
-			<Link to={`${employee.id}/edit`} style="display:contents">
+			{#if !isViewingSelf(employee.id)}
+				<Button
+					startIcon="delete"
+					actionType="danger"
+					variant="secondary"
+					onClick={deleteEmployee}
+				/>
+			{/if}
+      <Link to={`${employee.id}/edit`} style="display:contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>

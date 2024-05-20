@@ -18,6 +18,8 @@ ignoreWords:
   - ecomap
   - EPSG
   - fkey
+  - floatingactionbutton
+  - focusable
   - golangci
   - goncalo
   - GOPATH
@@ -52,6 +54,8 @@ ignoreWords:
   - Português
   - postgis
   - proguard
+  - rnwa
+  - rnwd
   - sharedpref
   - signin
   - sslmode

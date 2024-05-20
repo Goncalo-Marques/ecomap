@@ -95,6 +95,8 @@
 	"signin.password.placeholder": "Enter your password",
 	"signin.button": "Sign in",
 	"signin.error.incorrectCredentials": "Invalid credentials. Either the username or password are incorrect.",
+	"signOut.button": "Sign out",
+	"myInformation": "My information",
 	"dashboard": "Dashboard",
 	"map": "Map",
 	"routes": "Routes",

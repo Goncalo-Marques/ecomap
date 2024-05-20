@@ -2,6 +2,7 @@
 	import { Link } from "svelte-routing";
 	import Logo from "./Logo.svelte";
 	import { BackOfficeRoutes } from "../../../constants/routes";
+	import EmployeeMenu from "./EmployeeMenu.svelte";
 </script>
 
 <div class="top-bar">
@@ -11,6 +12,7 @@
 			<h1>EcoMap</h1>
 		</div>
 	</Link>
+	<EmployeeMenu />
 </div>
 
 <style>

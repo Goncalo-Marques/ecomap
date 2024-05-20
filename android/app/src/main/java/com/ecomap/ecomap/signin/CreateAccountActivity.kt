@@ -2,7 +2,6 @@ package com.ecomap.ecomap.signin
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -18,8 +17,6 @@ import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.runBlocking
-import org.json.JSONException
-import org.json.JSONObject
 
 class CreateAccountActivity : AppCompatActivity() {
     private lateinit var textInputEditTextFirstName: TextInputEditText
@@ -27,7 +24,7 @@ class CreateAccountActivity : AppCompatActivity() {
     private lateinit var textInputEditTextUsername: TextInputEditText
     private lateinit var textInputEditTextPassword: TextInputEditText
     private lateinit var buttonCreateAccount: Button
-    private lateinit var progressBarCreateAccount: ProgressBar
+    private lateinit var progressBar: ProgressBar
 
     private lateinit var store: UserStore
 
@@ -48,7 +45,7 @@ class CreateAccountActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Retrieve user store.
-        store = UserStore(this.applicationContext)
+        store = UserStore(applicationContext)
 
         // Get activity views.
         textInputEditTextFirstName = findViewById(R.id.text_input_edit_text_first_name)
@@ -56,13 +53,13 @@ class CreateAccountActivity : AppCompatActivity() {
         textInputEditTextUsername = findViewById(R.id.text_input_edit_text_username)
         textInputEditTextPassword = findViewById(R.id.text_input_edit_text_password)
         buttonCreateAccount = findViewById(R.id.button_create_account)
-        progressBarCreateAccount = findViewById(R.id.progress_bar_create_account)
-
-        // Hide progress bar when activity is created.
-        progressBarCreateAccount.visibility = View.INVISIBLE
+        progressBar = findViewById(R.id.progress_bar_create_account)
 
         // Set up on click event for the create account button.
         buttonCreateAccount.setOnClickListener { createUser() }
+
+        // Hide progress bar when activity is created.
+        progressBar.visibility = View.INVISIBLE
     }
 
     /**
@@ -95,40 +92,31 @@ class CreateAccountActivity : AppCompatActivity() {
         }
 
         // Display progress bar.
-        progressBarCreateAccount.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
 
         // Create the request to create the user.
         val request =
-            ApiClient.createAccount(
-                firstName,
-                lastName,
-                username,
-                password,
+            ApiClient.createAccount(firstName, lastName, username, password,
                 { signInUser(username, password) },
                 { error ->
                     // Hide the progress bar when a network error occurs.
-                    progressBarCreateAccount.visibility = View.INVISIBLE
+                    progressBar.visibility = View.INVISIBLE
 
-                    val body = String(error.networkResponse.data)
-                    val json = JSONObject(body)
+                    val errorResponse = ApiClient.mapError(error)
 
-                    var message: String
-                    try {
-                        message = json.getString("message")
-                    } catch (e: JSONException) {
-                        Log.e(LOG_TAG, e.message, e)
-                        message = json.getString("code")
+                    var errorMessage = errorResponse.code
+                    if (errorResponse.message.isNotEmpty()) {
+                        errorMessage = errorResponse.message
                     }
 
                     Toast.makeText(
-                        this.applicationContext,
-                        message,
+                        applicationContext,
+                        errorMessage,
                         Toast.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                 })
 
-        ApiRequestQueue.getInstance(this.applicationContext).add(request)
+        ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 
     /**
@@ -139,44 +127,37 @@ class CreateAccountActivity : AppCompatActivity() {
     private fun signInUser(username: String, password: String) {
         val request = ApiClient.signIn(username, password,
             { token ->
-                if (token == null) {
+                if (token.isEmpty()) {
                     Toast.makeText(
-                        this.applicationContext,
+                        applicationContext,
                         getString(R.string.error_create_account),
                         Toast.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                     return@signIn
                 }
 
-                val intent = Intent(this, MainActivity::class.java)
+                val intentMainActivity = Intent(this, MainActivity::class.java)
 
                 // Flags the intent to mark the activity as the root in the history stack,
                 // clearing out any other tasks.
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
-                runBlocking {
-                    // Stores token in UserStore.
-                    store.storeToken(token)
-                    startActivity(intent)
-                }
+                // Stores token in UserStore.
+                runBlocking { store.storeToken(token) }
+
+                startActivity(intentMainActivity)
             },
             { _ ->
                 // Hide the progress bar when a network error occurs.
-                progressBarCreateAccount.visibility = View.INVISIBLE
+                progressBar.visibility = View.INVISIBLE
 
                 Toast.makeText(
-                    this.applicationContext,
+                    applicationContext,
                     getString(R.string.error_create_account),
                     Toast.LENGTH_LONG
-                )
-                    .show()
+                ).show()
             })
 
-        ApiRequestQueue.getInstance(this.applicationContext).add(request)
-    }
-
-    companion object {
-        private val LOG_TAG = CreateAccountActivity::class.java.simpleName
+        ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 }
