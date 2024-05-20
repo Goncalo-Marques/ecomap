@@ -115,7 +115,7 @@
 	"employees.role": "Cargo",
 	"employees.role.manager": "Gerente",
 	"employees.role.wasteOperator": "Operador de resíduos",
-	"employees.birthdate": "Data de nascimento",
+	"employees.dateOfBirth": "Data de nascimento",
 	"employees.phone": "Telefone",
 	"employees.location": "Localização",
 	"employees.scheduleStart": "Hora de início",
@@ -129,7 +129,7 @@
 	"employees.username.placeholder": "Introduza o nome de utilizador",
 	"employees.firstName.placeholder": "Introduza o primeiro nome",
 	"employees.lastName.placeholder": "Introduza o último nome",
-	"employees.birthdate.placeholder": "Introduza a data de nascimento",
+	"employees.dateOfBirth.placeholder": "Introduza a data de nascimento",
 	"employees.phone.placeholder": "Introduza número de telefone",
 	"employees.scheduleStart.placeholder": "Introduza a hora de início",
 	"employees.scheduleEnd.placeholder": "Introduza a hora de término"

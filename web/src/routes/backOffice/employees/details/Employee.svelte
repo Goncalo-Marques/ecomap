@@ -23,6 +23,9 @@
 	 */
 	export let id: string;
 
+	/**
+	 * Toast context.
+	 */
 	const toast = getToastContext();
 
 	/**
@@ -92,12 +95,6 @@
 		)}
 
 		<DetailsHeader to="" title={`${employee.firstName} ${employee.lastName}`}>
-			<Button
-				startIcon="delete"
-				actionType="danger"
-				variant="secondary"
-				onClick={deleteEmployee}
-			/>
 			{#if !isViewingSelf(employee.id)}
 				<Button
 					startIcon="delete"
@@ -117,7 +114,7 @@
 					<Field label={$t("employees.lastName")} value={employee.lastName} />
 					<Field label={$t("employees.username")} value={employee.username} />
 					<Field
-						label={$t("employees.birthdate")}
+						label={$t("employees.dateOfBirth")}
 						value={formatDate(employee.dateOfBirth, DateFormats.shortDate)}
 					/>
 					<Field label={$t("employees.phone")} value={employee.phoneNumber} />

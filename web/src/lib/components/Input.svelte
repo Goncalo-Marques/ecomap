@@ -32,6 +32,12 @@
 	export let id: HTMLInputAttributes["id"] = null;
 
 	/**
+	 * Defines the field legal number intervals. Can be used to force seconds field in time input.
+	 * @default null
+	 */
+	export let step: HTMLInputAttributes["step"] = null;
+
+	/**
 	 * Defines the maximum value that is acceptable and valid for the input.
 	 * @default null
 	 */
@@ -136,6 +142,7 @@
 		{required}
 		{max}
 		{min}
+		{step}
 		{style}
 		maxlength={maxLength}
 		minlength={minLength}

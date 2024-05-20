@@ -84,7 +84,7 @@
 		},
 		phoneNumber: {
 			min: 0,
-			max: 15,
+			max: 16,
 		},
 	};
 
@@ -156,8 +156,6 @@
 		// LastName Validation.
 		if (lastNameValidity.valueMissing) {
 			formErrorMessages.lastName = $t("error.valueMissing");
-		} else if (lastNameValidity.patternMismatch) {
-			formErrorMessages.lastName = $t("error.patternMismatch");
 		} else if (lastNameValidity.tooShort) {
 			formErrorMessages.lastName = $t("error.tooShort", {
 				minLength: formFieldsLengths.lastName.min,
@@ -173,8 +171,6 @@
 		// DateOfBirth Validation.
 		if (dateOfBirthValidity.valueMissing) {
 			formErrorMessages.dateOfBirth = $t("error.valueMissing");
-		} else if (dateOfBirthValidity.patternMismatch) {
-			formErrorMessages.dateOfBirth = $t("error.patternMismatch");
 		} else {
 			formErrorMessages.dateOfBirth = "";
 		}
@@ -199,8 +195,6 @@
 		// ScheduleStart Validation.
 		if (scheduleStart.valueMissing) {
 			formErrorMessages.scheduleStart = $t("error.valueMissing");
-		} else if (scheduleStart.patternMismatch) {
-			formErrorMessages.scheduleStart = $t("error.patternMismatch");
 		} else {
 			formErrorMessages.scheduleStart = "";
 		}
@@ -208,8 +202,6 @@
 		// ScheduleEnd Validation.
 		if (scheduleEnd.valueMissing) {
 			formErrorMessages.scheduleEnd = $t("error.valueMissing");
-		} else if (scheduleEnd.patternMismatch) {
-			formErrorMessages.scheduleEnd = $t("error.patternMismatch");
 		} else {
 			formErrorMessages.scheduleEnd = "";
 		}
@@ -227,6 +219,8 @@
 			!formErrorMessages.lastName &&
 			!formErrorMessages.dateOfBirth &&
 			!formErrorMessages.phoneNumber &&
+			!formErrorMessages.scheduleStart &&
+			!formErrorMessages.scheduleEnd &&
 			!formErrorMessages.location &&
 			!!coordinate
 		);
@@ -283,10 +277,10 @@
 			"location",
 		) as HTMLInputElement;
 		const scheduleStartInput = form.elements.namedItem(
-			"scheduleEnd",
+			"scheduleStart",
 		) as HTMLInputElement;
 		const scheduleEndInput = form.elements.namedItem(
-			"scheduleStart",
+			"scheduleEnd",
 		) as HTMLInputElement;
 
 		// Check if form is valid to prevent making a server request.
@@ -364,9 +358,9 @@
 						name="lastName"
 						value={employee?.lastName}
 						error={!!formErrorMessages.lastName}
-						placeholder={$t("employees.firstName.placeholder")}
-						minLength={formFieldsLengths.firstName.min}
-						maxLength={formFieldsLengths.firstName.max}
+						placeholder={$t("employees.lastName.placeholder")}
+						minLength={formFieldsLengths.lastName.min}
+						maxLength={formFieldsLengths.lastName.max}
 					/>
 				</FormControl>
 
@@ -387,9 +381,9 @@
 					/>
 				</FormControl>
 
-				<!-- Birthdate -->
+				<!-- dateOfBirth -->
 				<FormControl
-					label={$t("employees.birthdate")}
+					label={$t("employees.dateOfBirth")}
 					error={!!formErrorMessages.dateOfBirth}
 					helperText={formErrorMessages.dateOfBirth}
 				>
@@ -398,7 +392,7 @@
 						name="dateOfBirth"
 						value={employee?.dateOfBirth}
 						error={!!formErrorMessages.dateOfBirth}
-						placeholder={$t("employees.birthdate.placeholder")}
+						placeholder={$t("employees.dateOfBirth.placeholder")}
 						type="date"
 					/>
 				</FormControl>
@@ -412,6 +406,7 @@
 					<Input
 						required
 						name="phoneNumber"
+						pattern={`^(?:\\+[0-9]{1,3}[ ]?)?[0-9]{3}[ ]?[0-9]{3}[ ]?[0-9]{3}$`}
 						value={employee?.phoneNumber}
 						error={!!formErrorMessages.phoneNumber}
 						placeholder={$t("employees.phone.placeholder")}
@@ -457,6 +452,7 @@
 					<Input
 						required
 						name="scheduleStart"
+						step="1"
 						value={employee?.scheduleStart}
 						error={!!formErrorMessages.scheduleStart}
 						placeholder={$t("employees.scheduleStart.placeholder")}
@@ -473,6 +469,7 @@
 					<Input
 						required
 						name="scheduleEnd"
+						step="1"
 						value={employee?.scheduleEnd}
 						error={!!formErrorMessages.scheduleEnd}
 						placeholder={$t("employees.scheduleEnd.placeholder")}

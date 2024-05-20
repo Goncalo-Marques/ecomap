@@ -346,7 +346,7 @@
 		"employees.role.wasteOperator": {
 			"type": "string"
 		},
-		"employees.birthdate": {
+		"employees.dateOfBirth": {
 			"type": "string"
 		},
 		"employees.phone": {
@@ -388,7 +388,7 @@
 		"employees.lastName.placeholder": {
 			"type": "string"
 		},
-		"employees.birthdate.placeholder": {
+		"employees.dateOfBirth.placeholder": {
 			"type": "string"
 		},
 		"employees.phone.placeholder": {
