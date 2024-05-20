@@ -83,7 +83,7 @@ class SignInActivity : AppCompatActivity() {
 
                     // Flags the intent to mark the activity as the root in the history stack,
                     // clearing out any other tasks.
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
                     // Stores token in UserStore.
                     runBlocking { store.storeToken(token) }
@@ -94,7 +94,7 @@ class SignInActivity : AppCompatActivity() {
                 { _ ->
                     Toast.makeText(
                         applicationContext,
-                        getString(R.string.error_sign_in),
+                        getString(R.string.error_sign_in_invalid_credentials),
                         Toast.LENGTH_LONG
                     ).show()
                 })

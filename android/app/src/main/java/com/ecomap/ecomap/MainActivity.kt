@@ -6,14 +6,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.android.volley.VolleyError
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
@@ -272,6 +270,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Helper function to handle a successful response.
         val handleSuccess = fun(paginatedContainers: ContainersPaginated) {
+            if (isFinishing || isDestroyed) {
+                return
+            }
+
             for (container in paginatedContainers.containers) {
                 val containerCoordinates = container.geoJSON.geometry.coordinates
                 val containerPosition = LatLng(containerCoordinates[1], containerCoordinates[0])
@@ -297,22 +299,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             containerClusterManager.cluster()
         }
 
-        // Helper function to handle a failed response.
-        val handleError = fun(error: VolleyError) {
-            val errorResponse = ApiClient.mapError(error)
-
-            var errorMessage = errorResponse.code
-            if (errorResponse.message.isNotEmpty()) {
-                errorMessage = errorResponse.message
-            }
-
-            Toast.makeText(
-                applicationContext,
-                errorMessage,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
         // Execute the request to get all existing containers and mark them in the map.
         val request = ApiClient.listContainers(
             containerCategoryFilter,
@@ -329,14 +315,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             REQUEST_LIST_CONTAINER_LIMIT * i,
                             token,
                             { handleSuccess(it) },
-                            { handleError(it) }
+                            { Common.handleVolleyError(this, this, it) }
                         )
                     )
                 }
 
                 handleSuccess(paginatedContainers)
             },
-            { error -> handleError(error) })
+            { error -> Common.handleVolleyError(this, this, error) })
 
         ApiRequestQueue.getInstance(applicationContext).add(request)
     }

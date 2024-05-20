@@ -196,6 +196,13 @@ object ApiClient {
      * @return Domain Error data class.
      */
     fun mapError(error: VolleyError): Error {
+        if (error.networkResponse == null) {
+            return Error("", "")
+        }
+        if (error.networkResponse.data.isEmpty()) {
+            return Error("", "")
+        }
+
         val body = String(error.networkResponse.data)
         val json = JSONObject(body)
 
