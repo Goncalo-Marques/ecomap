@@ -47,7 +47,6 @@
         tools:layout="@layout/fragment_map" />
 
     <HorizontalScrollView
-        android:id="@+id/horizontal_scroll_view_container_filter"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:scrollbars="none"
