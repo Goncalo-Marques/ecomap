@@ -373,7 +373,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val MAP_PADDING_LEFT = 16
         private const val MAP_PADDING_TOP = 144
         private const val MAP_PADDING_RIGHT = 16
-        private const val MAP_PADDING_BOTTOM = 224
+        private const val MAP_PADDING_BOTTOM = 32
 
         private const val MAP_CAMERA_ZOOM_DEFAULT = 15.0F
 
