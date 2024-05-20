@@ -17,9 +17,14 @@ class ContainerClusterRenderer(
     clusterManager: ClusterManager<ContainerMarker>
 ) : DefaultClusterRenderer<ContainerMarker>(context, map, clusterManager) {
     private val bitmapMarker = BitmapDescriptorFactory.fromResource(R.drawable.marker_icon)
+    private val color = context.getColor(R.color.green_800)
 
     override fun onBeforeClusterItemRendered(item: ContainerMarker, markerOptions: MarkerOptions) {
-        markerOptions.icon(bitmapMarker)
         super.onBeforeClusterItemRendered(item, markerOptions)
+        markerOptions.icon(bitmapMarker)
+    }
+
+    override fun getColor(clusterSize: Int): Int {
+        return color
     }
 }
