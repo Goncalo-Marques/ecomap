@@ -106,7 +106,7 @@
 					onClick={deleteEmployee}
 				/>
 			{/if}
-      <Link to={`${employee.id}/edit`} style="display:contents">
+			<Link to={`${employee.id}/edit`} style="display:contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
