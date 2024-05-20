@@ -54,6 +54,8 @@ ignoreWords:
   - Português
   - postgis
   - proguard
+  - rnwa
+  - rnwd
   - sharedpref
   - signin
   - sslmode

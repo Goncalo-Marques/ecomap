@@ -22,6 +22,9 @@
 		"editInfo": {
 			"type": "string"
 		},
+		"personalInfo": {
+			"type": "string"
+		},
 		"cancel": {
 			"type": "string"
 		},
@@ -29,6 +32,9 @@
 			"type": "string"
 		},
 		"preview": {
+			"type": "string"
+		},
+		"work": {
 			"type": "string"
 		},
 		"selectLocation": {
@@ -280,6 +286,12 @@
 		"signin.error.incorrectCredentials": {
 			"type": "string"
 		},
+		"signOut.button": {
+			"type": "string"
+		},
+		"myInformation": {
+			"type": "string"
+		},
 		"dashboard": {
 			"type": "string"
 		},
@@ -332,6 +344,36 @@
 			"type": "string"
 		},
 		"employees.role.wasteOperator": {
+			"type": "string"
+		},
+		"employees.birthdate": {
+			"type": "string"
+		},
+		"employees.phone": {
+			"type": "string"
+		},
+		"employees.location": {
+			"type": "string"
+		},
+		"employees.scheduleStart": {
+			"type": "string"
+		},
+		"employees.scheduleEnd": {
+			"type": "string"
+		},
+		"employees.notFound.title": {
+			"type": "string"
+		},
+		"employees.notFound.description": {
+			"type": "string"
+		},
+		"employees.delete.success": {
+			"type": "string"
+		},
+		"employees.delete.conflict.title": {
+			"type": "string"
+		},
+		"employees.delete.conflict.description": {
 			"type": "string"
 		}
 	}

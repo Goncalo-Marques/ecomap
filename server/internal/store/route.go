@@ -112,8 +112,20 @@ func (s *store) ListRoutes(ctx context.Context, tx pgx.Tx, filter domain.RoutesP
 
 	// Get rows for the given filter.
 	rows, err := tx.Query(ctx, `
-		SELECT r.id, r.name, r.truck_id, r.departure_warehouse_id, r.arrival_warehouse_id, r.created_at, r.modified_at
+		SELECT r.id, r.name, r.created_at, r.modified_at,
+			t.id, t.make, t.model, t.license_plate, t.person_capacity, ST_AsGeoJSON(t.geom)::jsonb, rnt.osm_name, mt.name, t.created_at, t.modified_at,
+			wd.id, wd.truck_capacity, ST_AsGeoJSON(wd.geom)::jsonb, rnwd.osm_name, mwd.name, wd.created_at, wd.modified_at, 
+			wa.id, wa.truck_capacity, ST_AsGeoJSON(wa.geom)::jsonb, rnwa.osm_name, mwa.name, wa.created_at, wa.modified_at 
 		FROM routes AS r
+		INNER JOIN trucks AS t ON r.truck_id = t.id
+			LEFT JOIN road_network AS rnt ON t.road_id = rnt.id
+			LEFT JOIN municipalities AS mt ON t.municipality_id = mt.id
+		INNER JOIN warehouses AS wd ON r.departure_warehouse_id = wd.id
+			LEFT JOIN road_network AS rnwd ON wd.road_id = rnwd.id
+			LEFT JOIN municipalities AS mwd ON wd.municipality_id = mwd.id
+		INNER JOIN warehouses AS wa ON r.arrival_warehouse_id = wa.id
+			LEFT JOIN road_network AS rnwa ON wa.road_id = rnwa.id
+			LEFT JOIN municipalities AS mwa ON wa.municipality_id = mwa.id
 	`+sqlWhere+listSQLOrder(sortField, filter.Order)+listSQLLimitOffset(filter.Limit, filter.Offset),
 		argsWhere...,
 	)
@@ -136,8 +148,20 @@ func (s *store) ListRoutes(ctx context.Context, tx pgx.Tx, filter domain.RoutesP
 // GetRouteByID executes a query to return the route with the specified identifier.
 func (s *store) GetRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (domain.Route, error) {
 	row := tx.QueryRow(ctx, `
-		SELECT r.id, r.name, r.truck_id, r.departure_warehouse_id, r.arrival_warehouse_id, r.created_at, r.modified_at
+		SELECT r.id, r.name, r.created_at, r.modified_at,
+			t.id, t.make, t.model, t.license_plate, t.person_capacity, ST_AsGeoJSON(t.geom)::jsonb, rnt.osm_name, mt.name, t.created_at, t.modified_at,
+			wd.id, wd.truck_capacity, ST_AsGeoJSON(wd.geom)::jsonb, rnwd.osm_name, mwd.name, wd.created_at, wd.modified_at, 
+			wa.id, wa.truck_capacity, ST_AsGeoJSON(wa.geom)::jsonb, rnwa.osm_name, mwa.name, wa.created_at, wa.modified_at 
 		FROM routes AS r
+		INNER JOIN trucks AS t ON r.truck_id = t.id
+			LEFT JOIN road_network AS rnt ON t.road_id = rnt.id
+			LEFT JOIN municipalities AS mt ON t.municipality_id = mt.id
+		INNER JOIN warehouses AS wd ON r.departure_warehouse_id = wd.id
+			LEFT JOIN road_network AS rnwd ON wd.road_id = rnwd.id
+			LEFT JOIN municipalities AS mwd ON wd.municipality_id = mwd.id
+		INNER JOIN warehouses AS wa ON r.arrival_warehouse_id = wa.id
+			LEFT JOIN road_network AS rnwa ON wa.road_id = rnwa.id
+			LEFT JOIN municipalities AS mwa ON wa.municipality_id = mwa.id
 		WHERE r.id = $1 
 	`,
 		id,
@@ -221,17 +245,92 @@ func (s *store) DeleteRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) er
 func getRouteFromRow(row pgx.Row) (domain.Route, error) {
 	var route domain.Route
 
+	var truckGeoJSONPoint domain.GeoJSONGeometryPoint
+	var truckWayName *string
+	var truckMunicipalityName *string
+
+	var departureWarehouseGeoJSONPoint domain.GeoJSONGeometryPoint
+	var departureWarehouseWayName *string
+	var departureWarehouseMunicipalityName *string
+
+	var arrivalWarehouseGeoJSONPoint domain.GeoJSONGeometryPoint
+	var arrivalWarehouseWayName *string
+	var arrivalWarehouseMunicipalityName *string
+
 	err := row.Scan(
 		&route.ID,
 		&route.Name,
-		&route.TruckID,
-		&route.DepartureWarehouseID,
-		&route.ArrivalWarehouseID,
 		&route.CreatedAt,
 		&route.ModifiedAt,
+
+		&route.Truck.ID,
+		&route.Truck.Make,
+		&route.Truck.Model,
+		&route.Truck.LicensePlate,
+		&route.Truck.PersonCapacity,
+		&truckGeoJSONPoint,
+		&truckWayName,
+		&truckMunicipalityName,
+		&route.Truck.CreatedAt,
+		&route.Truck.ModifiedAt,
+
+		&route.DepartureWarehouse.ID,
+		&route.DepartureWarehouse.TruckCapacity,
+		&departureWarehouseGeoJSONPoint,
+		&departureWarehouseWayName,
+		&departureWarehouseMunicipalityName,
+		&route.DepartureWarehouse.CreatedAt,
+		&route.DepartureWarehouse.ModifiedAt,
+
+		&route.ArrivalWarehouse.ID,
+		&route.ArrivalWarehouse.TruckCapacity,
+		&arrivalWarehouseGeoJSONPoint,
+		&arrivalWarehouseWayName,
+		&arrivalWarehouseMunicipalityName,
+		&route.ArrivalWarehouse.CreatedAt,
+		&route.ArrivalWarehouse.ModifiedAt,
 	)
 	if err != nil {
 		return domain.Route{}, err
+	}
+
+	truckGeoJSONProperties := make(domain.GeoJSONFeatureProperties)
+	if truckWayName != nil {
+		truckGeoJSONProperties.SetWayName(*truckWayName)
+	}
+	if truckMunicipalityName != nil {
+		truckGeoJSONProperties.SetMunicipalityName(*truckMunicipalityName)
+	}
+
+	route.Truck.GeoJSON = domain.GeoJSONFeature{
+		Geometry:   truckGeoJSONPoint,
+		Properties: truckGeoJSONProperties,
+	}
+
+	departureWarehouseGeoJSONProperties := make(domain.GeoJSONFeatureProperties)
+	if departureWarehouseWayName != nil {
+		departureWarehouseGeoJSONProperties.SetWayName(*departureWarehouseWayName)
+	}
+	if departureWarehouseMunicipalityName != nil {
+		departureWarehouseGeoJSONProperties.SetMunicipalityName(*departureWarehouseMunicipalityName)
+	}
+
+	route.DepartureWarehouse.GeoJSON = domain.GeoJSONFeature{
+		Geometry:   departureWarehouseGeoJSONPoint,
+		Properties: departureWarehouseGeoJSONProperties,
+	}
+
+	arrivalWarehouseGeoJSONProperties := make(domain.GeoJSONFeatureProperties)
+	if arrivalWarehouseWayName != nil {
+		arrivalWarehouseGeoJSONProperties.SetWayName(*arrivalWarehouseWayName)
+	}
+	if arrivalWarehouseMunicipalityName != nil {
+		arrivalWarehouseGeoJSONProperties.SetMunicipalityName(*arrivalWarehouseMunicipalityName)
+	}
+
+	route.ArrivalWarehouse.GeoJSON = domain.GeoJSONFeature{
+		Geometry:   arrivalWarehouseGeoJSONPoint,
+		Properties: arrivalWarehouseGeoJSONProperties,
 	}
 
 	return route, nil

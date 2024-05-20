@@ -246,14 +246,14 @@ func (s *service) GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJS
 			return nil
 		}
 
-		arrivalWarehouse, err := s.store.GetWarehouseByID(ctx, tx, route.ArrivalWarehouseID)
+		arrivalWarehouse, err := s.store.GetWarehouseByID(ctx, tx, route.ArrivalWarehouse.ID)
 		if err != nil {
 			return err
 		}
 
 		// Get essential roads.
 		var departureRoad *domain.Road
-		tempDepartureRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.DepartureWarehouseID)
+		tempDepartureRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.DepartureWarehouse.ID)
 		if err != nil {
 			if !errors.Is(err, domain.ErrRoadNotFound) {
 				return err
@@ -263,7 +263,7 @@ func (s *service) GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJS
 		}
 
 		var arrivalRoad *domain.Road
-		tempArrivalRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.ArrivalWarehouseID)
+		tempArrivalRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.ArrivalWarehouse.ID)
 		if err != nil {
 			if !errors.Is(err, domain.ErrRoadNotFound) {
 				return err

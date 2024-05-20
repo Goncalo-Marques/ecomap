@@ -37,7 +37,7 @@ func (s *service) CreateRouteEmployee(ctx context.Context, routeID, employeeID u
 			return err
 		}
 
-		truck, err := s.store.GetTruckByID(ctx, tx, route.TruckID)
+		truck, err := s.store.GetTruckByID(ctx, tx, route.Truck.ID)
 		if err != nil {
 			return err
 		}

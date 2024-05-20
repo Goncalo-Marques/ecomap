@@ -49,10 +49,13 @@ type EditableRoutePatch struct {
 
 // Route defines the route structure.
 type Route struct {
-	EditableRoute
-	ID         uuid.UUID
-	CreatedAt  time.Time
-	ModifiedAt time.Time
+	ID                 uuid.UUID
+	Name               RouteName
+	Truck              Truck
+	DepartureWarehouse Warehouse
+	ArrivalWarehouse   Warehouse
+	CreatedAt          time.Time
+	ModifiedAt         time.Time
 }
 
 // RoutePaginatedSort defines the field of the route to sort.
