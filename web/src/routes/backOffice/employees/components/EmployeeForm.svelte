@@ -84,7 +84,7 @@
 		},
 		phoneNumber: {
 			min: 0,
-			max: 16,
+			max: 11,
 		},
 	};
 
@@ -406,7 +406,7 @@
 					<Input
 						required
 						name="phoneNumber"
-						pattern={`^(?:\\+[0-9]{1,3}[ ]?)?[0-9]{3}[ ]?[0-9]{3}[ ]?[0-9]{3}$`}
+						pattern={`^[0-9]{3}[ ]?[0-9]{3}[ ]?[0-9]{3}$`}
 						value={employee?.phoneNumber}
 						error={!!formErrorMessages.phoneNumber}
 						placeholder={$t("employees.phone.placeholder")}
