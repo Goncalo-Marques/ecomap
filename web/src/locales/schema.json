@@ -328,6 +328,9 @@
 		"employees.username": {
 			"type": "string"
 		},
+		"employees.password": {
+			"type": "string"
+		},
 		"employees.firstName": {
 			"type": "string"
 		},
@@ -398,6 +401,18 @@
 			"type": "string"
 		},
 		"employees.scheduleEnd.placeholder": {
+			"type": "string"
+		},
+		"employees.create.title": {
+			"type": "string"
+		},
+		"employees.create.success": {
+			"type": "string"
+		},
+		"employees.role.placeholder": {
+			"type": "string"
+		},
+		"employees.password.placeholder": {
 			"type": "string"
 		}
 	}

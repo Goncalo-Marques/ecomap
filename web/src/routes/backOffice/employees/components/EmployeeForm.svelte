@@ -11,9 +11,13 @@
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
 	import { getLocationName } from "../../../../lib/utils/location";
 	import LocationInput from "../../../../lib/components/LocationInput.svelte";
-	import type { Employee } from "../../../../domain/employees";
+	import type { Employee, EmployeeRoles } from "../../../../domain/employees";
 	import SelectLocation from "../../../../lib/components/SelectLocation.svelte";
 	import { convertToResourceProjection } from "../../../../lib/utils/map";
+	import { isValidEmployeeRole } from "../utils/employee";
+	import Select from "../../../../lib/components/Select.svelte";
+	import { rolesOptions } from "../constants/roles";
+	import Option from "../../../../lib/components/Option.svelte";
 
 	/**
 	 * The back route.
@@ -26,9 +30,36 @@
 	export let title: string;
 
 	/**
+	 * Set form as a create form, to create a new employee.\
+	 * @default false
+	 */
+	export let createForm: boolean = false;
+
+	/**
 	 * Callback fired when save action is triggered.
 	 */
-	export let onSave: (
+	export let onSave: onSaveType | onSaveCreateType;
+
+	/**
+	 * Type of callback to create new employee.
+	 */
+	type onSaveCreateType = (
+		username: string,
+		password: string,
+		firstName: string,
+		lastName: string,
+		role: EmployeeRoles,
+		dateOfBirth: string,
+		phoneNumber: string,
+		location: GeoJSONFeaturePoint,
+		scheduleStart: string,
+		scheduleEnd: string,
+	) => void;
+
+	/**
+	 * Type of callback to update employee.
+	 */
+	type onSaveType = (
 		username: string,
 		firstName: string,
 		lastName: string,
@@ -74,6 +105,10 @@
 			min: 0,
 			max: 30,
 		},
+		password: {
+			min: 0,
+			max: 30,
+		},
 		firstName: {
 			min: 0,
 			max: 30,
@@ -93,8 +128,10 @@
 	 */
 	let formErrorMessages = {
 		username: "",
+		password: "",
 		firstName: "",
 		lastName: "",
+		role: "",
 		dateOfBirth: "",
 		phoneNumber: "",
 		location: "",
@@ -114,8 +151,10 @@
 	 */
 	function validateForm(
 		usernameValidity: ValidityState,
+		passwordValidity: ValidityState,
 		firstNameValidity: ValidityState,
 		lastNameValidity: ValidityState,
+		roleValidity: ValidityState,
 		dateOfBirthValidity: ValidityState,
 		phoneNumberValidity: ValidityState,
 		locationValidity: ValidityState,
@@ -136,6 +175,23 @@
 			});
 		} else {
 			formErrorMessages.username = "";
+		}
+
+		// Password Validation.
+		if (passwordValidity.valueMissing) {
+			formErrorMessages.password = $t("error.valueMissing");
+		} else if (passwordValidity.patternMismatch) {
+			formErrorMessages.phoneNumber = $t("error.patternMismatch");
+		} else if (passwordValidity.tooShort) {
+			formErrorMessages.password = $t("error.tooShort", {
+				minLength: formFieldsLengths.password.min,
+			});
+		} else if (passwordValidity.tooLong) {
+			formErrorMessages.password = $t("error.tooLong", {
+				maxLength: formFieldsLengths.password.max,
+			});
+		} else {
+			formErrorMessages.password = "";
 		}
 
 		//FirstName Validation.
@@ -166,6 +222,13 @@
 			});
 		} else {
 			formErrorMessages.lastName = "";
+		}
+
+		//  Role Validation.
+		if (roleValidity.valueMissing) {
+			formErrorMessages.role = $t("error.valueMissing");
+		} else {
+			formErrorMessages.role = "";
 		}
 
 		// DateOfBirth Validation.
@@ -215,8 +278,10 @@
 
 		return (
 			!formErrorMessages.username &&
+			!formErrorMessages.password &&
 			!formErrorMessages.firstName &&
 			!formErrorMessages.lastName &&
+			!formErrorMessages.role &&
 			!formErrorMessages.dateOfBirth &&
 			!formErrorMessages.phoneNumber &&
 			!formErrorMessages.scheduleStart &&
@@ -235,8 +300,10 @@
 		const formData = new FormData(form);
 
 		const username = formData.get("username") ?? "";
+		const password = formData.get("password") ?? "";
 		const firstName = formData.get("firstName") ?? "";
 		const lastName = formData.get("lastName") ?? "";
+		const role = formData.get("role") ?? "";
 		const dateOfBirth = formData.get("dateOfBirth") ?? "";
 		const phoneNumber = formData.get("phoneNumber") ?? "";
 		const location = formData.get("location") ?? "";
@@ -246,8 +313,10 @@
 		// Check if all fields are strings.
 		if (
 			typeof username !== "string" ||
+			typeof password !== "string" ||
 			typeof firstName !== "string" ||
 			typeof lastName !== "string" ||
+			typeof role !== "string" ||
 			typeof dateOfBirth !== "string" ||
 			typeof phoneNumber !== "string" ||
 			typeof location !== "string" ||
@@ -257,28 +326,44 @@
 			return;
 		}
 
+		if (!isValidEmployeeRole(role)) {
+			return;
+		}
+
 		const usernameInput = form.elements.namedItem(
 			"username",
+		) as HTMLInputElement;
+
+		const passwordInput = form.elements.namedItem(
+			"password",
 		) as HTMLInputElement;
 
 		const firstNameInput = form.elements.namedItem(
 			"firstName",
 		) as HTMLInputElement;
+
 		const lastNameInput = form.elements.namedItem(
 			"lastName",
 		) as HTMLInputElement;
+
+		const roleInput = form.elements.namedItem("role") as HTMLInputElement;
+
 		const dateOfBirthInput = form.elements.namedItem(
 			"dateOfBirth",
 		) as HTMLInputElement;
+
 		const phoneNumberInput = form.elements.namedItem(
 			"phoneNumber",
 		) as HTMLInputElement;
+
 		const locationInput = form.elements.namedItem(
 			"location",
 		) as HTMLInputElement;
+
 		const scheduleStartInput = form.elements.namedItem(
 			"scheduleStart",
 		) as HTMLInputElement;
+
 		const scheduleEndInput = form.elements.namedItem(
 			"scheduleEnd",
 		) as HTMLInputElement;
@@ -287,8 +372,10 @@
 		if (
 			!validateForm(
 				usernameInput.validity,
+				passwordInput.validity,
 				firstNameInput.validity,
 				lastNameInput.validity,
+				roleInput.validity,
 				dateOfBirthInput.validity,
 				phoneNumberInput.validity,
 				locationInput.validity,
@@ -300,7 +387,30 @@
 			return;
 		}
 
-		onSave(
+		if (createForm) {
+			(onSave as onSaveCreateType)(
+				username,
+				password,
+				firstName,
+				lastName,
+				role,
+				dateOfBirth,
+				phoneNumber,
+				{
+					type: "Feature",
+					geometry: {
+						type: "Point",
+						coordinates: selectedCoordinate,
+					},
+					properties: {},
+				},
+				scheduleStart,
+				scheduleEnd,
+			);
+			return;
+		}
+
+		(onSave as onSaveType)(
 			username,
 			firstName,
 			lastName,
@@ -380,6 +490,27 @@
 						maxLength={formFieldsLengths.username.max}
 					/>
 				</FormControl>
+
+				{#if createForm}
+					<!-- Password -->
+					<!-- TODO pattern to password -->
+					<FormControl
+						label={$t("employees.password")}
+						error={!!formErrorMessages.password}
+						helperText={formErrorMessages.password}
+					>
+						<Input
+							required
+							name="password"
+							type="password"
+							pattern={``}
+							error={!!formErrorMessages.password}
+							placeholder={$t("employees.password.placeholder")}
+							minLength={formFieldsLengths.password.min}
+							maxLength={formFieldsLengths.password.max}
+						/>
+					</FormControl>
+				{/if}
 
 				<!-- dateOfBirth -->
 				<FormControl
@@ -476,6 +607,28 @@
 						type="time"
 					/>
 				</FormControl>
+
+				{#if createForm}
+					<!-- Role -->
+					<FormControl
+						label={$t("employees.role")}
+						error={!!formErrorMessages.role}
+						helperText={formErrorMessages.role}
+					>
+						<Select
+							required
+							name="role"
+							error={!!formErrorMessages.role}
+							placeholder={$t("employees.role.placeholder")}
+						>
+							{#each rolesOptions as role}
+								<Option value={role}>
+									{$t(`employees.role.${role}`)}
+								</Option>
+							{/each}
+						</Select>
+					</FormControl>
+				{/if}
 			</DetailsFields>
 		</DetailsSection>
 	</DetailsContent>

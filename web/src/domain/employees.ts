@@ -28,3 +28,8 @@ export interface EmployeesFilters {
 	order: SortingDirection;
 	role?: Employee["role"];
 }
+
+/**
+ * Sortable fields of a employees.
+ */
+export type EmployeeRoles = Employee["role"];

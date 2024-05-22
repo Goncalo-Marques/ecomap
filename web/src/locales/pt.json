@@ -109,6 +109,7 @@
 	"employees": "Colaboradores",
 	"employees.search": "Pesquise por nome de utilizador",
 	"employees.username": "Nome de utilizador",
+	"employees.password": "Password",
 	"employees.firstName": "Primeiro nome",
 	"employees.lastName": "Último nome",
 	"employees.schedule": "Horário",
@@ -132,5 +133,9 @@
 	"employees.dateOfBirth.placeholder": "Introduza a data de nascimento",
 	"employees.phone.placeholder": "Introduza número de telefone",
 	"employees.scheduleStart.placeholder": "Introduza a hora de início",
-	"employees.scheduleEnd.placeholder": "Introduza a hora de término"
+	"employees.scheduleEnd.placeholder": "Introduza a hora de término",
+	"employees.create.title": "Adicionar colaborador",
+	"employees.create.success": "Colaborador adicionado com sucesso",
+	"employees.role.placeholder": "Selecione um cargo",
+	"employees.password.placeholder": "Intruduza a password"
 }

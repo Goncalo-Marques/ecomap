@@ -109,6 +109,7 @@
 	"employees": "Employees",
 	"employees.search": "Search by username",
 	"employees.username": "Username",
+	"employees.password": "Password",
 	"employees.firstName": "First name",
 	"employees.lastName": "Last name",
 	"employees.schedule": "Schedule",
@@ -132,5 +133,9 @@
 	"employees.dateOfBirth.placeholder": "Enter birthdate",
 	"employees.phone.placeholder": "Enter phone number",
 	"employees.scheduleStart.placeholder": "Enter start time of schedule",
-	"employees.scheduleEnd.placeholder": "Enter end time of schedule"
+	"employees.scheduleEnd.placeholder": "Enter end time of schedule",
+	"employees.create.title": "Add employee",
+	"employees.create.success": "Employee added successfully",
+	"employees.role.placeholder": "Select a role",
+	"employees.password.placeholder": "Enter password"
 }
