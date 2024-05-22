@@ -115,6 +115,7 @@ func geoJSONFeatureCollectionLineStringFromDomain(geoJSON domain.GeoJSON) (spec.
 		}
 
 		specGeoJSONFeatureLineString[i] = spec.GeoJSONFeatureLineString{
+			Type: spec.GeoJSONFeatureLineStringTypeFeature,
 			Geometry: spec.GeoJSONGeometryLineString{
 				Type:        spec.LineString,
 				Coordinates: specCoordinates,
