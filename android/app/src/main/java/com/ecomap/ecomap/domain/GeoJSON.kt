@@ -21,7 +21,21 @@ data class GeoJSONProperties(
     var municipalityName: String = "",
 ) {
     /**
+     * Returns the way name or unknown if not defined.
+     * @param context Activity context.
+     * @return Way name or unknown way.
+     */
+    fun getWayName(context: Context): String {
+        if (wayName.isBlank()) {
+            return context.getString(R.string.way_unknown)
+        }
+
+        return this.wayName
+    }
+
+    /**
      * Returns the location name based on the way and municipality name.
+     * @param context Activity context.
      * @return Location name.
      */
     fun getLocationName(context: Context): String {

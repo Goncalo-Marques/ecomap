@@ -19,6 +19,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
@@ -26,6 +28,7 @@ import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
 import com.ecomap.ecomap.map.ContainerClusterRenderer
 import com.ecomap.ecomap.map.ContainerMarker
+import com.ecomap.ecomap.map.CustomAdapter
 import com.ecomap.ecomap.signin.SignInActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -83,6 +86,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Defines the container info window snippet view.
      */
     private lateinit var containerInfoWindowSnippetText: TextView
+
+    /**
+     * Defines the container categories info window view.
+     */
+    private lateinit var containerInfoWindowRecyclerCategories: RecyclerView
 
     /**
      * Defines the container info window directions button.
@@ -152,12 +160,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         containerInfoWindowView = findViewById(R.id.info_window)
         containerInfoWindowTitleText = findViewById(R.id.info_window_text_title)
         containerInfoWindowSnippetText = findViewById(R.id.info_window_text_snippet)
+        containerInfoWindowRecyclerCategories = findViewById(R.id.info_window_recycler_categories)
+        containerInfoWindowRecyclerCategories.layoutManager = LinearLayoutManager(this)
         containerInfoWindowDirectionsButton = findViewById(R.id.info_window_button_directions)
 
         // Set button functions.
         populateChipGroupContainerFilter(chipGroupContainerFilter)
         buttonMyLocation.setOnClickListener { focusMyLocation() }
-        containerInfoWindowView.visibility = View.GONE
+
+        closeContainerInfoWindow()
     }
 
     /**
@@ -337,9 +348,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 val existingContainer = filteredContainers[containerPosition]
                 if (existingContainer == null) {
                     val containerMarker = ContainerMarker(
+                        this,
                         container.id,
-                        containerPosition,
-                        container.geoJSON.properties.getLocationName(this),
+                        container.geoJSON,
                         arrayListOf(container.category.getStringResource(this))
                     )
 
@@ -422,8 +433,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun showContainerInfoWindow(container: ContainerMarker) {
         groupButtonsView.visibility = View.GONE
         containerInfoWindowView.visibility = View.VISIBLE
-        containerInfoWindowTitleText.text = container.title
-        containerInfoWindowSnippetText.text = container.snippet
+        containerInfoWindowTitleText.text = container.geoJSON.properties.municipalityName
+        containerInfoWindowSnippetText.text = container.geoJSON.properties.getWayName(this)
+
+        val customAdapter = CustomAdapter(container.categories.toSet().toTypedArray())
+        containerInfoWindowRecyclerCategories.adapter = customAdapter
+
         containerInfoWindowDirectionsButton.setOnClickListener {
             val intentMapDirections = Intent(Intent.ACTION_VIEW)
             intentMapDirections.data =
