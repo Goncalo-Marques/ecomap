@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
@@ -161,7 +161,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         containerInfoWindowTitleText = findViewById(R.id.info_window_text_title)
         containerInfoWindowSnippetText = findViewById(R.id.info_window_text_snippet)
         containerInfoWindowRecyclerCategories = findViewById(R.id.info_window_recycler_categories)
-        containerInfoWindowRecyclerCategories.layoutManager = LinearLayoutManager(this)
+        containerInfoWindowRecyclerCategories.layoutManager =
+            GridLayoutManager(this, CONTAINER_INFO_WINDOW_RECYCLER_CATEGORIES_SPAN_COUNT)
         containerInfoWindowDirectionsButton = findViewById(R.id.info_window_button_directions)
 
         // Set button functions.
@@ -482,5 +483,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val MAP_CAMERA_ZOOM_DEFAULT = 15.0F
 
         private const val REQUEST_LIST_CONTAINER_LIMIT = 100
+
+        private const val CONTAINER_INFO_WINDOW_RECYCLER_CATEGORIES_SPAN_COUNT = 2
     }
 }
