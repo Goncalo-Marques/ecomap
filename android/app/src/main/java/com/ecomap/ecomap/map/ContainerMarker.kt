@@ -7,6 +7,7 @@ import com.google.maps.android.clustering.ClusterItem
  * A marker that represents one or more containers at the same position on the map.
  */
 class ContainerMarker(
+    internal val id: String,
     private val position: LatLng,
     private val locationName: String,
     val categories: ArrayList<String>

@@ -24,4 +24,6 @@
     <string name="container_category_hazardous">Hazardous</string>
     <string name="way_unknown">Unknown way</string>
     <string name="error_sign_in_expired">Session expired</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="Directions">Directions</string>
 </resources>
