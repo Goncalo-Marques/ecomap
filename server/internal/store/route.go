@@ -224,13 +224,6 @@ func (s *store) DeleteRouteByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) er
 		id,
 	)
 	if err != nil {
-		switch constraintNameFromError(err) {
-		case constraintRoutesContainersRouteIDFkey:
-			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteAssociatedWithRouteContainer)
-		case constraintRoutesEmployeesRouteIDFkey:
-			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrRouteAssociatedWithRouteEmployee)
-		}
-
 		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
 	}
 

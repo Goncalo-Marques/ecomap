@@ -13,13 +13,11 @@ import (
 )
 
 const (
-	errRouteNotFound                     = "route not found"
-	errRouteDepartureWarehouseNotFound   = "route departure warehouse not found"
-	errRouteArrivalWarehouseNotFound     = "route arrival warehouse not found"
-	errRouteTruckPersonCapacityMinLimit  = "route already has more employees than the new truck has capacity"
-	errRouteTruckPersonCapacityMaxLimit  = "route cannot have more employees than the truck has capacity"
-	errRouteAssociatedWithRouteContainer = "route associated with container"
-	errRouteAssociatedWithRouteEmployee  = "route associated with employee"
+	errRouteNotFound                    = "route not found"
+	errRouteDepartureWarehouseNotFound  = "route departure warehouse not found"
+	errRouteArrivalWarehouseNotFound    = "route arrival warehouse not found"
+	errRouteTruckPersonCapacityMinLimit = "route already has more employees than the new truck has capacity"
+	errRouteTruckPersonCapacityMaxLimit = "route cannot have more employees than the truck has capacity"
 )
 
 // CreateRoute handles the http request to create a route.
@@ -214,10 +212,6 @@ func (h *handler) DeleteRouteByID(w http.ResponseWriter, r *http.Request, routeI
 		switch {
 		case errors.Is(err, domain.ErrRouteNotFound):
 			notFound(w, errRouteNotFound)
-		case errors.Is(err, domain.ErrRouteAssociatedWithRouteContainer):
-			conflict(w, errRouteAssociatedWithRouteContainer)
-		case errors.Is(err, domain.ErrRouteAssociatedWithRouteEmployee):
-			conflict(w, errRouteAssociatedWithRouteEmployee)
 		default:
 			internalServerError(w)
 		}
