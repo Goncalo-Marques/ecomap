@@ -249,13 +249,6 @@ func (s *store) DeleteUserByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) err
 		id,
 	)
 	if err != nil {
-		switch constraintNameFromError(err) {
-		case constraintUsersContainerBookmarksUserIDFkey:
-			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserAssociatedWithUserContainerBookmark)
-		case constraintContainersReportsIssuerIDFkey:
-			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrUserAssociatedWithContainerReportAsIssuer)
-		}
-
 		return fmt.Errorf("%s: %w", descriptionFailedExec, err)
 	}
 

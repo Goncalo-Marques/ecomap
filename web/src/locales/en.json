@@ -36,7 +36,7 @@
 	"containers.update.success": "Container updated successfully",
 	"containers.delete.success": "Container deleted successfully",
 	"containers.delete.conflict.title": "Conflict",
-	"containers.delete.conflict.description": "This container cannot be deleted because it's associated with a report, bookmark, or route.",
+	"containers.delete.conflict.description": "This container cannot be deleted because it's associated with a bookmark or route.",
 	"truck": "Truck",
 	"trucks": "Trucks",
 	"trucks.create.title": "Add truck",
@@ -68,7 +68,7 @@
 	"warehouses.notFound.description": "The warehouse you are looking for does not exist.",
 	"warehouses.delete.success": "Warehouse deleted successfully",
 	"warehouses.delete.conflict.title": "Conflict",
-	"warehouses.delete.conflict.description": "This warehouse cannot be deleted because it's associated with a truck or a route.",
+	"warehouses.delete.conflict.description": "This warehouse cannot be deleted because it's associated with a route.",
 	"landfill": "Landfill",
 	"landfills": "Landfills",
 	"landfills.create.title": "Add landfill",
@@ -124,5 +124,5 @@
 	"employees.notFound.description": "The employee you are looking for does not exist.",
 	"employees.delete.success": "Employee deleted successfully",
 	"employees.delete.conflict.title": "Conflict",
-	"employees.delete.conflict.description": "This employee cannot be deleted because it's associated with a report or a route."
+	"employees.delete.conflict.description": "This employee cannot be deleted because it's associated with a route."
 }
