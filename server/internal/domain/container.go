@@ -10,7 +10,6 @@ import (
 // Container errors.
 var (
 	ErrContainerNotFound                            = errors.New("container not found")                     // Returned when a container is not found.
-	ErrContainerAssociatedWithContainerReport       = errors.New("container associated with user report")   // Returned when a container is associated with a user report.
 	ErrContainerAssociatedWithUserContainerBookmark = errors.New("container associated with user bookmark") // Returned when a container is associated with a user bookmark.
 	ErrContainerAssociatedWithRouteContainer        = errors.New("container associated with route")         // Returned when a container is associated with a route.
 )

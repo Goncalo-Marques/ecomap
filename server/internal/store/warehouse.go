@@ -190,8 +190,6 @@ func (s *store) DeleteWarehouseByID(ctx context.Context, tx pgx.Tx, id uuid.UUID
 	)
 	if err != nil {
 		switch constraintNameFromError(err) {
-		case constraintWarehousesTrucksWarehouseIDFkey:
-			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrWarehouseAssociatedWithWarehouseTruck)
 		case constraintRoutesDepartureWarehouseIDFkey:
 			return fmt.Errorf("%s: %w", descriptionFailedExec, domain.ErrWarehouseAssociatedWithRouteDeparture)
 		case constraintRoutesArrivalWarehouseIDFkey:
