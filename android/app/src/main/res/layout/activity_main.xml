@@ -140,7 +140,7 @@
             android:id="@+id/info_window_button_directions"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/Directions"
+            android:text="@string/directions"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

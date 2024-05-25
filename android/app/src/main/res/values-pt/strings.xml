@@ -26,6 +26,6 @@
     <string name="way_unknown">Rua desconhecida</string>
     <string name="error_sign_in_expired">Sessão expirada</string>
     <string name="placeholder">Placeholder</string>
-    <string name="Directions">Direções</string>
+    <string name="directions">Direções</string>
     <string name="container_category">Categoria do contentor</string>
 </resources>
