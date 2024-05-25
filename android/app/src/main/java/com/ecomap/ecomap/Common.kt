@@ -13,6 +13,14 @@ import com.ecomap.ecomap.signin.SignInActivity
  */
 class Common {
     companion object {
+        /**
+         * Handles the volley error. It displays a toast view with the associated error message.
+         * It also evaluates the status code and starts the sign in activity in case of a 401
+         * response.
+         * @param context Application context.
+         * @param activity Activity to finish in case of status code 401.
+         * @param error Volley error.
+         */
         fun handleVolleyError(context: Context, activity: Activity, error: VolleyError) {
             if (activity.isFinishing || activity.isDestroyed) {
                 return
