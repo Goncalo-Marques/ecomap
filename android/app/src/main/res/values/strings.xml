@@ -26,4 +26,5 @@
     <string name="error_sign_in_expired">Session expired</string>
     <string name="placeholder">Placeholder</string>
     <string name="Directions">Directions</string>
+    <string name="container_category">Container category</string>
 </resources>

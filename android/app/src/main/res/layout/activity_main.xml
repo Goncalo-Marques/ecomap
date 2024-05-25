@@ -122,6 +122,7 @@
             android:text="@string/placeholder"
             android:textAlignment="textStart"
             android:textColor="@color/gray_500"
+            android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/info_window_recycler_categories"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

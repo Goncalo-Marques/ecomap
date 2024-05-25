@@ -26,9 +26,10 @@ import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
 import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
+import com.ecomap.ecomap.map.ContainerCategoriesRecyclerViewAdapter
+import com.ecomap.ecomap.map.ContainerCategoryRecyclerViewData
 import com.ecomap.ecomap.map.ContainerClusterRenderer
 import com.ecomap.ecomap.map.ContainerMarker
-import com.ecomap.ecomap.map.CustomAdapter
 import com.ecomap.ecomap.signin.SignInActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -230,6 +231,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             // Returns true so that the default info window is not displayed.
             true
         }
+        containerClusterManager.setOnClusterClickListener {
+            closeContainerInfoWindow()
+            return@setOnClusterClickListener false
+        }
         map.setOnMapClickListener { closeContainerInfoWindow() }
 
         // Prompt the user for permission.
@@ -352,13 +357,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         this,
                         container.id,
                         container.geoJSON,
-                        arrayListOf(container.category.getStringResource(this))
+                        arrayListOf(container.category)
                     )
 
                     containerClusterManager.addItem(containerMarker)
                     filteredContainers[containerPosition] = containerMarker
                 } else {
-                    existingContainer.categories.add(container.category.getStringResource(this))
+                    existingContainer.categories.add(container.category)
                 }
             }
 
@@ -437,8 +442,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         containerInfoWindowTitleText.text = container.geoJSON.properties.municipalityName
         containerInfoWindowSnippetText.text = container.geoJSON.properties.getWayName(this)
 
-        val customAdapter = CustomAdapter(container.categories.toSet().toTypedArray())
-        containerInfoWindowRecyclerCategories.adapter = customAdapter
+        val containerCategoriesDataSet =
+            ArrayList<ContainerCategoryRecyclerViewData>(container.categories.size)
+        for (containerCategory in container.categories) {
+            val data = ContainerCategoryRecyclerViewData(
+                containerCategory.getIconResource(),
+                containerCategory.getStringResource(this)
+            )
+            if (containerCategoriesDataSet.contains(data)) {
+                // The category already exists in the current data set.
+                continue
+            }
+
+            containerCategoriesDataSet.add(data)
+        }
+        containerInfoWindowRecyclerCategories.adapter =
+            ContainerCategoriesRecyclerViewAdapter(containerCategoriesDataSet.toTypedArray())
 
         containerInfoWindowDirectionsButton.setOnClickListener {
             val intentMapDirections = Intent(Intent.ACTION_VIEW)
