@@ -19,7 +19,7 @@ data class ContainerCategoryRecyclerViewData(
 )
 
 /**
- * Recycle view adapter for the container categories.
+ * Recycler view adapter for the container categories.
  */
 class ContainerCategoriesRecyclerViewAdapter(private val dataSet: Array<ContainerCategoryRecyclerViewData>) :
     RecyclerView.Adapter<ContainerCategoriesRecyclerViewAdapter.ViewHolder>() {
