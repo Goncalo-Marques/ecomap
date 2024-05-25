@@ -236,7 +236,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             closeContainerInfoWindow()
 
             // Returns false, so the default behavior is still used.
-            return@setOnClusterClickListener false
+            false
         }
         map.setOnMapClickListener { closeContainerInfoWindow() }
 
