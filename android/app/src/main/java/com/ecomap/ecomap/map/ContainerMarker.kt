@@ -30,6 +30,7 @@ class ContainerMarker(
             categoriesString.add(category.getStringResource(context))
         }
 
+        // Convert to set to avoid duplicate categories.
         return categoriesString.toSet().joinToString(", ")
     }
 
