@@ -14,8 +14,8 @@ import com.ecomap.ecomap.R
  * @param category Category description.
  */
 data class ContainerCategoryRecyclerViewData(
-    val iconResourceID: Int = 0,
-    val category: String = "",
+    val iconResourceID: Int,
+    val category: String,
 )
 
 /**
