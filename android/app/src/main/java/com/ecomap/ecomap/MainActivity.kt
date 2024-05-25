@@ -475,7 +475,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     /**
-     * Closes the container info  window.
+     * Closes the container info window.
      * It makes the main buttons visible and hides the info window.
      */
     private fun closeContainerInfoWindow() {
