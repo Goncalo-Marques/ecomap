@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var containerInfoWindowSnippetText: TextView
 
     /**
-     * Defines the container categories info window view.
+     * Defines the container info window categories recycler view.
      */
     private lateinit var containerInfoWindowRecyclerCategories: RecyclerView
 
