@@ -170,6 +170,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         populateChipGroupContainerFilter(chipGroupContainerFilter)
         buttonMyLocation.setOnClickListener { focusMyLocation() }
 
+        // Start with the container info window closed.
         closeContainerInfoWindow()
     }
 
