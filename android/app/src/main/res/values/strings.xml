@@ -12,7 +12,16 @@
     <string name="first_name_required_error">First name must be filled</string>
     <string name="last_name_required_error">Last name must be filled</string>
     <string name="error_create_account">Failed to create account</string>
-    <string name="error_sign_in">Failed to sign in</string>
+    <string name="error_sign_in_invalid_credentials">Invalid credentials</string>
     <string name="password_constraints">Password must contain at least 14 characters, including one regular character, one special character, and one number.</string>
     <string name="content_description_button_my_location">Go to my location</string>
+    <string name="container_category_general">General</string>
+    <string name="container_category_paper">Paper</string>
+    <string name="container_category_plastic">Plastic</string>
+    <string name="container_category_metal">Metal</string>
+    <string name="container_category_glass">Glass</string>
+    <string name="container_category_organic">Organic</string>
+    <string name="container_category_hazardous">Hazardous</string>
+    <string name="way_unknown">Unknown way</string>
+    <string name="error_sign_in_expired">Session expired</string>
 </resources>
