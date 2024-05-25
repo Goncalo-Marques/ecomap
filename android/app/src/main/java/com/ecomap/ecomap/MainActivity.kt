@@ -4,19 +4,30 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.Group
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
 import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
+import com.ecomap.ecomap.map.ContainerCategoriesRecyclerViewAdapter
+import com.ecomap.ecomap.map.ContainerCategoryRecyclerViewData
 import com.ecomap.ecomap.map.ContainerClusterRenderer
 import com.ecomap.ecomap.map.ContainerMarker
 import com.ecomap.ecomap.signin.SignInActivity
@@ -56,6 +67,36 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Defines the cluster manager of the container markers.
      */
     private lateinit var containerClusterManager: ClusterManager<ContainerMarker>
+
+    /**
+     * Defines the group of buttons view.
+     */
+    private lateinit var groupButtonsView: Group
+
+    /**
+     * Defines the container info window view.
+     */
+    private lateinit var containerInfoWindowView: ConstraintLayout
+
+    /**
+     * Defines the container info window title view.
+     */
+    private lateinit var containerInfoWindowTitleText: TextView
+
+    /**
+     * Defines the container info window snippet view.
+     */
+    private lateinit var containerInfoWindowSnippetText: TextView
+
+    /**
+     * Defines the container info window categories recycler view.
+     */
+    private lateinit var containerInfoWindowRecyclerCategories: RecyclerView
+
+    /**
+     * Defines the container info window directions button.
+     */
+    private lateinit var containerInfoWindowDirectionsButton: Button
 
     /**
      * Defines the authentication token.
@@ -116,10 +157,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Get activity views.
         val chipGroupContainerFilter: ChipGroup = findViewById(R.id.chip_group_container_filter)
         val buttonMyLocation: FloatingActionButton = findViewById(R.id.button_my_location)
+        groupButtonsView = findViewById(R.id.group_buttons)
+        containerInfoWindowView = findViewById(R.id.info_window)
+        containerInfoWindowTitleText = findViewById(R.id.info_window_text_title)
+        containerInfoWindowSnippetText = findViewById(R.id.info_window_text_snippet)
+        containerInfoWindowRecyclerCategories = findViewById(R.id.info_window_recycler_categories)
+        containerInfoWindowRecyclerCategories.layoutManager =
+            GridLayoutManager(this, CONTAINER_INFO_WINDOW_RECYCLER_CATEGORIES_SPAN_COUNT)
+        containerInfoWindowDirectionsButton = findViewById(R.id.info_window_button_directions)
 
         // Set button functions.
         populateChipGroupContainerFilter(chipGroupContainerFilter)
         buttonMyLocation.setOnClickListener { focusMyLocation() }
+
+        // Start with the container info window closed.
+        closeContainerInfoWindow()
     }
 
     /**
@@ -165,6 +217,28 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             ContainerClusterRenderer(this, map, containerClusterManager)
         map.setOnCameraIdleListener(containerClusterManager)
         map.setOnMarkerClickListener(containerClusterManager)
+
+        // Set container info window functions.
+        containerClusterManager.setOnClusterItemClickListener { container ->
+            // Display the container information window and move to the container location.
+            showContainerInfoWindow(container)
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    container.position,
+                    map.cameraPosition.zoom
+                )
+            )
+
+            // Returns true so that the default info window is not displayed.
+            true
+        }
+        containerClusterManager.setOnClusterClickListener {
+            closeContainerInfoWindow()
+
+            // Returns false, so the default behavior is still used.
+            false
+        }
+        map.setOnMapClickListener { closeContainerInfoWindow() }
 
         // Prompt the user for permission.
         getLocationPermission()
@@ -283,15 +357,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 val existingContainer = filteredContainers[containerPosition]
                 if (existingContainer == null) {
                     val containerMarker = ContainerMarker(
-                        containerPosition,
-                        container.geoJSON.properties.getLocationName(this),
-                        arrayListOf(container.category.getStringResource(this))
+                        this,
+                        container.id,
+                        container.geoJSON,
+                        arrayListOf(container.category)
                     )
 
                     containerClusterManager.addItem(containerMarker)
                     filteredContainers[containerPosition] = containerMarker
                 } else {
-                    existingContainer.categories.add(container.category.getStringResource(this))
+                    existingContainer.categories.add(container.category)
                 }
             }
 
@@ -360,6 +435,58 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Opens the info window for the given container marker.
+     * It hides the main buttons and shows the info window with the given container marker data.
+     */
+    private fun showContainerInfoWindow(container: ContainerMarker) {
+        groupButtonsView.visibility = View.GONE
+        containerInfoWindowView.visibility = View.VISIBLE
+        containerInfoWindowTitleText.text = container.geoJSON.properties.municipalityName
+        containerInfoWindowSnippetText.text = container.geoJSON.properties.getWayName(this)
+
+        val containerCategoriesDataSet =
+            ArrayList<ContainerCategoryRecyclerViewData>(container.categories.size)
+        for (containerCategory in container.categories) {
+            val data = ContainerCategoryRecyclerViewData(
+                containerCategory.getIconResource(),
+                containerCategory.getStringResource(this)
+            )
+            if (containerCategoriesDataSet.contains(data)) {
+                // The category already exists in the current data set.
+                continue
+            }
+
+            containerCategoriesDataSet.add(data)
+        }
+        containerInfoWindowRecyclerCategories.adapter =
+            ContainerCategoriesRecyclerViewAdapter(containerCategoriesDataSet.toTypedArray())
+
+        containerInfoWindowDirectionsButton.setOnClickListener {
+            val intentMapDirections = Intent(Intent.ACTION_VIEW)
+            intentMapDirections.data =
+                Uri.parse("geo:0,0?q=${container.position.latitude},${container.position.longitude}(${container.snippet})")
+
+            if (intentMapDirections.resolveActivity(packageManager) != null) {
+                // Start activity only if there is an app that can resolve it.
+                startActivity(intentMapDirections)
+            }
+        }
+    }
+
+    /**
+     * Closes the container info window.
+     * It makes the main buttons visible and hides the info window.
+     */
+    private fun closeContainerInfoWindow() {
+        if (!containerInfoWindowView.isVisible) {
+            return
+        }
+
+        groupButtonsView.visibility = View.VISIBLE
+        containerInfoWindowView.visibility = View.GONE
+    }
+
     companion object {
         private val LOG_TAG = MainActivity::class.java.simpleName
 
@@ -378,5 +505,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val MAP_CAMERA_ZOOM_DEFAULT = 15.0F
 
         private const val REQUEST_LIST_CONTAINER_LIMIT = 100
+
+        private const val CONTAINER_INFO_WINDOW_RECYCLER_CATEGORIES_SPAN_COUNT = 2
     }
 }

@@ -54,6 +54,7 @@ ignoreWords:
   - Português
   - postgis
   - proguard
+  - recyclerview
   - rnwa
   - rnwd
   - scrollbars
