@@ -36,7 +36,7 @@
 	"containers.update.success": "Contentor atualizado com sucesso",
 	"containers.delete.success": "Contentor eliminado com sucesso",
 	"containers.delete.conflict.title": "Conflito",
-	"containers.delete.conflict.description": "Este contentor não pode ser eliminado porque está associado a um reporte, marcador ou rota.",
+	"containers.delete.conflict.description": "Este contentor não pode ser eliminado porque está associado a um marcador ou rota.",
 	"truck": "Camião",
 	"trucks": "Camiões",
 	"trucks.create.title": "Adicionar camião",
@@ -68,7 +68,7 @@
 	"warehouses.notFound.description": "O armazém que procura não existe.",
 	"warehouses.delete.success": "Armazém eliminado com sucesso",
 	"warehouses.delete.conflict.title": "Conflito",
-	"warehouses.delete.conflict.description": "Este armazém não pode ser eliminado porque está associado a um camião ou a uma rota.",
+	"warehouses.delete.conflict.description": "Este armazém não pode ser eliminado porque está associado a uma rota.",
 	"landfill": "Aterro",
 	"landfills": "Aterros",
 	"landfills.create.title": "Adicionar aterro",
@@ -124,5 +124,5 @@
 	"employees.notFound.description": "O colaborador que procura não existe.",
 	"employees.delete.success": "Colaborador eliminado com sucesso",
 	"employees.delete.conflict.title": "Conflito",
-	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a um reporte ou a uma rota."
+	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a uma rota."
 }

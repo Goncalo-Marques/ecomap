@@ -247,7 +247,6 @@ func (s *service) DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrWarehouseNotFound),
-			errors.Is(err, domain.ErrWarehouseAssociatedWithWarehouseTruck),
 			errors.Is(err, domain.ErrWarehouseAssociatedWithRouteDeparture),
 			errors.Is(err, domain.ErrWarehouseAssociatedWithRouteArrival):
 			return domain.Warehouse{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteWarehouseByID, logAttrs...)

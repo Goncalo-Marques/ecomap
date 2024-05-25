@@ -103,15 +103,15 @@ CREATE TABLE containers_reports (
     issue_type      containers_reports_issue_type   NOT NULL,
     description     varchar(500),
     attachment      bytea,
-    issuer_id       uuid                            NOT NULL,
+    issuer_id       uuid,
     resolver_id     uuid,
     resolved        boolean                         NOT NULL    DEFAULT FALSE,
     created_at      timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     modified_at     timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT containers_reports_pkey              PRIMARY KEY (id),
-    CONSTRAINT containers_reports_container_id_fkey FOREIGN KEY (container_id)  REFERENCES containers (id),
-    CONSTRAINT containers_reports_issuer_id_fkey    FOREIGN KEY (issuer_id)     REFERENCES users (id),
-    CONSTRAINT containers_reports_resolver_id_fkey  FOREIGN KEY (resolver_id)   REFERENCES employees (id)
+    CONSTRAINT containers_reports_container_id_fkey FOREIGN KEY (container_id)  REFERENCES containers (id)  ON DELETE CASCADE,
+    CONSTRAINT containers_reports_issuer_id_fkey    FOREIGN KEY (issuer_id)     REFERENCES users (id)       ON DELETE SET NULL,
+    CONSTRAINT containers_reports_resolver_id_fkey  FOREIGN KEY (resolver_id)   REFERENCES employees (id)   ON DELETE SET NULL
 );
 
 CREATE TRIGGER containers_reports_update_modified_at
@@ -127,7 +127,7 @@ CREATE TABLE users_container_bookmarks (
     container_id    uuid        NOT NULL,
     created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT users_container_bookmarks_pkey               PRIMARY KEY (user_id, container_id),
-    CONSTRAINT users_container_bookmarks_user_id_fkey       FOREIGN KEY (user_id)               REFERENCES users (id),
+    CONSTRAINT users_container_bookmarks_user_id_fkey       FOREIGN KEY (user_id)               REFERENCES users (id)       ON DELETE CASCADE,
     CONSTRAINT users_container_bookmarks_container_id_fkey  FOREIGN KEY (container_id)          REFERENCES containers (id)
 );
 
@@ -172,7 +172,7 @@ CREATE TABLE warehouses_trucks (
     truck_id        uuid        NOT NULL,
     created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT warehouses_trucks_pkey               PRIMARY KEY (warehouse_id, truck_id),
-    CONSTRAINT warehouses_trucks_warehouse_id_fkey  FOREIGN KEY (warehouse_id)              REFERENCES warehouses (id),
+    CONSTRAINT warehouses_trucks_warehouse_id_fkey  FOREIGN KEY (warehouse_id)              REFERENCES warehouses (id)  ON DELETE CASCADE,
     CONSTRAINT warehouses_trucks_truck_id_fkey      FOREIGN KEY (truck_id)                  REFERENCES trucks (id),
     CONSTRAINT warehouses_trucks_truck_id_key       UNIQUE (truck_id)
 );
@@ -203,7 +203,7 @@ CREATE TABLE routes_containers (
     container_id    uuid        NOT NULL,
     created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_containers_pkey               PRIMARY KEY (route_id, container_id),
-    CONSTRAINT routes_containers_route_id_fkey      FOREIGN KEY (route_id)                  REFERENCES routes (id),
+    CONSTRAINT routes_containers_route_id_fkey      FOREIGN KEY (route_id)                  REFERENCES routes (id)      ON DELETE CASCADE,
     CONSTRAINT routes_containers_container_id_fkey  FOREIGN KEY (container_id)              REFERENCES containers (id)
 );
 
@@ -216,6 +216,6 @@ CREATE TABLE routes_employees (
     employee_role   routes_employees_employee_role  NOT NULL,
     created_at      timestamp                       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT routes_employees_pkey                PRIMARY KEY (route_id, employee_id),
-    CONSTRAINT routes_employees_route_id_fkey       FOREIGN KEY (route_id)              REFERENCES routes (id),
+    CONSTRAINT routes_employees_route_id_fkey       FOREIGN KEY (route_id)              REFERENCES routes (id)      ON DELETE CASCADE,
     CONSTRAINT routes_employees_employee_id_fkey    FOREIGN KEY (employee_id)           REFERENCES employees (id)
 );
