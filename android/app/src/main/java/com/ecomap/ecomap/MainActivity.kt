@@ -476,6 +476,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         containerInfoWindowBookmarkButton.setOnClickListener {
+            // Since a marker can contain multiple containers in the same position, check that at
+            // least one is bookmarked.
             var bookmarked = false
             for (container in containerMarker.containers) {
                 if (userContainerBookmarks.contains(container.id)) {
@@ -485,30 +487,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             if (bookmarked) {
+                // Remove the bookmark from all containers in the marker.
                 containerInfoWindowBookmarkButton.setImageResource(R.drawable.bookmark)
 
                 for (container in containerMarker.containers) {
                     userContainerBookmarks.remove(container.id)
 
-                    val request = ApiClient.removeUserContainerBookmark(userID, container.id, token,
-                        {}, {})
-
+                    val request =
+                        ApiClient.removeUserContainerBookmark(userID, container.id, token, {}, {})
                     ApiRequestQueue.getInstance(applicationContext).add(request)
                 }
             } else {
+                // Create the bookmark for all containers in the marker.
                 containerInfoWindowBookmarkButton.setImageResource(R.drawable.bookmark_fill)
 
                 for (container in containerMarker.containers) {
                     userContainerBookmarks[container.id] = container
 
-                    val request = ApiClient.createUserContainerBookmark(userID, container.id, token,
-                        {}, {})
-
+                    val request =
+                        ApiClient.createUserContainerBookmark(userID, container.id, token, {}, {})
                     ApiRequestQueue.getInstance(applicationContext).add(request)
                 }
             }
         }
 
+        // Populate the container category recycler view.
         val containerCategoriesDataSet =
             ArrayList<ContainerCategoryRecyclerViewData>(containerMarker.containers.size)
         for (container in containerMarker.containers) {
@@ -526,6 +529,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         containerInfoWindowRecyclerCategories.adapter =
             ContainerCategoriesRecyclerViewAdapter(containerCategoriesDataSet.toTypedArray())
 
+        // Set the directions button to open in an external application.
         containerInfoWindowDirectionsButton.setOnClickListener {
             val intentMapDirections = Intent(Intent.ACTION_VIEW)
             intentMapDirections.data =
