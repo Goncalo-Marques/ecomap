@@ -6,6 +6,7 @@ import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.ecomap.ecomap.domain.Container
 import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
@@ -27,6 +28,7 @@ object ApiClient {
     private const val URL_USERS = "$URL_BASE/users"
     private const val URL_USERS_SIGN_IN = "$URL_BASE/users/signin"
     private const val URL_CONTAINERS = "$URL_BASE/containers"
+    private const val URL_BOOKMARK_CONTAINERS = "/bookmarks/containers"
 
     // Authentication field names.
     private const val FIELD_NAME_TOKEN = "token"
@@ -133,14 +135,15 @@ object ApiClient {
      * @param containerCategory Container category to filter by.
      * @param limit Amount of resources to get for the provided filter.
      * @param offset Amount of resources to skip for the provided filter.
+     * @param token JWT authorization token.
      * @param listener Volley response listener.
      * @param errorListener Volley response error listener.
      * @return Volley request.
      */
     fun listContainers(
         containerCategory: ContainerCategory? = null,
-        limit: Int = 100,
-        offset: Int = 0,
+        limit: Int,
+        offset: Int,
         token: String,
         listener: Listener<ContainersPaginated>,
         errorListener: ErrorListener
@@ -171,6 +174,113 @@ object ApiClient {
                     )
                 )
             },
+            errorListener,
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                return getHeaders(token)
+            }
+        }
+    }
+
+    /**
+     * Returns the user container bookmarks with the specified filter.
+     * @param userID User identifier.
+     * @param limit Amount of resources to get for the provided filter.
+     * @param offset Amount of resources to skip for the provided filter.
+     * @param token JWT authorization token.
+     * @param listener Volley response listener.
+     * @param errorListener Volley response error listener.
+     * @return Volley request.
+     */
+    fun listUserContainerBookmarks(
+        userID: String,
+        limit: Int,
+        offset: Int,
+        token: String,
+        listener: Listener<ContainersPaginated>,
+        errorListener: ErrorListener
+    ): JsonObjectRequest {
+        val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS" +
+                "?$FIELD_NAME_PAGINATION_LIMIT=$limit" +
+                "&$FIELD_NAME_PAGINATION_OFFSET=$offset"
+
+        return object : JsonObjectRequest(
+            Method.GET, url, null,
+            { response ->
+                val containers = ArrayList<Container>(limit)
+
+                val jsonContainers = response.optJSONArray(FIELD_CONTAINERS)
+                if (jsonContainers != null) {
+                    for (i in 0 until jsonContainers.length()) {
+                        containers.add(mapContainer(jsonContainers.optJSONObject(i)))
+                    }
+                }
+
+                listener.onResponse(
+                    ContainersPaginated(
+                        response.optInt(FIELD_NAME_PAGINATION_TOTAL),
+                        containers
+                    )
+                )
+            },
+            errorListener,
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                return getHeaders(token)
+            }
+        }
+    }
+
+    /**
+     * Creates a user container bookmark for the specified identifiers.
+     * @param userID User identifier.
+     * @param containerID Container identifier.
+     * @param token JWT authorization token.
+     * @param listener Volley response listener.
+     * @param errorListener Volley response error listener.
+     * @return Volley request.
+     */
+    fun createUserContainerBookmark(
+        userID: String,
+        containerID: String,
+        token: String,
+        listener: Listener<Unit>,
+        errorListener: ErrorListener
+    ): StringRequest {
+        val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS/$containerID"
+
+        return object : StringRequest(
+            Method.POST, url,
+            { listener.onResponse(Unit) },
+            errorListener,
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                return getHeaders(token)
+            }
+        }
+    }
+
+    /**
+     * Removes a user container bookmark for the specified identifiers.
+     * @param userID User identifier.
+     * @param containerID Container identifier.
+     * @param token JWT authorization token.
+     * @param listener Volley response listener.
+     * @param errorListener Volley response error listener.
+     * @return Volley request.
+     */
+    fun removeUserContainerBookmark(
+        userID: String,
+        containerID: String,
+        token: String,
+        listener: Listener<Unit>,
+        errorListener: ErrorListener
+    ): StringRequest {
+        val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS/$containerID"
+
+        return object : StringRequest(
+            Method.DELETE, url,
+            { listener.onResponse(Unit) },
             errorListener,
         ) {
             override fun getHeaders(): MutableMap<String, String> {

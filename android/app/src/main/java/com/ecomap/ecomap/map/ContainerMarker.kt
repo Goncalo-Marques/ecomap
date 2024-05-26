@@ -1,7 +1,7 @@
 package com.ecomap.ecomap.map
 
 import android.content.Context
-import com.ecomap.ecomap.domain.ContainerCategory
+import com.ecomap.ecomap.domain.Container
 import com.ecomap.ecomap.domain.GeoJSONFeaturePoint
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
@@ -11,10 +11,16 @@ import com.google.maps.android.clustering.ClusterItem
  */
 class ContainerMarker(
     internal val context: Context,
-    internal val id: String,
-    internal val geoJSON: GeoJSONFeaturePoint,
-    val categories: ArrayList<ContainerCategory>
+    internal val containers: ArrayList<Container>
 ) : ClusterItem {
+    internal var geoJSON = GeoJSONFeaturePoint()
+
+    init {
+        if (containers.isNotEmpty()) {
+            geoJSON = containers[0].geoJSON
+        }
+    }
+
     override fun getPosition(): LatLng {
         val coordinates = geoJSON.geometry.coordinates
         return LatLng(coordinates[1], coordinates[0])
@@ -25,9 +31,9 @@ class ContainerMarker(
     }
 
     override fun getSnippet(): String {
-        val categoriesString = ArrayList<String>(categories.size)
-        for (category in categories) {
-            categoriesString.add(category.getStringResource(context))
+        val categoriesString = ArrayList<String>(containers.size)
+        for (container in containers) {
+            categoriesString.add(container.category.getStringResource(context))
         }
 
         // Convert to set to avoid duplicate categories.
