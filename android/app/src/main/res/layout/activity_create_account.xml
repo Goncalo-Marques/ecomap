@@ -121,11 +121,11 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toStartOf="@+id/guideline_begin" />
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar_create_account"
-        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminate="true"
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toTopOf="@+id/button_create_account"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
