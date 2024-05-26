@@ -21,10 +21,10 @@ class UserStore(private val context: Context) {
      * Retrieves user JWT token.
      * @return Coroutine with JWT token or `null` when JWT token is not found.
      */
-    fun getToken(): String {
+    fun getToken(): String? {
         return runBlocking {
             val preferences = context.dataStore.data.first()
-            preferences[USER_TOKEN]?.toString() ?: ""
+            preferences[USER_TOKEN]
         }
     }
 

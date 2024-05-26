@@ -59,7 +59,7 @@ class UserAccountActivity : AppCompatActivity() {
 
         // Get user store and token.
         store = UserStore(applicationContext)
-        token = store.getToken()
+        token = store.getToken().toString()
         userID = Common.getSubjectFromJWT(token)
 
         // Update UI with the user personal information and bookmarks.

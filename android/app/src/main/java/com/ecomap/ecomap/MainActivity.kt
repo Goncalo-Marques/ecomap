@@ -137,13 +137,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Check whether the user store contains the login token.
         // If not, start the SignIn Activity.
         val store = UserStore(applicationContext)
-        token = store.getToken()
-        if (token.isEmpty()) {
+        val storeToken = store.getToken()
+        if (storeToken == null) {
             startActivity(intentSignInActivity)
             finishAffinity()
             return
         }
 
+        token = storeToken.toString()
         userID = Common.getSubjectFromJWT(token)
 
         // Construct the main entry point for the Android location services.
