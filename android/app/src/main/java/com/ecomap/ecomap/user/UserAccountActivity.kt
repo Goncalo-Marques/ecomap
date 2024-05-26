@@ -51,16 +51,16 @@ class UserAccountActivity : AppCompatActivity() {
         textViewUsername = findViewById(R.id.text_view_username_value)
         progressBar = findViewById(R.id.progress_bar_user_account)
 
-        // Set up on click event for the sign out button.
+        // Set up on click events for the buttons.
         buttonSignOut.setOnClickListener { signOutUser() }
-
-        // Show progress bar while data is still loading.
-        progressBar.visibility = View.VISIBLE
 
         // Get user store and token.
         store = UserStore(applicationContext)
         token = store.getToken().toString()
         userID = Common.getSubjectFromJWT(token)
+
+        // Show progress bar while data is still loading.
+        progressBar.visibility = View.VISIBLE
 
         // Update UI with the user personal information and bookmarks.
         updateUserPersonalInformationUI()
