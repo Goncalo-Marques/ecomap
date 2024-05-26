@@ -24,7 +24,7 @@ class UserStore(private val context: Context) {
     fun getToken(): String {
         return runBlocking {
             val preferences = context.dataStore.data.first()
-            preferences[USER_TOKEN].toString()
+            preferences[USER_TOKEN]?.toString() ?: ""
         }
     }
 
