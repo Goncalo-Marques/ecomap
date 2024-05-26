@@ -52,8 +52,11 @@
 	 * Handles the submit event of the form.
 	 * @param e Submit event.
 	 */
-	async function handleSubmit(e: SubmitEvent) {
-		const formData = new FormData(e.currentTarget as HTMLFormElement);
+	async function handleSubmit(
+		e: Event & { currentTarget: EventTarget & HTMLFormElement },
+	) {
+		const form = e.currentTarget;
+		const formData = new FormData(form);
 		const username = formData.get("username");
 		const password = formData.get("password");
 

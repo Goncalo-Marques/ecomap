@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
 	import OlMap from "ol/Map";
-	import Modal from "../clients/Modal.svelte";
+	import Modal from "./Modal.svelte";
 	import Map from "./map/Map.svelte";
 	import VectorLayer from "ol/layer/Vector";
 	import { Feature, MapBrowserEvent } from "ol";
@@ -256,7 +256,7 @@
 <Modal
 	{open}
 	{onOpenChange}
-	onClickOutside={removeSelectedLocation}
+	onBackdropClick={removeSelectedLocation}
 	title={$t("selectLocation")}
 >
 	<Map bind:map mapId="select-location-map" --height="32rem" --width="60rem" />
