@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private lateinit var containerInfoWindowBookmarkButton: ImageButton
 
-
     /**
      * Defines the container info window categories recycler view.
      */
