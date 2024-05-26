@@ -491,8 +491,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     userContainerBookmarks.remove(container.id)
 
                     val request = ApiClient.removeUserContainerBookmark(userID, container.id, token,
-                        {},
-                        { })
+                        {}, {})
 
                     ApiRequestQueue.getInstance(applicationContext).add(request)
                 }
@@ -503,8 +502,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     userContainerBookmarks[container.id] = container
 
                     val request = ApiClient.createUserContainerBookmark(userID, container.id, token,
-                        { },
-                        { })
+                        {}, {})
 
                     ApiRequestQueue.getInstance(applicationContext).add(request)
                 }
