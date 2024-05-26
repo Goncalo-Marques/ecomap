@@ -14,7 +14,6 @@ import (
 
 const (
 	errContainerNotFound                            = "container not found"
-	errContainerAssociatedWithContainerReport       = "container associated with user report"
 	errContainerAssociatedWithUserContainerBookmark = "container associated with user bookmark"
 	errContainerAssociatedWithRouteContainer        = "container associated with route"
 )
@@ -223,8 +222,6 @@ func (h *handler) DeleteContainerByID(w http.ResponseWriter, r *http.Request, co
 		switch {
 		case errors.Is(err, domain.ErrContainerNotFound):
 			notFound(w, errContainerNotFound)
-		case errors.Is(err, domain.ErrContainerAssociatedWithContainerReport):
-			conflict(w, errContainerAssociatedWithContainerReport)
 		case errors.Is(err, domain.ErrContainerAssociatedWithUserContainerBookmark):
 			conflict(w, errContainerAssociatedWithUserContainerBookmark)
 		case errors.Is(err, domain.ErrContainerAssociatedWithRouteContainer):

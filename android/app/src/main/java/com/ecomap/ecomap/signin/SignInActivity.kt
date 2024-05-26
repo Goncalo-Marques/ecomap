@@ -52,8 +52,8 @@ class SignInActivity : AppCompatActivity() {
      * Opens create account screen.
      */
     private fun openCreateAccountScreen() {
-        val intent = Intent(this, CreateAccountActivity::class.java)
-        startActivity(intent)
+        val intentCreateAccountActivity = Intent(this, CreateAccountActivity::class.java)
+        startActivity(intentCreateAccountActivity)
     }
 
     /**
@@ -79,34 +79,24 @@ class SignInActivity : AppCompatActivity() {
                 username,
                 password,
                 { token ->
-                    if (token == null) {
-                        Toast.makeText(
-                            applicationContext,
-                            getString(R.string.error_sign_in),
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
-                        return@signIn
-                    }
-
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intentMainActivity = Intent(this, MainActivity::class.java)
 
                     // Flags the intent to mark the activity as the root in the history stack,
                     // clearing out any other tasks.
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
                     // Stores token in UserStore.
                     runBlocking { store.storeToken(token) }
 
-                    startActivity(intent)
+                    startActivity(intentMainActivity)
+                    finish()
                 },
                 { _ ->
                     Toast.makeText(
                         applicationContext,
-                        getString(R.string.error_sign_in),
+                        getString(R.string.error_sign_in_invalid_credentials),
                         Toast.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                 })
 
         ApiRequestQueue.getInstance(applicationContext).add(request)

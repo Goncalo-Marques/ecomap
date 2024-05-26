@@ -13,10 +13,8 @@ import (
 )
 
 const (
-	errUserNotFound                              = "user not found"
-	errUserAlreadyExists                         = "username already exists"
-	errUserAssociatedWithUserContainerBookmark   = "user associated with container bookmark"
-	errUserAssociatedWithContainerReportAsIssuer = "user associated with container report as issuer"
+	errUserNotFound      = "user not found"
+	errUserAlreadyExists = "username already exists"
 )
 
 // CreateUser handles the http request to create a user.
@@ -177,10 +175,6 @@ func (h *handler) DeleteUserByID(w http.ResponseWriter, r *http.Request, userID 
 		switch {
 		case errors.Is(err, domain.ErrUserNotFound):
 			notFound(w, errUserNotFound)
-		case errors.Is(err, domain.ErrUserAssociatedWithUserContainerBookmark):
-			conflict(w, errUserAssociatedWithUserContainerBookmark)
-		case errors.Is(err, domain.ErrUserAssociatedWithContainerReportAsIssuer):
-			conflict(w, errUserAssociatedWithContainerReportAsIssuer)
 		default:
 			internalServerError(w)
 		}
