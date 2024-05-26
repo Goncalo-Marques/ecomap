@@ -136,6 +136,33 @@ object ApiClient {
     }
 
     /**
+     * Returns the details of a user account.
+     * @param userID User identifier.
+     * @param token JWT authorization token.
+     * @param listener Volley response listener.
+     * @param errorListener Volley response error listener.
+     * @return Volley request.
+     */
+    fun getAccount(
+        userID: String,
+        token: String,
+        listener: Listener<User>,
+        errorListener: ErrorListener
+    ): JsonObjectRequest {
+        val url = "$URL_USERS/$userID"
+
+        return object : JsonObjectRequest(
+            Method.GET, url, null,
+            { response -> listener.onResponse(mapUser(response)) },
+            errorListener
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                return getHeaders(token)
+            }
+        }
+    }
+
+    /**
      * Returns the containers with the specified filter.
      * @param containerCategory Container category to filter by.
      * @param limit Amount of resources to get for the provided filter.
@@ -299,7 +326,7 @@ object ApiClient {
      * @param token Authorization bearer token.
      * @return Headers map.
      */
-    fun getHeaders(token: String): HashMap<String, String> {
+    private fun getHeaders(token: String): HashMap<String, String> {
         val headers = HashMap<String, String>()
         headers[HEADER_KEY_AUTHORIZATION] = HEADER_VALUE_BEARER_PREFIX + token
         return headers
@@ -332,7 +359,7 @@ object ApiClient {
      * @param json JSON object to map.
      * @return Domain User data class.
      */
-    fun mapUser(json: JSONObject): User {
+    private fun mapUser(json: JSONObject): User {
         return User(
             json.optString(FIELD_NAME_ID),
             json.optString(FIELD_NAME_USERNAME),
@@ -348,7 +375,7 @@ object ApiClient {
      * @param json JSON object to map.
      * @return Domain Container data class.
      */
-    fun mapContainer(json: JSONObject): Container {
+    private fun mapContainer(json: JSONObject): Container {
         val geoJSON = GeoJSONFeaturePoint()
 
         val geoJSONObject = json.optJSONObject(FIELD_CONTAINER_GEO_JSON)
