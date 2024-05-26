@@ -6,6 +6,7 @@ import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.ecomap.ecomap.domain.Container
 import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
@@ -245,11 +246,11 @@ object ApiClient {
         token: String,
         listener: Listener<Unit>,
         errorListener: ErrorListener
-    ): JsonObjectRequest {
+    ): StringRequest {
         val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS/$containerID"
 
-        return object : JsonObjectRequest(
-            Method.POST, url, null,
+        return object : StringRequest(
+            Method.POST, url,
             { listener.onResponse(Unit) },
             errorListener,
         ) {
@@ -274,11 +275,11 @@ object ApiClient {
         token: String,
         listener: Listener<Unit>,
         errorListener: ErrorListener
-    ): JsonObjectRequest {
+    ): StringRequest {
         val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS/$containerID"
 
-        return object : JsonObjectRequest(
-            Method.DELETE, url, null,
+        return object : StringRequest(
+            Method.DELETE, url,
             { listener.onResponse(Unit) },
             errorListener,
         ) {
