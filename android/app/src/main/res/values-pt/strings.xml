@@ -27,5 +27,6 @@
     <string name="error_sign_in_expired">Sessão expirada</string>
     <string name="placeholder">Placeholder</string>
     <string name="directions">Direções</string>
-    <string name="container_category">Categoria do contentor</string>
+    <string name="content_description_container_category">Categoria do contentor</string>
+    <string name="content_description_container_bookmark">Marcador de contentor</string>
 </resources>

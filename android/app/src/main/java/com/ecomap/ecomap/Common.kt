@@ -7,12 +7,45 @@ import android.widget.Toast
 import com.android.volley.VolleyError
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.signin.SignInActivity
+import okio.ByteString.Companion.decodeBase64
+import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * Class containing common methods and attributes.
  */
 class Common {
     companion object {
+        /**
+         * Returns the payload of the given JWT.
+         * @param token Token to extract the payload from.
+         * @return Payload extracted.
+         */
+        private fun decodeJWTPayload(token: String): String {
+            val tokenParts = token.split(".")
+            if (tokenParts.size < 2) {
+                return ""
+            }
+
+            return tokenParts[1].decodeBase64()?.string(Charsets.UTF_8) ?: ""
+        }
+
+        /**
+         * Returns the subject of the given JWT.
+         * @param token Token to extract the subject from.
+         * @return Subject extracted.
+         */
+        fun getSubjectFromJWT(token: String): String {
+            val payload = decodeJWTPayload(token)
+
+            try {
+                val jsonObject = JSONObject(payload)
+                return jsonObject.optString("sub")
+            } catch (e: JSONException) {
+                return ""
+            }
+        }
+
         /**
          * Handles the volley error. It displays a toast view with the associated error message.
          * It also evaluates the status code and starts the sign in activity in case of a 401

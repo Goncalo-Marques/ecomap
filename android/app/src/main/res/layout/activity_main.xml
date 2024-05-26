@@ -111,7 +111,7 @@
             android:textAlignment="textStart"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/info_window_text_snippet"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/info_window_button_container_bookmark"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -124,8 +124,19 @@
             android:textColor="@color/gray_500"
             android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/info_window_recycler_categories"
+            app:layout_constraintEnd_toEndOf="@+id/info_window_text_title"
+            app:layout_constraintStart_toStartOf="@+id/info_window_text_title" />
+
+        <ImageButton
+            android:id="@+id/info_window_button_container_bookmark"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:contentDescription="@string/content_description_container_bookmark"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/bookmark"
+            app:tint="@color/green_700" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/info_window_recycler_categories"
