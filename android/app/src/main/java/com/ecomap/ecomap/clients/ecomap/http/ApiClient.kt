@@ -1,6 +1,7 @@
 package com.ecomap.ecomap.clients.ecomap.http
 
 import android.util.Log
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
@@ -95,7 +96,11 @@ object ApiClient {
             Request.Method.POST, URL_USERS_SIGN_IN, requestPayload,
             { response -> listener.onResponse(response.optString(FIELD_NAME_TOKEN)) },
             errorListener
-        )
+        ).apply {
+            // Avoid retrying a request that failed due to invalid credentials, as this is an
+            // expected error.
+            retryPolicy = DefaultRetryPolicy(0, 0, 0f)
+        }
     }
 
     /**
