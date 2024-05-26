@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private lateinit var containerInfoWindowBookmarkButton: ImageButton
 
-
     /**
      * Defines the container info window categories recycler view.
      */
@@ -419,7 +418,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 handleSuccess(paginatedContainers)
             },
-            { error -> Common.handleVolleyError(this, this, error) })
+            { Common.handleVolleyError(this, this, it) })
 
         ApiRequestQueue.getInstance(applicationContext).add(request)
     }
@@ -595,7 +594,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 handleSuccess(paginatedContainers)
             },
-            { error -> Common.handleVolleyError(this, this, error) })
+            { Common.handleVolleyError(this, this, it) })
 
         ApiRequestQueue.getInstance(applicationContext).add(request)
     }
