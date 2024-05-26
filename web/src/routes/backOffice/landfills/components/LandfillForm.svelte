@@ -136,8 +136,10 @@
 	 * Handles the submit event of the form.
 	 * @param e Submit event.
 	 */
-	function handleSubmit(e: SubmitEvent) {
-		const form = e.currentTarget as HTMLFormElement;
+	function handleSubmit(
+		e: Event & { currentTarget: EventTarget & HTMLFormElement },
+	) {
+		const form = e.currentTarget;
 		const formData = new FormData(form);
 
 		const location = formData.get("location") ?? "";

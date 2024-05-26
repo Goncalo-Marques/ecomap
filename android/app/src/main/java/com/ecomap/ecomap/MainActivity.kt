@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
+import com.ecomap.ecomap.domain.Container
 import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
 import com.ecomap.ecomap.map.ContainerCategoriesRecyclerViewAdapter
@@ -89,6 +91,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var containerInfoWindowSnippetText: TextView
 
     /**
+     * Defines the container info window bookmark button.
+     */
+    private lateinit var containerInfoWindowBookmarkButton: ImageButton
+
+    /**
      * Defines the container info window categories recycler view.
      */
     private lateinit var containerInfoWindowRecyclerCategories: RecyclerView
@@ -99,9 +106,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var containerInfoWindowDirectionsButton: Button
 
     /**
+     * Defines the containers the user has bookmarked.
+     * It is contained in a map with the container id as key.
+     */
+    private var userContainerBookmarks: MutableMap<String, Container> = mutableMapOf()
+
+    /**
      * Defines the authentication token.
      */
     private lateinit var token: String
+
+    /**
+     * Defines the identifier of the current user.
+     */
+    private lateinit var userID: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,6 +145,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             token = storeToken.toString()
+            userID = Common.getSubjectFromJWT(token)
         }
 
         // Construct the main entry point for the Android location services.
@@ -161,6 +180,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         containerInfoWindowView = findViewById(R.id.info_window)
         containerInfoWindowTitleText = findViewById(R.id.info_window_text_title)
         containerInfoWindowSnippetText = findViewById(R.id.info_window_text_snippet)
+        containerInfoWindowBookmarkButton = findViewById(R.id.info_window_button_container_bookmark)
         containerInfoWindowRecyclerCategories = findViewById(R.id.info_window_recycler_categories)
         containerInfoWindowRecyclerCategories.layoutManager =
             GridLayoutManager(this, CONTAINER_INFO_WINDOW_RECYCLER_CATEGORIES_SPAN_COUNT)
@@ -248,6 +268,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Adds the containers in the map.
         updateContainersUI()
+
+        // Get user container bookmarks.
+        getUserContainerBookmarks()
 
         // Get the current location of the device and set the position of the map.
         focusMyLocation()
@@ -358,15 +381,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (existingContainer == null) {
                     val containerMarker = ContainerMarker(
                         this,
-                        container.id,
-                        container.geoJSON,
-                        arrayListOf(container.category)
+                        arrayListOf(container)
                     )
 
                     containerClusterManager.addItem(containerMarker)
                     filteredContainers[containerPosition] = containerMarker
                 } else {
-                    existingContainer.categories.add(container.category)
+                    existingContainer.containers.add(container)
                 }
             }
 
@@ -397,7 +418,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 handleSuccess(paginatedContainers)
             },
-            { error -> Common.handleVolleyError(this, this, error) })
+            { Common.handleVolleyError(this, this, it) })
 
         ApiRequestQueue.getInstance(applicationContext).add(request)
     }
@@ -439,18 +460,63 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Opens the info window for the given container marker.
      * It hides the main buttons and shows the info window with the given container marker data.
      */
-    private fun showContainerInfoWindow(container: ContainerMarker) {
+    private fun showContainerInfoWindow(containerMarker: ContainerMarker) {
         groupButtonsView.visibility = View.GONE
         containerInfoWindowView.visibility = View.VISIBLE
-        containerInfoWindowTitleText.text = container.geoJSON.properties.municipalityName
-        containerInfoWindowSnippetText.text = container.geoJSON.properties.getWayName(this)
+        containerInfoWindowTitleText.text = containerMarker.geoJSON.properties.municipalityName
+        containerInfoWindowSnippetText.text = containerMarker.geoJSON.properties.getWayName(this)
 
+        containerInfoWindowBookmarkButton.setImageResource(R.drawable.bookmark)
+        for (container in containerMarker.containers) {
+            if (userContainerBookmarks.contains(container.id)) {
+                // Container is bookmarked.
+                containerInfoWindowBookmarkButton.setImageResource(R.drawable.bookmark_fill)
+                break
+            }
+        }
+        containerInfoWindowBookmarkButton.setOnClickListener {
+            // Since a marker can contain multiple containers in the same position, check that at
+            // least one is bookmarked.
+            var bookmarked = false
+            for (container in containerMarker.containers) {
+                if (userContainerBookmarks.contains(container.id)) {
+                    bookmarked = true
+                    break
+                }
+            }
+
+            if (bookmarked) {
+                // Remove the bookmark from all containers in the marker.
+                containerInfoWindowBookmarkButton.setImageResource(R.drawable.bookmark)
+
+                for (container in containerMarker.containers) {
+                    userContainerBookmarks.remove(container.id)
+
+                    val request =
+                        ApiClient.removeUserContainerBookmark(userID, container.id, token, {}, {})
+                    ApiRequestQueue.getInstance(applicationContext).add(request)
+                }
+            } else {
+                // Create the bookmark for all containers in the marker.
+                containerInfoWindowBookmarkButton.setImageResource(R.drawable.bookmark_fill)
+
+                for (container in containerMarker.containers) {
+                    userContainerBookmarks[container.id] = container
+
+                    val request =
+                        ApiClient.createUserContainerBookmark(userID, container.id, token, {}, {})
+                    ApiRequestQueue.getInstance(applicationContext).add(request)
+                }
+            }
+        }
+
+        // Populate the container category recycler view.
         val containerCategoriesDataSet =
-            ArrayList<ContainerCategoryRecyclerViewData>(container.categories.size)
-        for (containerCategory in container.categories) {
+            ArrayList<ContainerCategoryRecyclerViewData>(containerMarker.containers.size)
+        for (container in containerMarker.containers) {
             val data = ContainerCategoryRecyclerViewData(
-                containerCategory.getIconResource(),
-                containerCategory.getStringResource(this)
+                container.category.getIconResource(),
+                container.category.getStringResource(this)
             )
             if (containerCategoriesDataSet.contains(data)) {
                 // The category already exists in the current data set.
@@ -462,10 +528,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         containerInfoWindowRecyclerCategories.adapter =
             ContainerCategoriesRecyclerViewAdapter(containerCategoriesDataSet.toTypedArray())
 
+        // Set the directions button to open in an external application.
         containerInfoWindowDirectionsButton.setOnClickListener {
             val intentMapDirections = Intent(Intent.ACTION_VIEW)
             intentMapDirections.data =
-                Uri.parse("geo:0,0?q=${container.position.latitude},${container.position.longitude}(${container.snippet})")
+                Uri.parse("geo:0,0?q=${containerMarker.position.latitude},${containerMarker.position.longitude}(${containerMarker.snippet})")
 
             if (intentMapDirections.resolveActivity(packageManager) != null) {
                 // Start activity only if there is an app that can resolve it.
@@ -485,6 +552,51 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         groupButtonsView.visibility = View.VISIBLE
         containerInfoWindowView.visibility = View.GONE
+    }
+
+    /**
+     * Gets the current list of containers that the user has bookmarked.
+     */
+    private fun getUserContainerBookmarks() {
+        userContainerBookmarks.clear()
+
+        // Helper function to handle a successful response.
+        val handleSuccess = fun(paginatedContainers: ContainersPaginated) {
+            if (isFinishing || isDestroyed) {
+                return
+            }
+
+            for (container in paginatedContainers.containers) {
+                userContainerBookmarks[container.id] = container
+            }
+        }
+
+        // Execute the request to get all existing user container bookmarks and add them to the list.
+        val request = ApiClient.listUserContainerBookmarks(
+            userID,
+            REQUEST_LIST_CONTAINER_LIMIT,
+            0,
+            token,
+            { paginatedContainers ->
+                val remainingRequest = paginatedContainers.total / REQUEST_LIST_CONTAINER_LIMIT
+                for (i in 1..remainingRequest) {
+                    ApiRequestQueue.getInstance(applicationContext).add(
+                        ApiClient.listUserContainerBookmarks(
+                            userID,
+                            REQUEST_LIST_CONTAINER_LIMIT,
+                            REQUEST_LIST_CONTAINER_LIMIT * i,
+                            token,
+                            { handleSuccess(it) },
+                            { Common.handleVolleyError(this, this, it) }
+                        )
+                    )
+                }
+
+                handleSuccess(paginatedContainers)
+            },
+            { Common.handleVolleyError(this, this, it) })
+
+        ApiRequestQueue.getInstance(applicationContext).add(request)
     }
 
     companion object {

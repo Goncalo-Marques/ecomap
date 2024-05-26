@@ -456,6 +456,51 @@
 		},
 		"employees.delete.conflict.description": {
 			"type": "string"
+		},
+		"employees.updatePassword.title": {
+			"type": "string"
+		},
+		"employees.updatePassword.currentPassword.label": {
+			"type": "string"
+		},
+		"employees.updatePassword.newPassword.label": {
+			"type": "string"
+		},
+		"employees.updatePassword.confirmPassword.label": {
+			"type": "string"
+		},
+		"employees.updatePassword.currentPassword.placeholder": {
+			"type": "string"
+		},
+		"employees.updatePassword.newPassword.placeholder": {
+			"type": "string"
+		},
+		"employees.updatePassword.confirmPassword.placeholder": {
+			"type": "string"
+		},
+		"employees.updatePassword.success": {
+			"type": "string"
+		},
+		"employees.updatePassword.error.passwordConstraints.title": {
+			"type": "string"
+		},
+		"employees.updatePassword.error.passwordConstraints.description": {
+			"type": "string"
+		},
+		"employees.updatePassword.error.incorrectPassword.title": {
+			"type": "string"
+		},
+		"employees.updatePassword.error.incorrectPassword.description": {
+			"type": "string"
+		},
+		"employees.error.passwordMismatch": {
+			"type": "string"
+		},
+		"employees.passwordConstraints": {
+			"type": "string"
+		},
+		"confirm": {
+			"type": "string"
 		}
 	}
 }

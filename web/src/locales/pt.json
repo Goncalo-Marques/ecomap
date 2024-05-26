@@ -151,5 +151,20 @@
 	"employees.notFound.description": "O colaborador que procura não existe.",
 	"employees.delete.success": "Colaborador eliminado com sucesso",
 	"employees.delete.conflict.title": "Conflito",
-	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a uma rota."
+	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a uma rota.",
+	"employees.updatePassword.title": "Alterar palavra-passe",
+	"employees.updatePassword.currentPassword.label": "Palavra-passe atual",
+	"employees.updatePassword.newPassword.label": "Nova palavra-passe",
+	"employees.updatePassword.confirmPassword.label": "Confirmar palavra-passe",
+	"employees.updatePassword.currentPassword.placeholder": "Introduza a palavra-passe atual",
+	"employees.updatePassword.newPassword.placeholder": "Introduza a nova palavra-passe",
+	"employees.updatePassword.confirmPassword.placeholder": "Repita a nova palavra-passe",
+	"employees.updatePassword.success": "Palavra-passe alterada com sucesso",
+	"employees.updatePassword.error.passwordConstraints.title": "Palavra-passe inválida",
+	"employees.updatePassword.error.passwordConstraints.description": "A palavra-passe deve conter pelo menos 14 caracteres, incluindo um carácter regular, um carácter especial e um número.",
+	"employees.updatePassword.error.incorrectPassword.title": "Credenciais inválidas",
+	"employees.updatePassword.error.incorrectPassword.description": "A palavra-passe introduzida não corresponde à sua palavra-passe atual.",
+	"employees.error.passwordMismatch": "A palavra-passe não corresponde à nova palavra-passe",
+	"employees.passwordConstraints": "A palavra-passe deve conter pelo menos 14 caracteres, incluindo um carácter regular, um carácter especial e um número",
+	"confirm": "Confirmar"
 }
