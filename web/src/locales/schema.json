@@ -400,10 +400,16 @@
 		"employees.updatePassword.success": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.title": {
+		"employees.updatePassword.error.passwordConstraints.title": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.description": {
+		"employees.updatePassword.error.passwordConstraints.description": {
+			"type": "string"
+		},
+		"employees.updatePassword.error.incorrectPassword.title": {
+			"type": "string"
+		},
+		"employees.updatePassword.error.incorrectPassword.description": {
 			"type": "string"
 		},
 		"employees.error.passwordMismatch": {

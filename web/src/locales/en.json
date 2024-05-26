@@ -133,8 +133,10 @@
 	"employees.updatePassword.newPassword.placeholder": "Enter the new password",
 	"employees.updatePassword.confirmPassword.placeholder": "Repeat the new password",
 	"employees.updatePassword.success": "Password changed successfully",
-	"employees.updatePassword.error.title": "Invalid password",
-	"employees.updatePassword.error.description": "The password must contain at least 14 characters, including one regular character, one special character, and one number",
+	"employees.updatePassword.error.passwordConstraints.title": "Invalid password",
+	"employees.updatePassword.error.passwordConstraints.description": "The password must contain at least 14 characters, including one regular character, one special character, and one number",
+	"employees.updatePassword.error.incorrectPassword.title": "Incorrect credentials",
+	"employees.updatePassword.error.incorrectPassword.description": "The password entered does not match your current password.",
 	"employees.error.passwordMismatch": "The password doesn't match the new password",
 	"employees.passwordConstraints": "Password must contain at least 14 characters, including one regular character, one special character, and one number",
 	"confirm": "Confirm"
