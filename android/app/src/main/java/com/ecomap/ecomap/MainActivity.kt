@@ -48,8 +48,6 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.maps.android.clustering.ClusterManager
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
@@ -139,16 +137,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Check whether the user store contains the login token.
         // If not, start the SignIn Activity.
         val store = UserStore(applicationContext)
-        runBlocking {
-            val storeToken = store.getToken().first()
-            if (storeToken == null) {
-                startActivity(intentSignInActivity)
-                finish()
-            }
-
-            token = storeToken.toString()
-            userID = Common.getSubjectFromJWT(token)
+        token = store.getToken()
+        if (token.isEmpty()) {
+            startActivity(intentSignInActivity)
+            finishAffinity()
+            return
         }
+
+        userID = Common.getSubjectFromJWT(token)
 
         // Construct the main entry point for the Android location services.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)

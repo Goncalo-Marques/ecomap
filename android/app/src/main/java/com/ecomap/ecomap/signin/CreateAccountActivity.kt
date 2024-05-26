@@ -17,14 +17,12 @@ import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.runBlocking
 
 class CreateAccountActivity : AppCompatActivity() {
     private lateinit var textInputEditTextFirstName: TextInputEditText
     private lateinit var textInputEditTextLastName: TextInputEditText
     private lateinit var textInputEditTextUsername: TextInputEditText
     private lateinit var textInputEditTextPassword: TextInputEditText
-    private lateinit var buttonCreateAccount: Button
     private lateinit var progressBar: ProgressBar
 
     private lateinit var store: UserStore
@@ -53,7 +51,7 @@ class CreateAccountActivity : AppCompatActivity() {
         textInputEditTextLastName = findViewById(R.id.text_input_edit_text_last_name)
         textInputEditTextUsername = findViewById(R.id.text_input_edit_text_username)
         textInputEditTextPassword = findViewById(R.id.text_input_edit_text_password)
-        buttonCreateAccount = findViewById(R.id.button_create_account)
+        val buttonCreateAccount: Button = findViewById(R.id.button_create_account)
         progressBar = findViewById(R.id.progress_bar_create_account)
 
         // Set up on click event for the create account button.
@@ -140,26 +138,13 @@ class CreateAccountActivity : AppCompatActivity() {
     private fun signInUser(username: String, password: String) {
         val request = ApiClient.signIn(username, password,
             { token ->
-                if (token.isEmpty()) {
-                    Toast.makeText(
-                        applicationContext,
-                        getString(R.string.error_create_account),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@signIn
-                }
+                // Stores token in UserStore.
+                store.storeToken(token)
 
                 val intentMainActivity = Intent(this, MainActivity::class.java)
-
-                // Flags the intent to mark the activity as the root in the history stack,
-                // clearing out any other tasks.
-                intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-
-                // Stores token in UserStore.
-                runBlocking { store.storeToken(token) }
-
                 startActivity(intentMainActivity)
-                finish()
+
+                finishAffinity()
             },
             { _ ->
                 // Hide the progress bar when a network error occurs.

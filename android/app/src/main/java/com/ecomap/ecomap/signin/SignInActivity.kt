@@ -14,13 +14,10 @@ import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.runBlocking
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var textInputEditTextUsername: TextInputEditText
     private lateinit var textInputEditTextPassword: TextInputEditText
-    private lateinit var buttonSignIn: Button
-    private lateinit var buttonCreateAccount: Button
 
     private lateinit var store: UserStore
 
@@ -40,8 +37,8 @@ class SignInActivity : AppCompatActivity() {
         // Get activity views.
         textInputEditTextUsername = findViewById(R.id.text_input_edit_text_username)
         textInputEditTextPassword = findViewById(R.id.text_input_edit_text_password)
-        buttonSignIn = findViewById(R.id.button_sign_in)
-        buttonCreateAccount = findViewById(R.id.button_create_account)
+        val buttonSignIn: Button = findViewById(R.id.button_sign_in)
+        val buttonCreateAccount: Button = findViewById(R.id.button_create_account)
 
         // Set up on click events for the sign in and create account button.
         buttonSignIn.setOnClickListener { signInUser() }
@@ -79,17 +76,13 @@ class SignInActivity : AppCompatActivity() {
                 username,
                 password,
                 { token ->
-                    val intentMainActivity = Intent(this, MainActivity::class.java)
-
-                    // Flags the intent to mark the activity as the root in the history stack,
-                    // clearing out any other tasks.
-                    intentMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-
                     // Stores token in UserStore.
-                    runBlocking { store.storeToken(token) }
+                    store.storeToken(token)
 
+                    val intentMainActivity = Intent(this, MainActivity::class.java)
                     startActivity(intentMainActivity)
-                    finish()
+
+                    finishAffinity()
                 },
                 { _ ->
                     Toast.makeText(

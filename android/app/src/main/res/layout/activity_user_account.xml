@@ -17,7 +17,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="@string/my_account" />
+        app:title="@string/my_account">
+
+        <Button
+            android:id="@+id/button_sign_out"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/sign_out"
+            app:icon="@drawable/sign_out"
+            android:layout_marginEnd="16dp" />
+
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_begin"

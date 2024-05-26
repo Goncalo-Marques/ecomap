@@ -1,8 +1,10 @@
 package com.ecomap.ecomap.user
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -14,8 +16,7 @@ import com.ecomap.ecomap.R
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import com.ecomap.ecomap.signin.SignInActivity
 
 class UserAccountActivity : AppCompatActivity() {
     private lateinit var textViewFirstName: TextView
@@ -23,6 +24,7 @@ class UserAccountActivity : AppCompatActivity() {
     private lateinit var textViewUsername: TextView
     private lateinit var progressBar: ProgressBar
 
+    private lateinit var store: UserStore
     private lateinit var token: String
     private lateinit var userID: String
 
@@ -43,22 +45,22 @@ class UserAccountActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Get activity views.
+        val buttonSignOut: Button = findViewById(R.id.button_sign_out)
         textViewFirstName = findViewById(R.id.text_view_first_name_value)
         textViewLastName = findViewById(R.id.text_view_last_name_value)
         textViewUsername = findViewById(R.id.text_view_username_value)
         progressBar = findViewById(R.id.progress_bar_user_account)
 
+        // Set up on click event for the sign out button.
+        buttonSignOut.setOnClickListener { signOutUser() }
+
         // Show progress bar while data is still loading.
         progressBar.visibility = View.VISIBLE
 
-        // Get user token.
-        val store = UserStore(applicationContext)
-        runBlocking {
-            val storeToken = store.getToken().first()
-
-            token = storeToken.toString()
-            userID = Common.getSubjectFromJWT(token)
-        }
+        // Get user store and token.
+        store = UserStore(applicationContext)
+        token = store.getToken()
+        userID = Common.getSubjectFromJWT(token)
 
         // Update UI with the user personal information and bookmarks.
         updateUserPersonalInformationUI()
@@ -78,18 +80,40 @@ class UserAccountActivity : AppCompatActivity() {
     }
 
     /**
+     * Signs the user out by deleting the token from the store and starting the sign in activity.
+     */
+    private fun signOutUser() {
+        // Removes token from UserStore.
+        store.removeToken()
+
+        val intentSignInActivity = Intent(this, SignInActivity::class.java)
+        startActivity(intentSignInActivity)
+
+        finishAffinity()
+    }
+
+    /**
      * Gets the user's personal information and sets it in the UI.
      */
     private fun updateUserPersonalInformationUI() {
         val request = ApiClient.getAccount(
             userID, token,
             { userAccount ->
+                // Set user information.
                 textViewFirstName.text = userAccount.firstName
                 textViewLastName.text = userAccount.lastName
                 textViewUsername.text = userAccount.username
+
+                // Hide the progress bar when the user information is loaded.
                 progressBar.visibility = View.INVISIBLE
             },
-            { Common.handleVolleyError(this, this, it) })
+            {
+                // Hide the progress bar when a network error occurs.
+                progressBar.visibility = View.INVISIBLE
+
+                Common.handleVolleyError(this, this, it)
+            }
+        )
 
         ApiRequestQueue.getInstance(applicationContext).add(request)
     }
