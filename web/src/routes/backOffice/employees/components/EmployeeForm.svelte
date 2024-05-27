@@ -138,6 +138,8 @@
 		location: "",
 		scheduleStart: "",
 		scheduleEnd: "",
+		newPassword: "",
+		confirmPassword: "",
 	};
 
 	/**
@@ -152,7 +154,6 @@
 	 */
 	function validateForm(
 		usernameValidity: ValidityState,
-		passwordValidity: ValidityState,
 		firstNameValidity: ValidityState,
 		lastNameValidity: ValidityState,
 		roleValidity: ValidityState,
@@ -161,6 +162,8 @@
 		locationValidity: ValidityState,
 		scheduleStart: ValidityState,
 		scheduleEnd: ValidityState,
+		newPasswordInput: HTMLInputElement,
+		confirmPasswordInput: HTMLInputElement,
 		coordinate: number[] | undefined,
 	): coordinate is number[] {
 		// Username Validation.
@@ -176,23 +179,6 @@
 			});
 		} else {
 			formErrorMessages.username = "";
-		}
-
-		// Password Validation.
-		if (passwordValidity.valueMissing) {
-			formErrorMessages.password = $t("error.valueMissing");
-		} else if (passwordValidity.patternMismatch) {
-			formErrorMessages.phoneNumber = $t("error.patternMismatch");
-		} else if (passwordValidity.tooShort) {
-			formErrorMessages.password = $t("error.tooShort", {
-				minLength: formFieldsLengths.password.min,
-			});
-		} else if (passwordValidity.tooLong) {
-			formErrorMessages.password = $t("error.tooLong", {
-				maxLength: formFieldsLengths.password.max,
-			});
-		} else {
-			formErrorMessages.password = "";
 		}
 
 		//FirstName Validation.
@@ -277,6 +263,23 @@
 			formErrorMessages.location = "";
 		}
 
+		// Password Validation.
+		if (newPasswordInput.validity.valueMissing) {
+			formErrorMessages.newPassword = $t("error.valueMissing");
+		} else {
+			formErrorMessages.newPassword = "";
+		}
+
+		if (confirmPasswordInput.validity.valueMissing) {
+			formErrorMessages.confirmPassword = $t("error.valueMissing");
+		} else if (newPasswordInput.value !== confirmPasswordInput.value) {
+			formErrorMessages.confirmPassword = $t(
+				"employees.error.passwordMismatch",
+			);
+		} else {
+			formErrorMessages.confirmPassword = "";
+		}
+
 		return (
 			!formErrorMessages.username &&
 			!formErrorMessages.password &&
@@ -288,6 +291,9 @@
 			!formErrorMessages.scheduleStart &&
 			!formErrorMessages.scheduleEnd &&
 			!formErrorMessages.location &&
+			!formErrorMessages.newPassword &&
+			!formErrorMessages.confirmPassword &&
+			newPasswordInput.value === confirmPasswordInput.value &&
 			!!coordinate
 		);
 	}
@@ -301,7 +307,8 @@
 		const formData = new FormData(form);
 
 		const username = formData.get("username") ?? "";
-		const password = formData.get("password") ?? "";
+		const newPassword = formData.get("newPassword") ?? "";
+		const confirmPassword = formData.get("confirmPassword") ?? "";
 		const firstName = formData.get("firstName") ?? "";
 		const lastName = formData.get("lastName") ?? "";
 		const role = formData.get("role") ?? "";
@@ -314,7 +321,6 @@
 		// Check if all fields are strings.
 		if (
 			typeof username !== "string" ||
-			typeof password !== "string" ||
 			typeof firstName !== "string" ||
 			typeof lastName !== "string" ||
 			typeof role !== "string" ||
@@ -322,21 +328,15 @@
 			typeof phoneNumber !== "string" ||
 			typeof location !== "string" ||
 			typeof scheduleStart !== "string" ||
-			typeof scheduleEnd !== "string"
+			typeof scheduleEnd !== "string" ||
+			typeof newPassword !== "string" ||
+			typeof confirmPassword !== "string"
 		) {
-			return;
-		}
-
-		if (!isValidEmployeeRole(role)) {
 			return;
 		}
 
 		const usernameInput = form.elements.namedItem(
 			"username",
-		) as HTMLInputElement;
-
-		const passwordInput = form.elements.namedItem(
-			"password",
 		) as HTMLInputElement;
 
 		const firstNameInput = form.elements.namedItem(
@@ -369,11 +369,18 @@
 			"scheduleEnd",
 		) as HTMLInputElement;
 
+		const newPasswordInput = form.elements.namedItem(
+			"newPassword",
+		) as HTMLInputElement;
+
+		const confirmPasswordInput = form.elements.namedItem(
+			"confirmPassword",
+		) as HTMLInputElement;
+
 		// Check if form is valid to prevent making a server request.
 		if (
 			!validateForm(
 				usernameInput.validity,
-				passwordInput.validity,
 				firstNameInput.validity,
 				lastNameInput.validity,
 				roleInput.validity,
@@ -382,16 +389,22 @@
 				locationInput.validity,
 				scheduleStartInput.validity,
 				scheduleEndInput.validity,
+				newPasswordInput,
+				confirmPasswordInput,
 				selectedCoordinate,
 			)
 		) {
 			return;
 		}
 
+		if (!isValidEmployeeRole(role)) {
+			return;
+		}
+
 		if (createForm) {
 			(onSave as onSaveCreateType)(
 				username,
-				password,
+				newPassword,
 				firstName,
 				lastName,
 				role,
@@ -492,27 +505,6 @@
 					/>
 				</FormControl>
 
-				{#if createForm}
-					<!-- Password -->
-					<!-- TODO pattern to password -->
-					<FormControl
-						label={$t("employees.password")}
-						error={!!formErrorMessages.password}
-						helperText={formErrorMessages.password}
-					>
-						<Input
-							required
-							name="password"
-							type="password"
-							pattern={``}
-							error={!!formErrorMessages.password}
-							placeholder={$t("employees.password.placeholder")}
-							minLength={formFieldsLengths.password.min}
-							maxLength={formFieldsLengths.password.max}
-						/>
-					</FormControl>
-				{/if}
-
 				<!-- dateOfBirth -->
 				<FormControl
 					label={$t("employees.dateOfBirth")}
@@ -572,6 +564,45 @@
 				locationName = name;
 			}}
 		/>
+		{#if createForm}
+			<DetailsSection label={$t("employees.password")}>
+				<DetailsFields>
+					<!-- NewPassword -->
+					<FormControl
+						label={$t("employees.updatePassword.newPassword.label")}
+						error={!!formErrorMessages.newPassword}
+						helperText={formErrorMessages.newPassword}
+						title={$t("employees.passwordConstraints")}
+					>
+						<Input
+							required
+							type="password"
+							name="newPassword"
+							placeholder={$t(
+								"employees.updatePassword.newPassword.placeholder",
+							)}
+							error={!!formErrorMessages.newPassword}
+						/>
+					</FormControl>
+					<!-- ConfirmPassword -->
+					<FormControl
+						label={$t("employees.updatePassword.confirmPassword.label")}
+						error={!!formErrorMessages.confirmPassword}
+						helperText={formErrorMessages.confirmPassword}
+					>
+						<Input
+							required
+							type="password"
+							name="confirmPassword"
+							placeholder={$t(
+								"employees.updatePassword.confirmPassword.placeholder",
+							)}
+							error={!!formErrorMessages.confirmPassword}
+						/>
+					</FormControl>
+				</DetailsFields>
+			</DetailsSection>
+		{/if}
 		<DetailsSection label={$t("work")}>
 			<DetailsFields>
 				<!-- scheduleStart -->

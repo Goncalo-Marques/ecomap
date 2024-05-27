@@ -40,6 +40,10 @@
 		scheduleStart: string,
 		scheduleEnd: string,
 	) {
+		// Adding seconds to times. Necessary because api receives times with seconds.
+		scheduleStart += ":00";
+		scheduleEnd += ":00";
+
 		const res = await ecomapHttpClient.POST("/employees", {
 			body: {
 				username,
@@ -56,11 +60,27 @@
 		});
 
 		if (res.error) {
-			toast.show({
-				type: "error",
-				title: $t("error.unexpected.title"),
-				description: $t("error.unexpected.description"),
-			});
+			switch (res.error.code) {
+				case "bad_request":
+					toast.show({
+						type: "error",
+						title: $t(
+							"employees.updatePassword.error.passwordConstraints.title",
+						),
+						description: $t(
+							"employees.updatePassword.error.passwordConstraints.description",
+						),
+					});
+					break;
+
+				default:
+					toast.show({
+						type: "error",
+						title: $t("error.unexpected.title"),
+						description: $t("error.unexpected.description"),
+					});
+					break;
+			}
 
 			return;
 		}
