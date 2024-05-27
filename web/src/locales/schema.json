@@ -388,16 +388,7 @@
 		"employees.lastName.placeholder": {
 			"type": "string"
 		},
-		"employees.dateOfBirth.placeholder": {
-			"type": "string"
-		},
 		"employees.phone.placeholder": {
-			"type": "string"
-		},
-		"employees.scheduleStart.placeholder": {
-			"type": "string"
-		},
-		"employees.scheduleEnd.placeholder": {
 			"type": "string"
 		},
 		"employees.updatePassword.title": {

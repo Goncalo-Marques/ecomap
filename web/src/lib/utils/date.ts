@@ -31,3 +31,12 @@ export function formatDate(
 export function formatTime(time: string): string {
 	return formatDate(`${UNIX_TIME_0_DATE} ${time}`, DateFormats.shortTime);
 }
+
+/**
+ * Formats times to 2-digit hour and 2-digit minutes. In 24 hours format.
+ * @param time Time to be formatted.
+ * @returns Formatted time.
+ */
+export function formatTime24H(time: string): string {
+	return formatDate(`${UNIX_TIME_0_DATE} ${time}`, DateFormats.shortTime24H);
+}
