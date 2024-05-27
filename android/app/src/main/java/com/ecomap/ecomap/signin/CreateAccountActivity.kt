@@ -146,6 +146,7 @@ class CreateAccountActivity : AppCompatActivity() {
                 runBlocking { store.storeToken(token) }
 
                 startActivity(intentMainActivity)
+                finish()
             },
             { _ ->
                 // Hide the progress bar when a network error occurs.

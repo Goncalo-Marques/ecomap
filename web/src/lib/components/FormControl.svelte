@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Icon from "./Icon.svelte";
+
 	/**
 	 * A space-separated list of the classes of the element.
 	 * @default ""
@@ -23,11 +25,22 @@
 	 * @default null
 	 */
 	export let label: string | null = null;
+
+	/**
+	 * The text representing advisory information related to the element it belongs to.
+	 * @default null
+	 */
+	export let title: string | null = null;
 </script>
 
 <label class={className}>
 	{#if label}
-		{label}
+		<span {title} class="header">
+			<span class="input-label">{label}</span>
+			{#if title}
+				<Icon name="info" size="xx-small" />
+			{/if}
+		</span>
 	{/if}
 	<slot />
 	{#if helperText}
@@ -39,7 +52,16 @@
 	label {
 		display: flex;
 		flex-direction: column;
-		color: var(--gray-500);
+	}
+
+	.header {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+
+		& .input-label {
+			color: var(--gray-500);
+		}
 	}
 
 	.helper-text {

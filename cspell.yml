@@ -9,6 +9,7 @@ ignoreWords:
   - Avenir
   - birthdate
   - buildx
+  - Charsets
   - clazz
   - cloudrun
   - codegen
@@ -40,6 +41,7 @@ ignoreWords:
   - nutsiii
   - oapi
   - oapitypes
+  - okio
   - openapi
   - Parens
   - pgconn
@@ -54,8 +56,10 @@ ignoreWords:
   - Português
   - postgis
   - proguard
+  - recyclerview
   - rnwa
   - rnwd
+  - scrollbars
   - sharedpref
   - signin
   - sslmode
