@@ -52,7 +52,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.play.services.maps) // Maps SDK for Android
-    implementation(libs.play.services.location)
+    implementation(libs.android.maps.utils) // Maps SDK for Android Utility Library
+    implementation(libs.play.services.location) // Google Play Services Geolocation API
     implementation(libs.volley)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import IconButton from "../components/IconButton.svelte";
+	import IconButton from "./IconButton.svelte";
 
 	/**
 	 * Indicates if modal is open.
@@ -28,7 +28,7 @@
 	 * Callback fired when backdrop is clicked.
 	 * @default null
 	 */
-	export let onClickOutside: (() => void) | null = null;
+	export let onBackdropClick: (() => void) | null = null;
 
 	/**
 	 * Dialog element.
@@ -51,7 +51,7 @@
 		// Check if the element that was pressed is the dialog. If it is, it means that the click was performed outside the modal.
 		if (e.target === dialog) {
 			closeModal();
-			onClickOutside?.();
+			onBackdropClick?.();
 		}
 	}
 

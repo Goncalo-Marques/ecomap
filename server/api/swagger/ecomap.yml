@@ -231,12 +231,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        409:
-          description: User is associated with a report or a bookmark.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
         500:
           $ref: "#/components/responses/InternalServerError"
   /users/password:
@@ -682,7 +676,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         409:
-          description: Employee is associated with a report or a route.
+          description: Employee is associated with a route.
           content:
             application/json:
               schema:
@@ -973,7 +967,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         409:
-          description: Container is associated with a report, bookmark, or route.
+          description: Container is associated with a bookmark or route.
           content:
             application/json:
               schema:
@@ -1366,7 +1360,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         409:
-          description: Warehouse is associated with a truck or a route.
+          description: Warehouse is associated with a route.
           content:
             application/json:
               schema:
@@ -1758,12 +1752,6 @@ paths:
           $ref: "#/components/responses/Forbidden"
         404:
           description: Route not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        409:
-          description: Route is associated with a container or employee.
           content:
             application/json:
               schema:

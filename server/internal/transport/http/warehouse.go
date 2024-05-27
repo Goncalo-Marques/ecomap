@@ -15,7 +15,6 @@ import (
 const (
 	errWarehouseNotFound                            = "warehouse not found"
 	errWarehouseAlreadyHasMoreTrucksThanNewCapacity = "warehouse already has more trucks than the new capacity"
-	errWarehouseAssociatedWithWarehouseTruck        = "warehouse associated with truck"
 	errWarehouseAssociatedWithRouteDeparture        = "warehouse associated with route as departure"
 	errWarehouseAssociatedWithRouteArrival          = "warehouse associated with route as arrival"
 )
@@ -226,8 +225,6 @@ func (h *handler) DeleteWarehouseByID(w http.ResponseWriter, r *http.Request, wa
 		switch {
 		case errors.Is(err, domain.ErrWarehouseNotFound):
 			notFound(w, errWarehouseNotFound)
-		case errors.Is(err, domain.ErrWarehouseAssociatedWithWarehouseTruck):
-			conflict(w, errWarehouseAssociatedWithWarehouseTruck)
 		case errors.Is(err, domain.ErrWarehouseAssociatedWithRouteDeparture):
 			conflict(w, errWarehouseAssociatedWithRouteDeparture)
 		case errors.Is(err, domain.ErrWarehouseAssociatedWithRouteArrival):

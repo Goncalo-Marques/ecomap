@@ -1,5 +1,8 @@
 package com.ecomap.ecomap.domain
 
+import android.content.Context
+import com.ecomap.ecomap.R
+
 /**
  * Represents all the available container categories.
  */
@@ -10,7 +13,40 @@ enum class ContainerCategory {
     METAL,
     GLASS,
     ORGANIC,
-    HAZARDOUS
+    HAZARDOUS;
+
+    /**
+     * Returns the respective drawable icon resource.
+     * @return Resource ID.
+     */
+    fun getIconResource(): Int {
+        return when (this) {
+            GENERAL -> R.drawable.general
+            PAPER -> R.drawable.paper
+            PLASTIC -> R.drawable.plastic
+            METAL -> R.drawable.metal
+            GLASS -> R.drawable.glass
+            ORGANIC -> R.drawable.organic
+            HAZARDOUS -> R.drawable.hazardous
+        }
+    }
+
+    /**
+     * Returns the respective human readable string resource.
+     * @param context Activity context.
+     * @return String resource.
+     */
+    fun getStringResource(context: Context): String {
+        return when (this) {
+            GENERAL -> context.getString(R.string.container_category_general)
+            PAPER -> context.getString(R.string.container_category_paper)
+            PLASTIC -> context.getString(R.string.container_category_plastic)
+            METAL -> context.getString(R.string.container_category_metal)
+            GLASS -> context.getString(R.string.container_category_glass)
+            ORGANIC -> context.getString(R.string.container_category_organic)
+            HAZARDOUS -> context.getString(R.string.container_category_hazardous)
+        }
+    }
 }
 
 /**

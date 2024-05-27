@@ -207,9 +207,7 @@ func (s *service) DeleteRouteByID(ctx context.Context, id uuid.UUID) (domain.Rou
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrRouteNotFound),
-			errors.Is(err, domain.ErrRouteAssociatedWithRouteContainer),
-			errors.Is(err, domain.ErrRouteAssociatedWithRouteEmployee):
+		case errors.Is(err, domain.ErrRouteNotFound):
 			return domain.Route{}, logInfoAndWrapError(ctx, err, descriptionFailedDeleteRouteByID, logAttrs...)
 		default:
 			return domain.Route{}, logAndWrapError(ctx, err, descriptionFailedDeleteRouteByID, logAttrs...)

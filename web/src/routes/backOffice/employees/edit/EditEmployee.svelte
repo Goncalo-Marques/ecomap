@@ -56,6 +56,10 @@
 		scheduleStart: string,
 		scheduleEnd: string,
 	) {
+		// Adding seconds to times. Necessary because api receives times with seconds.
+		scheduleStart += ":00";
+		scheduleEnd += ":00";
+
 		const res = await ecomapHttpClient.PATCH("/employees/{employeeId}", {
 			params: {
 				path: {

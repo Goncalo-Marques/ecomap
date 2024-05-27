@@ -18,6 +18,7 @@
 	import Select from "../../../../lib/components/Select.svelte";
 	import { rolesOptions } from "../constants/roles";
 	import Option from "../../../../lib/components/Option.svelte";
+	import { formatTime24H } from "../../../../lib/utils/date";
 
 	/**
 	 * The back route.
@@ -523,7 +524,6 @@
 						name="dateOfBirth"
 						value={employee?.dateOfBirth}
 						error={!!formErrorMessages.dateOfBirth}
-						placeholder={$t("employees.dateOfBirth.placeholder")}
 						type="date"
 					/>
 				</FormControl>
@@ -583,10 +583,10 @@
 					<Input
 						required
 						name="scheduleStart"
-						step="1"
-						value={employee?.scheduleStart}
+						value={employee?.scheduleStart
+							? formatTime24H(employee.scheduleStart)
+							: ""}
 						error={!!formErrorMessages.scheduleStart}
-						placeholder={$t("employees.scheduleStart.placeholder")}
 						type="time"
 					/>
 				</FormControl>
@@ -600,10 +600,10 @@
 					<Input
 						required
 						name="scheduleEnd"
-						step="1"
-						value={employee?.scheduleEnd}
+						value={employee?.scheduleEnd
+							? formatTime24H(employee.scheduleEnd)
+							: ""}
 						error={!!formErrorMessages.scheduleEnd}
-						placeholder={$t("employees.scheduleEnd.placeholder")}
 						type="time"
 					/>
 				</FormControl>

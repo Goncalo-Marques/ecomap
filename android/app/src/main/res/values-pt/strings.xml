@@ -13,7 +13,20 @@
     <string name="first_name_required_error">Primeiro nome deve ser preenchido</string>
     <string name="last_name_required_error">Último nome deve ser preenchido</string>
     <string name="error_create_account">Erro ao criar conta</string>
-    <string name="error_sign_in">Erro ao iniciar sessão</string>
+    <string name="error_sign_in_invalid_credentials">Credenciais inválidas</string>
     <string name="password_constraints">A palavra-passe deve conter pelo menos 14 caracteres, incluindo um carácter regular, um carácter especial e um número.</string>
     <string name="content_description_button_my_location">Ir para a minha localização</string>
+    <string name="container_category_general">Geral</string>
+    <string name="container_category_paper">Papel</string>
+    <string name="container_category_plastic">Plástico</string>
+    <string name="container_category_metal">Metal</string>
+    <string name="container_category_glass">Vidro</string>
+    <string name="container_category_organic">Orgânico</string>
+    <string name="container_category_hazardous">Perigoso</string>
+    <string name="way_unknown">Rua desconhecida</string>
+    <string name="error_sign_in_expired">Sessão expirada</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="directions">Direções</string>
+    <string name="content_description_container_category">Categoria do contentor</string>
+    <string name="content_description_container_bookmark">Marcador de contentor</string>
 </resources>

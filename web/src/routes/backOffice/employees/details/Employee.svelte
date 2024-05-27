@@ -17,6 +17,7 @@
 	import { getToastContext } from "../../../../lib/contexts/toast";
 	import { BackOfficeRoutes } from "../../../constants/routes";
 	import { isViewingSelf } from "../../../../lib/utils/auth";
+	import UpdatePasswordModal from "./UpdatePasswordModal.svelte";
 
 	/**
 	 * Employee ID.
@@ -27,6 +28,12 @@
 	 * Toast context.
 	 */
 	const toast = getToastContext();
+
+	/**
+	 * The update password open modal state.
+	 * @default false
+	 */
+	let openUpdatePasswordModal = false;
 
 	/**
 	 * Fetches employee data.
@@ -95,7 +102,14 @@
 		)}
 
 		<DetailsHeader to="" title={`${employee.firstName} ${employee.lastName}`}>
-			{#if !isViewingSelf(employee.id)}
+			{#if isViewingSelf(employee.id)}
+				<Button
+					variant="secondary"
+					onClick={() => (openUpdatePasswordModal = true)}
+				>
+					{$t("employees.updatePassword.title")}
+				</Button>
+			{:else}
 				<Button
 					startIcon="delete"
 					actionType="danger"
@@ -150,6 +164,11 @@
 				</DetailsFields>
 			</DetailsSection>
 		</DetailsContent>
+		<UpdatePasswordModal
+			{employee}
+			open={openUpdatePasswordModal}
+			onOpenChange={open => (openUpdatePasswordModal = open)}
+		/>
 	{:catch}
 		<div class="employee-not-found">
 			<h2>{$t("employees.notFound.title")}</h2>
