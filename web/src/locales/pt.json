@@ -91,8 +91,8 @@
 	"signin.title": "Iniciar sessão",
 	"signin.username.label": "Utilizador",
 	"signin.username.placeholder": "Digite o seu nome de utilizador",
-	"signin.password.label": "Password",
-	"signin.password.placeholder": "Digite a sua password",
+	"signin.password.label": "Palavra-passe",
+	"signin.password.placeholder": "Digite a sua palavra-passe",
 	"signin.button": "Iniciar sessão",
 	"signin.error.incorrectCredentials": "Credenciais inválidas. O nome de utilizador ou a palavra-passe estão incorrectos.",
 	"signOut.button": "Terminar sessão",
@@ -109,7 +109,7 @@
 	"employees": "Colaboradores",
 	"employees.search": "Pesquise por nome de utilizador",
 	"employees.username": "Nome de utilizador",
-	"employees.password": "Password",
+	"employees.password": "Palavra-passe",
 	"employees.firstName": "Primeiro nome",
 	"employees.lastName": "Último nome",
 	"employees.schedule": "Horário",
@@ -135,7 +135,7 @@
 	"employees.create.title": "Adicionar colaborador",
 	"employees.create.success": "Colaborador adicionado com sucesso",
 	"employees.role.placeholder": "Selecione um cargo",
-	"employees.password.placeholder": "Intruduza a password",
+	"employees.password.placeholder": "Intruduza a palavra-passe",
 	"employees.phone.placeholder": "Introduza o número de telefone",
 	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a uma rota.",
 	"employees.updatePassword.title": "Alterar palavra-passe",
@@ -152,5 +152,7 @@
 	"employees.updatePassword.error.incorrectPassword.description": "A palavra-passe introduzida não corresponde à sua palavra-passe atual.",
 	"employees.error.passwordMismatch": "A palavra-passe não corresponde à nova palavra-passe",
 	"employees.passwordConstraints": "A palavra-passe deve conter pelo menos 14 caracteres, incluindo um carácter regular, um carácter especial e um número",
-	"confirm": "Confirmar"
+	"confirm": "Confirmar",
+	"employees.security": "Segurança",
+	"employees.password.confirm.placeholder": "Introduza a palavra-passe"
 }

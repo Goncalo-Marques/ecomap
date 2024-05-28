@@ -152,5 +152,7 @@
 	"employees.create.title": "Add employee",
 	"employees.create.success": "Employee added successfully",
 	"employees.role.placeholder": "Select a role",
-	"employees.password.placeholder": "Enter password"
+	"employees.password.placeholder": "Enter password",
+	"employees.security": "Security",
+	"employees.password.confirm.placeholder": "Repeat the password"
 }

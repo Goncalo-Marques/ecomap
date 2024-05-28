@@ -450,6 +450,12 @@
 		},
 		"employees.password.placeholder": {
 			"type": "string"
+		},
+		"employees.security": {
+			"type": "string"
+		},
+		"employees.password.confirm.placeholder": {
+			"type": "string"
 		}
 	}
 }
