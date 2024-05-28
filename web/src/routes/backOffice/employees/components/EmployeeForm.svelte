@@ -129,7 +129,6 @@
 	 */
 	let formErrorMessages = {
 		username: "",
-		password: "",
 		firstName: "",
 		lastName: "",
 		role: "",
@@ -138,7 +137,7 @@
 		location: "",
 		scheduleStart: "",
 		scheduleEnd: "",
-		newPassword: "",
+		password: "",
 		confirmPassword: "",
 	};
 
@@ -147,9 +146,14 @@
 	 * @param usernameValidity
 	 * @param firstNameValidity
 	 * @param lastNameValidity
+	 * @param roleValidity
 	 * @param dateOfBirthValidity
 	 * @param phoneNumberValidity
 	 * @param locationValidity
+	 * @param scheduleStart
+	 * @param scheduleEnd
+	 * @param passwordInput
+	 * @param confirmPasswordInput
 	 * @param coordinate
 	 */
 	function validateForm(
@@ -162,7 +166,7 @@
 		locationValidity: ValidityState,
 		scheduleStart: ValidityState,
 		scheduleEnd: ValidityState,
-		newPasswordInput: HTMLInputElement,
+		passwordInput: HTMLInputElement,
 		confirmPasswordInput: HTMLInputElement,
 		coordinate: number[] | undefined,
 	): coordinate is number[] {
@@ -264,15 +268,15 @@
 		}
 
 		// Password Validation.
-		if (newPasswordInput.validity.valueMissing) {
-			formErrorMessages.newPassword = $t("error.valueMissing");
+		if (passwordInput.validity.valueMissing) {
+			formErrorMessages.password = $t("error.valueMissing");
 		} else {
-			formErrorMessages.newPassword = "";
+			formErrorMessages.password = "";
 		}
 
 		if (confirmPasswordInput.validity.valueMissing) {
 			formErrorMessages.confirmPassword = $t("error.valueMissing");
-		} else if (newPasswordInput.value !== confirmPasswordInput.value) {
+		} else if (passwordInput.value !== confirmPasswordInput.value) {
 			formErrorMessages.confirmPassword = $t(
 				"employees.error.passwordMismatch",
 			);
@@ -291,9 +295,9 @@
 			!formErrorMessages.scheduleStart &&
 			!formErrorMessages.scheduleEnd &&
 			!formErrorMessages.location &&
-			!formErrorMessages.newPassword &&
+			!formErrorMessages.password &&
 			!formErrorMessages.confirmPassword &&
-			newPasswordInput.value === confirmPasswordInput.value &&
+			passwordInput.value === confirmPasswordInput.value &&
 			!!coordinate
 		);
 	}
@@ -307,7 +311,7 @@
 		const formData = new FormData(form);
 
 		const username = formData.get("username") ?? "";
-		const newPassword = formData.get("newPassword") ?? "";
+		const password = formData.get("newPassword") ?? "";
 		const confirmPassword = formData.get("confirmPassword") ?? "";
 		const firstName = formData.get("firstName") ?? "";
 		const lastName = formData.get("lastName") ?? "";
@@ -329,7 +333,7 @@
 			typeof location !== "string" ||
 			typeof scheduleStart !== "string" ||
 			typeof scheduleEnd !== "string" ||
-			typeof newPassword !== "string" ||
+			typeof password !== "string" ||
 			typeof confirmPassword !== "string"
 		) {
 			return;
@@ -369,7 +373,7 @@
 			"scheduleEnd",
 		) as HTMLInputElement;
 
-		const newPasswordInput = form.elements.namedItem(
+		const passwordInput = form.elements.namedItem(
 			"newPassword",
 		) as HTMLInputElement;
 
@@ -389,7 +393,7 @@
 				locationInput.validity,
 				scheduleStartInput.validity,
 				scheduleEndInput.validity,
-				newPasswordInput,
+				passwordInput,
 				confirmPasswordInput,
 				selectedCoordinate,
 			)
@@ -404,7 +408,7 @@
 		if (createForm) {
 			(onSave as onSaveCreateType)(
 				username,
-				newPassword,
+				password,
 				firstName,
 				lastName,
 				role,
@@ -565,23 +569,21 @@
 			}}
 		/>
 		{#if createForm}
-			<DetailsSection label={$t("employees.password")}>
+			<DetailsSection label={$t("employees.security")}>
 				<DetailsFields>
 					<!-- NewPassword -->
 					<FormControl
-						label={$t("employees.updatePassword.newPassword.label")}
-						error={!!formErrorMessages.newPassword}
-						helperText={formErrorMessages.newPassword}
+						label={$t("employees.password")}
+						error={!!formErrorMessages.password}
+						helperText={formErrorMessages.password}
 						title={$t("employees.passwordConstraints")}
 					>
 						<Input
 							required
 							type="password"
 							name="newPassword"
-							placeholder={$t(
-								"employees.updatePassword.newPassword.placeholder",
-							)}
-							error={!!formErrorMessages.newPassword}
+							placeholder={$t("employees.password.placeholder")}
+							error={!!formErrorMessages.password}
 						/>
 					</FormControl>
 					<!-- ConfirmPassword -->
@@ -594,9 +596,7 @@
 							required
 							type="password"
 							name="confirmPassword"
-							placeholder={$t(
-								"employees.updatePassword.confirmPassword.placeholder",
-							)}
+							placeholder={$t("employees.password.confirm.placeholder")}
 							error={!!formErrorMessages.confirmPassword}
 						/>
 					</FormControl>
