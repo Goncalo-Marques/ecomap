@@ -160,14 +160,14 @@
 		usernameValidity: ValidityState,
 		firstNameValidity: ValidityState,
 		lastNameValidity: ValidityState,
-		roleValidity: ValidityState,
+		roleValidity: ValidityState | null,
 		dateOfBirthValidity: ValidityState,
 		phoneNumberValidity: ValidityState,
 		locationValidity: ValidityState,
 		scheduleStart: ValidityState,
 		scheduleEnd: ValidityState,
-		passwordInput: HTMLInputElement,
-		confirmPasswordInput: HTMLInputElement,
+		passwordInput: HTMLInputElement | null,
+		confirmPasswordInput: HTMLInputElement | null,
 		coordinate: number[] | undefined,
 	): coordinate is number[] {
 		// Username Validation.
@@ -215,13 +215,6 @@
 			formErrorMessages.lastName = "";
 		}
 
-		//  Role Validation.
-		if (roleValidity.valueMissing) {
-			formErrorMessages.role = $t("error.valueMissing");
-		} else {
-			formErrorMessages.role = "";
-		}
-
 		// DateOfBirth Validation.
 		if (dateOfBirthValidity.valueMissing) {
 			formErrorMessages.dateOfBirth = $t("error.valueMissing");
@@ -267,21 +260,53 @@
 			formErrorMessages.location = "";
 		}
 
-		// Password Validation.
-		if (passwordInput.validity.valueMissing) {
-			formErrorMessages.password = $t("error.valueMissing");
-		} else {
-			formErrorMessages.password = "";
+		if (
+			roleValidity !== null &&
+			passwordInput !== null &&
+			confirmPasswordInput !== null
+		) {
+			//  Role Validation.
+			if (roleValidity.valueMissing) {
+				formErrorMessages.role = $t("error.valueMissing");
+			} else {
+				formErrorMessages.role = "";
+			}
+
+			// Password Validation.
+			if (passwordInput.validity.valueMissing) {
+				formErrorMessages.password = $t("error.valueMissing");
+			} else {
+				formErrorMessages.password = "";
+			}
+
+			if (confirmPasswordInput.validity.valueMissing) {
+				formErrorMessages.confirmPassword = $t("error.valueMissing");
+			} else if (passwordInput.value !== confirmPasswordInput.value) {
+				formErrorMessages.confirmPassword = $t(
+					"employees.error.passwordMismatch",
+				);
+			} else {
+				formErrorMessages.confirmPassword = "";
+			}
 		}
 
-		if (confirmPasswordInput.validity.valueMissing) {
-			formErrorMessages.confirmPassword = $t("error.valueMissing");
-		} else if (passwordInput.value !== confirmPasswordInput.value) {
-			formErrorMessages.confirmPassword = $t(
-				"employees.error.passwordMismatch",
+		if (createForm && passwordInput !== null && confirmPasswordInput !== null) {
+			return (
+				!formErrorMessages.username &&
+				!formErrorMessages.password &&
+				!formErrorMessages.firstName &&
+				!formErrorMessages.lastName &&
+				!formErrorMessages.role &&
+				!formErrorMessages.dateOfBirth &&
+				!formErrorMessages.phoneNumber &&
+				!formErrorMessages.scheduleStart &&
+				!formErrorMessages.scheduleEnd &&
+				!formErrorMessages.location &&
+				!formErrorMessages.password &&
+				!formErrorMessages.confirmPassword &&
+				passwordInput.value === confirmPasswordInput.value &&
+				!!coordinate
 			);
-		} else {
-			formErrorMessages.confirmPassword = "";
 		}
 
 		return (
@@ -289,15 +314,11 @@
 			!formErrorMessages.password &&
 			!formErrorMessages.firstName &&
 			!formErrorMessages.lastName &&
-			!formErrorMessages.role &&
 			!formErrorMessages.dateOfBirth &&
 			!formErrorMessages.phoneNumber &&
 			!formErrorMessages.scheduleStart &&
 			!formErrorMessages.scheduleEnd &&
 			!formErrorMessages.location &&
-			!formErrorMessages.password &&
-			!formErrorMessages.confirmPassword &&
-			passwordInput.value === confirmPasswordInput.value &&
 			!!coordinate
 		);
 	}
@@ -387,25 +408,26 @@
 				usernameInput.validity,
 				firstNameInput.validity,
 				lastNameInput.validity,
-				roleInput.validity,
+				createForm ? roleInput.validity : null,
 				dateOfBirthInput.validity,
 				phoneNumberInput.validity,
 				locationInput.validity,
 				scheduleStartInput.validity,
 				scheduleEndInput.validity,
-				passwordInput,
-				confirmPasswordInput,
+				createForm ? passwordInput : null,
+				createForm ? confirmPasswordInput : null,
 				selectedCoordinate,
 			)
 		) {
 			return;
 		}
 
-		if (!isValidEmployeeRole(role)) {
-			return;
-		}
-
 		if (createForm) {
+			// Validates user role, in create form.
+			if (!isValidEmployeeRole(role)) {
+				return;
+			}
+
 			(onSave as onSaveCreateType)(
 				username,
 				password,
