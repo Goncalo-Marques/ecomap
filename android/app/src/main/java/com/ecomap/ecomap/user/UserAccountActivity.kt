@@ -213,17 +213,14 @@ class UserAccountActivity : AppCompatActivity() {
                     existingContainer.containers.add(container)
 
                     // Find the position of the changed item.
-                    var position = 0
                     for ((index, data) in recyclerViewContainerBookmarksDataSet.withIndex()) {
                         for (c in data.containers) {
                             if (c.id == container.id) {
-                                position = index
+                                recyclerViewContainerBookmarks.adapter?.notifyItemChanged(index)
                                 break
                             }
                         }
                     }
-
-                    recyclerViewContainerBookmarks.adapter?.notifyItemChanged(position)
                 }
             }
 
