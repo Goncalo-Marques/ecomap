@@ -15,7 +15,7 @@ import com.ecomap.ecomap.R
  */
 data class ContainerCategoryRecyclerViewData(
     val iconResourceID: Int,
-    val category: String,
+    val category: String = "",
 )
 
 /**
@@ -35,7 +35,7 @@ class ContainerCategoriesRecyclerViewAdapter(private val dataSet: Array<Containe
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item.
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.frame_layout_container_categories, viewGroup, false)
+            .inflate(R.layout.frame_layout_container_category, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -45,6 +45,11 @@ class ContainerCategoriesRecyclerViewAdapter(private val dataSet: Array<Containe
 
         viewHolder.imageView.setImageResource(data.iconResourceID)
         viewHolder.textView.text = data.category
+
+        if (data.category.isBlank()) {
+            // Make the category description invisible if it is not provided.
+            viewHolder.textView.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int {
