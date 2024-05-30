@@ -27,6 +27,9 @@ class ContainerBookmarksRecyclerViewAdapter(
     private val dataSet: ArrayList<ContainerBookmarkRecyclerViewData>
 ) :
     RecyclerView.Adapter<ContainerBookmarksRecyclerViewAdapter.ViewHolder>() {
+    /**
+     * Invoked when a button container bookmark is clicked for a specific position in the data set.
+     */
     var onButtonContainerBookmarkClicked: ((position: Int) -> Unit)? = null
 
     /**
