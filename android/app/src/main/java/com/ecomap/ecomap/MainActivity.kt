@@ -196,6 +196,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         closeContainerInfoWindow()
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        // Get user container bookmarks.
+        getUserContainerBookmarks()
+    }
+
     /**
      * Populates the given chip group with all the available container categories.
      */
@@ -278,9 +285,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Adds the containers in the map.
         updateContainersUI()
-
-        // Get user container bookmarks.
-        getUserContainerBookmarks()
 
         // Get the current location of the device and set the position of the map.
         focusMyLocation()
