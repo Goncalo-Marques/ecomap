@@ -104,7 +104,7 @@
         android:id="@+id/info_window"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@drawable/background_info_window"
         android:paddingStart="16dp"
         android:paddingTop="32dp"
         android:paddingEnd="16dp"
