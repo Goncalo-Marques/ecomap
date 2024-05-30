@@ -66,7 +66,7 @@ class UserAccountActivity : AppCompatActivity() {
 
         // Set up container bookmarks recycler view.
         recyclerViewContainerBookmarksDataSet = arrayListOf()
-        
+
         recyclerViewContainerBookmarks.layoutManager = LinearLayoutManager(this)
         val recyclerViewContainerBookmarksAdapter =
             ContainerBookmarksRecyclerViewAdapter(this, recyclerViewContainerBookmarksDataSet)
@@ -121,7 +121,7 @@ class UserAccountActivity : AppCompatActivity() {
      * It also notifies the recycler view adapter to update the affected item.
      */
     private fun removeUserContainerBookmark(position: Int) {
-        // Remove the user container bookmark when the button is clicked.
+        // Remove the user container bookmark.
         for (container in recyclerViewContainerBookmarksDataSet[position].containers) {
             val request =
                 ApiClient.removeUserContainerBookmark(userID, container.id, token,
