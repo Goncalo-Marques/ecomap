@@ -215,7 +215,8 @@ object ApiClient {
     }
 
     /**
-     * Returns the user container bookmarks with the specified filter.
+     * Returns the user container bookmarks with the specified filter. The bookmarks are sorted by
+     * descending order of the date they were created.
      * @param userID User identifier.
      * @param limit Amount of resources to get for the provided filter.
      * @param offset Amount of resources to skip for the provided filter.
@@ -234,7 +235,8 @@ object ApiClient {
     ): JsonObjectRequest {
         val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS" +
                 "?$FIELD_NAME_PAGINATION_LIMIT=$limit" +
-                "&$FIELD_NAME_PAGINATION_OFFSET=$offset"
+                "&$FIELD_NAME_PAGINATION_OFFSET=$offset" +
+                "&sort=createdAt&order=desc"
 
         return object : JsonObjectRequest(
             Method.GET, url, null,
