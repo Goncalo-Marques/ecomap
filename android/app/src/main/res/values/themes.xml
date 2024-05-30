@@ -19,8 +19,8 @@
         <item name="android:textColor">@color/chip_text</item>
         <item name="chipIconTint">@color/chip_text</item>
         <item name="chipCornerRadius">16dp</item>
-        <item name="chipStrokeWidth">2dp</item>
-        <item name="chipStrokeColor">@color/gray_300</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:elevation">2dp</item>
     </style>
 
     <style name="Widget.EcoMap.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
