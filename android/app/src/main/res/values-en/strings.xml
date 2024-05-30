@@ -33,4 +33,6 @@
     <string name="my_account">My account</string>
     <string name="personal_information">Personal information</string>
     <string name="sign_out">Sign out</string>
+    <string name="container_bookmarks">Container bookmarks</string>
+    <string name="container_bookmarks_empty">There are no container bookmarks</string>
 </resources>

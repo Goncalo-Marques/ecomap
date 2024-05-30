@@ -35,7 +35,6 @@
     </style>
 
     <style name="Widget.EcoMap.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="backgroundTint">@color/white</item>
         <item name="colorOnSurface">@color/green_700</item>
         <item name="strokeColor">@color/green_700</item>
     </style>
