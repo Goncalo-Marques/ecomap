@@ -65,8 +65,9 @@ class UserAccountActivity : AppCompatActivity() {
         buttonSignOut.setOnClickListener { signOutUser() }
 
         // Set up container bookmarks recycler view.
-        recyclerViewContainerBookmarks.layoutManager = LinearLayoutManager(this)
         recyclerViewContainerBookmarksDataSet = arrayListOf()
+        
+        recyclerViewContainerBookmarks.layoutManager = LinearLayoutManager(this)
         val recyclerViewContainerBookmarksAdapter =
             ContainerBookmarksRecyclerViewAdapter(this, recyclerViewContainerBookmarksDataSet)
         recyclerViewContainerBookmarks.adapter = recyclerViewContainerBookmarksAdapter
