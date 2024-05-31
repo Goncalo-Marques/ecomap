@@ -125,6 +125,11 @@
 	"employees.delete.success": "Employee deleted successfully",
 	"employees.delete.conflict.title": "Conflict",
 	"employees.delete.conflict.description": "This employee cannot be deleted because it's associated with a route.",
+	"employees.update.success": "Employee updated successfully",
+	"employees.username.placeholder": "Enter username",
+	"employees.firstName.placeholder": "Enter first name",
+	"employees.lastName.placeholder": "Enter last name",
+	"employees.phone.placeholder": "Enter phone number",
 	"employees.updatePassword.title": "Change password",
 	"employees.updatePassword.currentPassword.label": "Current password",
 	"employees.updatePassword.newPassword.label": "New password",
@@ -139,10 +144,5 @@
 	"employees.updatePassword.error.incorrectPassword.description": "The password entered does not match your current password.",
 	"employees.error.passwordMismatch": "The password doesn't match the new password",
 	"employees.passwordConstraints": "Password must contain at least 14 characters, including one regular character, one special character, and one number",
-	"confirm": "Confirm",
-	"employees.update.success": "Employee updated successfully",
-	"employees.username.placeholder": "Enter username",
-	"employees.firstName.placeholder": "Enter first name",
-	"employees.lastName.placeholder": "Enter last name",
-	"employees.phone.placeholder": "Enter phone number"
+	"confirm": "Confirm"
 }
