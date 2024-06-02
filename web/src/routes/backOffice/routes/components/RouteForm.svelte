@@ -9,10 +9,8 @@
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import { getLocationName } from "../../../../lib/utils/location";
 	import type { Route } from "../../../../domain/route";
-	import { LANDFILL_ICON_SRC } from "../../../../lib/constants/map";
 	import LocationInput from "../../../../lib/components/LocationInput.svelte";
 	import Select from "../../../../lib/components/Select.svelte";
-	import { onMount } from "svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { getBatchPaginatedResponse } from "../../../../lib/utils/request";
 	import type { Truck } from "../../../../domain/truck";
@@ -20,8 +18,13 @@
 	import Option from "../../../../lib/components/Option.svelte";
 	import Input from "../../../../lib/components/Input.svelte";
 	import SelectContainers from "./SelectContainers.svelte";
-	import DriversTable from "./DriversTable.svelte";
-	import CollectorsTable from "./CollectorsTable.svelte";
+	import OperatorsTable from "./OperatorsTable.svelte";
+	import type { Employee } from "../../../../domain/employees";
+	import type { Container } from "../../../../domain/container";
+	import type {
+		RouteEmployee,
+		RouteEmployeeRole,
+	} from "../../../../domain/routeEmployee";
 
 	/**
 	 * The back route.
@@ -41,7 +44,14 @@
 		departureWarehouseId: string,
 		arrivalWarehouseId: string,
 		truckId: string,
-		containerIds: string[],
+		containersIds: {
+			added: string[];
+			deleted: string[];
+		},
+		operatorsIds: {
+			added: { routeRole: RouteEmployeeRole; id: string }[];
+			deleted: { routeRole: RouteEmployeeRole; id: string }[];
+		},
 	) => void;
 
 	/**
@@ -59,15 +69,29 @@
 	/**
 	 * TODO.
 	 */
-	let containers = {
+	let containers: {
+		original: Container[];
+		added: Container[];
+		deleted: Container[];
+	} = {
+		original: [],
 		added: [],
 		deleted: [],
 	};
 
-	const options: { truck: Truck[]; warehouse: Warehouse[] } = {
-		truck: [],
-		warehouse: [],
-	};
+	let routeOperators: RouteEmployee[];
+
+	let selectedDrivers: Employee[];
+
+	let selectedCollectors: Employee[];
+
+	let truckOptionsPromise: Promise<Truck[]>;
+
+	let warehouseOptionsPromise: Promise<Warehouse[]>;
+
+	let loadingOperators: boolean = false;
+
+	let operators: Employee[];
 
 	/**
 	 * Error messages of the form fields.
@@ -92,9 +116,9 @@
 	 */
 	function validateForm(
 		nameInput: HTMLInputElement,
-		truckInput: HTMLInputElement,
-		departureWarehouseInput: HTMLInputElement,
-		arrivalWarehouseInput: HTMLInputElement,
+		truckInput: HTMLSelectElement,
+		departureWarehouseInput: HTMLSelectElement,
+		arrivalWarehouseInput: HTMLSelectElement,
 		containersInput: HTMLInputElement,
 	) {
 		if (nameInput.validity.valueMissing) {
@@ -145,17 +169,22 @@
 	) {
 		const form = e.currentTarget;
 		const formElements = form.elements;
-		const nameInput = formElements.namedItem("name") as HTMLInputElement;
-		const truckInput = formElements.namedItem("truck") as HTMLInputElement;
-		const departureWarehouseInput = formElements.namedItem(
-			"departureWarehouse",
-		) as HTMLInputElement;
-		const arrivalWarehouseInput = formElements.namedItem(
-			"arrivalWarehouse",
-		) as HTMLInputElement;
-		const containersInput = formElements.namedItem(
-			"containers",
-		) as HTMLInputElement;
+		const nameInput = formElements.namedItem("name");
+		const truckInput = formElements.namedItem("truck");
+		const departureWarehouseInput =
+			formElements.namedItem("departureWarehouse");
+		const arrivalWarehouseInput = formElements.namedItem("arrivalWarehouse");
+		const containersInput = formElements.namedItem("containers");
+
+		if (
+			!(nameInput instanceof HTMLInputElement) ||
+			!(truckInput instanceof HTMLSelectElement) ||
+			!(departureWarehouseInput instanceof HTMLSelectElement) ||
+			!(arrivalWarehouseInput instanceof HTMLSelectElement) ||
+			!(containersInput instanceof HTMLInputElement)
+		) {
+			throw new Error("Form elements are not inputs");
+		}
 
 		// Check if form is valid to prevent making a server request.
 		if (
@@ -169,49 +198,204 @@
 		) {
 			return;
 		}
+
+		const containersIds = {
+			added: containers.added.map(container => container.id),
+			deleted: containers.deleted.map(container => container.id),
+		};
+
+		const operatorsIds: {
+			added: { routeRole: RouteEmployeeRole; id: string }[];
+			deleted: { routeRole: RouteEmployeeRole; id: string }[];
+		} = {
+			added: [],
+			deleted: [],
+		};
+
+		for (const selectedDriver of selectedDrivers) {
+			if (routeOperators.every(operator => operator.id !== selectedDriver.id)) {
+				operatorsIds.added.push({
+					id: selectedDriver.id,
+					routeRole: "driver",
+				});
+			}
+		}
+		for (const routeOperator of routeOperators.filter(
+			routeOperator => routeOperator.routeRole === "driver",
+		)) {
+			if (
+				selectedDrivers.every(
+					selectedDriver => selectedDriver.id !== routeOperator.id,
+				)
+			) {
+				operatorsIds.deleted.push({
+					id: routeOperator.id,
+					routeRole: "driver",
+				});
+			}
+		}
+
+		for (const selectedCollector of selectedCollectors) {
+			if (
+				routeOperators.every(
+					routeOperator => routeOperator.id !== selectedCollector.id,
+				)
+			) {
+				operatorsIds.added.push({
+					id: selectedCollector.id,
+					routeRole: "collector",
+				});
+			}
+		}
+		for (const routeOperator of routeOperators.filter(
+			routeOperator => routeOperator.routeRole === "collector",
+		)) {
+			if (
+				selectedCollectors.every(
+					selectedCollector => selectedCollector.id !== routeOperator.id,
+				)
+			) {
+				operatorsIds.deleted.push({
+					id: routeOperator.id,
+					routeRole: "collector",
+				});
+			}
+		}
+
+		onSave(
+			nameInput.value,
+			departureWarehouseInput.value,
+			arrivalWarehouseInput.value,
+			truckInput.value,
+			containersIds,
+			operatorsIds,
+		);
 	}
 
 	/**
-	 * TODO.
+	 * Retrieves the value displayed in the container input.
+	 * @param originalAmount The number of containers on the route.
+	 * @param addedAmount The number of containers added to the route.
+	 * @param deletedAmount The number of containers deleted from the route.
+	 * @returns Container input value.
 	 */
-	async function getOptions() {
-		const [trucksRes, warehousesRes] = await Promise.allSettled([
-			getBatchPaginatedResponse(async (limit, offset) => {
-				const res = await ecomapHttpClient.GET("/trucks", {
-					params: { query: { limit, offset } },
-				});
+	function getContainersInputValue(
+		originalAmount: number,
+		addedAmount: number,
+		deletedAmount: number,
+	) {
+		const containerAmount = originalAmount + addedAmount - deletedAmount;
 
-				if (res.error) {
-					return { total: 0, items: [] };
-				}
-
-				return { total: res.data.total, items: res.data.trucks };
-			}),
-			getBatchPaginatedResponse(async (limit, offset) => {
-				const res = await ecomapHttpClient.GET("/warehouses", {
-					params: { query: { limit, offset } },
-				});
-
-				if (res.error) {
-					return { total: 0, items: [] };
-				}
-
-				return { total: res.data.total, items: res.data.warehouses };
-			}),
-		]);
-
-		if (trucksRes.status === "fulfilled") {
-			options.truck = trucksRes.value;
-		}
-
-		if (warehousesRes.status === "fulfilled") {
-			options.warehouse = warehousesRes.value;
-		}
+		return `${containerAmount} ${$t(containerAmount === 1 ? "container" : "containers").toLowerCase()}`;
 	}
 
-	onMount(() => {
-		getOptions();
-	});
+	/**
+	 * Retrieves the route operators from the route ID.
+	 * @param id Route ID.
+	 */
+	async function getRouteOperators(id: string) {
+		routeOperators = await getBatchPaginatedResponse(async (limit, offset) => {
+			const res = await ecomapHttpClient.GET("/routes/{routeId}/employees", {
+				params: { path: { routeId: id }, query: { limit, offset } },
+			});
+
+			if (res.error) {
+				return { total: 0, items: [] };
+			}
+
+			return { total: res.data.total, items: res.data.employees };
+		});
+
+		selectedDrivers = routeOperators.filter(
+			routeOperator => routeOperator.routeRole === "driver",
+		);
+		selectedCollectors = routeOperators.filter(
+			routeOperator => routeOperator.routeRole === "collector",
+		);
+	}
+
+	/**
+	 * Retrieves the route containers from the route ID.
+	 * @param id Route ID.
+	 */
+	async function getRouteContainers(id: string) {
+		const routeContainers = await getBatchPaginatedResponse(
+			async (limit, offset) => {
+				const res = await ecomapHttpClient.GET("/routes/{routeId}/containers", {
+					params: { path: { routeId: id }, query: { limit, offset } },
+				});
+
+				if (res.error) {
+					return { total: 0, items: [] };
+				}
+
+				return { total: res.data.total, items: res.data.containers };
+			},
+		);
+
+		containers.original = routeContainers;
+	}
+
+	async function getTruckOptions() {
+		return getBatchPaginatedResponse(async (limit, offset) => {
+			const res = await ecomapHttpClient.GET("/trucks", {
+				params: { query: { limit, offset } },
+			});
+
+			if (res.error) {
+				return { total: 0, items: [] };
+			}
+
+			return { total: res.data.total, items: res.data.trucks };
+		});
+	}
+
+	async function getWarehouseOptions() {
+		return getBatchPaginatedResponse(async (limit, offset) => {
+			const res = await ecomapHttpClient.GET("/warehouses", {
+				params: { query: { limit, offset } },
+			});
+
+			if (res.error) {
+				return { total: 0, items: [] };
+			}
+
+			return { total: res.data.total, items: res.data.warehouses };
+		});
+	}
+
+	async function fetchOperators() {
+		loadingOperators = true;
+
+		operators = await getBatchPaginatedResponse(async (limit, offset) => {
+			const res = await ecomapHttpClient.GET("/employees", {
+				params: {
+					query: {
+						limit,
+						offset,
+						role: "wasteOperator",
+					},
+				},
+			});
+
+			if (res.error) {
+				return { total: 0, items: [] };
+			}
+
+			return { total: res.data.total, items: res.data.employees };
+		});
+
+		loadingOperators = false;
+	}
+
+	truckOptionsPromise = getTruckOptions();
+	warehouseOptionsPromise = getWarehouseOptions();
+	fetchOperators();
+
+	if (route) {
+		getRouteContainers(route.id);
+		getRouteOperators(route.id);
+	}
 </script>
 
 <form novalidate on:submit|preventDefault={handleSubmit}>
@@ -233,6 +417,7 @@
 						required
 						name="name"
 						maxLength={50}
+						value={route?.name}
 						error={!!formErrorMessages.name}
 						placeholder={$t("routes.name.placeholder")}
 					/>
@@ -243,19 +428,23 @@
 					error={!!formErrorMessages.truck}
 					helperText={formErrorMessages.truck}
 				>
-					<Select
-						required
-						name="truck"
-						error={!!formErrorMessages.truck}
-						placeholder={$t("routes.truck.placeholder")}
-						value={route?.truck.id}
-					>
-						{#each options.truck as truck}
-							<Option value={truck.id}>
-								{`${truck.make} ${truck.model} (${truck.licensePlate})`}
-							</Option>
-						{/each}
-					</Select>
+					{#await truckOptionsPromise}
+						<Select placeholder={$t("routes.truck.placeholder")} />
+					{:then truckOptions}
+						<Select
+							required
+							name="truck"
+							error={!!formErrorMessages.truck}
+							placeholder={$t("routes.truck.placeholder")}
+							value={route?.truck.id}
+						>
+							{#each truckOptions as truck}
+								<Option value={truck.id}>
+									{`${truck.make} ${truck.model} (${truck.licensePlate})`}
+								</Option>
+							{/each}
+						</Select>
+					{/await}
 				</FormControl>
 
 				<FormControl
@@ -263,22 +452,26 @@
 					error={!!formErrorMessages.departureWarehouse}
 					helperText={formErrorMessages.departureWarehouse}
 				>
-					<Select
-						required
-						name="truck"
-						error={!!formErrorMessages.departureWarehouse}
-						placeholder={$t("routes.departure.placeholder")}
-						value={route?.departureWarehouse.id}
-					>
-						{#each options.warehouse as warehouse}
-							<Option value={warehouse.id}>
-								{getLocationName(
-									warehouse.geoJson.properties.wayName,
-									warehouse.geoJson.properties.municipalityName,
-								)}
-							</Option>
-						{/each}
-					</Select>
+					{#await warehouseOptionsPromise}
+						<Select placeholder={$t("routes.departure.placeholder")} />
+					{:then warehouseOptions}
+						<Select
+							required
+							name="departureWarehouse"
+							error={!!formErrorMessages.departureWarehouse}
+							placeholder={$t("routes.departure.placeholder")}
+							value={route?.departureWarehouse.id}
+						>
+							{#each warehouseOptions as warehouse}
+								<Option value={warehouse.id}>
+									{getLocationName(
+										warehouse.geoJson.properties.wayName,
+										warehouse.geoJson.properties.municipalityName,
+									)}
+								</Option>
+							{/each}
+						</Select>
+					{/await}
 				</FormControl>
 
 				<FormControl
@@ -286,22 +479,26 @@
 					error={!!formErrorMessages.arrivalWarehouse}
 					helperText={formErrorMessages.arrivalWarehouse}
 				>
-					<Select
-						required
-						name="truck"
-						error={!!formErrorMessages.arrivalWarehouse}
-						placeholder={$t("routes.arrival.placeholder")}
-						value={route?.arrivalWarehouse.id}
-					>
-						{#each options.warehouse as warehouse}
-							<Option value={warehouse.id}>
-								{getLocationName(
-									warehouse.geoJson.properties.wayName,
-									warehouse.geoJson.properties.municipalityName,
-								)}
-							</Option>
-						{/each}
-					</Select>
+					{#await warehouseOptionsPromise}
+						<Select placeholder={$t("routes.arrival.placeholder")} />
+					{:then warehouseOptions}
+						<Select
+							required
+							name="arrivalWarehouse"
+							error={!!formErrorMessages.arrivalWarehouse}
+							placeholder={$t("routes.arrival.placeholder")}
+							value={route?.arrivalWarehouse.id}
+						>
+							{#each warehouseOptions as warehouse}
+								<Option value={warehouse.id}>
+									{getLocationName(
+										warehouse.geoJson.properties.wayName,
+										warehouse.geoJson.properties.municipalityName,
+									)}
+								</Option>
+							{/each}
+						</Select>
+					{/await}
 				</FormControl>
 
 				<FormControl
@@ -311,6 +508,11 @@
 				>
 					<LocationInput
 						required
+						value={getContainersInputValue(
+							containers.original.length,
+							containers.added.length,
+							containers.deleted.length,
+						)}
 						name="containers"
 						placeholder={$t("routes.containers.placeholder")}
 						error={!!formErrorMessages.containers}
@@ -319,22 +521,46 @@
 				</FormControl>
 			</DetailsFields>
 		</DetailsSection>
-		<DetailsSection label={$t("routes.employees.role.drivers")}>
-			<DriversTable />
+		<DetailsSection
+			class="drivers-collectors"
+			label={$t("routes.employees.role.drivers")}
+		>
+			<OperatorsTable
+				{operators}
+				loading={loadingOperators}
+				bind:selectedOperators={selectedDrivers}
+				disabledOperators={selectedCollectors}
+			/>
 		</DetailsSection>
-		<DetailsSection label={$t("routes.employees.role.collectors")}>
-			<CollectorsTable />
+		<DetailsSection
+			class="drivers-collectors"
+			label={$t("routes.employees.role.collectors")}
+		>
+			<OperatorsTable
+				{operators}
+				loading={loadingOperators}
+				bind:selectedOperators={selectedCollectors}
+				disabledOperators={selectedDrivers}
+			/>
 		</DetailsSection>
 	</DetailsContent>
 	<SelectContainers
+		routeId={route?.id}
 		open={openSelectContainers}
 		onOpenChange={open => (openSelectContainers = open)}
-		onSave={() => {}}
+		onSave={(addedContainers, deletedContainers) => {
+			containers.added = addedContainers;
+			containers.deleted = deletedContainers;
+		}}
 	/>
 </form>
 
 <style>
 	form {
 		display: contents;
+	}
+
+	:global(.drivers-collectors) {
+		flex: 1;
 	}
 </style>

@@ -1,23 +1,26 @@
 <script lang="ts">
 	import OlMap from "ol/Map";
 	import { Feature } from "ol";
-	import { LineString, MultiLineString, Point } from "ol/geom";
-	import { fromLonLat } from "ol/proj";
+	import { MultiLineString, Point } from "ol/geom";
 	import { Link } from "svelte-routing";
 	import Button from "../../../../lib/components/Button.svelte";
-	import Map from "../../../../lib/components/map/Map.svelte";
+	import MapComponent from "../../../../lib/components/map/Map.svelte";
 	import { MapHelper } from "../../../../lib/components/map/mapUtils";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
-	import type { Route } from "../../../../domain/route";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
-	import { CONTAINER_ICON_SRC } from "../../../../lib/constants/map";
+	import {
+		SELECTED_CONTAINER_ICON_SRC,
+		WAREHOUSE_ICON_SRC,
+	} from "../../../../lib/constants/map";
 	import RouteBottomSheet from "./RouteBottomSheet.svelte";
-	import type { FeatureObject, SimpleGeometryObject } from "ol/format/Feature";
 	import VectorSource from "ol/source/Vector";
 	import VectorLayer from "ol/layer/Vector";
 	import type { Coordinate } from "ol/coordinate";
 	import { Stroke, Style } from "ol/style";
+	import { getBatchPaginatedResponse } from "../../../../lib/utils/request";
+	import { convertToMapProjection } from "../../../../lib/utils/map";
+	import type { GeoJSONFeatureCollectionLineString } from "../../../../domain/geojson";
 
 	/**
 	 * Route ID.
@@ -37,9 +40,17 @@
 
 	/**
 	 * Adds a route to the map.
-	 * @param coordinates Route coordinates.
+	 * @param geoJson Route ways.
 	 */
-	function addRouteToMap(coordinates: Coordinate[][]) {
+	function addRouteToMap(geoJson: GeoJSONFeatureCollectionLineString) {
+		const coordinates: Coordinate[][] = [];
+		for (const feature of geoJson.features) {
+			const transformedCoordinates = feature.geometry.coordinates.map(
+				convertToMapProjection,
+			);
+			coordinates.push(transformedCoordinates);
+		}
+
 		const multiLineString = new MultiLineString(coordinates);
 		const feature = new Feature(multiLineString);
 
@@ -64,51 +75,113 @@
 	}
 
 	/**
-	 * Fetches route data and adds route to the map.
+	 * Retrieves container features to display in the map.
 	 */
-	async function fetchRoute(): Promise<Route> {
-		const [routeRes, routeWaysRes] = await Promise.allSettled([
-			ecomapHttpClient.GET("/routes/{routeId}", {
-				params: { path: { routeId: id } },
-			}),
-			ecomapHttpClient.GET("/routes/{routeId}/ways", {
-				params: { path: { routeId: id } },
-			}),
-		]);
+	async function getContainerFeatures(): Promise<Feature<Point>[]> {
+		const containers = await getBatchPaginatedResponse(
+			async (limit, offset) => {
+				const res = await ecomapHttpClient.GET("/routes/{routeId}/containers", {
+					params: { path: { routeId: id }, query: { limit, offset } },
+				});
 
-		if (
-			routeRes.status === "rejected" ||
-			routeWaysRes.status === "rejected" ||
-			(routeRes.status === "fulfilled" && routeRes.value.error) ||
-			(routeWaysRes.status === "fulfilled" && routeWaysRes.value.error)
-		) {
+				if (res.error) {
+					return { total: 0, items: [] };
+				}
+
+				return { total: res.data.total, items: res.data.containers };
+			},
+		);
+
+		const containerFeatures: Feature<Point>[] = [];
+		for (const container of containers) {
+			const transformedCoordinate = convertToMapProjection(
+				container.geoJson.geometry.coordinates,
+			);
+			const containerFeature = new Feature(new Point(transformedCoordinate));
+			containerFeatures.push(containerFeature);
+		}
+
+		return containerFeatures;
+	}
+
+	async function getRoute() {
+		const res = await ecomapHttpClient.GET("/routes/{routeId}", {
+			params: { path: { routeId: id } },
+		});
+
+		if (res.error) {
+			throw new Error("Failed to retrieve route details");
+		}
+
+		return res.data;
+	}
+
+	async function getRouteWays() {
+		const res = await ecomapHttpClient.GET("/routes/{routeId}/ways", {
+			params: { path: { routeId: id } },
+		});
+
+		if (res.error) {
+			throw new Error("Failed to retrieve route ways");
+		}
+
+		return res.data;
+	}
+
+	async function loadRoute() {
+		const [routeRes, routeWaysRes, containerFeaturesRes] =
+			await Promise.allSettled([
+				getRoute(),
+				getRouteWays(),
+				getContainerFeatures(),
+			]);
+
+		if (routeRes.status === "rejected" || routeWaysRes.status === "rejected") {
 			isMapVisible = false;
 			throw new Error("Failed to retrieve route details");
 		}
 
-		const route = routeRes.value.data!;
-		const routeWays = routeWaysRes.value.data!;
+		const mapHelper = new MapHelper(map);
 
-		const coordinates: Coordinate[][] = [];
-		for (const feature of routeWays.features) {
-			const transformedCoordinates = feature.geometry.coordinates.map(
-				coordinate => fromLonLat(coordinate),
-			);
-			coordinates.push(transformedCoordinates);
+		addRouteToMap(routeWaysRes.value);
+
+		const departureWarehouseFeature = new Feature(
+			new Point(
+				convertToMapProjection(
+					routeRes.value.departureWarehouse.geoJson.geometry.coordinates,
+				),
+			),
+		);
+		const arrivalWarehouseFeature = new Feature(
+			new Point(
+				convertToMapProjection(
+					routeRes.value.arrivalWarehouse.geoJson.geometry.coordinates,
+				),
+			),
+		);
+		mapHelper.addPointLayer(
+			[departureWarehouseFeature, arrivalWarehouseFeature],
+			{
+				iconSrc: WAREHOUSE_ICON_SRC,
+			},
+		);
+
+		if (containerFeaturesRes.status === "fulfilled") {
+			mapHelper.addPointLayer(containerFeaturesRes.value, {
+				iconSrc: SELECTED_CONTAINER_ICON_SRC,
+			});
 		}
-
-		addRouteToMap(coordinates);
 
 		isMapVisible = true;
 
-		return route;
+		return routeRes.value;
 	}
 
-	let routePromise = fetchRoute();
+	let routePromise = loadRoute();
 </script>
 
 <main class="map" data-mapVisible={isMapVisible}>
-	<Map bind:map />
+	<MapComponent bind:map />
 
 	{#await routePromise}
 		<div class="route-loading">

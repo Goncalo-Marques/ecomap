@@ -14,7 +14,6 @@ import { Vector as VectorLayer } from "ol/layer";
 import type { FeatureLike } from "ol/Feature";
 import type { Options as OptionsLayer } from "ol/layer/Layer";
 import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
-import type { WebGLStyle } from "ol/style/webgl";
 import {
 	mapLayerName,
 	colorLayerKey,
@@ -32,6 +31,7 @@ import { getCssVariable } from "../../utils/cssVars";
 import type {
 	CreateMapOptions,
 	MapHelperClusterLayerOptions,
+	MapHelperPointLayerOptions,
 } from "../../../domain/components/map";
 
 /**
@@ -48,13 +48,6 @@ const cssVars = {
 const defaultVectorStyle: VectorStyle = {
 	"stroke-color": "#fff",
 	"fill-color": "#3980a895",
-};
-
-/**
- * Default style for WebGl point layer.
- */
-const defaultIconStyle: WebGLStyle = {
-	"icon-src": DEFAULT_PIN_ICON_SRC,
 };
 
 /**
@@ -131,25 +124,31 @@ export class MapHelper {
 	/**
 	 * Add a point vector layer into map.
 	 *
-	 * @param sourceOptions Options of the point layer source.
-	 * @param layerName Name for layer.
-	 * @param [layerColor="#15803D"] Color that identifies the layer.
-	 * @param [style=defaultIconStyle] Style for new layer.
+	 * @param features Layer features.
+	 * @param options Layer options.
 	 */
 	public addPointLayer(
-		sourceOptions: Options<Feature<Geometry>>,
-		layerName: string,
-		layerColor: string = "#15803D",
-		style: WebGLStyle = defaultIconStyle,
+		features: Feature<Geometry>[],
+		options?: MapHelperPointLayerOptions,
 	) {
 		const pointsLayer = new WebGLPointsLayer({
-			source: new VectorSource(sourceOptions),
-			style: style,
+			source: new VectorSource({
+				features,
+			}),
+			style: {
+				"icon-src": options?.iconSrc ?? DEFAULT_PIN_ICON_SRC,
+			},
 			zIndex: this.map.getAllLayers().length,
 		});
 
-		pointsLayer.set(nameLayerKey, layerName);
-		pointsLayer.set(colorLayerKey, layerColor);
+		if (options?.layerName) {
+			pointsLayer.set(nameLayerKey, options.layerName);
+		}
+
+		if (options?.layerColor) {
+			pointsLayer.set(colorLayerKey, options.layerColor);
+		}
+
 		this.map.addLayer(pointsLayer);
 	}
 

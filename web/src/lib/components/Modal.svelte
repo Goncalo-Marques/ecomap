@@ -88,9 +88,12 @@
 		padding: 0;
 		margin: auto;
 		min-width: 32rem;
+		max-width: 90vw;
+		max-height: 90vh;
 		border: unset;
 		border-radius: 0.25rem;
 		box-shadow: var(--shadow-md);
+		overflow: hidden;
 	}
 
 	dialog::backdrop {
