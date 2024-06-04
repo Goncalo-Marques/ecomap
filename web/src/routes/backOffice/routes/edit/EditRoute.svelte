@@ -8,7 +8,9 @@
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import type { Route } from "../../../../domain/route";
 	import { getToastContext } from "../../../../lib/contexts/toast";
-	import type { RouteEmployeeRole } from "../../../../domain/routeEmployee";
+	import type { SelectedRouteContainersIds } from "../../../../domain/container";
+	import type { SelectedRouteEmployees } from "../../../../domain/routeEmployee";
+	import type { Truck } from "../../../../domain/truck";
 
 	/**
 	 * Route ID.
@@ -22,6 +24,7 @@
 
 	/**
 	 * Fetches route data.
+	 * @returns Route data.
 	 */
 	async function fetchRoute(): Promise<Route> {
 		const res = await ecomapHttpClient.GET("/routes/{routeId}", {
@@ -37,111 +40,136 @@
 
 	/**
 	 * Updates a route with a given name, departure warehouse,
-	 * arrival warehouse, truck and location.
+	 * arrival warehouse, truck and assigns containers and employees
+	 * to that route.
+	 * @param currentRoute Current route.
 	 * @param name Route name.
 	 * @param departureWarehouseId Route departure warehouse ID.
 	 * @param arrivalWarehouseId Route arrival warehouse ID.
-	 * @param truckID Route truck ID.
+	 * @param truck Route truck.
+	 * @param containersIds Container IDs.
+	 * @param routeEmployees Route employees.
 	 */
 	async function updateRoute(
+		currentRoute: Route,
 		name: string,
 		departureWarehouseId: string,
 		arrivalWarehouseId: string,
-		truckId: string,
-		containersIds: {
-			added: string[];
-			deleted: string[];
-		},
-		operators: {
-			added: { routeRole: RouteEmployeeRole; id: string }[];
-			deleted: { routeRole: RouteEmployeeRole; id: string }[];
-		},
+		truck: Truck,
+		containersIds: SelectedRouteContainersIds,
+		routeEmployees: SelectedRouteEmployees,
 	) {
-		const routeRes = await ecomapHttpClient.PATCH("/routes/{routeId}", {
-			params: {
-				path: {
-					routeId: id,
+		async function performRouteUpdate() {
+			const routeRes = await ecomapHttpClient.PATCH("/routes/{routeId}", {
+				params: {
+					path: {
+						routeId: id,
+					},
 				},
-			},
-			body: {
-				name,
-				departureWarehouseId,
-				arrivalWarehouseId,
-				truckId,
-			},
-		});
-
-		if (routeRes.error) {
-			toast.show({
-				type: "error",
-				title: $t("error.unexpected.title"),
-				description: $t("error.unexpected.description"),
+				body: {
+					name,
+					departureWarehouseId,
+					arrivalWarehouseId,
+					truckId: truck.id,
+				},
 			});
-			return;
+
+			if (routeRes.error) {
+				toast.show({
+					type: "error",
+					title: $t("error.unexpected.title"),
+					description: $t("error.unexpected.description"),
+				});
+				return;
+			}
+
+			toast.show({
+				type: "success",
+				title: $t("routes.update.success"),
+				description: undefined,
+			});
 		}
 
-		const promises = [];
+		async function performRouteAssociations() {
+			const promises = [];
 
-		for (const containerId of containersIds.added) {
-			promises.push(
-				ecomapHttpClient.POST("/routes/{routeId}/containers/{containerId}", {
-					params: {
-						path: {
-							routeId: routeRes.data.id,
-							containerId,
+			// Add promises that remove each removed container with the updated route.
+			for (const containerId of containersIds.deleted) {
+				promises.push(
+					ecomapHttpClient.DELETE(
+						"/routes/{routeId}/containers/{containerId}",
+						{
+							params: {
+								path: {
+									routeId: id,
+									containerId,
+								},
+							},
 						},
-					},
-				}),
-			);
-		}
-		for (const containerId of containersIds.deleted) {
-			promises.push(
-				ecomapHttpClient.DELETE("/routes/{routeId}/containers/{containerId}", {
-					params: {
-						path: {
-							routeId: routeRes.data.id,
-							containerId,
+					),
+				);
+			}
+
+			// Add promises that associate each added container with the updated route.
+			for (const containerId of containersIds.added) {
+				promises.push(
+					ecomapHttpClient.POST("/routes/{routeId}/containers/{containerId}", {
+						params: {
+							path: {
+								routeId: id,
+								containerId,
+							},
 						},
-					},
-				}),
-			);
+					}),
+				);
+			}
+
+			// Add promises that remove the association of each removed container with the updated route.
+			for (const routeEmployee of routeEmployees.deleted) {
+				promises.push(
+					ecomapHttpClient.DELETE("/routes/{routeId}/employees/{employeeId}", {
+						params: {
+							path: {
+								routeId: id,
+								employeeId: routeEmployee.id,
+							},
+						},
+					}),
+				);
+			}
+
+			// Add promises that add the association of each added container with the updated route.
+			for (const routeEmployee of routeEmployees.added) {
+				promises.push(
+					ecomapHttpClient.POST("/routes/{routeId}/employees/{employeeId}", {
+						params: {
+							path: {
+								routeId: id,
+								employeeId: routeEmployee.id,
+							},
+						},
+						body: {
+							routeRole: routeEmployee.routeRole,
+						},
+					}),
+				);
+			}
+
+			// Execute all promises.
+			await Promise.allSettled(promises);
 		}
 
-		for (const operator of operators.deleted) {
-			promises.push(
-				ecomapHttpClient.DELETE("/routes/{routeId}/employees/{employeeId}", {
-					params: {
-						path: {
-							routeId: routeRes.data.id,
-							employeeId: operator.id,
-						},
-					},
-				}),
-			);
+		// Perform requests based on truck person capacity.
+		// If the selected truck has a higher capacity than the current truck associated with the route,
+		// the route must be updated first to avoid conflicts with the number of employees associated.
+		// Otherwise, perform the associations first.
+		if (truck.personCapacity > currentRoute.truck.personCapacity) {
+			await performRouteUpdate();
+			await performRouteAssociations();
+		} else {
+			await performRouteAssociations();
+			await performRouteUpdate();
 		}
-		for (const operator of operators.added) {
-			promises.push(
-				ecomapHttpClient.POST("/routes/{routeId}/employees/{employeeId}", {
-					params: {
-						path: {
-							routeId: routeRes.data.id,
-							employeeId: operator.id,
-						},
-					},
-					body: {
-						routeRole: operator.routeRole,
-					},
-				}),
-			);
-		}
-
-		await Promise.allSettled(promises);
-
-		toast.show({
-			type: "success",
-			title: $t("routes.update.success"),
-			description: undefined,
-		});
 
 		navigate(`${BackOfficeRoutes.ROUTES}/${id}`);
 	}
@@ -159,7 +187,24 @@
 			{route}
 			back={route.id}
 			title={route.name}
-			onSave={updateRoute}
+			onSave={(
+				name,
+				departureWarehouseId,
+				arrivalWarehouseId,
+				truck,
+				containersIds,
+				routeEmployees,
+			) => {
+				updateRoute(
+					route,
+					name,
+					departureWarehouseId,
+					arrivalWarehouseId,
+					truck,
+					containersIds,
+					routeEmployees,
+				);
+			}}
 		/>
 	{:catch}
 		<div class="route-not-found">

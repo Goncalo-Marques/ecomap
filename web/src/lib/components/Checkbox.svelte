@@ -1,14 +1,34 @@
 <script lang="ts">
 	import type { ChangeEventHandler } from "svelte/elements";
 
+	/**
+	 * The label displayed for the checkbox.
+	 * @default null
+	 */
 	export let label: string | null = null;
 
+	/**
+	 * The size of the checkbox.
+	 * @default "medium"
+	 */
 	export let size: "small" | "medium" | "large" = "medium";
 
+	/**
+	 * Indicates if the checkbox is disabled.
+	 * @default false
+	 */
 	export let disabled: boolean = false;
 
+	/**
+	 * Indicates if the checkbox is checked.
+	 * @default false
+	 */
 	export let checked: boolean = false;
 
+	/**
+	 * Callback fired when checkbox checked state changes.
+	 * @default null
+	 */
 	export let onChange: ChangeEventHandler<HTMLInputElement> | null = null;
 </script>
 

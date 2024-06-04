@@ -76,13 +76,6 @@
 	export let mapId: string = "map_id";
 
 	/**
-	 * A space-separated list of the classes of the element.
-	 * @default ""
-	 */
-	let className: string = "";
-	export { className as class };
-
-	/**
 	 * Callback fired when map is initialized.
 	 *
 	 * @default null
@@ -113,7 +106,7 @@
 	});
 </script>
 
-<div id={mapId} class={`map ${className}`}>
+<div id={mapId} class="map">
 	{#if showLayers && layers.length}
 		<section class="layers">
 			<header>

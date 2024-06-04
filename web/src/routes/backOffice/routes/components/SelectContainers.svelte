@@ -215,7 +215,7 @@
 		// Mark feature as selected.
 		feature.set("selected", true);
 
-		// Keep track of the selected feature to reset it on the next map click event.
+		// Add feature to the list of selected features.
 		selectedFeatures.push(feature);
 
 		const containers: Container[] = feature.get("items");

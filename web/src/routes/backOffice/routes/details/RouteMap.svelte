@@ -10,6 +10,7 @@
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { t } from "../../../../lib/utils/i8n";
 	import {
+		LANDFILL_ICON_SRC,
 		SELECTED_CONTAINER_ICON_SRC,
 		WAREHOUSE_ICON_SRC,
 	} from "../../../../lib/constants/map";
@@ -21,6 +22,7 @@
 	import { getBatchPaginatedResponse } from "../../../../lib/utils/request";
 	import { convertToMapProjection } from "../../../../lib/utils/map";
 	import type { GeoJSONFeatureCollectionLineString } from "../../../../domain/geojson";
+	import { getCssVariable } from "../../../../lib/utils/cssVars";
 
 	/**
 	 * Route ID.
@@ -54,30 +56,40 @@
 		const multiLineString = new MultiLineString(coordinates);
 		const feature = new Feature(multiLineString);
 
+		const view = map.getView();
+
 		const layerLines = new VectorLayer({
 			source: new VectorSource({
 				features: [feature],
 			}),
 			style() {
-				return new Style({
-					stroke: new Stroke({
-						width: 1,
-						color: [0, 0, 255, 1],
+				return [
+					new Style({
+						stroke: new Stroke({
+							color: getCssVariable("--blue-600"),
+							width: 8,
+						}),
 					}),
-				});
+					new Style({
+						stroke: new Stroke({
+							color: getCssVariable("--blue-500"),
+							width: 6,
+						}),
+					}),
+				];
 			},
 		});
 
 		map.addLayer(layerLines);
 
-		const view = map.getView();
 		view.fit(multiLineString, { padding: [40, 40, 280, 40] });
 	}
 
 	/**
-	 * Retrieves container features to display in the map.
+	 * Retrieves route container features to display in the map.
+	 * @returns Route container features.
 	 */
-	async function getContainerFeatures(): Promise<Feature<Point>[]> {
+	async function getRouteContainerFeatures(): Promise<Feature<Point>[]> {
 		const containers = await getBatchPaginatedResponse(
 			async (limit, offset) => {
 				const res = await ecomapHttpClient.GET("/routes/{routeId}/containers", {
@@ -104,6 +116,39 @@
 		return containerFeatures;
 	}
 
+	/**
+	 * Retrieves landfill features to display in the map.
+	 * @returns Landfill features.
+	 */
+	async function getLandfillFeatures(): Promise<Feature<Point>[]> {
+		const landfills = await getBatchPaginatedResponse(async (limit, offset) => {
+			const res = await ecomapHttpClient.GET("/landfills", {
+				params: { path: { routeId: id }, query: { limit, offset } },
+			});
+
+			if (res.error) {
+				return { total: 0, items: [] };
+			}
+
+			return { total: res.data.total, items: res.data.landfills };
+		});
+
+		const landfillFeatures: Feature<Point>[] = [];
+		for (const landfill of landfills) {
+			const transformedCoordinate = convertToMapProjection(
+				landfill.geoJson.geometry.coordinates,
+			);
+			const landfillFeature = new Feature(new Point(transformedCoordinate));
+			landfillFeatures.push(landfillFeature);
+		}
+
+		return landfillFeatures;
+	}
+
+	/**
+	 * Retrieves route details.
+	 * @returns Route details.
+	 */
 	async function getRoute() {
 		const res = await ecomapHttpClient.GET("/routes/{routeId}", {
 			params: { path: { routeId: id } },
@@ -116,6 +161,10 @@
 		return res.data;
 	}
 
+	/**
+	 * Retrieves route ways.
+	 * @returns Route ways.
+	 */
 	async function getRouteWays() {
 		const res = await ecomapHttpClient.GET("/routes/{routeId}/ways", {
 			params: { path: { routeId: id } },
@@ -128,12 +177,17 @@
 		return res.data;
 	}
 
+	/**
+	 * Loads route data and displays it in the map.
+	 * @returns Route data.
+	 */
 	async function loadRoute() {
-		const [routeRes, routeWaysRes, containerFeaturesRes] =
+		const [routeRes, routeWaysRes, containerFeaturesRes, landfillFeaturesRes] =
 			await Promise.allSettled([
 				getRoute(),
 				getRouteWays(),
-				getContainerFeatures(),
+				getRouteContainerFeatures(),
+				getLandfillFeatures(),
 			]);
 
 		if (routeRes.status === "rejected" || routeWaysRes.status === "rejected") {
@@ -145,6 +199,7 @@
 
 		addRouteToMap(routeWaysRes.value);
 
+		// Add route warehouses to map.
 		const departureWarehouseFeature = new Feature(
 			new Point(
 				convertToMapProjection(
@@ -166,9 +221,17 @@
 			},
 		);
 
+		// Add route containers to map.
 		if (containerFeaturesRes.status === "fulfilled") {
 			mapHelper.addPointLayer(containerFeaturesRes.value, {
 				iconSrc: SELECTED_CONTAINER_ICON_SRC,
+			});
+		}
+
+		// Add landfills to map.
+		if (landfillFeaturesRes.status === "fulfilled") {
+			mapHelper.addPointLayer(landfillFeaturesRes.value, {
+				iconSrc: LANDFILL_ICON_SRC,
 			});
 		}
 

@@ -115,6 +115,8 @@
 	"routes.delete.success": "Rota eliminada com sucesso",
 	"routes.delete.conflict.title": "Conflito",
 	"routes.delete.conflict.description": "Esta rota não pode ser eliminada porque está associada a um contentor ou a um operador.",
+	"routes.truck.error.personCapacityExceeded.title": "Conflicto",
+	"routes.truck.error.personCapacityExceeded.description": "A quantidade de operadores excede a capacidade do camião.",
 	"routes.name": "Nome",
 	"routes.name.placeholder": "Introduza o nome",
 	"routes.truck.placeholder": "Selecione o camião",

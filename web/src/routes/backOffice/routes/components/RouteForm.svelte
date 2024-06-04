@@ -20,11 +20,16 @@
 	import SelectContainers from "./SelectContainers.svelte";
 	import OperatorsTable from "./OperatorsTable.svelte";
 	import type { Employee } from "../../../../domain/employees";
-	import type { Container } from "../../../../domain/container";
+	import type {
+		Container,
+		SelectedRouteContainersIds,
+	} from "../../../../domain/container";
 	import type {
 		RouteEmployee,
-		RouteEmployeeRole,
+		SelectedRouteEmployees,
 	} from "../../../../domain/routeEmployee";
+	import { getTruckName } from "../utils/truck";
+	import { getToastContext } from "../../../../lib/contexts/toast";
 
 	/**
 	 * The back route.
@@ -43,15 +48,9 @@
 		name: string,
 		departureWarehouseId: string,
 		arrivalWarehouseId: string,
-		truckId: string,
-		containersIds: {
-			added: string[];
-			deleted: string[];
-		},
-		operatorsIds: {
-			added: { routeRole: RouteEmployeeRole; id: string }[];
-			deleted: { routeRole: RouteEmployeeRole; id: string }[];
-		},
+		truck: Truck,
+		containersIds: SelectedRouteContainersIds,
+		routeEmployees: SelectedRouteEmployees,
 	) => void;
 
 	/**
@@ -61,15 +60,20 @@
 	export let route: Route | null = null;
 
 	/**
+	 * Toast context.
+	 */
+	const toast = getToastContext();
+
+	/**
 	 * The select containers open modal state.
 	 * @default false
 	 */
 	let openSelectContainers = false;
 
 	/**
-	 * TODO.
+	 * The containers map with the original, added and deleted containers for the route.
 	 */
-	let containers: {
+	let containersMap: {
 		original: Container[];
 		added: Container[];
 		deleted: Container[];
@@ -79,19 +83,41 @@
 		deleted: [],
 	};
 
-	let routeOperators: RouteEmployee[];
+	/**
+	 * The route employees.
+	 */
+	let routeEmployees: RouteEmployee[];
 
+	/**
+	 * The selected drivers for the route.
+	 */
 	let selectedDrivers: Employee[];
 
+	/**
+	 * The selected collectors for the route.
+	 */
 	let selectedCollectors: Employee[];
 
+	/**
+	 * The promise with the truck options for the truck select input.
+	 */
 	let truckOptionsPromise: Promise<Truck[]>;
 
+	/**
+	 * The promise with the warehouse options for the truck select input.
+	 */
 	let warehouseOptionsPromise: Promise<Warehouse[]>;
 
-	let loadingOperators: boolean = false;
+	/**
+	 * The loading state for the waste operators.
+	 * @default false
+	 */
+	let loadingWasteOperators: boolean = false;
 
-	let operators: Employee[];
+	/**
+	 * The waste operators.
+	 */
+	let wasteOperators: Employee[];
 
 	/**
 	 * Error messages of the form fields.
@@ -199,55 +225,80 @@
 			return;
 		}
 
+		let selectedTruck: Truck;
+		try {
+			selectedTruck = JSON.parse(truckInput.value);
+
+			if (
+				selectedTruck.personCapacity <
+				selectedDrivers.length + selectedCollectors.length
+			) {
+				toast.show({
+					type: "error",
+					title: $t("routes.truck.error.personCapacityExceeded.title"),
+					description: $t(
+						"routes.truck.error.personCapacityExceeded.description",
+					),
+				});
+				return;
+			}
+		} catch {
+			return;
+		}
+
+		// Set the added and deleted container IDs.
 		const containersIds = {
-			added: containers.added.map(container => container.id),
-			deleted: containers.deleted.map(container => container.id),
+			added: containersMap.added.map(container => container.id),
+			deleted: containersMap.deleted.map(container => container.id),
 		};
 
-		const operatorsIds: {
-			added: { routeRole: RouteEmployeeRole; id: string }[];
-			deleted: { routeRole: RouteEmployeeRole; id: string }[];
-		} = {
+		const selectedRouteEmployees: SelectedRouteEmployees = {
 			added: [],
 			deleted: [],
 		};
 
+		// Add all new drivers.
 		for (const selectedDriver of selectedDrivers) {
-			if (routeOperators.every(operator => operator.id !== selectedDriver.id)) {
-				operatorsIds.added.push({
+			if (routeEmployees.every(operator => operator.id !== selectedDriver.id)) {
+				selectedRouteEmployees.added.push({
 					id: selectedDriver.id,
 					routeRole: "driver",
 				});
 			}
 		}
-		for (const routeOperator of routeOperators.filter(
+
+		// Add all removed drivers.
+		for (const routeEmployee of routeEmployees.filter(
 			routeOperator => routeOperator.routeRole === "driver",
 		)) {
 			if (
 				selectedDrivers.every(
-					selectedDriver => selectedDriver.id !== routeOperator.id,
+					selectedDriver => selectedDriver.id !== routeEmployee.id,
 				)
 			) {
-				operatorsIds.deleted.push({
-					id: routeOperator.id,
+				selectedRouteEmployees.deleted.push({
+					id: routeEmployee.id,
 					routeRole: "driver",
 				});
 			}
 		}
 
+		// Add all new collectors.
 		for (const selectedCollector of selectedCollectors) {
 			if (
-				routeOperators.every(
+				routeEmployees.every(
 					routeOperator => routeOperator.id !== selectedCollector.id,
 				)
 			) {
-				operatorsIds.added.push({
+				selectedRouteEmployees.added.push({
 					id: selectedCollector.id,
 					routeRole: "collector",
 				});
 			}
 		}
-		for (const routeOperator of routeOperators.filter(
+
+		// Add all removed collectors.
+		for (const routeOperator of routeEmployees.filter(
 			routeOperator => routeOperator.routeRole === "collector",
 		)) {
 			if (
@@ -255,7 +306,7 @@
 					selectedCollector => selectedCollector.id !== routeOperator.id,
 				)
 			) {
-				operatorsIds.deleted.push({
+				selectedRouteEmployees.deleted.push({
 					id: routeOperator.id,
 					routeRole: "collector",
 				});
@@ -266,9 +317,9 @@
 			nameInput.value,
 			departureWarehouseInput.value,
 			arrivalWarehouseInput.value,
-			truckInput.value,
+			selectedTruck,
 			containersIds,
-			operatorsIds,
+			selectedRouteEmployees,
 		);
 	}
 
@@ -294,7 +345,7 @@
 	 * @param id Route ID.
 	 */
 	async function getRouteOperators(id: string) {
-		routeOperators = await getBatchPaginatedResponse(async (limit, offset) => {
+		routeEmployees = await getBatchPaginatedResponse(async (limit, offset) => {
 			const res = await ecomapHttpClient.GET("/routes/{routeId}/employees", {
 				params: { path: { routeId: id }, query: { limit, offset } },
 			});
@@ -306,10 +357,10 @@
 			return { total: res.data.total, items: res.data.employees };
 		});
 
-		selectedDrivers = routeOperators.filter(
+		selectedDrivers = routeEmployees.filter(
 			routeOperator => routeOperator.routeRole === "driver",
 		);
-		selectedCollectors = routeOperators.filter(
+		selectedCollectors = routeEmployees.filter(
 			routeOperator => routeOperator.routeRole === "collector",
 		);
 	}
@@ -333,9 +384,13 @@
 			},
 		);
 
-		containers.original = routeContainers;
+		containersMap.original = routeContainers;
 	}
 
+	/**
+	 * Retrieves truck options.
+	 * @returns Truck options.
+	 */
 	async function getTruckOptions() {
 		return getBatchPaginatedResponse(async (limit, offset) => {
 			const res = await ecomapHttpClient.GET("/trucks", {
@@ -350,6 +405,10 @@
 		});
 	}
 
+	/**
+	 * Retrieves warehouse options.
+	 * @returns Warehouse options.
+	 */
 	async function getWarehouseOptions() {
 		return getBatchPaginatedResponse(async (limit, offset) => {
 			const res = await ecomapHttpClient.GET("/warehouses", {
@@ -364,10 +423,13 @@
 		});
 	}
 
-	async function fetchOperators() {
-		loadingOperators = true;
+	/**
+	 * Fetch waste operators.
+	 */
+	async function fetchWasteOperators() {
+		loadingWasteOperators = true;
 
-		operators = await getBatchPaginatedResponse(async (limit, offset) => {
+		wasteOperators = await getBatchPaginatedResponse(async (limit, offset) => {
 			const res = await ecomapHttpClient.GET("/employees", {
 				params: {
 					query: {
@@ -385,13 +447,14 @@
 			return { total: res.data.total, items: res.data.employees };
 		});
 
-		loadingOperators = false;
+		loadingWasteOperators = false;
 	}
 
 	truckOptionsPromise = getTruckOptions();
 	warehouseOptionsPromise = getWarehouseOptions();
-	fetchOperators();
+	fetchWasteOperators();
 
+	// If a route is defined, fetch its containers and operators.
 	if (route) {
 		getRouteContainers(route.id);
 		getRouteOperators(route.id);
@@ -436,11 +499,11 @@
 							name="truck"
 							error={!!formErrorMessages.truck}
 							placeholder={$t("routes.truck.placeholder")}
-							value={route?.truck.id}
+							value={route ? JSON.stringify(route.truck) : undefined}
 						>
 							{#each truckOptions as truck}
-								<Option value={truck.id}>
-									{`${truck.make} ${truck.model} (${truck.licensePlate})`}
+								<Option value={JSON.stringify(truck)}>
+									{getTruckName(truck.make, truck.model, truck.licensePlate)}
 								</Option>
 							{/each}
 						</Select>
@@ -509,9 +572,9 @@
 					<LocationInput
 						required
 						value={getContainersInputValue(
-							containers.original.length,
-							containers.added.length,
-							containers.deleted.length,
+							containersMap.original.length,
+							containersMap.added.length,
+							containersMap.deleted.length,
 						)}
 						name="containers"
 						placeholder={$t("routes.containers.placeholder")}
@@ -526,8 +589,8 @@
 			label={$t("routes.employees.role.drivers")}
 		>
 			<OperatorsTable
-				{operators}
-				loading={loadingOperators}
+				operators={wasteOperators}
+				loading={loadingWasteOperators}
 				bind:selectedOperators={selectedDrivers}
 				disabledOperators={selectedCollectors}
 			/>
@@ -537,8 +600,8 @@
 			label={$t("routes.employees.role.collectors")}
 		>
 			<OperatorsTable
-				{operators}
-				loading={loadingOperators}
+				operators={wasteOperators}
+				loading={loadingWasteOperators}
 				bind:selectedOperators={selectedCollectors}
 				disabledOperators={selectedDrivers}
 			/>
@@ -549,8 +612,8 @@
 		open={openSelectContainers}
 		onOpenChange={open => (openSelectContainers = open)}
 		onSave={(addedContainers, deletedContainers) => {
-			containers.added = addedContainers;
-			containers.deleted = deletedContainers;
+			containersMap.added = addedContainers;
+			containersMap.deleted = deletedContainers;
 		}}
 	/>
 </form>

@@ -6,7 +6,9 @@
 	import RouteForm from "../components/RouteForm.svelte";
 	import { BackOfficeRoutes } from "../../../constants/routes";
 	import { getToastContext } from "../../../../lib/contexts/toast";
-	import type { RouteEmployeeRole } from "../../../../domain/routeEmployee";
+	import type { SelectedRouteContainersIds } from "../../../../domain/container";
+	import type { SelectedRouteEmployees } from "../../../../domain/routeEmployee";
+	import type { Truck } from "../../../../domain/truck";
 
 	/**
 	 * Toast context.
@@ -15,32 +17,29 @@
 
 	/**
 	 * Creates a route with a given name, departure warehouse,
-	 * arrival warehouse, truck and location.
+	 * arrival warehouse, truck and assigns containers and employees
+	 * to that route.
 	 * @param name Route name.
 	 * @param departureWarehouseId Route departure warehouse ID.
 	 * @param arrivalWarehouseId Route arrival warehouse ID.
-	 * @param truckID Route truck ID.
+	 * @param truck Route truck.
+	 * @param containersIds Container IDs.
+	 * @param routeEmployees Route employees.
 	 */
 	async function createRoute(
 		name: string,
 		departureWarehouseId: string,
 		arrivalWarehouseId: string,
-		truckId: string,
-		containersIds: {
-			added: string[];
-			deleted: string[];
-		},
-		operators: {
-			added: { routeRole: RouteEmployeeRole; id: string }[];
-			deleted: { routeRole: RouteEmployeeRole; id: string }[];
-		},
+		truck: Truck,
+		containersIds: SelectedRouteContainersIds,
+		routeEmployees: SelectedRouteEmployees,
 	) {
 		const routeRes = await ecomapHttpClient.POST("/routes", {
 			body: {
 				name,
 				arrivalWarehouseId,
 				departureWarehouseId,
-				truckId,
+				truckId: truck.id,
 			},
 		});
 
@@ -55,6 +54,7 @@
 
 		const promises = [];
 
+		// Add promises that associate each added container with the created route.
 		for (const containerId of containersIds.added) {
 			promises.push(
 				ecomapHttpClient.POST("/routes/{routeId}/containers/{containerId}", {
@@ -68,22 +68,24 @@
 			);
 		}
 
-		for (const operator of operators.added) {
+		// Add promises that associate each added employee with the created route.
+		for (const routeEmployee of routeEmployees.added) {
 			promises.push(
 				ecomapHttpClient.POST("/routes/{routeId}/employees/{employeeId}", {
 					params: {
 						path: {
 							routeId: routeRes.data.id,
-							employeeId: operator.id,
+							employeeId: routeEmployee.id,
 						},
 					},
 					body: {
-						routeRole: operator.routeRole,
+						routeRole: routeEmployee.routeRole,
 					},
 				}),
 			);
 		}
 
+		// Execute all promises.
 		await Promise.allSettled(promises);
 
 		toast.show({

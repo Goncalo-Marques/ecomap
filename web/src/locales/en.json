@@ -115,6 +115,8 @@
 	"routes.delete.success": "Route deleted successfully",
 	"routes.delete.conflict.title": "Conflict",
 	"routes.delete.conflict.description": "This route cannot be deleted because it's associated with a container or employee.",
+	"routes.truck.error.personCapacityExceeded.title": "Conflict",
+	"routes.truck.error.personCapacityExceeded.description": "The amount of operators exceeds the capacity of the truck.",
 	"routes.name": "Name",
 	"routes.name.placeholder": "Enter the name",
 	"routes.truck.placeholder": "Select a truck",

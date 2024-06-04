@@ -8,6 +8,7 @@
 	import routesStore from "./routesStore";
 	import { getLocationName } from "../../../../lib/utils/location";
 	import type { Route } from "../../../../domain/route";
+	import { getTruckName } from "../utils/truck";
 
 	const { loading, data, filters } = routesStore;
 
@@ -55,7 +56,7 @@
 			enableSorting: false,
 			enableFiltering: false,
 			cell(truck) {
-				return `${truck.make} ${truck.model} (${truck.licensePlate})`;
+				return getTruckName(truck.make, truck.model, truck.licensePlate);
 			},
 		},
 		{

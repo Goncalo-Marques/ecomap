@@ -6,6 +6,7 @@
 	import { formatDate } from "../../../../lib/utils/date";
 	import { t } from "../../../../lib/utils/i8n";
 	import { getLocationName } from "../../../../lib/utils/location";
+	import { getTruckName } from "../utils/truck";
 
 	/**
 	 * The route whose information is displayed.
@@ -30,7 +31,11 @@
 	/>
 	<Field
 		label={$t("truck")}
-		value={`${route.truck.make} ${route.truck.model} (${route.truck.licensePlate})`}
+		value={getTruckName(
+			route.truck.make,
+			route.truck.model,
+			route.truck.licensePlate,
+		)}
 	/>
 	<Field
 		label={$t("createdAt")}

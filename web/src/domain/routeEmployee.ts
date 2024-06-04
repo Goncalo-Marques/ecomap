@@ -23,3 +23,19 @@ export interface RouteEmployeesFilters {
  * Role of a route employee.
  */
 export type RouteEmployeeRole = components["schemas"]["RouteEmployeeRole"];
+
+/**
+ * Represents a selected employee for a route.
+ */
+export interface SelectedRouteEmployee {
+	id: string;
+	routeRole: RouteEmployeeRole;
+}
+
+/**
+ * Represents the selected employees that are added or deleted from a route.
+ */
+export interface SelectedRouteEmployees {
+	added: SelectedRouteEmployee[];
+	deleted: SelectedRouteEmployee[];
+}

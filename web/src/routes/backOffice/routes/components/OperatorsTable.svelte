@@ -11,35 +11,64 @@
 	import { getLocationName } from "../../../../lib/utils/location";
 	import Checkbox from "../../../../lib/components/Checkbox.svelte";
 
+	/**
+	 * Indicates whether the operator data is loading.
+	 */
 	export let loading: boolean;
 
+	/**
+	 * The operators available.
+	 */
 	export let operators: Employee[];
 
+	/**
+	 * The operators that are selected.
+	 * @default []
+	 */
 	export let selectedOperators: Employee[] = [];
 
-	export let disabledOperators: Employee[];
+	/**
+	 * The operators that cannot be selected.
+	 * @default []
+	 */
+	export let disabledOperators: Employee[] = [];
 
-	function checkboxColumn(selectedOps: Employee[], disabledOps: Employee[]) {
-		return (employee: Employee): TableCellSvelteComponent => {
+	/**
+	 * The checkbox cell displayed for each operator.
+	 *
+	 * The cell function for the checkbox is extracted from the table columns to dynamically
+	 * update the checkbox state as the selected and disabled operators change.
+	 *
+	 * @param selectedOps Selected operators.
+	 * @param disabledOps Disabled operators.
+	 * @returns Checkbox cell.
+	 */
+	function checkboxCell(selectedOps: Employee[], disabledOps: Employee[]) {
+		return (operator: Employee): TableCellSvelteComponent => {
 			const props: ComponentProps<Checkbox> = {
 				size: "large",
-				checked: selectedOps.some(operator => operator.id === employee.id),
-				disabled: disabledOps.some(operator => operator.id === employee.id),
+				checked: selectedOps.some(selectedOp => selectedOp.id === operator.id),
+				disabled: disabledOps.some(disabledOp => disabledOp.id === operator.id),
 				onChange(e) {
 					const newSelectedOperators = [...selectedOps];
 
 					const checked = e.currentTarget.checked;
 					if (checked) {
-						newSelectedOperators.push(employee);
+						// Add operator to selected operators list.
+						newSelectedOperators.push(operator);
 					} else {
+						// Retrieve the index of the selected operator that needs to be removed.
 						const selectedOperatorIndex = newSelectedOperators.findIndex(
-							operator => operator.id === employee.id,
+							selectedOperator => selectedOperator.id === operator.id,
 						);
+
+						// If the operator was found, remove it from the list.
 						if (selectedOperatorIndex !== -1) {
 							newSelectedOperators.splice(selectedOperatorIndex, 1);
 						}
 					}
 
+					// Update selected operators.
 					selectedOperators = newSelectedOperators;
 				},
 			};
@@ -57,7 +86,7 @@
 			header: "",
 			size: 40,
 			cell(operator) {
-				return checkboxColumn(selectedOperators, disabledOperators)(operator);
+				return checkboxCell(selectedOperators, disabledOperators)(operator);
 			},
 		},
 		{
@@ -104,7 +133,8 @@
 		},
 	];
 
-	$: columns[0].cell = checkboxColumn(selectedOperators, disabledOperators);
+	// Reconstruct the checkbox cell each time the selected or disabled operators are changed.
+	$: columns[0].cell = checkboxCell(selectedOperators, disabledOperators);
 </script>
 
 <Table {columns} {loading} rows={operators} />

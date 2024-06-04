@@ -346,6 +346,12 @@
 		"routes.delete.conflict.description": {
 			"type": "string"
 		},
+		"routes.truck.error.personCapacityExceeded.title": {
+			"type": "string"
+		},
+		"routes.truck.error.personCapacityExceeded.description": {
+			"type": "string"
+		},
 		"routes.name": {
 			"type": "string"
 		},
