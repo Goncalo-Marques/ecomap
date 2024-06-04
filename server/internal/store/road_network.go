@@ -193,7 +193,12 @@ func (s *store) GetRoadsGeometryAStar(ctx context.Context, tx pgx.Tx, seqVertexI
 	prevVertexID := seqVertexIDs[0]
 	for i := 1; i < len(seqVertexIDs); i++ {
 		batch.Queue(fmt.Sprintf(`
-			SELECT ST_AsGeoJSON(rn.geom_way)::jsonb
+			SELECT ST_AsGeoJSON(
+				CASE 
+					WHEN a.node = rn.source THEN rn.geom_way
+					ELSE ST_Reverse(rn.geom_way)
+				END
+			)::jsonb
 			FROM pgr_aStar(
 				'WITH bounding_box AS (
 					SELECT ST_Buffer(ST_ConvexHull(ST_Collect(geom_vertex)), 0.3) FROM road_network_vertex WHERE id IN (%s)
