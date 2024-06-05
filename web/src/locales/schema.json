@@ -456,6 +456,9 @@
 		},
 		"employees.password.confirm.placeholder": {
 			"type": "string"
+		},
+		"employees.password.error.passwordMismatch": {
+			"type": "string"
 		}
 	}
 }

@@ -11,7 +11,7 @@
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
 	import { getLocationName } from "../../../../lib/utils/location";
 	import LocationInput from "../../../../lib/components/LocationInput.svelte";
-	import type { Employee, EmployeeRoles } from "../../../../domain/employees";
+	import type { Employee, EmployeeRole } from "../../../../domain/employees";
 	import SelectLocation from "../../../../lib/components/SelectLocation.svelte";
 	import { convertToResourceProjection } from "../../../../lib/utils/map";
 	import { isValidEmployeeRole } from "../utils/employee";
@@ -31,7 +31,7 @@
 	export let title: string;
 
 	/**
-	 * Set form as a create form, to create a new employee.\
+	 * Set form as a create form, to create a new employee.
 	 * @default false
 	 */
 	export let createForm: boolean = false;
@@ -39,17 +39,17 @@
 	/**
 	 * Callback fired when save action is triggered.
 	 */
-	export let onSave: onSaveType | onSaveCreateType;
+	export let onSave: onSaveFn | onSaveCreateFn;
 
 	/**
 	 * Type of callback to create new employee.
 	 */
-	type onSaveCreateType = (
+	type onSaveCreateFn = (
 		username: string,
 		password: string,
 		firstName: string,
 		lastName: string,
-		role: EmployeeRoles,
+		role: EmployeeRole,
 		dateOfBirth: string,
 		phoneNumber: string,
 		location: GeoJSONFeaturePoint,
@@ -60,7 +60,7 @@
 	/**
 	 * Type of callback to update employee.
 	 */
-	type onSaveType = (
+	type onSaveFn = (
 		username: string,
 		firstName: string,
 		lastName: string,
@@ -290,37 +290,34 @@
 			}
 		}
 
+		let validationArray: boolean[] = [
+			!formErrorMessages.username,
+			!formErrorMessages.password,
+			!formErrorMessages.firstName,
+			!formErrorMessages.lastName,
+			!formErrorMessages.dateOfBirth,
+			!formErrorMessages.phoneNumber,
+			!formErrorMessages.scheduleStart,
+			!formErrorMessages.scheduleEnd,
+			!formErrorMessages.location,
+		];
+
 		if (createForm && passwordInput !== null && confirmPasswordInput !== null) {
-			return (
-				!formErrorMessages.username &&
-				!formErrorMessages.password &&
-				!formErrorMessages.firstName &&
-				!formErrorMessages.lastName &&
-				!formErrorMessages.role &&
-				!formErrorMessages.dateOfBirth &&
-				!formErrorMessages.phoneNumber &&
-				!formErrorMessages.scheduleStart &&
-				!formErrorMessages.scheduleEnd &&
-				!formErrorMessages.location &&
-				!formErrorMessages.password &&
-				!formErrorMessages.confirmPassword &&
-				passwordInput.value === confirmPasswordInput.value &&
-				!!coordinate
+			validationArray.push(
+				!formErrorMessages.role,
+				!formErrorMessages.password,
+				!formErrorMessages.confirmPassword,
+				passwordInput.value === confirmPasswordInput.value,
 			);
 		}
 
-		return (
-			!formErrorMessages.username &&
-			!formErrorMessages.password &&
-			!formErrorMessages.firstName &&
-			!formErrorMessages.lastName &&
-			!formErrorMessages.dateOfBirth &&
-			!formErrorMessages.phoneNumber &&
-			!formErrorMessages.scheduleStart &&
-			!formErrorMessages.scheduleEnd &&
-			!formErrorMessages.location &&
-			!!coordinate
-		);
+		for (const obj of validationArray) {
+			if (!obj) {
+				return false && !!coordinate;
+			}
+		}
+
+		return true && !!coordinate;
 	}
 
 	/**
@@ -430,7 +427,7 @@
 				return;
 			}
 
-			(onSave as onSaveCreateType)(
+			(onSave as onSaveCreateFn)(
 				username,
 				password,
 				firstName,
@@ -452,7 +449,7 @@
 			return;
 		}
 
-		(onSave as onSaveType)(
+		(onSave as onSaveFn)(
 			username,
 			firstName,
 			lastName,

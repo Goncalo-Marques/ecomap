@@ -14,6 +14,11 @@ export type EmployeeSortableFields = NonNullable<
 >;
 
 /**
+ * Employee roles.
+ */
+export type EmployeeRole = Employee["role"];
+
+/**
  * Paginated employees.
  */
 export type PaginatedEmployees = components["schemas"]["EmployeesPaginated"];
@@ -26,10 +31,5 @@ export interface EmployeesFilters {
 	username: string;
 	sort: EmployeeSortableFields;
 	order: SortingDirection;
-	role?: Employee["role"];
+	role?: EmployeeRole;
 }
-
-/**
- * Sortable fields of a employees.
- */
-export type EmployeeRoles = Employee["role"];

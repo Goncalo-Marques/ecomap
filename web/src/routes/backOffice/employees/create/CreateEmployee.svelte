@@ -7,8 +7,7 @@
 	import { BackOfficeRoutes } from "../../../constants/routes";
 	import { getToastContext } from "../../../../lib/contexts/toast";
 	import EmployeeForm from "../components/EmployeeForm.svelte";
-	import type { EmployeeRoles } from "../../../../domain/employees";
-
+	import type { EmployeeRole } from "../../../../domain/employees";
 	/**
 	 * Toast context.
 	 */
@@ -16,31 +15,30 @@
 
 	/**
 	 * Creates a new employee with given username, password, firstName, lastName, role, dateOfBirth, phoneNumber, location, scheduleStart and scheduleEnd.
-	 *
-	 * @param username
-	 * @param password
-	 * @param firstName
-	 * @param lastName
-	 * @param role
-	 * @param dateOfBirth
-	 * @param phoneNumber
-	 * @param location
-	 * @param scheduleStart
-	 * @param scheduleEnd
+	 * @param username Employee username.
+	 * @param password Employee password.
+	 * @param firstName Employee firstName.
+	 * @param lastName Employee lastName.
+	 * @param role Employee role.
+	 * @param dateOfBirth Employee dateOfBirth.
+	 * @param phoneNumber Employee phoneNumber.
+	 * @param location Employee location.
+	 * @param scheduleStart Employee scheduleStart.
+	 * @param scheduleEnd Employee scheduleEnd.
 	 */
 	async function createEmployee(
 		username: string,
 		password: string,
 		firstName: string,
 		lastName: string,
-		role: EmployeeRoles,
+		role: EmployeeRole,
 		dateOfBirth: string,
 		phoneNumber: string,
 		location: GeoJSONFeaturePoint,
 		scheduleStart: string,
 		scheduleEnd: string,
 	) {
-		// Adding seconds to times. Necessary because api receives times with seconds.
+		// Adding seconds to times. Necessary because API receives times with seconds.
 		scheduleStart += ":00";
 		scheduleEnd += ":00";
 

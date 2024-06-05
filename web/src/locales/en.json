@@ -154,5 +154,6 @@
 	"employees.role.placeholder": "Select a role",
 	"employees.password.placeholder": "Enter password",
 	"employees.security": "Security",
-	"employees.password.confirm.placeholder": "Repeat the password"
+	"employees.password.confirm.placeholder": "Repeat the password",
+	"employees.password.error.passwordMismatch": "The password doesn't match the password"
 }
