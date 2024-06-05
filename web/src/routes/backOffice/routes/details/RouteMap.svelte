@@ -18,7 +18,7 @@
 	import VectorSource from "ol/source/Vector";
 	import VectorLayer from "ol/layer/Vector";
 	import type { Coordinate } from "ol/coordinate";
-	import { Stroke, Style } from "ol/style";
+	import { Icon, Stroke, Style } from "ol/style";
 	import { getBatchPaginatedResponse } from "../../../../lib/utils/request";
 	import { convertToMapProjection } from "../../../../lib/utils/map";
 	import type { GeoJSONFeatureCollectionLineString } from "../../../../domain/geojson";
@@ -62,21 +62,64 @@
 			source: new VectorSource({
 				features: [feature],
 			}),
-			style() {
-				return [
+			style(feature) {
+				const geometry = feature.getGeometry();
+				if (!(geometry instanceof MultiLineString)) {
+					throw new Error("Feature is not of type MultiLineString");
+				}
+
+				const zoom = view.getZoom();
+				if (!zoom) {
+					return;
+				}
+
+				const isDirectionsVisible = zoom > 14;
+
+				const styles = [
 					new Style({
 						stroke: new Stroke({
 							color: getCssVariable("--blue-600"),
-							width: 8,
+							width: isDirectionsVisible ? 24 : 12,
 						}),
 					}),
 					new Style({
 						stroke: new Stroke({
 							color: getCssVariable("--blue-500"),
-							width: 6,
+							width: 8,
 						}),
 					}),
 				];
+
+				if (isDirectionsVisible) {
+					// Add directions style to the layer.
+					for (const lineString of geometry.getLineStrings()) {
+						lineString.forEachSegment((start, end) => {
+							const dx = end[0] - start[0];
+							const dy = end[1] - start[1];
+							const rotation = Math.atan2(dy, dx);
+
+							// Point in the middle of the segment.
+							const middlePoint = new Point([
+								dx * 0.5 + start[0],
+								dy * 0.5 + start[1],
+							]);
+
+							styles.push(
+								new Style({
+									geometry: middlePoint,
+									image: new Icon({
+										src: "/images/arrow.svg",
+										rotateWithView: true,
+										displacement: [0, -8],
+										rotation: -rotation,
+									}),
+								}),
+							);
+						});
+					}
+				}
+
+				return styles;
 			},
 		});
 
