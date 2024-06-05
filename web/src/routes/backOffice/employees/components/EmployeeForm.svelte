@@ -105,13 +105,15 @@
 
 	/**
 	 * Validates form and sets error messages on the form fields if they contain errors.
-	 * @param usernameValidity
-	 * @param firstNameValidity
-	 * @param lastNameValidity
-	 * @param dateOfBirthValidity
-	 * @param phoneNumberValidity
-	 * @param locationValidity
-	 * @param coordinate
+	 * @param usernameValidity Employee username field validity state.
+	 * @param firstNameValidity Employee firstName field validity state.
+	 * @param lastNameValidity Employee lastName field validity state.
+	 * @param dateOfBirthValidity Employee dateOfBirth field validity state.
+	 * @param phoneNumberValidity Employee phoneNumber field validity state.
+	 * @param locationValidity Employee location field validity state.
+	 * @param scheduleStart Employee scheduleStart field validity state.
+	 * @param scheduleEnd Employee scheduleEnd field validity state.
+	 * @param coordinate Employee coordinate.
 	 */
 	function validateForm(
 		usernameValidity: ValidityState,
@@ -139,7 +141,7 @@
 			formErrorMessages.username = "";
 		}
 
-		//FirstName Validation.
+		// FirstName Validation.
 		if (firstNameValidity.valueMissing) {
 			formErrorMessages.firstName = $t("error.valueMissing");
 		} else if (firstNameValidity.tooShort) {
@@ -454,9 +456,7 @@
 					<Input
 						required
 						name="scheduleStart"
-						value={employee?.scheduleStart
-							? formatTime24H(employee.scheduleStart)
-							: ""}
+						value={employee ? formatTime24H(employee.scheduleStart) : ""}
 						error={!!formErrorMessages.scheduleStart}
 						type="time"
 					/>
@@ -471,9 +471,7 @@
 					<Input
 						required
 						name="scheduleEnd"
-						value={employee?.scheduleEnd
-							? formatTime24H(employee.scheduleEnd)
-							: ""}
+						value={employee ? formatTime24H(employee.scheduleEnd) : ""}
 						error={!!formErrorMessages.scheduleEnd}
 						type="time"
 					/>

@@ -37,14 +37,14 @@
 
 	/**
 	 * Updates employee with given username, firstName, lastName, dateOfBirth, phoneNumber, location, scheduleStart and scheduleEnd.
-	 * @param username
-	 * @param firstName
-	 * @param lastName
-	 * @param dateOfBirth
-	 * @param phoneNumber
-	 * @param location
-	 * @param scheduleStart
-	 * @param scheduleEnd
+	 * @param username Employee username.
+	 * @param firstName Employee firstName.
+	 * @param lastName Employee lastName.
+	 * @param dateOfBirth Employee dateOfBirth.
+	 * @param phoneNumber Employee phoneNumber.
+	 * @param location Employee location.
+	 * @param scheduleStart Employee scheduleStart.
+	 * @param scheduleEnd Employee scheduleEnd.
 	 */
 	async function updateEmployee(
 		username: string,
@@ -56,7 +56,7 @@
 		scheduleStart: string,
 		scheduleEnd: string,
 	) {
-		// Adding seconds to times. Necessary because api receives times with seconds.
+		// Adding seconds to times. Necessary because API receives times with seconds.
 		scheduleStart += ":00";
 		scheduleEnd += ":00";
 
