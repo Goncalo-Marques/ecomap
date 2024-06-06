@@ -73,6 +73,7 @@ object ApiClient {
     private const val FIELD_CONTAINER_CREATED_AT = "createdAt"
     private const val FIELD_CONTAINER_MODIFIED_AT = "modifiedAt"
     private const val FIELD_CONTAINERS = "containers"
+    private const val FIELD_FILTER_CONTAINER_CATEGORY = "containerCategory"
 
     /**
      * Signs in a user with a given username and password.
@@ -218,6 +219,7 @@ object ApiClient {
      * Returns the user container bookmarks with the specified filter. The bookmarks are sorted by
      * descending order of the date they were created.
      * @param userID User identifier.
+     * @param containerCategory Container category to filter by.
      * @param limit Amount of resources to get for the provided filter.
      * @param offset Amount of resources to skip for the provided filter.
      * @param token JWT authorization token.
@@ -227,16 +229,20 @@ object ApiClient {
      */
     fun listUserContainerBookmarks(
         userID: String,
+        containerCategory: ContainerCategory? = null,
         limit: Int,
         offset: Int,
         token: String,
         listener: Listener<ContainersPaginated>,
         errorListener: ErrorListener
     ): JsonObjectRequest {
-        val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS" +
+        var url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS" +
                 "?$FIELD_NAME_PAGINATION_LIMIT=$limit" +
                 "&$FIELD_NAME_PAGINATION_OFFSET=$offset" +
                 "&sort=createdAt&order=desc"
+        if (containerCategory != null) {
+            url += "&$FIELD_FILTER_CONTAINER_CATEGORY=${mapDomainContainerCategory(containerCategory)}"
+        }
 
         return object : JsonObjectRequest(
             Method.GET, url, null,

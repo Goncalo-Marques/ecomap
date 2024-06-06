@@ -18,6 +18,7 @@ import com.ecomap.ecomap.R
 import com.ecomap.ecomap.clients.ecomap.http.ApiClient
 import com.ecomap.ecomap.clients.ecomap.http.ApiRequestQueue
 import com.ecomap.ecomap.data.UserStore
+import com.ecomap.ecomap.domain.ContainerCategory
 import com.ecomap.ecomap.domain.ContainersPaginated
 import com.ecomap.ecomap.signin.SignInActivity
 import com.google.android.gms.maps.model.LatLng
@@ -52,6 +53,10 @@ class UserAccountActivity : AppCompatActivity() {
         // Enable back button on action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Get extras.
+        val currentContainerBookmarkOrdinal =
+            intent.getIntExtra(INTENT_EXTRA_CONTAINER_CATEGORY, -1)
+
         // Get activity views.
         val buttonSignOut: Button = findViewById(R.id.button_sign_out)
         textViewFirstName = findViewById(R.id.text_view_first_name_value)
@@ -69,7 +74,7 @@ class UserAccountActivity : AppCompatActivity() {
 
         recyclerViewContainerBookmarks.layoutManager = LinearLayoutManager(this)
         val recyclerViewContainerBookmarksAdapter =
-            ContainerBookmarksRecyclerViewAdapter(this, recyclerViewContainerBookmarksDataSet)
+            ContainerBookmarksRecyclerViewAdapter(this, this, recyclerViewContainerBookmarksDataSet)
         recyclerViewContainerBookmarks.adapter = recyclerViewContainerBookmarksAdapter
 
         updateUserContainerBookmarksVisibility()
@@ -87,8 +92,14 @@ class UserAccountActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         // Update UI with the user personal information and bookmarks.
+        var containerCategoryFilter: ContainerCategory? = null
+        if (currentContainerBookmarkOrdinal != -1) {
+            containerCategoryFilter =
+                ContainerCategory.entries.toTypedArray()[currentContainerBookmarkOrdinal]
+        }
+
         updateUserPersonalInformationUI()
-        updateUserContainerBookmarksUI()
+        updateUserContainerBookmarksUI(containerCategoryFilter)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -181,7 +192,7 @@ class UserAccountActivity : AppCompatActivity() {
     /**
      * Gets the current list of containers that the user has bookmarked and sets them in the UI.
      */
-    private fun updateUserContainerBookmarksUI() {
+    private fun updateUserContainerBookmarksUI(containerCategoryFilter: ContainerCategory? = null) {
         // Map containing the containers, merging those that are in the same position to be
         // contained in the same item.
         val mappedContainers = mutableMapOf<LatLng, ContainerBookmarkRecyclerViewData>()
@@ -230,6 +241,7 @@ class UserAccountActivity : AppCompatActivity() {
         // Execute the request to get all existing user container bookmarks and add them to the list.
         val request = ApiClient.listUserContainerBookmarks(
             userID,
+            containerCategoryFilter,
             REQUEST_LIST_CONTAINER_LIMIT,
             0,
             token,
@@ -240,6 +252,7 @@ class UserAccountActivity : AppCompatActivity() {
                     ApiRequestQueue.getInstance(applicationContext).add(
                         ApiClient.listUserContainerBookmarks(
                             userID,
+                            containerCategoryFilter,
                             REQUEST_LIST_CONTAINER_LIMIT,
                             REQUEST_LIST_CONTAINER_LIMIT * i,
                             token,
@@ -257,6 +270,8 @@ class UserAccountActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val INTENT_EXTRA_CONTAINER_CATEGORY = "containerCategory"
+
         private const val REQUEST_LIST_CONTAINER_LIMIT = 100
     }
 }

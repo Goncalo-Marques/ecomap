@@ -71,6 +71,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var containerClusterManager: ClusterManager<ContainerMarker>
 
     /**
+     *  Map containing the container markers, merging those that are in the same position to be
+     *  contained in the same marker.
+     */
+    private val containerMarkers = mutableMapOf<LatLng, ContainerMarker>()
+
+    /**
+     * Defines the current container category filter.
+     */
+    private var currentContainerCategoryFilter: ContainerCategory? = null
+
+    /**
      * Defines the group of buttons view.
      */
     private lateinit var groupButtonsView: Group
@@ -199,8 +210,28 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onStart() {
         super.onStart()
 
+        // Focus on the start location, if available.
+        if (startFocusLocation != null) {
+            val container = containerMarkers[startFocusLocation]
+            if (container != null) {
+                showContainerInfoWindow(container)
+                map.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        container.position,
+                        MAP_CAMERA_ZOOM_DEFAULT
+                    )
+                )
+            }
+        }
+
         // Get user container bookmarks.
         getUserContainerBookmarks()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        startFocusLocation = null
     }
 
     /**
@@ -237,6 +268,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private fun openUserAccountScreen() {
         val intentUserAccountActivity = Intent(this, UserAccountActivity::class.java)
+        intentUserAccountActivity.putExtra(
+            UserAccountActivity.INTENT_EXTRA_CONTAINER_CATEGORY,
+            currentContainerCategoryFilter?.ordinal
+        )
         startActivity(intentUserAccountActivity)
     }
 
@@ -372,12 +407,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Updates the map UI by adding the containers as markers using the provided filter.
      */
     private fun updateContainersUI(containerCategoryFilter: ContainerCategory? = null) {
+        currentContainerCategoryFilter = containerCategoryFilter
+
         // Clear the current markers.
         containerClusterManager.clearItems()
-
-        // Map containing the filtered containers, merging those that are in the same position to be
-        // contained in the same marker.
-        val filteredContainers = mutableMapOf<LatLng, ContainerMarker>()
+        containerMarkers.clear()
 
         // Helper function to handle a successful response.
         val handleSuccess = fun(paginatedContainers: ContainersPaginated) {
@@ -391,7 +425,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 // Add the marker if it is not currently in the Cluster Manager, otherwise append
                 // the container category to the existing marker.
-                val existingContainer = filteredContainers[containerPosition]
+                val existingContainer = containerMarkers[containerPosition]
                 if (existingContainer == null) {
                     val containerMarker = ContainerMarker(
                         this,
@@ -399,7 +433,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
 
                     containerClusterManager.addItem(containerMarker)
-                    filteredContainers[containerPosition] = containerMarker
+                    containerMarkers[containerPosition] = containerMarker
                 } else {
                     existingContainer.containers.add(container)
                 }
@@ -588,6 +622,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Execute the request to get all existing user container bookmarks and add them to the list.
         val request = ApiClient.listUserContainerBookmarks(
             userID,
+            null,
             REQUEST_LIST_CONTAINER_LIMIT,
             0,
             token,
@@ -597,6 +632,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     ApiRequestQueue.getInstance(applicationContext).add(
                         ApiClient.listUserContainerBookmarks(
                             userID,
+                            null,
                             REQUEST_LIST_CONTAINER_LIMIT,
                             REQUEST_LIST_CONTAINER_LIMIT * i,
                             token,
@@ -614,6 +650,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     companion object {
+        /**
+         * Defines the location to focus on start.
+         */
+        var startFocusLocation: LatLng? = null
+
         private val LOG_TAG = MainActivity::class.java.simpleName
 
         private const val PERMISSIONS_REQUEST_ACCESS_LOCATION = 1
