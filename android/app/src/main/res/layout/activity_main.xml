@@ -50,7 +50,7 @@
         android:id="@+id/group_buttons"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:constraint_referenced_ids="horizontal_scroll_view,button_my_location"
+        app:constraint_referenced_ids="horizontal_scroll_view,button_my_location,button_my_account"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,12 +82,23 @@
         android:id="@+id/button_my_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:clickable="true"
-        android:contentDescription="@string/content_description_button_my_location"
+        android:contentDescription="@string/content_description_my_location"
         android:focusable="true"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_bottom"
-        app:layout_constraintEnd_toStartOf="@+id/guideline_end"
+        app:layout_constraintBottom_toTopOf="@+id/button_my_account"
+        app:layout_constraintEnd_toEndOf="@+id/button_my_account"
         app:srcCompat="@drawable/my_location" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/button_my_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/content_description_my_account"
+        android:text="@string/my_account"
+        app:icon="@drawable/account"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_bottom"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_end" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/info_window"
@@ -98,6 +109,7 @@
         android:paddingTop="32dp"
         android:paddingEnd="16dp"
         android:paddingBottom="32dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

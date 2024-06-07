@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EcoMap</string>
-    <string name="sign_in_username">Username</string>
+    <string name="username">Username</string>
     <string name="sign_in_logo_description">EcoMap logo</string>
-    <string name="sign_in_password">Password</string>
+    <string name="password">Password</string>
     <string name="sign_in_sign_in_button">Sign in</string>
     <string name="create_account">Create account</string>
     <string name="sign_in_username_required_error">Username must be filled</string>
@@ -15,7 +15,7 @@
     <string name="error_create_account">Failed to create account</string>
     <string name="error_sign_in_invalid_credentials">Invalid credentials</string>
     <string name="password_constraints">Password must contain at least 14 characters, including one regular character, one special character, and one number.</string>
-    <string name="content_description_button_my_location">Go to my location</string>
+    <string name="content_description_my_location">Go to my location</string>
     <string name="container_category_general">General</string>
     <string name="container_category_paper">Paper</string>
     <string name="container_category_plastic">Plastic</string>
@@ -29,4 +29,8 @@
     <string name="directions">Directions</string>
     <string name="content_description_container_category">Container category</string>
     <string name="content_description_container_bookmark">Container bookmark</string>
+    <string name="content_description_my_account">My account</string>
+    <string name="my_account">My account</string>
+    <string name="personal_information">Personal information</string>
+    <string name="sign_out">Sign out</string>
 </resources>

@@ -33,6 +33,7 @@ import com.ecomap.ecomap.map.ContainerCategoryRecyclerViewData
 import com.ecomap.ecomap.map.ContainerClusterRenderer
 import com.ecomap.ecomap.map.ContainerMarker
 import com.ecomap.ecomap.signin.SignInActivity
+import com.ecomap.ecomap.user.UserAccountActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -44,10 +45,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.maps.android.clustering.ClusterManager
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
@@ -137,16 +137,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Check whether the user store contains the login token.
         // If not, start the SignIn Activity.
         val store = UserStore(applicationContext)
-        runBlocking {
-            val storeToken = store.getToken().first()
-            if (storeToken == null) {
-                startActivity(intentSignInActivity)
-                finish()
-            }
-
-            token = storeToken.toString()
-            userID = Common.getSubjectFromJWT(token)
+        val storeToken = store.getToken()
+        if (storeToken == null) {
+            startActivity(intentSignInActivity)
+            finishAffinity()
+            return
         }
+
+        token = storeToken.toString()
+        userID = Common.getSubjectFromJWT(token)
 
         // Construct the main entry point for the Android location services.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -176,6 +175,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Get activity views.
         val chipGroupContainerFilter: ChipGroup = findViewById(R.id.chip_group_container_filter)
         val buttonMyLocation: FloatingActionButton = findViewById(R.id.button_my_location)
+        val buttonMyAccount: ExtendedFloatingActionButton = findViewById(R.id.button_my_account)
+
         groupButtonsView = findViewById(R.id.group_buttons)
         containerInfoWindowView = findViewById(R.id.info_window)
         containerInfoWindowTitleText = findViewById(R.id.info_window_text_title)
@@ -189,6 +190,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Set button functions.
         populateChipGroupContainerFilter(chipGroupContainerFilter)
         buttonMyLocation.setOnClickListener { focusMyLocation() }
+        buttonMyAccount.setOnClickListener { openUserAccountScreen() }
 
         // Start with the container info window closed.
         closeContainerInfoWindow()
@@ -221,6 +223,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             // Add the chip to the group.
             chipGroup.addView(chip)
         }
+    }
+
+    /**
+     * Opens user account screen.
+     */
+    private fun openUserAccountScreen() {
+        val intentUserAccountActivity = Intent(this, UserAccountActivity::class.java)
+        startActivity(intentUserAccountActivity)
     }
 
     /**

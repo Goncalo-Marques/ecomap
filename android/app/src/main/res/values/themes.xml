@@ -4,10 +4,12 @@
         <item name="colorPrimary">@color/green_700</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.SmallComponent</item>
 
-        <item name="colorPrimaryContainer">@color/white</item>
-        <item name="colorOnPrimaryContainer">@color/green_700</item>
-
         <item name="chipStyle">@style/Widget.EcoMap.Chip</item>
+        <item name="floatingActionButtonStyle">@style/Widget.EcoMap.FloatingActionButton</item>
+        <item name="extendedFloatingActionButtonStyle">
+            @style/Widget.EcoMap.ExtendedFloatingActionButton
+        </item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.EcoMap.Button.OutlinedButton</item>
     </style>
 
     <style name="Theme.EcoMap" parent="Base.Theme.EcoMap" />
@@ -19,6 +21,23 @@
         <item name="chipCornerRadius">16dp</item>
         <item name="chipStrokeWidth">2dp</item>
         <item name="chipStrokeColor">@color/gray_300</item>
+    </style>
+
+    <style name="Widget.EcoMap.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/white</item>
+        <item name="tint">@color/green_700</item>
+    </style>
+
+    <style name="Widget.EcoMap.ExtendedFloatingActionButton" parent="Widget.Material3.ExtendedFloatingActionButton.Primary">
+        <item name="backgroundTint">@color/green_700</item>
+        <item name="iconTint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Widget.EcoMap.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="backgroundTint">@color/white</item>
+        <item name="colorOnSurface">@color/green_700</item>
+        <item name="strokeColor">@color/green_700</item>
     </style>
 
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
