@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 map.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(
                         container.position,
-                        MAP_CAMERA_ZOOM_DEFAULT
+                        MAP_CAMERA_ZOOM_CONTAINER_FOCUS
                     )
                 )
             }
@@ -670,6 +670,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val MAP_PADDING_BOTTOM = 32
 
         private const val MAP_CAMERA_ZOOM_DEFAULT = 15.0F
+        private const val MAP_CAMERA_ZOOM_CONTAINER_FOCUS = 17.0F
 
         private const val REQUEST_LIST_CONTAINER_LIMIT = 100
 
