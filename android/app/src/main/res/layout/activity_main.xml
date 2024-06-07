@@ -163,7 +163,8 @@
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@+id/info_window_button_directions"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:overScrollMode="never" />
 
         <Button
             android:id="@+id/info_window_button_directions"
