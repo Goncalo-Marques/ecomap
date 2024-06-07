@@ -231,6 +231,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onStop() {
         super.onStop()
 
+        // Reset the start focus location.
         startFocusLocation = null
     }
 
@@ -652,6 +653,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
         /**
          * Defines the location to focus on start.
+         * It is reset to null on the stop activity event.
          */
         var startFocusLocation: LatLng? = null
 
