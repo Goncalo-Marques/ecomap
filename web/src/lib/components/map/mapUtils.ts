@@ -39,7 +39,7 @@ import type {
  */
 const cssVars = {
 	text_sm_semibold: getCssVariable("--text-sm-semibold"),
-	indigo_400: getCssVariable("--indigo-400"),
+	gray_400: getCssVariable("--gray-400"),
 };
 
 /**
@@ -61,16 +61,6 @@ const defaultIconStyle: WebGLStyle = {
  * Style for cluster symbol.
  */
 const clusterStyle = new Style({
-	image: new Circle({
-		radius: 20,
-		stroke: new Stroke({
-			color: cssVars.indigo_400,
-			width: 2,
-		}),
-		fill: new Fill({
-			color: "#fff",
-		}),
-	}),
 	text: new Text({
 		font: cssVars.text_sm_semibold,
 		textAlign: "center",
@@ -80,6 +70,15 @@ const clusterStyle = new Style({
 	}),
 });
 
+/**
+ * Style for cluster circle.
+ */
+const clusterCircle = new Circle({
+	radius: 20,
+	fill: new Fill({
+		color: "#fff",
+	}),
+});
 /**
  * WebGl Vector layer for Open Layers.
  */
@@ -185,6 +184,24 @@ export class MapHelper {
 			style(feature: FeatureLike) {
 				const features: Feature[] = feature.get("features");
 				const size = features.length;
+
+				if (options?.clusterBorderColor) {
+					clusterCircle.setStroke(
+						new Stroke({
+							color: options.clusterBorderColor,
+							width: 3,
+						}),
+					);
+					clusterStyle.setImage(clusterCircle);
+				} else {
+					clusterCircle.setStroke(
+						new Stroke({
+							color: cssVars.gray_400,
+							width: 3,
+						}),
+					);
+					clusterStyle.setImage(clusterCircle);
+				}
 
 				if (size >= 2) {
 					clusterStyle.getText()?.setText(size.toString());
