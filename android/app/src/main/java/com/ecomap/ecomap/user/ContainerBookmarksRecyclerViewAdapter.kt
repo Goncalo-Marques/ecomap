@@ -53,7 +53,7 @@ class ContainerBookmarksRecyclerViewAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item.
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.frame_layout_container_bookmark, viewGroup, false)
+            .inflate(R.layout.container_bookmark, viewGroup, false)
 
         return ViewHolder(view)
     }
@@ -65,16 +65,8 @@ class ContainerBookmarksRecyclerViewAdapter(
         if (data.containers.isNotEmpty()) {
             val container = data.containers[0]
 
-            viewHolder.constraintLayout.setOnClickListener {
-                // When a bookmark is clicked, the current activity is terminated and the container
-                // location is focused.
-                val containerCoordinates = container.geoJSON.geometry.coordinates
-                val containerPosition = LatLng(containerCoordinates[1], containerCoordinates[0])
-
-                MainActivity.startFocusLocation = containerPosition
-                activity.finish()
-            }
-
+            viewHolder.constraintLayout.setOnClickListener { focusContainer(container) }
+            
             viewHolder.textViewMunicipalityName.text = container.geoJSON.properties.municipalityName
             viewHolder.textViewWayName.text = container.geoJSON.properties.getWayName(context)
         }
@@ -106,5 +98,17 @@ class ContainerBookmarksRecyclerViewAdapter(
 
     override fun getItemCount(): Int {
         return dataSet.size
+    }
+
+    /**
+     * Terminates the current activity focus on the container location.
+     * @param container Container to focus.
+     */
+    private fun focusContainer(container: Container) {
+        val containerCoordinates = container.geoJSON.geometry.coordinates
+        val containerPosition = LatLng(containerCoordinates[1], containerCoordinates[0])
+
+        MainActivity.startFocusLocation = containerPosition
+        activity.finish()
     }
 }
