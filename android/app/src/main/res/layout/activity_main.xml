@@ -104,7 +104,10 @@
         android:id="@+id/info_window"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@drawable/background_info_window"
+        android:elevation="2dp"
+        android:clickable="true"
+        android:focusable="true"
         android:paddingStart="16dp"
         android:paddingTop="32dp"
         android:paddingEnd="16dp"
@@ -119,6 +122,8 @@
             android:id="@+id/info_window_text_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/placeholder"
             android:textAlignment="textStart"
             android:textSize="16sp"
@@ -131,6 +136,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/placeholder"
             android:textAlignment="textStart"
             android:textColor="@color/gray_500"
@@ -157,7 +164,8 @@
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@+id/info_window_button_directions"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:overScrollMode="never" />
 
         <Button
             android:id="@+id/info_window_button_directions"

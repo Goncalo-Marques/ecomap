@@ -33,4 +33,6 @@
     <string name="my_account">Minha conta</string>
     <string name="personal_information">Informação pessoal</string>
     <string name="sign_out">Terminar sessão</string>
+    <string name="container_bookmarks">Marcadores de contentores</string>
+    <string name="container_bookmarks_empty">Não existem marcadores de contentores</string>
 </resources>

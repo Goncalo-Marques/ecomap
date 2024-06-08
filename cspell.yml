@@ -17,6 +17,7 @@ ignoreWords:
   - constraintlayout
   - deepmap
   - ecomap
+  - ellipsize
   - EPSG
   - fkey
   - floatingactionbutton
