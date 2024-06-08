@@ -1,8 +1,10 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.EcoMap" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.EcoMap" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/green_700</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.SmallComponent</item>
+
+        <item name="android:windowTranslucentStatus">true</item>
 
         <item name="chipStyle">@style/Widget.EcoMap.Chip</item>
         <item name="floatingActionButtonStyle">@style/Widget.EcoMap.FloatingActionButton</item>
@@ -38,7 +40,7 @@
         <item name="colorOnSurface">@color/green_700</item>
         <item name="strokeColor">@color/green_700</item>
     </style>
-    
+
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
