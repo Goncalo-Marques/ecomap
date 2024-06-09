@@ -15,7 +15,6 @@ ignoreWords:
   - codegen
   - Compat
   - constraintlayout
-  - deepmap
   - ecomap
   - ellipsize
   - EPSG
