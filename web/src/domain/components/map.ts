@@ -34,6 +34,26 @@ export interface CreateMapOptions {
 }
 
 /**
+ * Represents the options of the point layer of `MapHelper`.
+ */
+export interface MapHelperPointLayerOptions {
+	/**
+	 * The name of the layer.
+	 */
+	layerName?: string;
+
+	/**
+	 * The color of the layer.
+	 */
+	layerColor?: string;
+
+	/**
+	 * The source of the icon to be displayed for each feature of the layer.
+	 */
+	iconSrc?: string;
+}
+
+/**
  * Represents the options of the cluster layer of `MapHelper`.
  */
 export interface MapHelperClusterLayerOptions {

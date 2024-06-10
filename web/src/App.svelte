@@ -4,7 +4,7 @@
 	import SignIn from "./routes/signIn/SignIn.svelte";
 	import Dashboard from "./routes/backOffice/dashboard/Dashboard.svelte";
 	import Map from "./routes/backOffice/map/Map.svelte";
-	import Routes from "./routes/backOffice/routes/Routes.svelte";
+	import RoutesRouter from "./routes/backOffice/routes/RoutesRouter.svelte";
 	import LandfillsRouter from "./routes/backOffice/landfills/LandfillsRouter.svelte";
 	import EmployeesRouter from "./routes/backOffice/employees/EmployeesRouter.svelte";
 	import Forbidden from "./routes/clientErrors/Forbidden.svelte";
@@ -48,7 +48,9 @@
 					<Route path={`${BackOfficeRouterPaths.CONTAINERS}/*`}>
 						<ContainersRouter />
 					</Route>
-					<Route path={BackOfficeRouterPaths.ROUTES} component={Routes} />
+					<Route path={`${BackOfficeRouterPaths.ROUTES}/*`}>
+						<RoutesRouter />
+					</Route>
 					<Route path={BackOfficeRouterPaths.MAP} component={Map} />
 					<Route path={BackOfficeRouterPaths.DASHBOARD} component={Dashboard} />
 					<Route path={BackOfficeRouterPaths.DASHBOARD} component={NotFound} />

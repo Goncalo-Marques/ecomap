@@ -11,7 +11,7 @@ import { BackOfficeRoutes } from "../../../constants/routes";
  * The search parameter names for each filter of the containers table.
  */
 const FILTERS_PARAMS_NAMES: Record<keyof ContainersFilters, string> = {
-	pageIndex: "page-index",
+	pageIndex: "pageIndex",
 	location: "location",
 	category: "category",
 };

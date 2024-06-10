@@ -16,3 +16,9 @@ export type GeoJSONGeometryPoint =
  */
 export type GeoJSONFeatureProperties =
 	components["schemas"]["GeoJSONFeatureProperties"];
+
+/**
+ * GeoJSON feature collection line string.
+ */
+export type GeoJSONFeatureCollectionLineString =
+	components["schemas"]["GeoJSONFeatureCollectionLineString"];

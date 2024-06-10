@@ -30,3 +30,11 @@ export interface ContainersFilters {
  * Category of a container.
  */
 export type ContainerCategory = components["schemas"]["ContainerCategory"];
+
+/**
+ * Represents the selected container IDs that are added or deleted from a route.
+ */
+export interface SelectedRouteContainersIds {
+	added: string[];
+	deleted: string[];
+}

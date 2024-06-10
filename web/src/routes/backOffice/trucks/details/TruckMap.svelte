@@ -39,14 +39,7 @@
 		const feature = new Feature(point);
 
 		const mapHelper = new MapHelper(map);
-		mapHelper.addPointLayer(
-			{
-				features: [feature],
-			},
-			"truck",
-			"#fff",
-			{ "icon-src": TRUCK_ICON_SRC },
-		);
+		mapHelper.addPointLayer([feature], { iconSrc: TRUCK_ICON_SRC });
 
 		const view = map.getView();
 		view.fit(point);
