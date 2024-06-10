@@ -228,7 +228,7 @@ func (s *service) GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJS
 
 	var roadsGeometry []domain.GeoJSONGeometryLineString
 
-	err := s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
 		route, err := s.store.GetRouteByID(ctx, tx, id)
 		if err != nil {
 			return err
