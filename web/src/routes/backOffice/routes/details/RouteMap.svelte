@@ -12,6 +12,7 @@
 	import {
 		LANDFILL_ICON_SRC,
 		SELECTED_CONTAINER_ICON_SRC,
+		TRUCK_ICON_SRC,
 		WAREHOUSE_ICON_SRC,
 	} from "../../../../lib/constants/map";
 	import RouteBottomSheet from "./RouteBottomSheet.svelte";
@@ -263,6 +264,18 @@
 				iconSrc: WAREHOUSE_ICON_SRC,
 			},
 		);
+
+		// Add route truck to map.
+		const truckFeature = new Feature(
+			new Point(
+				convertToMapProjection(
+					routeRes.value.truck.geoJson.geometry.coordinates,
+				),
+			),
+		);
+		mapHelper.addPointLayer([truckFeature], {
+			iconSrc: TRUCK_ICON_SRC,
+		});
 
 		// Add route containers to map.
 		if (containerFeaturesRes.status === "fulfilled") {
