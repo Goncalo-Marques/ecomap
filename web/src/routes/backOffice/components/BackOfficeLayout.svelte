@@ -14,35 +14,23 @@
 	}
 </script>
 
-<div class="main">
-	<TopBar />
-	<div class="container">
-		<SideBar />
-		<div class="layout">
-			<slot />
-		</div>
+<TopBar />
+<div class="content">
+	<SideBar />
+	<div class="layout">
+		<slot />
 	</div>
 </div>
 
 <style>
-	.main {
-		min-height: 100vh;
+	.content {
 		display: flex;
-		flex-direction: column;
-	}
-
-	.container {
-		flex: 1;
-		display: flex;
+		height: calc(100vh - var(--top-bar-height));
 	}
 
 	.layout {
-		display: flex;
 		flex: 1;
+		display: grid;
 		overflow: auto;
-
-		& > * {
-			flex: 1;
-		}
 	}
 </style>

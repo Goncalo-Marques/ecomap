@@ -5,14 +5,20 @@
 	 */
 	let className: string = "";
 	export { className as class };
+
+	/**
+	 * The DOM element that's rendered.
+	 * @default "main"
+	 */
+	export let element: string = "main";
 </script>
 
-<main class={className}>
+<svelte:element this={element} class={`card ${className}`}>
 	<slot />
-</main>
+</svelte:element>
 
 <style>
-	main {
+	.card {
 		padding: 2rem;
 		background-color: var(--white);
 		border: 1px solid var(--gray-300);

@@ -1,101 +1,66 @@
 <script lang="ts">
-	import type { Employee } from "../../../domain/employees";
 	import ecomapHttpClient from "../../../lib/clients/ecomap/http";
-	import Spinner from "../../../lib/components/Spinner.svelte";
 	import { t } from "../../../lib/utils/i8n";
 	import { getBatchPaginatedResponse } from "../../../lib/utils/request";
-	import Card from "../components/Card.svelte";
+	import ContainersAdded from "./partials/ContainersAdded.svelte";
+	import ContainersByCategory from "./partials/ContainersByCategory.svelte";
+	import ContainersByMunicipality from "./partials/ContainersByMunicipality.svelte";
+	import TruckAmount from "./partials/TruckAmount.svelte";
+	import WarehouseAmount from "./partials/WarehouseAmount.svelte";
+	import ActiveEmployees from "./partials/employees/ActiveEmployees.svelte";
 
-	/**
-	 * Retrieves employees to be displayed in the employees table.
-	 * @returns Active employees.
-	 */
-	async function getActiveEmployees(): Promise<number> {
-		const employees = await getBatchPaginatedResponse(async (limit, offset) => {
-			const res = await ecomapHttpClient.GET("/employees", {
-				params: {
-					query: {
-						offset,
-						limit,
+	async function getContainers() {
+		const containers = await getBatchPaginatedResponse(
+			async (limit, offset) => {
+				const res = await ecomapHttpClient.GET("/containers", {
+					params: {
+						query: {
+							offset,
+							limit,
+							sort: "createdAt",
+							order: "asc",
+						},
 					},
-				},
-			});
+				});
 
-			if (res.error) {
-				return { total: 0, items: [] };
-			}
+				if (res.error) {
+					return { total: 0, items: [] };
+				}
 
-			return { total: res.data.total, items: res.data.employees };
-		});
+				return { total: res.data.total, items: res.data.containers };
+			},
+		);
 
-		// let activeEmployees = 0;
-
-		// const today = new Date();
-		// const unixTime = new Date(0);
-		// unixTime.setHours(today.getHours());
-		// unixTime.setMinutes(today.getMinutes());
-		// unixTime.setSeconds(today.getSeconds());
-
-		// const scheduleStart = new Date(0);
-		// const scheduleEnd = new Date(0);
-
-		// for (const employee of employees) {
-		// 	const [scheduleStartHours, scheduleStartMinutes, scheduleStartSeconds] =
-		// 		employee.scheduleStart.split(":").map(Number);
-		// 	scheduleStart.setHours(scheduleStartHours);
-		// 	scheduleStart.setMinutes(scheduleStartMinutes);
-		// 	scheduleStart.setSeconds(scheduleStartSeconds);
-
-		// 	const [scheduleEndHours, scheduleEndMinutes, scheduleEndSeconds] =
-		// 		employee.scheduleEnd.split(":").map(Number);
-		// 	scheduleEnd.setHours(scheduleEndHours);
-		// 	scheduleEnd.setMinutes(scheduleEndMinutes);
-		// 	scheduleEnd.setSeconds(scheduleEndSeconds);
-
-		// 	if (unixTime >= scheduleStart && unixTime <= scheduleEnd) {
-		// 		activeEmployees++;
-		// 	}
-		// }
-
-		return employees.length;
+		return containers;
 	}
 
-	const activeEmployeesPromise = getActiveEmployees();
+	let containersPromise = getContainers();
 </script>
 
 <main class="page-layout">
 	<h1>{$t("dashboard")}</h1>
-	<div class="row">
-		<Card>
-			<h2>Colaboradores ativos</h2>
-			{#await activeEmployeesPromise}
-				<Spinner />
-			{:then activeEmployees}
-				<p>{activeEmployees}</p>
-			{:catch}
-				<p>Erro</p>
-			{/await}
-		</Card>
-		<Card>
-			<h2>Colaboradores ativos</h2>
-			{#await activeEmployeesPromise}
-				<Spinner />
-			{:then activeEmployees}
-				<p>{activeEmployees}</p>
-			{:catch}
-				<p>Erro</p>
-			{/await}
-		</Card>
+	<div class="dashboard-content">
+		<ActiveEmployees />
+		<WarehouseAmount />
+		<TruckAmount />
+		<ContainersAdded {containersPromise} />
+		<ContainersByCategory {containersPromise} />
+		<ContainersByMunicipality {containersPromise} />
 	</div>
 </main>
 
 <style>
-	.row {
-		display: flex;
-		gap: 1rem;
+	h1 {
+		font: var(--text-2xl-semibold);
+	}
 
-		& > * {
-			flex: 1;
-		}
+	.dashboard-content {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-areas:
+			"activeEmployees warehouseAmount truckAmount"
+			"containersAdded containersAdded containersByCategory"
+			"containersByMunicipality containersByMunicipality containersByMunicipality";
+		gap: 1rem;
 	}
 </style>

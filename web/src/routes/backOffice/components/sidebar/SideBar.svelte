@@ -102,7 +102,6 @@
 		padding: 1rem;
 		background-color: var(--white);
 		border-right: 1px solid var(--gray-300);
-		flex-shrink: 0;
 	}
 
 	ul {
