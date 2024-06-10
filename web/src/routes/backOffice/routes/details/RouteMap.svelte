@@ -42,6 +42,11 @@
 	let map: OlMap;
 
 	/**
+	 * The interval of segments added to the map within a line string.
+	 */
+	const SEGMENT_INTERVAL = 5;
+
+	/**
 	 * Adds a route to the map.
 	 * @param geoJson Route ways.
 	 */
@@ -94,7 +99,18 @@
 				if (isDirectionsVisible) {
 					// Add directions style to the layer.
 					for (const lineString of geometry.getLineStrings()) {
+						let segmentsSkipped = SEGMENT_INTERVAL;
+
 						lineString.forEachSegment((start, end) => {
+							// Skip segment if the number of skipped segments is less than
+							// the segment interval.
+							if (segmentsSkipped < SEGMENT_INTERVAL) {
+								segmentsSkipped++;
+								return;
+							}
+
+							segmentsSkipped = 0;
+
 							const dx = end[0] - start[0];
 							const dy = end[1] - start[1];
 							const rotation = Math.atan2(dy, dx);
