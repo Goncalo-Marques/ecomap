@@ -17,6 +17,7 @@ ignoreWords:
   - constraintlayout
   - deepmap
   - ecomap
+  - ellipsize
   - EPSG
   - fkey
   - floatingactionbutton
@@ -51,6 +52,7 @@ ignoreWords:
   - pgxpool
   - pkey
   - plpgsql
+  - progressindicator
   - psql
   - popovertarget
   - Português

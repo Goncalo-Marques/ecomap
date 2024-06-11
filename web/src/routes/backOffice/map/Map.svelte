@@ -347,6 +347,7 @@
 				layerColor: getCssVariable("--green-700"),
 				iconSrc: CONTAINER_ICON_SRC,
 				selectedIconSrc: SELECTED_CONTAINER_ICON_SRC,
+				clusterBorderColor: getCssVariable("--green-700"),
 			});
 		}
 
@@ -356,6 +357,7 @@
 				layerColor: getCssVariable("--cyan-900"),
 				iconSrc: TRUCK_ICON_SRC,
 				selectedIconSrc: SELECTED_TRUCK_ICON_SRC,
+				clusterBorderColor: getCssVariable("--cyan-900"),
 			});
 		}
 
@@ -365,6 +367,7 @@
 				layerColor: getCssVariable("--indigo-400"),
 				iconSrc: WAREHOUSE_ICON_SRC,
 				selectedIconSrc: SELECTED_WAREHOUSE_ICON_SRC,
+				clusterBorderColor: getCssVariable("--indigo-400"),
 			});
 		}
 
@@ -374,6 +377,7 @@
 				layerColor: getCssVariable("--yellow-900"),
 				iconSrc: LANDFILL_ICON_SRC,
 				selectedIconSrc: SELECTED_LANDFILL_ICON_SRC,
+				clusterBorderColor: getCssVariable("--yellow-900"),
 			});
 		}
 
