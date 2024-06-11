@@ -35,19 +35,11 @@ import type {
 } from "../../../domain/components/map";
 
 /**
- * Variables retrieved from css vars.
- */
-const cssVars = {
-	text_sm_semibold: getCssVariable("--text-sm-semibold"),
-	gray_400: getCssVariable("--gray-400"),
-};
-
-/**
  * Default style for vector layer.
  */
 const defaultVectorStyle: VectorStyle = {
-	"stroke-color": "#fff",
-	"fill-color": "#3980a895",
+	"stroke-color": getCssVariable("--white"),
+	"fill-color": getCssVariable("--cyan-500"),
 };
 
 /**
@@ -62,10 +54,10 @@ const defaultIconStyle: WebGLStyle = {
  */
 const clusterStyle = new Style({
 	text: new Text({
-		font: cssVars.text_sm_semibold,
+		font: getCssVariable("--text-sm-semibold"),
 		textAlign: "center",
 		fill: new Fill({
-			color: "#000",
+			color: getCssVariable("--black"),
 		}),
 	}),
 });
@@ -76,7 +68,7 @@ const clusterStyle = new Style({
 const clusterCircle = new Circle({
 	radius: 20,
 	fill: new Fill({
-		color: "#fff",
+		color: getCssVariable("--white"),
 	}),
 });
 /**
@@ -196,7 +188,7 @@ export class MapHelper {
 				} else {
 					clusterCircle.setStroke(
 						new Stroke({
-							color: cssVars.gray_400,
+							color: getCssVariable("--gray-400"),
 							width: 3,
 						}),
 					);
