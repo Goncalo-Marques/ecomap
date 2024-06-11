@@ -329,8 +329,10 @@
 	<MapComponent
 		bind:map
 		mapId="select-containers-map"
-		--height="32rem"
-		--width="60rem"
+		--height="50vh"
+		--width="60vw"
+		--max-height="32rem"
+		--max-width="60rem"
 	/>
 	<svelte:fragment slot="actions">
 		<Button variant="tertiary" onClick={handleCancel}>{$t("cancel")}</Button>

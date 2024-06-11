@@ -138,6 +138,8 @@
 	.map {
 		width: var(--width, 100%);
 		height: var(--height, 100%);
+		max-width: var(--max-width, 100%);
+		max-height: var(--max-height, 100%);
 		position: relative;
 	}
 
