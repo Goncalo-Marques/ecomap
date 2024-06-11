@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
+	import { t } from "../../../../lib/utils/i8n";
 	import Card from "../../components/Card.svelte";
 
 	/**
@@ -21,14 +22,14 @@
 </script>
 
 <Card element="article" class="warehouse-amount-card">
-	<h2>Número de armazéns</h2>
+	<h2>{$t("dashboard.amountOfWarehouses")}</h2>
 	<p>
 		{#await warehouseAmountPromise}
 			<Spinner />
 		{:then warehouseAmount}
 			{warehouseAmount}
 		{:catch}
-			Error
+			{$t("error.unexpected.title")}
 		{/await}
 	</p>
 </Card>

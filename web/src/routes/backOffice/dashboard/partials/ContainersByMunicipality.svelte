@@ -6,34 +6,51 @@
 	import { getCssVariable } from "../../../../lib/utils/cssVars";
 	import { t } from "../../../../lib/utils/i8n";
 
+	/**
+	 * The promise with the containers.
+	 */
 	export let containersPromise: Promise<Container[]>;
 
-	let loading = false;
+	/**
+	 * Indicates whether the containers are being loaded.
+	 */
+	let loading = true;
 
-	function makeChart(containers: Container[]) {
-		const canvasElement = document.getElementById(
-			"container-municipality-chart",
-		);
-		if (!(canvasElement instanceof HTMLCanvasElement)) {
-			return;
-		}
+	/**
+	 * The canvas element where the chart is rendered.
+	 */
+	let canvas: HTMLCanvasElement;
 
-		const data = new Map<string, number>();
+	/**
+	 * Builds a chart with the containers.
+	 * @param containers Containers.
+	 */
+	function buildChart(containers: Container[]) {
+		// Build a map with the amount of containers per municipality.
+		const containersPerMunicipality = new Map<string, number>();
 		for (const container of containers) {
-			const name =
-				container.geoJson.properties.municipalityName ??
-				$t("location.unknownWay");
-			const containerMunicipalityAmount = data.get(name) ?? 0;
-			data.set(name, containerMunicipalityAmount + 1);
+			const municipalityName = container.geoJson.properties.municipalityName;
+			if (!municipalityName) {
+				continue;
+			}
+
+			const amount = containersPerMunicipality.get(municipalityName) ?? 0;
+			containersPerMunicipality.set(municipalityName, amount + 1);
 		}
 
-		new Chart(canvasElement, {
+		// Get chart labels.
+		const labels = Array.from(containersPerMunicipality.keys());
+
+		// Get chart data.
+		const data = Array.from(containersPerMunicipality.values());
+
+		new Chart(canvas, {
 			type: "bar",
 			data: {
-				labels: Array.from(data.keys()),
+				labels,
 				datasets: [
 					{
-						data: Array.from(data.values()),
+						data,
 						backgroundColor: getCssVariable("--green-700"),
 					},
 				],
@@ -55,19 +72,16 @@
 		loading = false;
 	}
 
-	containersPromise.then(containers => makeChart(containers));
+	containersPromise.then(containers => buildChart(containers));
 </script>
 
 <Card element="article" class="containers-municipality-card">
-	<h2>Contentores por município</h2>
-	<canvas
-		id="container-municipality-chart"
-		style={loading ? "display: none;" : ""}
-	/>
+	<h2>{$t("dashboard.containersByMunicipality")}</h2>
+	<canvas bind:this={canvas} style:display={loading ? "none" : ""} />
 	{#await containersPromise}
 		<Spinner />
 	{:catch}
-		<p>Erro</p>
+		<p>{$t("error.unexpected.title")}</p>
 	{/await}
 </Card>
 

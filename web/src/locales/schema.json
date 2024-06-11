@@ -295,6 +295,24 @@
 		"dashboard": {
 			"type": "string"
 		},
+		"dashboard.activeEmployees": {
+			"type": "string"
+		},
+		"dashboard.amountOfWarehouses": {
+			"type": "string"
+		},
+		"dashboard.amountOfTrucks": {
+			"type": "string"
+		},
+		"dashboard.containersAdded": {
+			"type": "string"
+		},
+		"dashboard.containersByCategory": {
+			"type": "string"
+		},
+		"dashboard.containersByMunicipality": {
+			"type": "string"
+		},
 		"map": {
 			"type": "string"
 		},

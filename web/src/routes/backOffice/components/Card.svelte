@@ -7,7 +7,7 @@
 	export { className as class };
 
 	/**
-	 * The DOM element that's rendered.
+	 * The HTML element that's rendered.
 	 * @default "main"
 	 */
 	export let element: string = "main";

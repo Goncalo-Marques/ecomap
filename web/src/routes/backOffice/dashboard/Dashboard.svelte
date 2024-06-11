@@ -7,8 +7,12 @@
 	import ContainersByMunicipality from "./partials/ContainersByMunicipality.svelte";
 	import TruckAmount from "./partials/TruckAmount.svelte";
 	import WarehouseAmount from "./partials/WarehouseAmount.svelte";
-	import ActiveEmployees from "./partials/employees/ActiveEmployees.svelte";
+	import ActiveEmployees from "./partials/ActiveEmployees.svelte";
 
+	/**
+	 * Retrieves the containers to be displayed in the charts.
+	 * @returns Containers.
+	 */
 	async function getContainers() {
 		const containers = await getBatchPaginatedResponse(
 			async (limit, offset) => {
