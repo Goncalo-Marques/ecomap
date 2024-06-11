@@ -56,4 +56,9 @@ export interface MapHelperClusterLayerOptions {
 	 * The source of the selected icon to be displayed for each selected feature of the layer.
 	 */
 	selectedIconSrc?: string;
+
+	/**
+	 * The color of the cluster border.
+	 */
+	clusterBorderColor?: string;
 }
