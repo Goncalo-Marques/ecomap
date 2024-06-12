@@ -70,6 +70,13 @@
 						),
 					});
 					break;
+				case "conflict":
+					toast.show({
+						type: "error",
+						title: $t("employees.username.taken.title"),
+						description: $t("employees.username.taken.description"),
+					});
+					break;
 
 				default:
 					toast.show({

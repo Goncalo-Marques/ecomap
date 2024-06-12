@@ -77,13 +77,24 @@
 				scheduleEnd,
 			},
 		});
-
 		if (res.error) {
-			toast.show({
-				type: "error",
-				title: $t("error.unexpected.title"),
-				description: $t("error.unexpected.description"),
-			});
+			switch (res.error.code) {
+				case "conflict":
+					toast.show({
+						type: "error",
+						title: $t("employees.username.taken.title"),
+						description: $t("employees.username.taken.description"),
+					});
+					break;
+
+				default:
+					toast.show({
+						type: "error",
+						title: $t("error.unexpected.title"),
+						description: $t("error.unexpected.description"),
+					});
+					break;
+			}
 
 			return;
 		}

@@ -62,7 +62,7 @@
 	"warehouses.create.title": "Adicionar armazém",
 	"warehouses.create.success": "Armazém adicionado com sucesso",
 	"warehouses.update.success": "Armazém atualizado com sucesso",
-	"warehouses.update.conflict.title": "Conflicto",
+	"warehouses.update.conflict.title": "Conflito",
 	"warehouses.update.conflict.description": "O armazém já tem mais camiões do que a nova capacidade.",
 	"warehouses.notFound.title": "Armazém não encontrado",
 	"warehouses.notFound.description": "O armazém que procura não existe.",
@@ -155,5 +155,7 @@
 	"confirm": "Confirmar",
 	"employees.security": "Segurança",
 	"employees.password.confirm.placeholder": "Introduza a palavra-passe",
-	"employees.password.error.passwordMismatch": "A palavra-passe não corresponde à palavra-passe"
+	"employees.password.error.passwordMismatch": "A palavra-passe não corresponde à palavra-passe",
+	"employees.username.taken.title": "Conflito",
+	"employees.username.taken.description": "O nome de utilizador encontra-se em uso."
 }

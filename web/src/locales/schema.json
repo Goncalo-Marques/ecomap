@@ -459,6 +459,12 @@
 		},
 		"employees.password.error.passwordMismatch": {
 			"type": "string"
+		},
+		"employees.username.taken.title": {
+			"type": "string"
+		},
+		"employees.username.taken.description": {
+			"type": "string"
 		}
 	}
 }
