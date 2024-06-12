@@ -42,7 +42,7 @@
 	let map: OlMap;
 
 	/**
-	 * The interval of segments added to the map within a line string.
+	 * The interval of segments added to the map within a route.
 	 */
 	const SEGMENT_INTERVAL = 5;
 
@@ -97,10 +97,10 @@
 				];
 
 				if (isDirectionsVisible) {
+					let segmentsSkipped = SEGMENT_INTERVAL;
+
 					// Add directions style to the layer.
 					for (const lineString of geometry.getLineStrings()) {
-						let segmentsSkipped = SEGMENT_INTERVAL;
-
 						lineString.forEachSegment((start, end) => {
 							// Skip segment if the number of skipped segments is less than
 							// the segment interval.
