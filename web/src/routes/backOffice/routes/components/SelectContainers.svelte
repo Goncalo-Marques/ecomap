@@ -18,6 +18,7 @@
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import { convertToMapProjection } from "../../../../lib/utils/map";
 	import MapComponent from "../../../../lib/components/map/Map.svelte";
+	import { getCssVariable } from "../../../../lib/utils/cssVars";
 
 	/**
 	 * The route ID.
@@ -179,6 +180,7 @@
 		mapHelper.addClusterLayer(containerFeatures, {
 			iconSrc: CONTAINER_ICON_SRC,
 			selectedIconSrc: SELECTED_CONTAINER_ICON_SRC,
+			clusterBorderColor: getCssVariable("--green-700"),
 		});
 	}
 
