@@ -28,7 +28,6 @@
 		RouteEmployee,
 		SelectedRouteEmployees,
 	} from "../../../../domain/routeEmployee";
-	import { getTruckName } from "../utils/truck";
 	import { getToastContext } from "../../../../lib/contexts/toast";
 
 	/**
@@ -86,17 +85,17 @@
 	/**
 	 * The route employees.
 	 */
-	let routeEmployees: RouteEmployee[];
+	let routeEmployees: RouteEmployee[] = [];
 
 	/**
 	 * The selected drivers for the route.
 	 */
-	let selectedDrivers: Employee[];
+	let selectedDrivers: Employee[] = [];
 
 	/**
 	 * The selected collectors for the route.
 	 */
-	let selectedCollectors: Employee[];
+	let selectedCollectors: Employee[] = [];
 
 	/**
 	 * The promise with the truck options for the truck select input.
@@ -503,7 +502,7 @@
 						>
 							{#each truckOptions as truck}
 								<Option value={JSON.stringify(truck)}>
-									{getTruckName(truck.make, truck.model, truck.licensePlate)}
+									{`${truck.make} ${truck.model} (${truck.licensePlate}, ${$t("personCapacity").toLowerCase()}: ${truck.personCapacity})`}
 								</Option>
 							{/each}
 						</Select>
