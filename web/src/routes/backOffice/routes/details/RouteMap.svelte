@@ -12,6 +12,7 @@
 	import {
 		LANDFILL_ICON_SRC,
 		SELECTED_CONTAINER_ICON_SRC,
+		TRUCK_ICON_SRC,
 		WAREHOUSE_ICON_SRC,
 	} from "../../../../lib/constants/map";
 	import RouteBottomSheet from "./RouteBottomSheet.svelte";
@@ -39,6 +40,11 @@
 	 * Open Layers map.
 	 */
 	let map: OlMap;
+
+	/**
+	 * The interval of segments added to the map within a route.
+	 */
+	const SEGMENT_INTERVAL = 5;
 
 	/**
 	 * Adds a route to the map.
@@ -91,9 +97,20 @@
 				];
 
 				if (isDirectionsVisible) {
+					let segmentsSkipped = SEGMENT_INTERVAL;
+
 					// Add directions style to the layer.
 					for (const lineString of geometry.getLineStrings()) {
 						lineString.forEachSegment((start, end) => {
+							// Skip segment if the number of skipped segments is less than
+							// the segment interval.
+							if (segmentsSkipped < SEGMENT_INTERVAL) {
+								segmentsSkipped++;
+								return;
+							}
+
+							segmentsSkipped = 0;
+
 							const dx = end[0] - start[0];
 							const dy = end[1] - start[1];
 							const rotation = Math.atan2(dy, dx);
@@ -263,6 +280,18 @@
 				iconSrc: WAREHOUSE_ICON_SRC,
 			},
 		);
+
+		// Add route truck to map.
+		const truckFeature = new Feature(
+			new Point(
+				convertToMapProjection(
+					routeRes.value.truck.geoJson.geometry.coordinates,
+				),
+			),
+		);
+		mapHelper.addPointLayer([truckFeature], {
+			iconSrc: TRUCK_ICON_SRC,
+		});
 
 		// Add route containers to map.
 		if (containerFeaturesRes.status === "fulfilled") {
