@@ -72,6 +72,8 @@ func (s *store) CreateTemporaryTableRoadNetworkWithBuffer(ctx context.Context, t
 	return nil
 }
 
+// CreateVerticesCloseToRoadNetwork creates new vertices by dividing the existing road network by the nearest edge to
+// each of the given vertices.
 func (s *store) CreateVerticesCloseToRoadNetwork(ctx context.Context, tx pgx.Tx, roadNetworkTableName string, verticesGeometry []domain.GeoJSONGeometryPoint) ([]int, error) {
 	if len(verticesGeometry) == 0 {
 		return nil, nil
