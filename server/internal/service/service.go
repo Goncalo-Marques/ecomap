@@ -96,11 +96,10 @@ type Store interface {
 	DeleteRouteEmployee(ctx context.Context, tx pgx.Tx, routeID, employeeID uuid.UUID) error
 
 	GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Road, error)
-	GetRoadByWarehouseID(ctx context.Context, tx pgx.Tx, warehouseID uuid.UUID) (domain.Road, error)
-	GetRoadByLandfillID(ctx context.Context, tx pgx.Tx, landfillID uuid.UUID) (domain.Road, error)
-	GetContainerRoadsByRouteID(ctx context.Context, tx pgx.Tx, routeID uuid.UUID) ([]domain.Road, error)
-	GetRoadVerticesTSP(ctx context.Context, tx pgx.Tx, vertexIDs []int, startVertexID, endVertexID int, directed bool) ([]int, error)
-	GetRoadsGeometryAStar(ctx context.Context, tx pgx.Tx, seqVertexIDs []int, directed bool) ([]domain.GeoJSONGeometryLineString, error)
+	CreateTemporaryTableRoadNetworkWithBuffer(ctx context.Context, tx pgx.Tx, tableName string, verticesGeometry []domain.GeoJSONGeometryPoint) error
+	CreateVerticesCloseToRoadNetwork(ctx context.Context, tx pgx.Tx, roadNetworkTableName string, verticesGeometry []domain.GeoJSONGeometryPoint) ([]int, error)
+	GetRoadVerticesTSP(ctx context.Context, tx pgx.Tx, roadNetworkTableName string, vertexIDs []int, startVertexID, endVertexID int, directed bool) ([]int, error)
+	GetRoadsGeometryAStar(ctx context.Context, tx pgx.Tx, roadNetworkTableName string, seqVertexIDs []int, directed bool) ([]domain.GeoJSONGeometryLineString, error)
 
 	GetMunicipalityByGeometry(ctx context.Context, tx pgx.Tx, geometry domain.GeoJSONGeometryPoint) (domain.Municipality, error)
 
