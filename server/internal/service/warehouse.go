@@ -31,16 +31,11 @@ func (s *service) CreateWarehouse(ctx context.Context, editableWarehouse domain.
 		return domain.Warehouse{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldTruckCapacity}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableWarehouse.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
 	var warehouse domain.Warehouse
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableWarehouse.GeoJSON)
+
 		var roadID *int
 		road, err := s.store.GetRoadByGeometry(ctx, tx, geometry)
 		if err != nil {
@@ -150,15 +145,6 @@ func (s *service) PatchWarehouse(ctx context.Context, id uuid.UUID, editableWare
 		return domain.Warehouse{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldTruckCapacity}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if editableWarehouse.GeoJSON != nil {
-		if feature, ok := editableWarehouse.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-	}
-
 	var warehouse domain.Warehouse
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
@@ -172,6 +158,8 @@ func (s *service) PatchWarehouse(ctx context.Context, id uuid.UUID, editableWare
 				return domain.ErrWarehouseTruckCapacityMinLimit
 			}
 		}
+
+		geometry := geometryPointFromGeoJSON(editableWarehouse.GeoJSON)
 
 		var roadID *int
 		var municipalityID *int

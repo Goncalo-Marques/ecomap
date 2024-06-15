@@ -184,3 +184,22 @@ func replaceSpacesWithHyphen(s string) string {
 func removeExtraSpaces(s string) string {
 	return strings.Join(strings.Fields(s), " ")
 }
+
+// geometryPointFromGeoJSON returns the geometry point from the provided GeoJSON.
+func geometryPointFromGeoJSON(geoJSON domain.GeoJSON) domain.GeoJSONGeometryPoint {
+	if geoJSON == nil {
+		return domain.GeoJSONGeometryPoint{}
+	}
+
+	feature, ok := geoJSON.(domain.GeoJSONFeature)
+	if !ok {
+		return domain.GeoJSONGeometryPoint{}
+	}
+
+	geometry, ok := feature.Geometry.(domain.GeoJSONGeometryPoint)
+	if !ok {
+		return domain.GeoJSONGeometryPoint{}
+	}
+
+	return geometry
+}
