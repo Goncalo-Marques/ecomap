@@ -315,21 +315,26 @@ func (s *service) GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJS
 			return err
 		}
 
-		var departureVertexID int
-		var landfillVertexID int
+		var tspStartVertexID int
+		var tspEndVertexID int
+		var tspVertexIDs []int
 
 		if landfillGeometry == nil {
-			departureVertexID = vertexIDs[len(vertexIDs)-2]
-			landfillVertexID = departureVertexID
+			// If there is no landfill, end at the arrival warehouse.
+			tspStartVertexID = vertexIDs[len(vertexIDs)-2]
+			tspEndVertexID = vertexIDs[len(vertexIDs)-1]
+			tspVertexIDs = vertexIDs
 		} else {
-			departureVertexID = vertexIDs[len(vertexIDs)-3]
-			landfillVertexID = vertexIDs[len(vertexIDs)-2]
+			// If there is a landfill, end at the closest one to the arrival warehouse.
+			tspStartVertexID = vertexIDs[len(vertexIDs)-3]
+			tspEndVertexID = vertexIDs[len(vertexIDs)-2]
+			tspVertexIDs = vertexIDs[:len(vertexIDs)-1]
 		}
 
 		// Compute the TSP for the route container vertices, starting at the departure warehouse and ending at the
 		// closest landfill to the arrival warehouse. Ignore the last vertex (arrival warehouse) because it is always
 		// the last vertex visited after the landfill.
-		seqVertexIDs, err := s.store.GetRoadVerticesTSP(ctx, tx, tempTableNameRoadNetwork, vertexIDs[:len(vertexIDs)-1], departureVertexID, landfillVertexID, true)
+		seqVertexIDs, err := s.store.GetRoadVerticesTSP(ctx, tx, tempTableNameRoadNetwork, tspVertexIDs, tspStartVertexID, tspEndVertexID, true)
 		if err != nil {
 			return err
 		}
