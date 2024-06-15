@@ -45,9 +45,9 @@ func (s *store) GetRoadByGeometry(ctx context.Context, tx pgx.Tx, geometry domai
 	return road, nil
 }
 
-// CreateTemporaryTableRoadNetworkWithBuffer creates a temporary table that is dropped when the transaction is
-// committed. The name of the table must be unique per storage session. This new table represents a buffer of the road
-// network, taking into account the convex hull of the given vertices.
+// CreateTemporaryTableRoadNetworkWithBuffer executes a query to create a temporary table that is dropped when the
+// transaction is committed. The name of the table must be unique per storage session. This new table represents a
+// buffer of the road network, taking into account the convex hull of the given vertices.
 func (s *store) CreateTemporaryTableRoadNetworkWithBuffer(ctx context.Context, tx pgx.Tx, tableName string, verticesGeometry []domain.GeoJSONGeometryPoint) error {
 	_, err := tx.Exec(ctx, fmt.Sprintf(`
 		CREATE TEMP TABLE %s
@@ -72,8 +72,8 @@ func (s *store) CreateTemporaryTableRoadNetworkWithBuffer(ctx context.Context, t
 	return nil
 }
 
-// CreateVerticesCloseToRoadNetwork creates new vertices by dividing the existing road network by the nearest edge to
-// each of the given vertices.
+// CreateVerticesCloseToRoadNetwork executes a query to create new vertices by dividing the existing road network,
+// taking into account the edge that is closest to each of the given vertices.
 func (s *store) CreateVerticesCloseToRoadNetwork(ctx context.Context, tx pgx.Tx, roadNetworkTableName string, verticesGeometry []domain.GeoJSONGeometryPoint) ([]int, error) {
 	if len(verticesGeometry) == 0 {
 		return nil, nil
