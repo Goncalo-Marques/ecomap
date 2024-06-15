@@ -91,6 +91,7 @@
 							getCssVariable("--green-700"),
 							0.2,
 						),
+						pointBackgroundColor: getCssVariable("--white"),
 						fill: "origin",
 					},
 				],
