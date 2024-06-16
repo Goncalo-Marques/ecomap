@@ -136,7 +136,7 @@
 	"employees.create.success": "Colaborador adicionado com sucesso",
 	"employees.role.placeholder": "Selecione um cargo",
 	"employees.password.placeholder": "Introduza a palavra-passe",
-	"employees.phone.placeholder": "Introduza o número de telefone",
+	"employees.phone.placeholder": "Introduza o número de telefone (XXX XXX XXX)",
 	"employees.delete.conflict.description": "Este colaborador não pode ser eliminado porque está associado a uma rota.",
 	"employees.updatePassword.title": "Alterar palavra-passe",
 	"employees.updatePassword.currentPassword.label": "Palavra-passe atual",

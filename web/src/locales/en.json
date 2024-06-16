@@ -131,7 +131,7 @@
 	"employees.username.placeholder": "Enter username",
 	"employees.firstName.placeholder": "Enter first name",
 	"employees.lastName.placeholder": "Enter last name",
-	"employees.phone.placeholder": "Enter phone number",
+	"employees.phone.placeholder": "Enter phone number (XXX XXX XXX)",
 	"employees.updatePassword.title": "Change password",
 	"employees.updatePassword.currentPassword.label": "Current password",
 	"employees.updatePassword.newPassword.label": "New password",
