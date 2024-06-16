@@ -142,6 +142,11 @@
 	};
 
 	/**
+	 * Current date.
+	 */
+	const currentDate = new Date().toISOString().split("T")[0];
+
+	/**
 	 * Validates form and sets error messages on the form fields if they contain errors.
 	 * @param usernameValidity Employee username field validity state.
 	 * @param firstNameValidity Employee firstName field validity state.
@@ -218,6 +223,10 @@
 		// DateOfBirth Validation.
 		if (dateOfBirthValidity.valueMissing) {
 			formErrorMessages.dateOfBirth = $t("error.valueMissing");
+		} else if (dateOfBirthValidity.rangeOverflow) {
+			formErrorMessages.dateOfBirth = $t("error.rangeOverflow", {
+				max: currentDate,
+			});
 		} else {
 			formErrorMessages.dateOfBirth = "";
 		}
@@ -530,7 +539,7 @@
 					/>
 				</FormControl>
 
-				<!-- dateOfBirth -->
+				<!-- DateOfBirth -->
 				<FormControl
 					label={$t("employees.dateOfBirth")}
 					error={!!formErrorMessages.dateOfBirth}
@@ -542,6 +551,7 @@
 						value={employee?.dateOfBirth}
 						error={!!formErrorMessages.dateOfBirth}
 						type="date"
+						max={currentDate}
 					/>
 				</FormControl>
 
