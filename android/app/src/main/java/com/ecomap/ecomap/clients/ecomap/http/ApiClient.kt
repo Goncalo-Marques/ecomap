@@ -1,6 +1,7 @@
 package com.ecomap.ecomap.clients.ecomap.http
 
 import android.util.Log
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
@@ -72,6 +73,7 @@ object ApiClient {
     private const val FIELD_CONTAINER_CREATED_AT = "createdAt"
     private const val FIELD_CONTAINER_MODIFIED_AT = "modifiedAt"
     private const val FIELD_CONTAINERS = "containers"
+    private const val FIELD_FILTER_CONTAINER_CATEGORY = "containerCategory"
 
     /**
      * Signs in a user with a given username and password.
@@ -95,7 +97,11 @@ object ApiClient {
             Request.Method.POST, URL_USERS_SIGN_IN, requestPayload,
             { response -> listener.onResponse(response.optString(FIELD_NAME_TOKEN)) },
             errorListener
-        )
+        ).apply {
+            // Avoid retrying a request that failed due to invalid credentials, as this is an
+            // expected error.
+            retryPolicy = DefaultRetryPolicy(0, 0, 0f)
+        }
     }
 
     /**
@@ -128,6 +134,33 @@ object ApiClient {
             { response -> listener.onResponse(mapUser(response)) },
             errorListener
         )
+    }
+
+    /**
+     * Returns the details of a user account.
+     * @param userID User identifier.
+     * @param token JWT authorization token.
+     * @param listener Volley response listener.
+     * @param errorListener Volley response error listener.
+     * @return Volley request.
+     */
+    fun getAccount(
+        userID: String,
+        token: String,
+        listener: Listener<User>,
+        errorListener: ErrorListener
+    ): JsonObjectRequest {
+        val url = "$URL_USERS/$userID"
+
+        return object : JsonObjectRequest(
+            Method.GET, url, null,
+            { response -> listener.onResponse(mapUser(response)) },
+            errorListener
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                return getHeaders(token)
+            }
+        }
     }
 
     /**
@@ -183,8 +216,10 @@ object ApiClient {
     }
 
     /**
-     * Returns the user container bookmarks with the specified filter.
+     * Returns the user container bookmarks with the specified filter. The bookmarks are sorted by
+     * descending order of the date they were created.
      * @param userID User identifier.
+     * @param containerCategory Container category to filter by.
      * @param limit Amount of resources to get for the provided filter.
      * @param offset Amount of resources to skip for the provided filter.
      * @param token JWT authorization token.
@@ -194,15 +229,20 @@ object ApiClient {
      */
     fun listUserContainerBookmarks(
         userID: String,
+        containerCategory: ContainerCategory? = null,
         limit: Int,
         offset: Int,
         token: String,
         listener: Listener<ContainersPaginated>,
         errorListener: ErrorListener
     ): JsonObjectRequest {
-        val url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS" +
+        var url = "$URL_USERS/$userID$URL_BOOKMARK_CONTAINERS" +
                 "?$FIELD_NAME_PAGINATION_LIMIT=$limit" +
-                "&$FIELD_NAME_PAGINATION_OFFSET=$offset"
+                "&$FIELD_NAME_PAGINATION_OFFSET=$offset" +
+                "&sort=createdAt&order=desc"
+        if (containerCategory != null) {
+            url += "&$FIELD_FILTER_CONTAINER_CATEGORY=${mapDomainContainerCategory(containerCategory)}"
+        }
 
         return object : JsonObjectRequest(
             Method.GET, url, null,
@@ -294,7 +334,7 @@ object ApiClient {
      * @param token Authorization bearer token.
      * @return Headers map.
      */
-    fun getHeaders(token: String): HashMap<String, String> {
+    private fun getHeaders(token: String): HashMap<String, String> {
         val headers = HashMap<String, String>()
         headers[HEADER_KEY_AUTHORIZATION] = HEADER_VALUE_BEARER_PREFIX + token
         return headers
@@ -327,7 +367,7 @@ object ApiClient {
      * @param json JSON object to map.
      * @return Domain User data class.
      */
-    fun mapUser(json: JSONObject): User {
+    private fun mapUser(json: JSONObject): User {
         return User(
             json.optString(FIELD_NAME_ID),
             json.optString(FIELD_NAME_USERNAME),
@@ -343,7 +383,7 @@ object ApiClient {
      * @param json JSON object to map.
      * @return Domain Container data class.
      */
-    fun mapContainer(json: JSONObject): Container {
+    private fun mapContainer(json: JSONObject): Container {
         val geoJSON = GeoJSONFeaturePoint()
 
         val geoJSONObject = json.optJSONObject(FIELD_CONTAINER_GEO_JSON)

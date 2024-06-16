@@ -40,7 +40,7 @@
         android:layout_marginTop="40dp"
         android:autofillHints="username"
         android:ems="10"
-        android:hint="@string/sign_in_username"
+        android:hint="@string/username"
         android:inputType="text"
         app:layout_constraintBottom_toTopOf="@+id/text_input_layout_username_create_account"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:hint="@string/sign_in_password" />
+            android:hint="@string/password" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -94,5 +94,15 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toStartOf="@+id/guideline_begin"
         app:layout_constraintTop_toBottomOf="@+id/button_sign_in" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_bar_sign_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_end"
+        app:layout_constraintStart_toStartOf="@+id/guideline_begin"
+        app:layout_constraintTop_toBottomOf="@+id/button_create_account" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

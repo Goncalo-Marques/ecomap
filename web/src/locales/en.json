@@ -118,6 +118,7 @@
 	"employees.role.manager": "Manager",
 	"employees.role.wasteOperator": "Waste operator",
 	"employees.dateOfBirth": "Birthdate",
+	"employees.dateOfBirth": "Birthdate",
 	"employees.phone": "Phone",
 	"employees.location": "Location",
 	"employees.scheduleStart": "Schedule start",
