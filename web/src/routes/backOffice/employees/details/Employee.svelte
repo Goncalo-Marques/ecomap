@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from "../../components/Card.svelte";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
-	import { navigate } from "svelte-routing";
+	import { Link, navigate } from "svelte-routing";
 	import Button from "../../../../lib/components/Button.svelte";
 	import { t } from "../../../../lib/utils/i8n";
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
@@ -117,6 +117,9 @@
 					onClick={deleteEmployee}
 				/>
 			{/if}
+			<Link to={`${employee.id}/edit`} style="display:contents">
+				<Button startIcon="edit">{$t("editInfo")}</Button>
+			</Link>
 		</DetailsHeader>
 		<DetailsContent>
 			<DetailsSection label={$t("personalInfo")}>
@@ -125,7 +128,7 @@
 					<Field label={$t("employees.lastName")} value={employee.lastName} />
 					<Field label={$t("employees.username")} value={employee.username} />
 					<Field
-						label={$t("employees.birthdate")}
+						label={$t("employees.dateOfBirth")}
 						value={formatDate(employee.dateOfBirth, DateFormats.shortDate)}
 					/>
 					<Field label={$t("employees.phone")} value={employee.phoneNumber} />
