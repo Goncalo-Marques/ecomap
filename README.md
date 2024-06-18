@@ -1,6 +1,10 @@
 # EcoMap
 
-TODO
+EcoMap is an advanced urban waste management system designed to provide a centralized and efficient solution for waste collection. The core of the system is the Web-based back-office application, offering a robust administration interface for managing containers, landfills, trucks, employees, and warehouses. Through this system, users can create routes, view interactive maps, and manage all aspects related to waste collection.
+
+A key objective of the EcoMap project is to achieve independence from external services, eliminating the reliance on third-party APIs. All operations are performed using the system's internal API.
+
+Additionally, the mobile application focuses on end-users, making it easy to locate waste containers. Users can quickly find the appropriate container based on geographic location and type of waste, enhancing the overall efficiency of waste management.
 
 # Development
 
