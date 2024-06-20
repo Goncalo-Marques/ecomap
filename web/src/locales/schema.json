@@ -418,16 +418,16 @@
 		"employees.updatePassword.success": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.passwordConstraints.title": {
+		"employees.password.error.passwordConstraints.title": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.passwordConstraints.description": {
+		"employees.password.error.passwordConstraints.description": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.incorrectPassword.title": {
+		"employees.password.error.incorrectPassword.title": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.incorrectPassword.description": {
+		"employees.password.error.incorrectPassword.description": {
 			"type": "string"
 		},
 		"employees.error.passwordMismatch": {

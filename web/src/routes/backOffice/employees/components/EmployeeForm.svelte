@@ -39,7 +39,7 @@
 	/**
 	 * Callback fired when save action is triggered.
 	 */
-	export let onSave: onSaveFn | onSaveCreateFn;
+	export let onSave: onSaveUpdateFn | onSaveCreateFn;
 
 	/**
 	 * Type of callback to create new employee.
@@ -60,7 +60,7 @@
 	/**
 	 * Type of callback to update employee.
 	 */
-	type onSaveFn = (
+	type onSaveUpdateFn = (
 		username: string,
 		firstName: string,
 		lastName: string,
@@ -107,8 +107,8 @@
 			max: 30,
 		},
 		password: {
-			min: 0,
-			max: 30,
+			min: 14,
+			max: 72,
 		},
 		firstName: {
 			min: 0,
@@ -158,7 +158,7 @@
 	 * @param scheduleStart Employee scheduleStart field validity state.
 	 * @param scheduleEnd Employee scheduleEnd field validity state.
 	 * @param passwordInput Employee password filed.
-	 * @param confirmPasswordInput Employee repeat password field.
+	 * @param confirmPasswordInput Employee confirm password field.
 	 * @param coordinate Employee coordinate.
 	 */
 	function validateForm(
@@ -309,6 +309,7 @@
 			!formErrorMessages.scheduleStart,
 			!formErrorMessages.scheduleEnd,
 			!formErrorMessages.location,
+			!!coordinate,
 		];
 
 		if (createForm && passwordInput !== null && confirmPasswordInput !== null) {
@@ -322,11 +323,11 @@
 
 		for (const obj of validationArray) {
 			if (!obj) {
-				return false && !!coordinate;
+				return false;
 			}
 		}
 
-		return true && !!coordinate;
+		return true;
 	}
 
 	/**
@@ -458,7 +459,7 @@
 			return;
 		}
 
-		(onSave as onSaveFn)(
+		(onSave as onSaveUpdateFn)(
 			username,
 			firstName,
 			lastName,

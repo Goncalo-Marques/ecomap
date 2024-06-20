@@ -8,6 +8,7 @@
 	import { getToastContext } from "../../../../lib/contexts/toast";
 	import EmployeeForm from "../components/EmployeeForm.svelte";
 	import type { EmployeeRole } from "../../../../domain/employees";
+
 	/**
 	 * Toast context.
 	 */
@@ -62,11 +63,9 @@
 				case "bad_request":
 					toast.show({
 						type: "error",
-						title: $t(
-							"employees.updatePassword.error.passwordConstraints.title",
-						),
+						title: $t("employees.password.error.passwordConstraints.title"),
 						description: $t(
-							"employees.updatePassword.error.passwordConstraints.description",
+							"employees.password.error.passwordConstraints.description",
 						),
 					});
 					break;
@@ -92,7 +91,7 @@
 
 		toast.show({
 			type: "success",
-			title: $t("employees.update.success"),
+			title: $t("employees.create.success"),
 			description: undefined,
 		});
 

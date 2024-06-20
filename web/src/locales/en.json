@@ -118,7 +118,6 @@
 	"employees.role.manager": "Manager",
 	"employees.role.wasteOperator": "Waste operator",
 	"employees.dateOfBirth": "Birthdate",
-	"employees.dateOfBirth": "Birthdate",
 	"employees.phone": "Phone",
 	"employees.location": "Location",
 	"employees.scheduleStart": "Schedule start",
@@ -141,10 +140,10 @@
 	"employees.updatePassword.newPassword.placeholder": "Enter the new password",
 	"employees.updatePassword.confirmPassword.placeholder": "Repeat the new password",
 	"employees.updatePassword.success": "Password changed successfully",
-	"employees.updatePassword.error.passwordConstraints.title": "Invalid password",
-	"employees.updatePassword.error.passwordConstraints.description": "The password must contain at least 14 characters, including one regular character, one special character, and one number",
-	"employees.updatePassword.error.incorrectPassword.title": "Incorrect credentials",
-	"employees.updatePassword.error.incorrectPassword.description": "The password entered does not match your current password.",
+	"employees.password.error.passwordConstraints.title": "Invalid password",
+	"employees.password.error.passwordConstraints.description": "The password must contain at least 14 characters, including one regular character, one special character, and one number",
+	"employees.password.error.incorrectPassword.title": "Incorrect credentials",
+	"employees.password.error.incorrectPassword.description": "The password entered does not match your current password.",
 	"employees.error.passwordMismatch": "The password doesn't match the new password",
 	"employees.passwordConstraints": "Password must contain at least 14 characters, including one regular character, one special character, and one number",
 	"employees.dateOfBirth.placeholder": "Enter birthdate",
@@ -156,7 +155,7 @@
 	"employees.password.placeholder": "Enter password",
 	"employees.security": "Security",
 	"employees.password.confirm.placeholder": "Repeat the password",
-	"employees.password.error.passwordMismatch": "The password doesn't match the password",
+	"employees.password.error.passwordMismatch": "The passwords don't match",
 	"employees.username.taken.title": "Conflict",
-	"employees.username.taken.description": "Username already taken."
+	"employees.username.taken.description": "The username is already in use."
 }
