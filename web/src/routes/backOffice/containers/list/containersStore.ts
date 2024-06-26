@@ -123,7 +123,7 @@ async function getContainers(
 				sort: "createdAt",
 				order: "desc",
 				category,
-				locationName: location,
+				locationName: location || undefined,
 			},
 		},
 	});
