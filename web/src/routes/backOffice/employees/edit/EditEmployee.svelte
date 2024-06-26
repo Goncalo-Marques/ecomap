@@ -21,6 +21,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Fetches employee data.
 	 */
 	async function fetchEmployee(): Promise<Employee> {
@@ -56,6 +62,8 @@
 		scheduleStart: string,
 		scheduleEnd: string,
 	) {
+		isSubmittingForm = true;
+
 		// Adding seconds to times. Necessary because API receives times with seconds.
 		scheduleStart += ":00";
 		scheduleEnd += ":00";
@@ -77,6 +85,9 @@
 				scheduleEnd,
 			},
 		});
+
+		isSubmittingForm = false;
+
 		if (res.error) {
 			switch (res.error.code) {
 				case "conflict":
@@ -119,10 +130,11 @@
 	{:then employee}
 		<EmployeeForm
 			{employee}
-			back={employee.id}
-			title={`${employee.firstName} ${employee.lastName}`}
-			onSave={updateEmployee}
 			action="edit"
+			title={`${employee.firstName} ${employee.lastName}`}
+			isSubmitting={isSubmittingForm}
+			back={employee.id}
+			onSave={updateEmployee}
 		/>
 	{:catch}
 		<div class="employee-not-found">
