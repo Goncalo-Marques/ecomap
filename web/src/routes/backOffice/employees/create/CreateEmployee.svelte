@@ -15,7 +15,7 @@
 	const toast = getToastContext();
 
 	/**
-	 * Creates a new employee with given username, password, firstName, lastName, role, dateOfBirth, phoneNumber, location, scheduleStart and scheduleEnd.
+	 * Creates a new employee with a given username, password, firstName, lastName, role, dateOfBirth, phoneNumber, location, scheduleStart and scheduleEnd.
 	 * @param username Employee username.
 	 * @param password Employee password.
 	 * @param firstName Employee firstName.
@@ -72,8 +72,8 @@
 				case "conflict":
 					toast.show({
 						type: "error",
-						title: $t("employees.username.taken.title"),
-						description: $t("employees.username.taken.description"),
+						title: $t("employees.create.conflict.title"),
+						description: $t("employees.create.conflict.description"),
 					});
 					break;
 

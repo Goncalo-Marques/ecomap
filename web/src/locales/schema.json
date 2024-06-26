@@ -460,10 +460,16 @@
 		"employees.password.error.passwordMismatch": {
 			"type": "string"
 		},
-		"employees.username.taken.title": {
+		"employees.update.conflict.title": {
 			"type": "string"
 		},
-		"employees.username.taken.description": {
+		"employees.update.conflict.description": {
+			"type": "string"
+		},
+		"employees.create.conflict.title": {
+			"type": "string"
+		},
+		"employees.create.conflict.description": {
 			"type": "string"
 		}
 	}

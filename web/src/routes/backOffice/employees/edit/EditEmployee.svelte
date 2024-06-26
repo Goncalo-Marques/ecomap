@@ -82,8 +82,8 @@
 				case "conflict":
 					toast.show({
 						type: "error",
-						title: $t("employees.username.taken.title"),
-						description: $t("employees.username.taken.description"),
+						title: $t("employees.update.conflict.title"),
+						description: $t("employees.update.conflict.description"),
 					});
 					break;
 

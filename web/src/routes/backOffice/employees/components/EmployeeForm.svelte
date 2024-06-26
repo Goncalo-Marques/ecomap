@@ -151,13 +151,13 @@
 	 * @param usernameValidity Employee username field validity state.
 	 * @param firstNameValidity Employee firstName field validity state.
 	 * @param lastNameValidity Employee lastName field validity state.
-	 * @param roleValidity Employee role filed validity state.
+	 * @param roleValidity Employee role field validity state.
 	 * @param dateOfBirthValidity Employee dateOfBirth field validity state.
 	 * @param phoneNumberValidity Employee phoneNumber field validity state.
 	 * @param locationValidity Employee location field validity state.
 	 * @param scheduleStart Employee scheduleStart field validity state.
 	 * @param scheduleEnd Employee scheduleEnd field validity state.
-	 * @param passwordInput Employee password filed.
+	 * @param passwordInput Employee password field.
 	 * @param confirmPasswordInput Employee confirm password field.
 	 * @param coordinate Employee coordinate.
 	 */
@@ -269,11 +269,7 @@
 			formErrorMessages.location = "";
 		}
 
-		if (
-			roleValidity !== null &&
-			passwordInput !== null &&
-			confirmPasswordInput !== null
-		) {
+		if (roleValidity && passwordInput && confirmPasswordInput) {
 			//  Role Validation.
 			if (roleValidity.valueMissing) {
 				formErrorMessages.role = $t("error.valueMissing");
@@ -299,7 +295,7 @@
 			}
 		}
 
-		let validationArray: boolean[] = [
+		let validations: boolean[] = [
 			!formErrorMessages.username,
 			!formErrorMessages.password,
 			!formErrorMessages.firstName,
@@ -312,8 +308,8 @@
 			!!coordinate,
 		];
 
-		if (createForm && passwordInput !== null && confirmPasswordInput !== null) {
-			validationArray.push(
+		if (createForm && passwordInput && confirmPasswordInput) {
+			validations.push(
 				!formErrorMessages.role,
 				!formErrorMessages.password,
 				!formErrorMessages.confirmPassword,
@@ -321,8 +317,8 @@
 			);
 		}
 
-		for (const obj of validationArray) {
-			if (!obj) {
+		for (const validation of validations) {
+			if (!validation) {
 				return false;
 			}
 		}

@@ -156,6 +156,8 @@
 	"employees.security": "Security",
 	"employees.password.confirm.placeholder": "Repeat the password",
 	"employees.password.error.passwordMismatch": "The passwords don't match",
-	"employees.username.taken.title": "Conflict",
-	"employees.username.taken.description": "The username is already in use."
+	"employees.update.conflict.title": "Conflict",
+	"employees.update.conflict.description": "The username is already in use.",
+	"employees.create.conflict.title": "Conflict",
+	"employees.create.conflict.description": "The username is already in use."
 }

@@ -156,6 +156,8 @@
 	"employees.security": "Segurança",
 	"employees.password.confirm.placeholder": "Introduza a palavra-passe",
 	"employees.password.error.passwordMismatch": "As palavras-passes não coincidem",
-	"employees.username.taken.title": "Conflito",
-	"employees.username.taken.description": "O nome de utilizador já está em uso."
+	"employees.update.conflict.title": "Conflito",
+	"employees.update.conflict.description": "O nome de utilizador já está em uso.",
+	"employees.create.conflict.title": "Conflito",
+	"employees.create.conflict.description": "O nome de utilizador já está em uso."
 }
