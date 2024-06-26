@@ -16,6 +16,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Creates a route with a given name, departure warehouse,
 	 * arrival warehouse, truck and assigns containers and employees
 	 * to that route.
@@ -34,6 +40,8 @@
 		containersIds: SelectedRouteContainersIds,
 		routeEmployees: SelectedRouteEmployees,
 	) {
+		isSubmittingForm = true;
+
 		const routeRes = await ecomapHttpClient.POST("/routes", {
 			body: {
 				name,
@@ -42,6 +50,8 @@
 				truckId: truck.id,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (routeRes.error) {
 			toast.show({
@@ -99,5 +109,10 @@
 </script>
 
 <Card class="page-layout">
-	<RouteForm back="" title={$t("routes.create.title")} onSave={createRoute} />
+	<RouteForm
+		back=""
+		isSubmitting={isSubmittingForm}
+		title={$t("routes.create.title")}
+		onSave={createRoute}
+	/>
 </Card>

@@ -23,6 +23,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Fetches route data.
 	 * @returns Route data.
 	 */
@@ -159,6 +165,8 @@
 			await Promise.allSettled(promises);
 		}
 
+		isSubmittingForm = true;
+
 		// Perform requests based on truck person capacity.
 		// If the selected truck has a higher capacity than the current truck associated with the route,
 		// the route must be updated first to avoid conflicts with the number of employees associated.
@@ -170,6 +178,8 @@
 			await performRouteAssociations();
 			await performRouteUpdate();
 		}
+
+		isSubmittingForm = false;
 
 		navigate(`${BackOfficeRoutes.ROUTES}/${id}`);
 	}
@@ -185,6 +195,7 @@
 	{:then route}
 		<RouteForm
 			{route}
+			isSubmitting={isSubmittingForm}
 			back={route.id}
 			title={route.name}
 			onSave={(

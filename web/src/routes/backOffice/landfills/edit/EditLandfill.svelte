@@ -22,6 +22,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Fetches landfill data.
 	 */
 	async function fetchLandfill(): Promise<Landfill> {
@@ -41,6 +47,8 @@
 	 * @param location Landfill location.
 	 */
 	async function updateLandfill(location: GeoJSONFeaturePoint) {
+		isSubmittingForm = true;
+
 		const res = await ecomapHttpClient.PATCH("/landfills/{landfillId}", {
 			params: {
 				path: {
@@ -51,6 +59,8 @@
 				geoJson: location,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (res.error) {
 			toast.show({
@@ -85,6 +95,7 @@
 		)}
 		<LandfillForm
 			{landfill}
+			isSubmitting={isSubmittingForm}
 			back={landfill.id}
 			title={locationName}
 			onSave={updateLandfill}

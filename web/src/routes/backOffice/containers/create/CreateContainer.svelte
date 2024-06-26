@@ -15,6 +15,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Creates a container with a given category and location.
 	 * @param category Container category.
 	 * @param location Container location.
@@ -23,12 +29,16 @@
 		category: ContainerCategory,
 		location: GeoJSONFeaturePoint,
 	) {
+		isSubmittingForm = true;
+
 		const res = await ecomapHttpClient.POST("/containers", {
 			body: {
 				category,
 				geoJson: location,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (res.error) {
 			toast.show({
@@ -53,6 +63,7 @@
 	<ContainerForm
 		back=""
 		title={$t("containers.create.title")}
+		isSubmitting={isSubmittingForm}
 		onSave={createContainer}
 	/>
 </Card>

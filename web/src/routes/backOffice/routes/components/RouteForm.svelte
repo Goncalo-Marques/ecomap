@@ -59,6 +59,11 @@
 	export let route: Route | null = null;
 
 	/**
+	 * Indicates if form is being submitted.
+	 */
+	export let isSubmitting: boolean;
+
+	/**
 	 * Toast context.
 	 */
 	const toast = getToastContext();
@@ -189,7 +194,7 @@
 	 * Handles the submit event of the form.
 	 * @param e Submit event.
 	 */
-	function handleSubmit(
+	async function handleSubmit(
 		e: Event & { currentTarget: EventTarget & HTMLFormElement },
 	) {
 		const form = e.currentTarget;
@@ -465,7 +470,9 @@
 		<Link to={back} style="display:contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
-		<Button type="submit" startIcon="check">{$t("save")}</Button>
+		<Button type="submit" disabled={isSubmitting} startIcon="check">
+			{$t("save")}
+		</Button>
 	</DetailsHeader>
 	<DetailsContent>
 		<DetailsSection label={$t("generalInfo")}>
