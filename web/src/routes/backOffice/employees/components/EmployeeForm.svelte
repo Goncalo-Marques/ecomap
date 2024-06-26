@@ -34,7 +34,7 @@
 	 * Set form as a create form, to create a new employee.
 	 * @default false
 	 */
-	export let createForm: boolean = false;
+	export let action: "create" | "edit";
 
 	/**
 	 * Callback fired when save action is triggered.
@@ -308,7 +308,7 @@
 			!!coordinate,
 		];
 
-		if (createForm && passwordInput && confirmPasswordInput) {
+		if (action == "create" && passwordInput && confirmPasswordInput) {
 			validations.push(
 				!formErrorMessages.role,
 				!formErrorMessages.password,
@@ -413,21 +413,21 @@
 				usernameInput.validity,
 				firstNameInput.validity,
 				lastNameInput.validity,
-				createForm ? roleInput.validity : null,
+				action === "create" ? roleInput.validity : null,
 				dateOfBirthInput.validity,
 				phoneNumberInput.validity,
 				locationInput.validity,
 				scheduleStartInput.validity,
 				scheduleEndInput.validity,
-				createForm ? passwordInput : null,
-				createForm ? confirmPasswordInput : null,
+				action === "create" ? passwordInput : null,
+				action === "create" ? confirmPasswordInput : null,
 				selectedCoordinate,
 			)
 		) {
 			return;
 		}
 
-		if (createForm) {
+		if (action === "create") {
 			// Validates user role, in create form.
 			if (!isValidEmployeeRole(role)) {
 				return;
@@ -596,7 +596,7 @@
 				locationName = name;
 			}}
 		/>
-		{#if createForm}
+		{#if action === "create"}
 			<DetailsSection label={$t("employees.security")}>
 				<DetailsFields>
 					<!-- NewPassword -->
@@ -663,7 +663,7 @@
 					/>
 				</FormControl>
 
-				{#if createForm}
+				{#if action === "create"}
 					<!-- Role -->
 					<FormControl
 						label={$t("employees.role")}

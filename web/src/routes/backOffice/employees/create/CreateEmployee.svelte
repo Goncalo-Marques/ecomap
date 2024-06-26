@@ -104,6 +104,6 @@
 		back=""
 		title={$t("employees.create.title")}
 		onSave={createEmployee}
-		createForm
+		action="create"
 	/>
 </Card>

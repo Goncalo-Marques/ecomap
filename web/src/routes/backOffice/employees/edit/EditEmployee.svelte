@@ -122,6 +122,7 @@
 			back={employee.id}
 			title={`${employee.firstName} ${employee.lastName}`}
 			onSave={updateEmployee}
+			action="edit"
 		/>
 	{:catch}
 		<div class="employee-not-found">
