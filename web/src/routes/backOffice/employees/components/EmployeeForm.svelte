@@ -31,8 +31,7 @@
 	export let title: string;
 
 	/**
-	 * Set form as a create form, to create a new employee.
-	 * @default false
+	 * Form action type.
 	 */
 	export let action: "create" | "edit";
 
