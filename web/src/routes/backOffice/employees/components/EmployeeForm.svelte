@@ -11,9 +11,13 @@
 	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
 	import { getLocationName } from "../../../../lib/utils/location";
 	import LocationInput from "../../../../lib/components/LocationInput.svelte";
-	import type { Employee } from "../../../../domain/employees";
+	import type { Employee, EmployeeRole } from "../../../../domain/employees";
 	import SelectLocation from "../../../../lib/components/SelectLocation.svelte";
 	import { convertToResourceProjection } from "../../../../lib/utils/map";
+	import { isValidEmployeeRole } from "../utils/employee";
+	import Select from "../../../../lib/components/Select.svelte";
+	import { rolesOptions } from "../constants/roles";
+	import Option from "../../../../lib/components/Option.svelte";
 	import { formatTime24H } from "../../../../lib/utils/date";
 
 	/**
@@ -27,9 +31,35 @@
 	export let title: string;
 
 	/**
+	 * Form action type.
+	 */
+	export let action: "create" | "edit";
+
+	/**
 	 * Callback fired when save action is triggered.
 	 */
-	export let onSave: (
+	export let onSave: onSaveUpdateFn | onSaveCreateFn;
+
+	/**
+	 * Type of callback to create new employee.
+	 */
+	type onSaveCreateFn = (
+		username: string,
+		password: string,
+		firstName: string,
+		lastName: string,
+		role: EmployeeRole,
+		dateOfBirth: string,
+		phoneNumber: string,
+		location: GeoJSONFeaturePoint,
+		scheduleStart: string,
+		scheduleEnd: string,
+	) => void;
+
+	/**
+	 * Type of callback to update employee.
+	 */
+	type onSaveUpdateFn = (
 		username: string,
 		firstName: string,
 		lastName: string,
@@ -75,6 +105,10 @@
 			min: 0,
 			max: 30,
 		},
+		password: {
+			min: 14,
+			max: 72,
+		},
 		firstName: {
 			min: 0,
 			max: 30,
@@ -96,11 +130,14 @@
 		username: "",
 		firstName: "",
 		lastName: "",
+		role: "",
 		dateOfBirth: "",
 		phoneNumber: "",
 		location: "",
 		scheduleStart: "",
 		scheduleEnd: "",
+		password: "",
+		confirmPassword: "",
 	};
 
 	/**
@@ -113,22 +150,28 @@
 	 * @param usernameValidity Employee username field validity state.
 	 * @param firstNameValidity Employee firstName field validity state.
 	 * @param lastNameValidity Employee lastName field validity state.
+	 * @param roleValidity Employee role field validity state.
 	 * @param dateOfBirthValidity Employee dateOfBirth field validity state.
 	 * @param phoneNumberValidity Employee phoneNumber field validity state.
 	 * @param locationValidity Employee location field validity state.
 	 * @param scheduleStart Employee scheduleStart field validity state.
 	 * @param scheduleEnd Employee scheduleEnd field validity state.
+	 * @param passwordInput Employee password field.
+	 * @param confirmPasswordInput Employee confirm password field.
 	 * @param coordinate Employee coordinate.
 	 */
 	function validateForm(
 		usernameValidity: ValidityState,
 		firstNameValidity: ValidityState,
 		lastNameValidity: ValidityState,
+		roleValidity: ValidityState | null,
 		dateOfBirthValidity: ValidityState,
 		phoneNumberValidity: ValidityState,
 		locationValidity: ValidityState,
 		scheduleStart: ValidityState,
 		scheduleEnd: ValidityState,
+		passwordInput: HTMLInputElement | null,
+		confirmPasswordInput: HTMLInputElement | null,
 		coordinate: number[] | undefined,
 	): coordinate is number[] {
 		// Username Validation.
@@ -225,17 +268,61 @@
 			formErrorMessages.location = "";
 		}
 
-		return (
-			!formErrorMessages.username &&
-			!formErrorMessages.firstName &&
-			!formErrorMessages.lastName &&
-			!formErrorMessages.dateOfBirth &&
-			!formErrorMessages.phoneNumber &&
-			!formErrorMessages.scheduleStart &&
-			!formErrorMessages.scheduleEnd &&
-			!formErrorMessages.location &&
-			!!coordinate
-		);
+		if (roleValidity && passwordInput && confirmPasswordInput) {
+			//  Role Validation.
+			if (roleValidity.valueMissing) {
+				formErrorMessages.role = $t("error.valueMissing");
+			} else {
+				formErrorMessages.role = "";
+			}
+
+			// Password Validation.
+			if (passwordInput.validity.valueMissing) {
+				formErrorMessages.password = $t("error.valueMissing");
+			} else {
+				formErrorMessages.password = "";
+			}
+
+			if (confirmPasswordInput.validity.valueMissing) {
+				formErrorMessages.confirmPassword = $t("error.valueMissing");
+			} else if (passwordInput.value !== confirmPasswordInput.value) {
+				formErrorMessages.confirmPassword = $t(
+					"employees.error.passwordMismatch",
+				);
+			} else {
+				formErrorMessages.confirmPassword = "";
+			}
+		}
+
+		let validations: boolean[] = [
+			!formErrorMessages.username,
+			!formErrorMessages.password,
+			!formErrorMessages.firstName,
+			!formErrorMessages.lastName,
+			!formErrorMessages.dateOfBirth,
+			!formErrorMessages.phoneNumber,
+			!formErrorMessages.scheduleStart,
+			!formErrorMessages.scheduleEnd,
+			!formErrorMessages.location,
+			!!coordinate,
+		];
+
+		if (action == "create" && passwordInput && confirmPasswordInput) {
+			validations.push(
+				!formErrorMessages.role,
+				!formErrorMessages.password,
+				!formErrorMessages.confirmPassword,
+				passwordInput.value === confirmPasswordInput.value,
+			);
+		}
+
+		for (const validation of validations) {
+			if (!validation) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -249,8 +336,11 @@
 		const formData = new FormData(form);
 
 		const username = formData.get("username") ?? "";
+		const password = formData.get("newPassword") ?? "";
+		const confirmPassword = formData.get("confirmPassword") ?? "";
 		const firstName = formData.get("firstName") ?? "";
 		const lastName = formData.get("lastName") ?? "";
+		const role = formData.get("role") ?? "";
 		const dateOfBirth = formData.get("dateOfBirth") ?? "";
 		const phoneNumber = formData.get("phoneNumber") ?? "";
 		const location = formData.get("location") ?? "";
@@ -262,11 +352,14 @@
 			typeof username !== "string" ||
 			typeof firstName !== "string" ||
 			typeof lastName !== "string" ||
+			typeof role !== "string" ||
 			typeof dateOfBirth !== "string" ||
 			typeof phoneNumber !== "string" ||
 			typeof location !== "string" ||
 			typeof scheduleStart !== "string" ||
-			typeof scheduleEnd !== "string"
+			typeof scheduleEnd !== "string" ||
+			typeof password !== "string" ||
+			typeof confirmPassword !== "string"
 		) {
 			return;
 		}
@@ -278,23 +371,39 @@
 		const firstNameInput = form.elements.namedItem(
 			"firstName",
 		) as HTMLInputElement;
+
 		const lastNameInput = form.elements.namedItem(
 			"lastName",
 		) as HTMLInputElement;
+
+		const roleInput = form.elements.namedItem("role") as HTMLInputElement;
+
 		const dateOfBirthInput = form.elements.namedItem(
 			"dateOfBirth",
 		) as HTMLInputElement;
+
 		const phoneNumberInput = form.elements.namedItem(
 			"phoneNumber",
 		) as HTMLInputElement;
+
 		const locationInput = form.elements.namedItem(
 			"location",
 		) as HTMLInputElement;
+
 		const scheduleStartInput = form.elements.namedItem(
 			"scheduleStart",
 		) as HTMLInputElement;
+
 		const scheduleEndInput = form.elements.namedItem(
 			"scheduleEnd",
+		) as HTMLInputElement;
+
+		const passwordInput = form.elements.namedItem(
+			"newPassword",
+		) as HTMLInputElement;
+
+		const confirmPasswordInput = form.elements.namedItem(
+			"confirmPassword",
 		) as HTMLInputElement;
 
 		// Check if form is valid to prevent making a server request.
@@ -303,18 +412,49 @@
 				usernameInput.validity,
 				firstNameInput.validity,
 				lastNameInput.validity,
+				action === "create" ? roleInput.validity : null,
 				dateOfBirthInput.validity,
 				phoneNumberInput.validity,
 				locationInput.validity,
 				scheduleStartInput.validity,
 				scheduleEndInput.validity,
+				action === "create" ? passwordInput : null,
+				action === "create" ? confirmPasswordInput : null,
 				selectedCoordinate,
 			)
 		) {
 			return;
 		}
 
-		onSave(
+		if (action === "create") {
+			// Validates user role, in create form.
+			if (!isValidEmployeeRole(role)) {
+				return;
+			}
+
+			(onSave as onSaveCreateFn)(
+				username,
+				password,
+				firstName,
+				lastName,
+				role,
+				dateOfBirth,
+				phoneNumber,
+				{
+					type: "Feature",
+					geometry: {
+						type: "Point",
+						coordinates: selectedCoordinate,
+					},
+					properties: {},
+				},
+				scheduleStart,
+				scheduleEnd,
+			);
+			return;
+		}
+
+		(onSave as onSaveUpdateFn)(
 			username,
 			firstName,
 			lastName,
@@ -455,6 +595,41 @@
 				locationName = name;
 			}}
 		/>
+		{#if action === "create"}
+			<DetailsSection label={$t("employees.security")}>
+				<DetailsFields>
+					<!-- NewPassword -->
+					<FormControl
+						label={$t("employees.password")}
+						error={!!formErrorMessages.password}
+						helperText={formErrorMessages.password}
+						title={$t("employees.passwordConstraints")}
+					>
+						<Input
+							required
+							type="password"
+							name="newPassword"
+							placeholder={$t("employees.password.placeholder")}
+							error={!!formErrorMessages.password}
+						/>
+					</FormControl>
+					<!-- ConfirmPassword -->
+					<FormControl
+						label={$t("employees.updatePassword.confirmPassword.label")}
+						error={!!formErrorMessages.confirmPassword}
+						helperText={formErrorMessages.confirmPassword}
+					>
+						<Input
+							required
+							type="password"
+							name="confirmPassword"
+							placeholder={$t("employees.password.confirm.placeholder")}
+							error={!!formErrorMessages.confirmPassword}
+						/>
+					</FormControl>
+				</DetailsFields>
+			</DetailsSection>
+		{/if}
 		<DetailsSection label={$t("work")}>
 			<DetailsFields>
 				<!-- scheduleStart -->
@@ -486,6 +661,28 @@
 						type="time"
 					/>
 				</FormControl>
+
+				{#if action === "create"}
+					<!-- Role -->
+					<FormControl
+						label={$t("employees.role")}
+						error={!!formErrorMessages.role}
+						helperText={formErrorMessages.role}
+					>
+						<Select
+							required
+							name="role"
+							error={!!formErrorMessages.role}
+							placeholder={$t("employees.role.placeholder")}
+						>
+							{#each rolesOptions as role}
+								<Option value={role}>
+									{$t(`employees.role.${role}`)}
+								</Option>
+							{/each}
+						</Select>
+					</FormControl>
+				{/if}
 			</DetailsFields>
 		</DetailsSection>
 	</DetailsContent>

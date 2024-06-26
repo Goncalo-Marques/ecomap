@@ -328,6 +328,9 @@
 		"employees.username": {
 			"type": "string"
 		},
+		"employees.password": {
+			"type": "string"
+		},
 		"employees.firstName": {
 			"type": "string"
 		},
@@ -415,16 +418,16 @@
 		"employees.updatePassword.success": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.passwordConstraints.title": {
+		"employees.password.error.passwordConstraints.title": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.passwordConstraints.description": {
+		"employees.password.error.passwordConstraints.description": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.incorrectPassword.title": {
+		"employees.password.error.incorrectPassword.title": {
 			"type": "string"
 		},
-		"employees.updatePassword.error.incorrectPassword.description": {
+		"employees.password.error.incorrectPassword.description": {
 			"type": "string"
 		},
 		"employees.error.passwordMismatch": {
@@ -434,6 +437,39 @@
 			"type": "string"
 		},
 		"confirm": {
+			"type": "string"
+		},
+		"employees.create.title": {
+			"type": "string"
+		},
+		"employees.create.success": {
+			"type": "string"
+		},
+		"employees.role.placeholder": {
+			"type": "string"
+		},
+		"employees.password.placeholder": {
+			"type": "string"
+		},
+		"employees.security": {
+			"type": "string"
+		},
+		"employees.password.confirm.placeholder": {
+			"type": "string"
+		},
+		"employees.password.error.passwordMismatch": {
+			"type": "string"
+		},
+		"employees.update.conflict.title": {
+			"type": "string"
+		},
+		"employees.update.conflict.description": {
+			"type": "string"
+		},
+		"employees.create.conflict.title": {
+			"type": "string"
+		},
+		"employees.create.conflict.description": {
 			"type": "string"
 		}
 	}

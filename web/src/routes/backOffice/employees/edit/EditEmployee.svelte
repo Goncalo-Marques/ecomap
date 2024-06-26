@@ -77,13 +77,24 @@
 				scheduleEnd,
 			},
 		});
-
 		if (res.error) {
-			toast.show({
-				type: "error",
-				title: $t("error.unexpected.title"),
-				description: $t("error.unexpected.description"),
-			});
+			switch (res.error.code) {
+				case "conflict":
+					toast.show({
+						type: "error",
+						title: $t("employees.update.conflict.title"),
+						description: $t("employees.update.conflict.description"),
+					});
+					break;
+
+				default:
+					toast.show({
+						type: "error",
+						title: $t("error.unexpected.title"),
+						description: $t("error.unexpected.description"),
+					});
+					break;
+			}
 
 			return;
 		}
@@ -111,6 +122,7 @@
 			back={employee.id}
 			title={`${employee.firstName} ${employee.lastName}`}
 			onSave={updateEmployee}
+			action="edit"
 		/>
 	{:catch}
 		<div class="employee-not-found">
