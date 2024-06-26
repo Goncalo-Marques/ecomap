@@ -47,6 +47,11 @@
 	export let landfill: Landfill | null = null;
 
 	/**
+	 * Indicates if form is being submitted.
+	 */
+	export let isSubmitting: boolean;
+
+	/**
 	 * The map which displays the selected landfill location.
 	 */
 	let mapPreview: OlMap;
@@ -174,7 +179,9 @@
 		<Link to={back} style="display:contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
-		<Button type="submit" startIcon="check">{$t("save")}</Button>
+		<Button type="submit" disabled={isSubmitting} startIcon="check">
+			{$t("save")}
+		</Button>
 	</DetailsHeader>
 	<DetailsContent>
 		<DetailsSection label={$t("generalInfo")}>

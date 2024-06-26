@@ -14,15 +14,25 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Creates a landfill with a given location.
 	 * @param location Landfill location.
 	 */
 	async function createLandfill(location: GeoJSONFeaturePoint) {
+		isSubmittingForm = true;
+
 		const res = await ecomapHttpClient.POST("/landfills", {
 			body: {
 				geoJson: location,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (res.error) {
 			toast.show({
@@ -47,6 +57,7 @@
 	<LandfillForm
 		back=""
 		title={$t("landfills.create.title")}
+		isSubmitting={isSubmittingForm}
 		onSave={createLandfill}
 	/>
 </Card>

@@ -14,6 +14,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Creates a warehouse with a given truck capacity and location.
 	 * @param truckCapacity Warehouse truck capacity.
 	 * @param location Warehouse location.
@@ -22,12 +28,16 @@
 		truckCapacity: number,
 		location: GeoJSONFeaturePoint,
 	) {
+		isSubmittingForm = true;
+
 		const res = await ecomapHttpClient.POST("/warehouses", {
 			body: {
 				truckCapacity,
 				geoJson: location,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (res.error) {
 			toast.show({
@@ -52,6 +62,7 @@
 	<WarehouseForm
 		back=""
 		title={$t("warehouses.create.title")}
+		isSubmitting={isSubmittingForm}
 		onSave={createWarehouse}
 	/>
 </Card>
