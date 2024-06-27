@@ -64,6 +64,13 @@
 	export let sortingOrder: SortingDirection | null = null;
 
 	/**
+	 * A space-separated list of the classes of the element.
+	 * @default ""
+	 */
+	let className: string = "";
+	export { className as class };
+
+	/**
 	 * Map that contains the sorting state for each column.
 	 * @example
 	 * { id: "asc", name: undefined }
@@ -174,7 +181,7 @@
 	$: columnsSorting = getColumnsSorting(columns, sortingField, sortingOrder);
 </script>
 
-<div class="table-container">
+<div class={`table-container ${className}`}>
 	<table>
 		<thead>
 			<tr>

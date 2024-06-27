@@ -137,4 +137,10 @@
 	$: columns[0].cell = checkboxCell(selectedOperators, disabledOperators);
 </script>
 
-<Table {columns} {loading} rows={operators} />
+<Table class="operators-table" {columns} {loading} rows={operators} />
+
+<style>
+	:global(.operators-table) {
+		min-height: 20rem;
+	}
+</style>
