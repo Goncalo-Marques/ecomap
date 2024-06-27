@@ -26,16 +26,11 @@ func (s *service) CreateLandfill(ctx context.Context, editableLandfill domain.Ed
 		slog.String(logging.ServiceMethod, "CreateLandfill"),
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableLandfill.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
 	var landfill domain.Landfill
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableLandfill.GeoJSON)
+
 		var roadID *int
 		road, err := s.store.GetRoadByGeometry(ctx, tx, geometry)
 		if err != nil {
@@ -141,18 +136,11 @@ func (s *service) PatchLandfill(ctx context.Context, id uuid.UUID, editableLandf
 		slog.String(logging.LandfillID, id.String()),
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if editableLandfill.GeoJSON != nil {
-		if feature, ok := editableLandfill.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-	}
-
 	var landfill domain.Landfill
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableLandfill.GeoJSON)
+
 		var roadID *int
 		var municipalityID *int
 

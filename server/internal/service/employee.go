@@ -71,16 +71,11 @@ func (s *service) CreateEmployee(ctx context.Context, editableEmployee domain.Ed
 
 	editableEmployee.Password = domain.Password(hashedPassword)
 
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
 	var employee domain.Employee
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableEmployee.GeoJSON)
+
 		var roadID *int
 		road, err := s.store.GetRoadByGeometry(ctx, tx, geometry)
 		if err != nil {
@@ -218,19 +213,12 @@ func (s *service) PatchEmployee(ctx context.Context, id uuid.UUID, editableEmplo
 		return domain.Employee{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldPhoneNumber}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if editableEmployee.GeoJSON != nil {
-		if feature, ok := editableEmployee.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-	}
-
 	var employee domain.Employee
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableEmployee.GeoJSON)
+
 		var roadID *int
 		var municipalityID *int
 

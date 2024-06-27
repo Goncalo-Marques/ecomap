@@ -43,16 +43,11 @@ func (s *service) CreateTruck(ctx context.Context, editableTruck domain.Editable
 		return domain.Truck{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldPersonCapacity}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableTruck.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
 	var truck domain.Truck
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableTruck.GeoJSON)
+
 		var roadID *int
 		road, err := s.store.GetRoadByGeometry(ctx, tx, geometry)
 		if err != nil {
@@ -171,19 +166,12 @@ func (s *service) PatchTruck(ctx context.Context, id uuid.UUID, editableTruck do
 		return domain.Truck{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldPersonCapacity}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if editableTruck.GeoJSON != nil {
-		if feature, ok := editableTruck.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-	}
-
 	var truck domain.Truck
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableTruck.GeoJSON)
+
 		var roadID *int
 		var municipalityID *int
 

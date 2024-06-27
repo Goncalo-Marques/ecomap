@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -19,6 +20,10 @@ const (
 	descriptionFailedPatchRoute      = "service: failed to patch route"
 	descriptionFailedDeleteRouteByID = "service: failed to delete route by id"
 	descriptionFailedGetRouteRoads   = "service: failed to get route roads"
+)
+
+const (
+	listRouteContainersPaginatedLimit = 100
 )
 
 // CreateRoute creates a new route with the specified data.
@@ -228,123 +233,120 @@ func (s *service) GetRouteRoads(ctx context.Context, id uuid.UUID) (domain.GeoJS
 
 	var roadsGeometry []domain.GeoJSONGeometryLineString
 
-	err := s.readOnlyTx(ctx, func(tx pgx.Tx) error {
+	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
 		route, err := s.store.GetRouteByID(ctx, tx, id)
 		if err != nil {
 			return err
 		}
 
-		routeContainerRoads, err := s.store.GetContainerRoadsByRouteID(ctx, tx, route.ID)
+		var containersGeometry []domain.GeoJSONGeometryPoint
+
+		for {
+			routeContainers, err := s.store.ListRouteContainers(ctx, tx, route.ID, domain.RouteContainersPaginatedFilter{
+				PaginatedRequest: domain.PaginatedRequest[domain.RouteContainerPaginatedSort]{
+					Limit:  listRouteContainersPaginatedLimit,
+					Offset: domain.PaginationOffset(len(containersGeometry)),
+				},
+			})
+			if err != nil {
+				return err
+			}
+
+			for _, result := range routeContainers.Results {
+				containerGeometry := geometryPointFromGeoJSON(result.GeoJSON)
+				containersGeometry = append(containersGeometry, containerGeometry)
+			}
+
+			if len(routeContainers.Results) < listRouteContainersPaginatedLimit {
+				break
+			}
+		}
+
+		// Early return when the route does not contain any containers associated.
+		if len(containersGeometry) == 0 {
+			return nil
+		}
+
+		departureWarehouse, err := s.store.GetWarehouseByID(ctx, tx, route.DepartureWarehouse.ID)
 		if err != nil {
 			return err
 		}
 
-		// Early return when the route does not contain any containers associated.
-		if len(routeContainerRoads) == 0 {
-			return nil
-		}
+		departureWarehouseGeometry := geometryPointFromGeoJSON(departureWarehouse.GeoJSON)
 
 		arrivalWarehouse, err := s.store.GetWarehouseByID(ctx, tx, route.ArrivalWarehouse.ID)
 		if err != nil {
 			return err
 		}
 
-		// Get essential roads.
-		var departureRoad *domain.Road
-		tempDepartureRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.DepartureWarehouse.ID)
-		if err != nil {
-			if !errors.Is(err, domain.ErrRoadNotFound) {
-				return err
-			}
-		} else {
-			departureRoad = &tempDepartureRoad
-		}
+		arrivalWarehouseGeometry := geometryPointFromGeoJSON(arrivalWarehouse.GeoJSON)
 
-		var arrivalRoad *domain.Road
-		tempArrivalRoad, err := s.store.GetRoadByWarehouseID(ctx, tx, route.ArrivalWarehouse.ID)
-		if err != nil {
-			if !errors.Is(err, domain.ErrRoadNotFound) {
-				return err
-			}
-		} else {
-			arrivalRoad = &tempArrivalRoad
-		}
-
-		var arrivalWarehouseGeometry domain.GeoJSONGeometryPoint
-		if feature, ok := arrivalWarehouse.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				arrivalWarehouseGeometry = g
-			}
-		}
-
-		var landfillID *uuid.UUID
+		var landfillGeometry *domain.GeoJSONGeometryPoint
 		landfill, err := s.store.GetLandfillClosestGeometry(ctx, tx, arrivalWarehouseGeometry)
 		if err != nil {
 			if !errors.Is(err, domain.ErrLandfillNotFound) {
 				return err
 			}
 		} else {
-			landfillID = &landfill.ID
+			geometry := geometryPointFromGeoJSON(landfill.GeoJSON)
+			landfillGeometry = &geometry
 		}
 
-		var landfillRoad *domain.Road
-		if landfillID != nil {
-			tempLandfillRoad, err := s.store.GetRoadByLandfillID(ctx, tx, *landfillID)
-			if err != nil {
-				if !errors.Is(err, domain.ErrRoadNotFound) {
-					return err
-				}
-			} else {
-				landfillRoad = &tempLandfillRoad
-			}
-		}
+		verticesGeometry := make([]domain.GeoJSONGeometryPoint, 0, len(containersGeometry)+3)
 
-		// Compute the TSP for the route container vertices, starting at the departure warehouse and ending at the
-		// closest landfill to the arrival warehouse.
-		vertexIDs := make([]int, 0, len(routeContainerRoads)+2)
-
-		for _, road := range routeContainerRoads {
-			if road.Source == nil {
-				continue
-			}
-
-			vertexIDs = append(vertexIDs, *road.Source)
+		verticesGeometry = append(verticesGeometry, containersGeometry...)
+		verticesGeometry = append(verticesGeometry, departureWarehouseGeometry)
+		if landfillGeometry != nil {
+			verticesGeometry = append(verticesGeometry, *landfillGeometry)
 		}
-		if departureRoad != nil && departureRoad.Source != nil {
-			vertexIDs = append(vertexIDs, *departureRoad.Source)
-		}
-		if landfillRoad != nil && landfillRoad.Source != nil {
-			vertexIDs = append(vertexIDs, *landfillRoad.Source)
-		}
+		verticesGeometry = append(verticesGeometry, arrivalWarehouseGeometry)
 
-		departureVertexID := vertexIDs[0]
-		if departureRoad != nil && departureRoad.Source != nil {
-			departureVertexID = *departureRoad.Source
-		}
+		// tempTableNameRoadNetwork defines the name of the road network temporary table.
+		// It contains a random suffix to avoid conflicts in the same database session.
+		tempTableNameRoadNetwork := "road_network_temp_" + strings.ReplaceAll(uuid.New().String(), "-", "")
 
-		landfillVertexID := vertexIDs[0]
-		if landfillRoad != nil && landfillRoad.Source != nil {
-			landfillVertexID = *landfillRoad.Source
-		}
-
-		seqVertexIDs, err := s.store.GetRoadVerticesTSP(ctx, tx, vertexIDs, departureVertexID, landfillVertexID, true)
+		err = s.store.CreateTemporaryTableRoadNetworkWithBuffer(ctx, tx, tempTableNameRoadNetwork, verticesGeometry)
 		if err != nil {
 			return err
 		}
 
-		arrivalVertexID := departureVertexID
-		if arrivalRoad != nil && arrivalRoad.Source != nil {
-			arrivalVertexID = *arrivalRoad.Source
+		vertexIDs, err := s.store.CreateVerticesCloseToRoadNetwork(ctx, tx, tempTableNameRoadNetwork, verticesGeometry)
+		if err != nil {
+			return err
+		}
+
+		var tspStartVertexID int
+		var tspEndVertexID int
+		var tspVertexIDs []int
+
+		if landfillGeometry == nil {
+			// If there is no landfill, end at the arrival warehouse.
+			tspStartVertexID = vertexIDs[len(vertexIDs)-2]
+			tspEndVertexID = vertexIDs[len(vertexIDs)-1]
+			tspVertexIDs = vertexIDs
+		} else {
+			// If there is a landfill, end at the closest one to the arrival warehouse.
+			tspStartVertexID = vertexIDs[len(vertexIDs)-3]
+			tspEndVertexID = vertexIDs[len(vertexIDs)-2]
+			tspVertexIDs = vertexIDs[:len(vertexIDs)-1]
+		}
+
+		// Compute the TSP for the route container vertices, starting at the departure warehouse and ending at the
+		// closest landfill to the arrival warehouse. Ignore the last vertex (arrival warehouse) because it is always
+		// the last vertex visited after the landfill.
+		seqVertexIDs, err := s.store.GetRoadVerticesTSP(ctx, tx, tempTableNameRoadNetwork, tspVertexIDs, tspStartVertexID, tspEndVertexID, true)
+		if err != nil {
+			return err
 		}
 
 		// Replace the last vertex with the last actual point of the route.
 		// This is a blind replacement because the last vertex is always the same as the first.
 		if len(seqVertexIDs) != 0 {
-			seqVertexIDs[len(seqVertexIDs)-1] = arrivalVertexID
+			seqVertexIDs[len(seqVertexIDs)-1] = vertexIDs[len(vertexIDs)-1]
 		}
 
 		// Compute the roads based on the sequential vertices.
-		roadsGeometry, err = s.store.GetRoadsGeometryAStar(ctx, tx, seqVertexIDs, true)
+		roadsGeometry, err = s.store.GetRoadsGeometryAStar(ctx, tx, tempTableNameRoadNetwork, seqVertexIDs, true)
 		if err != nil {
 			return err
 		}

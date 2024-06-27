@@ -4,7 +4,7 @@ BUILD_GIT_HASH = $(shell git describe --always)
 BUILD_TIMESTAMP = $(shell TZ="GMT" LC_TIME="en_US.utf8" date)
 
 LINTER_VERSION=v1.56.2
-OAPI_CODEGEN_VERSION=80f0b97 # TODO: keep an eye on the new version that uses go1.22
+OAPI_CODEGEN_VERSION=v2.3.0
 
 API_SWAGGER_SPEC_FILE=api/swagger/ecomap.yml
 API_SWAGGER_GEN_DIR=api/ecomap
@@ -32,7 +32,7 @@ vendor:
 
 ## generate-oapi: install oapi-codegen and generate the golang types, client and server based on the swagger specification in api/swagger
 generate-oapi:
-	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@$(OAPI_CODEGEN_VERSION)
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@$(OAPI_CODEGEN_VERSION)
 	mkdir -p $(API_SWAGGER_GEN_DIR)
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate types $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/models.gen.go
 	oapi-codegen -package $(API_SWAGGER_GEN_PACKAGE) -generate client $(API_SWAGGER_SPEC_FILE) > $(API_SWAGGER_GEN_DIR)/client.gen.go

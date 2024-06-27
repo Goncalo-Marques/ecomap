@@ -31,16 +31,11 @@ func (s *service) CreateContainer(ctx context.Context, editableContainer domain.
 		return domain.Container{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldCategory}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if feature, ok := editableContainer.GeoJSON.(domain.GeoJSONFeature); ok {
-		if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-			geometry = g
-		}
-	}
-
 	var container domain.Container
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableContainer.GeoJSON)
+
 		var roadID *int
 		road, err := s.store.GetRoadByGeometry(ctx, tx, geometry)
 		if err != nil {
@@ -150,19 +145,12 @@ func (s *service) PatchContainer(ctx context.Context, id uuid.UUID, editableCont
 		return domain.Container{}, logInfoAndWrapError(ctx, &domain.ErrFieldValueInvalid{FieldName: domain.FieldCategory}, descriptionInvalidFieldValue, logAttrs...)
 	}
 
-	var geometry domain.GeoJSONGeometryPoint
-	if editableContainer.GeoJSON != nil {
-		if feature, ok := editableContainer.GeoJSON.(domain.GeoJSONFeature); ok {
-			if g, ok := feature.Geometry.(domain.GeoJSONGeometryPoint); ok {
-				geometry = g
-			}
-		}
-	}
-
 	var container domain.Container
 	var err error
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		geometry := geometryPointFromGeoJSON(editableContainer.GeoJSON)
+
 		var roadID *int
 		var municipalityID *int
 
