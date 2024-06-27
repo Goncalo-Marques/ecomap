@@ -10,6 +10,7 @@
 	import { t } from "../../../lib/utils/i8n";
 	import {
 		CONTAINER_ICON_SRC,
+		DEFAULT_MAX_ZOOM,
 		LANDFILL_ICON_SRC,
 		SELECTED_CONTAINER_ICON_SRC,
 		SELECTED_LANDFILL_ICON_SRC,
@@ -463,6 +464,7 @@
 
 		const mapView = map.getView();
 		let extent: Extent;
+		let maxZoom: number | undefined = undefined;
 
 		const selectedFeatures: Feature[] = clickedFeatures[0].get("features");
 		if (selectedFeatures.length > 1) {
@@ -480,10 +482,17 @@
 
 			// Get extent of the feature.
 			extent = geometry.getExtent();
+
+			// Set maximum zoom to the feature.
+			maxZoom = DEFAULT_MAX_ZOOM;
 		}
 
 		// Zoom map.
-		mapView.fit(extent, { duration: 800, padding: [50, 50, 50, 50] });
+		mapView.fit(extent, {
+			duration: 800,
+			padding: [50, 50, 50, 50],
+			maxZoom,
+		});
 	}
 
 	onMount(() => {
