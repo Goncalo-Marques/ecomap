@@ -483,8 +483,12 @@
 			// Get extent of the feature.
 			extent = geometry.getExtent();
 
-			// Set maximum zoom to the feature.
+			const zoom = mapView.getZoom() ?? 0;
+
 			maxZoom = DEFAULT_MAX_ZOOM;
+			if (zoom > DEFAULT_MAX_ZOOM) {
+				maxZoom = zoom;
+			}
 		}
 
 		// Zoom map.
