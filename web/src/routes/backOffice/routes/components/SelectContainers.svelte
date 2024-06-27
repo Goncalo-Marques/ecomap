@@ -331,6 +331,7 @@
 	<MapComponent
 		bind:map
 		mapId="select-containers-map"
+		maxZoom={22}
 		--height="50vh"
 		--width="60vw"
 		--max-height="32rem"

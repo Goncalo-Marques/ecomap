@@ -141,7 +141,7 @@ async function getWarehouses(
 				limit: DEFAULT_PAGE_SIZE,
 				sort,
 				order,
-				locationName: location,
+				locationName: location || undefined,
 			},
 		},
 	});

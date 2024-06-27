@@ -68,6 +68,7 @@
 		]
 	},
 	"dependencies": {
+		"chart.js": "^4.4.3",
 		"ol": "^9.1.0",
 		"openapi-fetch": "^0.9.5"
 	},

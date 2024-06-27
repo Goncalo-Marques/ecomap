@@ -25,6 +25,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Fetches container data.
 	 */
 	async function fetchContainer(): Promise<Container> {
@@ -48,6 +54,8 @@
 		category: ContainerCategory,
 		location: GeoJSONFeaturePoint,
 	) {
+		isSubmittingForm = true;
+
 		const res = await ecomapHttpClient.PATCH("/containers/{containerId}", {
 			params: {
 				path: {
@@ -59,6 +67,8 @@
 				geoJson: location,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (res.error) {
 			toast.show({
@@ -93,6 +103,7 @@
 		)}
 		<ContainerForm
 			{container}
+			isSubmitting={isSubmittingForm}
 			back={container.id}
 			title={locationName}
 			onSave={updateContainer}

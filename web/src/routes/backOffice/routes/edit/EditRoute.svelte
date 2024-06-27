@@ -23,6 +23,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Fetches route data.
 	 * @returns Route data.
 	 */
@@ -91,11 +97,11 @@
 		}
 
 		async function performRouteAssociations() {
-			const promises = [];
+			const containerPromises = [];
 
 			// Add promises that remove each removed container with the updated route.
 			for (const containerId of containersIds.deleted) {
-				promises.push(
+				containerPromises.push(
 					ecomapHttpClient.DELETE(
 						"/routes/{routeId}/containers/{containerId}",
 						{
@@ -112,7 +118,7 @@
 
 			// Add promises that associate each added container with the updated route.
 			for (const containerId of containersIds.added) {
-				promises.push(
+				containerPromises.push(
 					ecomapHttpClient.POST("/routes/{routeId}/containers/{containerId}", {
 						params: {
 							path: {
@@ -124,24 +130,29 @@
 				);
 			}
 
+			// Execute all container promises.
+			await Promise.allSettled(containerPromises);
+
 			// Add promises that remove the association of each removed container with the updated route.
 			for (const routeEmployee of routeEmployees.deleted) {
-				promises.push(
-					ecomapHttpClient.DELETE("/routes/{routeId}/employees/{employeeId}", {
+				await ecomapHttpClient.DELETE(
+					"/routes/{routeId}/employees/{employeeId}",
+					{
 						params: {
 							path: {
 								routeId: id,
 								employeeId: routeEmployee.id,
 							},
 						},
-					}),
+					},
 				);
 			}
 
 			// Add promises that add the association of each added container with the updated route.
 			for (const routeEmployee of routeEmployees.added) {
-				promises.push(
-					ecomapHttpClient.POST("/routes/{routeId}/employees/{employeeId}", {
+				await ecomapHttpClient.POST(
+					"/routes/{routeId}/employees/{employeeId}",
+					{
 						params: {
 							path: {
 								routeId: id,
@@ -151,13 +162,12 @@
 						body: {
 							routeRole: routeEmployee.routeRole,
 						},
-					}),
+					},
 				);
 			}
-
-			// Execute all promises.
-			await Promise.allSettled(promises);
 		}
+
+		isSubmittingForm = true;
 
 		// Perform requests based on truck person capacity.
 		// If the selected truck has a higher capacity than the current truck associated with the route,
@@ -170,6 +180,8 @@
 			await performRouteAssociations();
 			await performRouteUpdate();
 		}
+
+		isSubmittingForm = false;
 
 		navigate(`${BackOfficeRoutes.ROUTES}/${id}`);
 	}
@@ -185,6 +197,7 @@
 	{:then route}
 		<RouteForm
 			{route}
+			isSubmitting={isSubmittingForm}
 			back={route.id}
 			title={route.name}
 			onSave={(

@@ -93,7 +93,7 @@ async function getRoutes(filters: RoutesFilters): Promise<PaginatedRoutes> {
 				limit: DEFAULT_PAGE_SIZE,
 				sort: "createdAt",
 				order: "desc",
-				name: route,
+				name: route || undefined,
 			},
 		},
 	});

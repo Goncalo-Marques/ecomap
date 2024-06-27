@@ -5,7 +5,7 @@
 	import EmployeeMenu from "./EmployeeMenu.svelte";
 </script>
 
-<div class="top-bar">
+<nav>
 	<Link to={BackOfficeRoutes.DASHBOARD}>
 		<div class="logo-container">
 			<Logo />
@@ -13,10 +13,15 @@
 		</div>
 	</Link>
 	<EmployeeMenu />
-</div>
+</nav>
 
 <style>
-	.top-bar {
+	:root {
+		--top-bar-height: 4rem;
+	}
+
+	nav {
+		height: var(--top-bar-height);
 		display: flex;
 		justify-content: space-between;
 		justify-items: center;

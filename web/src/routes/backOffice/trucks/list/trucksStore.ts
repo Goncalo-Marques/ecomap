@@ -137,7 +137,7 @@ async function getTrucks(filters: TrucksFilters): Promise<PaginatedTrucks> {
 				limit: DEFAULT_PAGE_SIZE,
 				sort,
 				order,
-				licensePlate,
+				licensePlate: licensePlate || undefined,
 			},
 		},
 	});

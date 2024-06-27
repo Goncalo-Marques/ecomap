@@ -495,7 +495,7 @@
 </script>
 
 <main>
-	<MapComponent bind:map showLayers={!selectedFeature} />
+	<MapComponent bind:map maxZoom={22} showLayers={!selectedFeature} />
 
 	{#if loading}
 		<div class="landfill-loading">

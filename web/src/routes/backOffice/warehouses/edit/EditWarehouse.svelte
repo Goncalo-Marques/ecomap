@@ -22,6 +22,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Fetches warehouse data.
 	 */
 	async function fetchWarehouse(): Promise<Warehouse> {
@@ -45,6 +51,8 @@
 		truckCapacity: number,
 		location: GeoJSONFeaturePoint,
 	) {
+		isSubmittingForm = true;
+
 		const res = await ecomapHttpClient.PATCH("/warehouses/{warehouseId}", {
 			params: {
 				path: {
@@ -56,6 +64,8 @@
 				geoJson: location,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (res.error) {
 			switch (res.error.code) {
@@ -103,6 +113,7 @@
 		)}
 		<WarehouseForm
 			{warehouse}
+			isSubmitting={isSubmittingForm}
 			back={warehouse.id}
 			title={locationName}
 			onSave={updateWarehouse}

@@ -147,11 +147,9 @@
 				case "bad_request":
 					toast.show({
 						type: "error",
-						title: $t(
-							"employees.updatePassword.error.passwordConstraints.title",
-						),
+						title: $t("employees.password.error.passwordConstraints.title"),
 						description: $t(
-							"employees.updatePassword.error.passwordConstraints.description",
+							"employees.password.error.passwordConstraints.description",
 						),
 					});
 					break;
@@ -159,9 +157,9 @@
 				case "unauthorized":
 					toast.show({
 						type: "error",
-						title: $t("employees.updatePassword.error.incorrectPassword.title"),
+						title: $t("employees.password.error.incorrectPassword.title"),
 						description: $t(
-							"employees.updatePassword.error.incorrectPassword.description",
+							"employees.password.error.incorrectPassword.description",
 						),
 					});
 					break;
