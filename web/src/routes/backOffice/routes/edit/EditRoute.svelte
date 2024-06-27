@@ -97,11 +97,11 @@
 		}
 
 		async function performRouteAssociations() {
-			const promises = [];
+			const containerPromises = [];
 
 			// Add promises that remove each removed container with the updated route.
 			for (const containerId of containersIds.deleted) {
-				promises.push(
+				containerPromises.push(
 					ecomapHttpClient.DELETE(
 						"/routes/{routeId}/containers/{containerId}",
 						{
@@ -118,7 +118,7 @@
 
 			// Add promises that associate each added container with the updated route.
 			for (const containerId of containersIds.added) {
-				promises.push(
+				containerPromises.push(
 					ecomapHttpClient.POST("/routes/{routeId}/containers/{containerId}", {
 						params: {
 							path: {
@@ -130,24 +130,29 @@
 				);
 			}
 
+			// Execute all container promises.
+			await Promise.allSettled(containerPromises);
+
 			// Add promises that remove the association of each removed container with the updated route.
 			for (const routeEmployee of routeEmployees.deleted) {
-				promises.push(
-					ecomapHttpClient.DELETE("/routes/{routeId}/employees/{employeeId}", {
+				await ecomapHttpClient.DELETE(
+					"/routes/{routeId}/employees/{employeeId}",
+					{
 						params: {
 							path: {
 								routeId: id,
 								employeeId: routeEmployee.id,
 							},
 						},
-					}),
+					},
 				);
 			}
 
 			// Add promises that add the association of each added container with the updated route.
 			for (const routeEmployee of routeEmployees.added) {
-				promises.push(
-					ecomapHttpClient.POST("/routes/{routeId}/employees/{employeeId}", {
+				await ecomapHttpClient.POST(
+					"/routes/{routeId}/employees/{employeeId}",
+					{
 						params: {
 							path: {
 								routeId: id,
@@ -157,12 +162,9 @@
 						body: {
 							routeRole: routeEmployee.routeRole,
 						},
-					}),
+					},
 				);
 			}
-
-			// Execute all promises.
-			await Promise.allSettled(promises);
 		}
 
 		isSubmittingForm = true;

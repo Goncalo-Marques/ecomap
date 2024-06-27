@@ -156,8 +156,8 @@ async function getEmployees(
 				limit: DEFAULT_PAGE_SIZE,
 				sort,
 				order,
-				username,
 				role,
+				username: username || undefined,
 			},
 		},
 	});

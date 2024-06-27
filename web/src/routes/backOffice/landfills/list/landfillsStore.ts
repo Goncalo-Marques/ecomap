@@ -100,7 +100,7 @@ async function getLandfills(
 				limit: DEFAULT_PAGE_SIZE,
 				sort: "createdAt",
 				order: "desc",
-				locationName: location,
+				locationName: location || undefined,
 			},
 		},
 	});
