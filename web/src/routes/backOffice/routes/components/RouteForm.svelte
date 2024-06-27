@@ -261,9 +261,18 @@
 			deleted: [],
 		};
 
+		const routeDrivers = routeEmployees.filter(
+			employee => employee.routeRole === "driver",
+		);
+		const routeCollectors = routeEmployees.filter(
+			employee => employee.routeRole === "collector",
+		);
+
 		// Add all new drivers.
 		for (const selectedDriver of selectedDrivers) {
-			if (routeEmployees.every(operator => operator.id !== selectedDriver.id)) {
+			if (
+				routeDrivers.every(routeDriver => routeDriver.id !== selectedDriver.id)
+			) {
 				selectedRouteEmployees.added.push({
 					id: selectedDriver.id,
 					routeRole: "driver",
@@ -272,16 +281,14 @@
 		}
 
 		// Add all removed drivers.
-		for (const routeEmployee of routeEmployees.filter(
-			routeOperator => routeOperator.routeRole === "driver",
-		)) {
+		for (const routeDriver of routeDrivers) {
 			if (
 				selectedDrivers.every(
-					selectedDriver => selectedDriver.id !== routeEmployee.id,
+					selectedDriver => selectedDriver.id !== routeDriver.id,
 				)
 			) {
 				selectedRouteEmployees.deleted.push({
-					id: routeEmployee.id,
+					id: routeDriver.id,
 					routeRole: "driver",
 				});
 			}
@@ -290,8 +297,8 @@
 		// Add all new collectors.
 		for (const selectedCollector of selectedCollectors) {
 			if (
-				routeEmployees.every(
-					routeOperator => routeOperator.id !== selectedCollector.id,
+				routeCollectors.every(
+					routeCollector => routeCollector.id !== selectedCollector.id,
 				)
 			) {
 				selectedRouteEmployees.added.push({
@@ -302,16 +309,14 @@
 		}
 
 		// Add all removed collectors.
-		for (const routeOperator of routeEmployees.filter(
-			routeOperator => routeOperator.routeRole === "collector",
-		)) {
+		for (const routeCollector of routeCollectors) {
 			if (
 				selectedCollectors.every(
-					selectedCollector => selectedCollector.id !== routeOperator.id,
+					selectedCollector => selectedCollector.id !== routeCollector.id,
 				)
 			) {
 				selectedRouteEmployees.deleted.push({
-					id: routeOperator.id,
+					id: routeCollector.id,
 					routeRole: "collector",
 				});
 			}
