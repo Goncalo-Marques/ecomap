@@ -11,7 +11,7 @@ import { BackOfficeRoutes } from "../../../constants/routes";
  * The search parameter names for each filter of the employees table.
  */
 const FILTERS_PARAMS_NAMES: Record<keyof EmployeesFilters, string> = {
-	pageIndex: "page-index",
+	pageIndex: "pageIndex",
 	username: "username",
 	sort: "sort",
 	order: "order",
@@ -156,8 +156,8 @@ async function getEmployees(
 				limit: DEFAULT_PAGE_SIZE,
 				sort,
 				order,
-				username,
 				role,
+				username: username || undefined,
 			},
 		},
 	});

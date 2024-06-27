@@ -298,7 +298,94 @@
 		"map": {
 			"type": "string"
 		},
+		"departure": {
+			"type": "string"
+		},
+		"arrival": {
+			"type": "string"
+		},
+		"operators": {
+			"type": "string"
+		},
+		"route": {
+			"type": "string"
+		},
 		"routes": {
+			"type": "string"
+		},
+		"routes.search": {
+			"type": "string"
+		},
+		"routes.create.title": {
+			"type": "string"
+		},
+		"routes.create.success": {
+			"type": "string"
+		},
+		"routes.update.success": {
+			"type": "string"
+		},
+		"routes.update.conflict.title": {
+			"type": "string"
+		},
+		"routes.update.conflict.description": {
+			"type": "string"
+		},
+		"routes.notFound.title": {
+			"type": "string"
+		},
+		"routes.notFound.description": {
+			"type": "string"
+		},
+		"routes.delete.success": {
+			"type": "string"
+		},
+		"routes.delete.conflict.title": {
+			"type": "string"
+		},
+		"routes.delete.conflict.description": {
+			"type": "string"
+		},
+		"routes.truck.error.personCapacityExceeded.title": {
+			"type": "string"
+		},
+		"routes.truck.error.personCapacityExceeded.description": {
+			"type": "string"
+		},
+		"routes.name": {
+			"type": "string"
+		},
+		"routes.name.placeholder": {
+			"type": "string"
+		},
+		"routes.truck.placeholder": {
+			"type": "string"
+		},
+		"routes.departure.placeholder": {
+			"type": "string"
+		},
+		"routes.arrival.placeholder": {
+			"type": "string"
+		},
+		"routes.containers.placeholder": {
+			"type": "string"
+		},
+		"routes.selectContainers": {
+			"type": "string"
+		},
+		"routes.employees.role": {
+			"type": "string"
+		},
+		"routes.employees.role.driver": {
+			"type": "string"
+		},
+		"routes.employees.role.collector": {
+			"type": "string"
+		},
+		"routes.employees.role.drivers": {
+			"type": "string"
+		},
+		"routes.employees.role.collectors": {
 			"type": "string"
 		},
 		"notFound.title": {

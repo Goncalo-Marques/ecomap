@@ -39,14 +39,7 @@
 		const feature = new Feature(point);
 
 		const mapHelper = new MapHelper(map);
-		mapHelper.addPointLayer(
-			{
-				features: [feature],
-			},
-			"landfill",
-			"#fff",
-			{ "icon-src": LANDFILL_ICON_SRC },
-		);
+		mapHelper.addPointLayer([feature], { iconSrc: LANDFILL_ICON_SRC });
 
 		const view = map.getView();
 		view.fit(point);

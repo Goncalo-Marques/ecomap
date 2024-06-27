@@ -51,6 +51,11 @@
 	export let warehouse: Warehouse | null = null;
 
 	/**
+	 * Indicates if form is being submitted.
+	 */
+	export let isSubmitting: boolean;
+
+	/**
 	 * The minimum valid capacity for the truck capacity field.
 	 */
 	const TRUCK_CAPACITY_MIN_VALUE = 0;
@@ -223,7 +228,9 @@
 		<Link to={back} style="display:contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
-		<Button type="submit" startIcon="check">{$t("save")}</Button>
+		<Button type="submit" startIcon="check" disabled={isSubmitting}>
+			{$t("save")}
+		</Button>
 	</DetailsHeader>
 	<DetailsContent>
 		<DetailsSection label={$t("generalInfo")}>

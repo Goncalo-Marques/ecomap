@@ -18,7 +18,9 @@
 	<TopBar />
 	<div class="container">
 		<SideBar />
-		<slot />
+		<div class="layout">
+			<slot />
+		</div>
 	</div>
 </div>
 
@@ -32,5 +34,15 @@
 	.container {
 		flex: 1;
 		display: flex;
+	}
+
+	.layout {
+		display: flex;
+		flex: 1;
+		overflow: auto;
+
+		& > * {
+			flex: 1;
+		}
 	}
 </style>

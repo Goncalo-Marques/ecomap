@@ -15,6 +15,12 @@
 	const toast = getToastContext();
 
 	/**
+	 * Indicates if form is being submitted.
+	 * @default false
+	 */
+	let isSubmittingForm: boolean = false;
+
+	/**
 	 * Creates a new employee with a given username, password, firstName, lastName, role, dateOfBirth, phoneNumber, location, scheduleStart and scheduleEnd.
 	 * @param username Employee username.
 	 * @param password Employee password.
@@ -39,6 +45,8 @@
 		scheduleStart: string,
 		scheduleEnd: string,
 	) {
+		isSubmittingForm = true;
+
 		// Adding seconds to times. Necessary because API receives times with seconds.
 		scheduleStart += ":00";
 		scheduleEnd += ":00";
@@ -57,6 +65,8 @@
 				scheduleEnd,
 			},
 		});
+
+		isSubmittingForm = false;
 
 		if (res.error) {
 			switch (res.error.code) {
@@ -102,8 +112,9 @@
 <Card class="page-layout">
 	<EmployeeForm
 		back=""
-		title={$t("employees.create.title")}
-		onSave={createEmployee}
 		action="create"
+		title={$t("employees.create.title")}
+		isSubmitting={isSubmittingForm}
+		onSave={createEmployee}
 	/>
 </Card>

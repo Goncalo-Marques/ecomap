@@ -77,6 +77,11 @@
 	export let employee: Employee | null = null;
 
 	/**
+	 * Indicates if form is being submitted.
+	 */
+	export let isSubmitting: boolean;
+
+	/**
 	 * The select location open modal state.
 	 * @default false
 	 */
@@ -479,7 +484,9 @@
 		<Link to={back} style="display:contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
-		<Button type="submit" startIcon="check">{$t("save")}</Button>
+		<Button type="submit" startIcon="check" disabled={isSubmitting}>
+			{$t("save")}
+		</Button>
 	</DetailsHeader>
 	<DetailsContent>
 		<DetailsSection label={$t("personalInfo")}>
