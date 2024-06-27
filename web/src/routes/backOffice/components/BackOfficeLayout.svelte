@@ -33,14 +33,4 @@
 		display: grid;
 		overflow: auto;
 	}
-
-	.layout {
-		display: flex;
-		flex: 1;
-		overflow: auto;
-
-		& > * {
-			flex: 1;
-		}
-	}
 </style>
