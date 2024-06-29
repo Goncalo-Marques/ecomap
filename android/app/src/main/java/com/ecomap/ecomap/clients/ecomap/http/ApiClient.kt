@@ -25,7 +25,7 @@ object ApiClient {
     private val LOG_TAG = ApiClient::class.java.simpleName
 
     // URLs.
-    private const val URL_BASE = "https://server-7fzc7ivuwa-ew.a.run.app/api"
+    private const val URL_BASE = "https://server-7fzc7ivuwa-ue.a.run.app/api"
     private const val URL_USERS = "$URL_BASE/users"
     private const val URL_USERS_SIGN_IN = "$URL_BASE/users/signin"
     private const val URL_CONTAINERS = "$URL_BASE/containers"
