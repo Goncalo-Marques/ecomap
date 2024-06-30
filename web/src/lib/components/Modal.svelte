@@ -36,6 +36,12 @@
 	let dialog: HTMLDialogElement;
 
 	/**
+	 * Indicates whether the modal contains actions.
+	 * If the modal contains actions, a footer is added to the modal.
+	 */
+	let containsActions: boolean = !!$$props.$$slots.actions;
+
+	/**
 	 * Closes the modal.
 	 */
 	function closeModal() {
@@ -78,9 +84,11 @@
 	<section style:padding={gutters ? "1.5rem" : ""}>
 		<slot />
 	</section>
-	<footer>
-		<slot name="actions" />
-	</footer>
+	{#if containsActions}
+		<footer>
+			<slot name="actions" />
+		</footer>
+	{/if}
 </dialog>
 
 <style>

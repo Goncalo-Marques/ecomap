@@ -4,6 +4,7 @@
 	import url from "../../../../lib/stores/url";
 	import { t } from "../../../../lib/utils/i8n";
 	import { BackOfficeRoutes } from "../../../constants/routes";
+	import Support from "./Support.svelte";
 </script>
 
 <nav>
@@ -89,6 +90,7 @@
 			</Link>
 		</li>
 	</ul>
+	<Support />
 </nav>
 
 <style>
@@ -114,7 +116,8 @@
 		display: block;
 	}
 
-	nav :global(a) {
+	nav li > :global(a),
+	nav > :global(button) {
 		display: flex;
 		justify-items: center;
 		gap: 0.5rem;
