@@ -3,7 +3,7 @@
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import { Link, navigate } from "svelte-routing";
 	import Button from "../../../../lib/components/Button.svelte";
-	import { t } from "../../../../lib/utils/i8n";
+	import { getSupportedLocaleName, locale, t } from "../../../../lib/utils/i8n";
 	import DetailsHeader from "../../../../lib/components/details/DetailsHeader.svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
 	import type { Employee } from "../../../../domain/employees";
@@ -100,9 +100,10 @@
 			employee.geoJson.properties.wayName,
 			employee.geoJson.properties.municipalityName,
 		)}
+		{@const isSelf = isViewingSelf(employee.id)}
 
 		<DetailsHeader to="" title={`${employee.firstName} ${employee.lastName}`}>
-			{#if isViewingSelf(employee.id)}
+			{#if isSelf}
 				<Button
 					variant="secondary"
 					onClick={() => (openUpdatePasswordModal = true)}
@@ -151,6 +152,16 @@
 					/>
 				</DetailsFields>
 			</DetailsSection>
+			{#if isSelf}
+				<DetailsSection label={$t("preferences")}>
+					<DetailsFields>
+						<Field
+							label={$t("language")}
+							value={getSupportedLocaleName($locale)}
+						/>
+					</DetailsFields>
+				</DetailsSection>
+			{/if}
 			<DetailsSection label={$t("additionalInfo")}>
 				<DetailsFields>
 					<Field

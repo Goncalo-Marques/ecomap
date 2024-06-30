@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from "../../../../lib/components/Button.svelte";
-	import { t } from "../../../../lib/utils/i8n";
+	import { locale, t } from "../../../../lib/utils/i8n";
 	import DetailsFields from "../../../../lib/components/details/DetailsFields.svelte";
 	import DetailsSection from "../../../../lib/components/details/DetailsSection.svelte";
 	import DetailsContent from "../../../../lib/components/details/DetailsContent.svelte";
@@ -19,6 +19,8 @@
 	import { rolesOptions } from "../constants/roles";
 	import Option from "../../../../lib/components/Option.svelte";
 	import { formatTime24H } from "../../../../lib/utils/date";
+	import { isViewingSelf } from "../../../../lib/utils/auth";
+	import { LocaleNames } from "../../../../lib/constants/locale";
 
 	/**
 	 * The back route.
@@ -149,6 +151,17 @@
 	 * Current date.
 	 */
 	const currentDate = new Date().toISOString().split("T")[0];
+
+	/**
+	 * Handles on change event of the locale select input.
+	 * @param e Select on change event.
+	 */
+	function handleLocaleChange(
+		e: Event & { currentTarget: EventTarget & HTMLSelectElement },
+	) {
+		const select = e.currentTarget;
+		locale.set(select.value);
+	}
 
 	/**
 	 * Validates form and sets error messages on the form fields if they contain errors.
@@ -692,6 +705,21 @@
 				{/if}
 			</DetailsFields>
 		</DetailsSection>
+
+		<!-- Preferences -->
+		{#if action === "edit" && employee && isViewingSelf(employee.id)}
+			<DetailsSection label={$t("preferences")}>
+				<DetailsFields>
+					<!-- Locale -->
+					<FormControl label={$t("language")}>
+						<Select value={$locale} onChange={handleLocaleChange}>
+							<Option value="en">{LocaleNames.EN}</Option>
+							<Option value="pt">{LocaleNames.PT}</Option>
+						</Select>
+					</FormControl>
+				</DetailsFields>
+			</DetailsSection>
+		{/if}
 	</DetailsContent>
 </form>
 

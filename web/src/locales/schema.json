@@ -37,6 +37,12 @@
 		"work": {
 			"type": "string"
 		},
+		"preferences": {
+			"type": "string"
+		},
+		"language": {
+			"type": "string"
+		},
 		"selectLocation": {
 			"type": "string"
 		},
