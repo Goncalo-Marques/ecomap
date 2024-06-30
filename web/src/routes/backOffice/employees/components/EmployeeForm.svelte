@@ -70,6 +70,7 @@
 		location: GeoJSONFeaturePoint,
 		scheduleStart: string,
 		scheduleEnd: string,
+		selectedLocale: string,
 	) => void;
 
 	/**
@@ -151,17 +152,6 @@
 	 * Current date.
 	 */
 	const currentDate = new Date().toISOString().split("T")[0];
-
-	/**
-	 * Handles on change event of the locale select input.
-	 * @param e Select on change event.
-	 */
-	function handleLocaleChange(
-		e: Event & { currentTarget: EventTarget & HTMLSelectElement },
-	) {
-		const select = e.currentTarget;
-		locale.set(select.value);
-	}
 
 	/**
 	 * Validates form and sets error messages on the form fields if they contain errors.
@@ -364,6 +354,7 @@
 		const location = formData.get("location") ?? "";
 		const scheduleStart = formData.get("scheduleStart") ?? "";
 		const scheduleEnd = formData.get("scheduleEnd") ?? "";
+		const selectedLocale = formData.get("locale") ?? "";
 
 		// Check if all fields are strings.
 		if (
@@ -377,7 +368,8 @@
 			typeof scheduleStart !== "string" ||
 			typeof scheduleEnd !== "string" ||
 			typeof password !== "string" ||
-			typeof confirmPassword !== "string"
+			typeof confirmPassword !== "string" ||
+			typeof selectedLocale !== "string"
 		) {
 			return;
 		}
@@ -488,6 +480,7 @@
 			},
 			scheduleStart,
 			scheduleEnd,
+			selectedLocale,
 		);
 	}
 </script>
@@ -712,7 +705,7 @@
 				<DetailsFields>
 					<!-- Locale -->
 					<FormControl label={$t("language")}>
-						<Select value={$locale} onChange={handleLocaleChange}>
+						<Select name="locale" value={$locale}>
 							<Option value="en">{LocaleNames.EN}</Option>
 							<Option value="pt">{LocaleNames.PT}</Option>
 						</Select>

@@ -109,9 +109,6 @@ function _locale(): Writable<string> {
 			// Set the supported locale in the lang attribute of the HTML element.
 			document.documentElement.setAttribute("lang", supportedLocale);
 
-			// Refresh current page when switching locales.
-			location.reload();
-
 			set(supportedLocale);
 		},
 		update(cb) {
@@ -122,9 +119,6 @@ function _locale(): Writable<string> {
 
 			// Set the supported locale in the lang attribute of the HTML element.
 			document.documentElement.setAttribute("lang", supportedLocale);
-
-			// Refresh current page when switching locales.
-			location.reload();
 
 			set(supportedLocale);
 		},
