@@ -2,7 +2,7 @@ import { derived, get, writable, type Writable } from "svelte/store";
 import en from "../../locales/en.json";
 import pt from "../../locales/pt.json";
 import schema from "../../locales/schema.json";
-import { SupportedLocales } from "../../domain/locale";
+import { LocaleNames, SupportedLocales } from "../constants/locale";
 
 /**
  * Identifiers of the locale schema.
@@ -13,6 +13,11 @@ type LocaleTextID = keyof (typeof schema)["properties"];
  * The standard locale in which the application is configured.
  */
 const DEFAULT_LOCALE: SupportedLocales = SupportedLocales.EN;
+
+/**
+ * The standard locale name in which the application is configured.
+ */
+const DEFAULT_LOCALE_NAME: LocaleNames = LocaleNames.EN;
 
 /**
  * Map of the supported locales with their respective configuration.
@@ -60,6 +65,22 @@ export function getSupportedLocale(locale: string): SupportedLocales {
 }
 
 /**
+ * Retrieves the name of a supported locale.
+ * @param locale Source locale.
+ * @returns Name of `locale` if its a supported locale, otherwise {@link DEFAULT_LOCALE_NAME}.
+ */
+export function getSupportedLocaleName(locale: string): LocaleNames {
+	switch (locale) {
+		case "en":
+			return LocaleNames.EN;
+		case "pt":
+			return LocaleNames.PT;
+	}
+
+	return DEFAULT_LOCALE_NAME;
+}
+
+/**
  * Inits a custom store for the application locale.
  * It synchronizes the store value with local storage.
  */
@@ -88,9 +109,6 @@ function _locale(): Writable<string> {
 			// Set the supported locale in the lang attribute of the HTML element.
 			document.documentElement.setAttribute("lang", supportedLocale);
 
-			// Refresh current page when switching locales.
-			location.reload();
-
 			set(supportedLocale);
 		},
 		update(cb) {
@@ -101,9 +119,6 @@ function _locale(): Writable<string> {
 
 			// Set the supported locale in the lang attribute of the HTML element.
 			document.documentElement.setAttribute("lang", supportedLocale);
-
-			// Refresh current page when switching locales.
-			location.reload();
 
 			set(supportedLocale);
 		},

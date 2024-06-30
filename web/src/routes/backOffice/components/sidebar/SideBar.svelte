@@ -4,7 +4,6 @@
 	import url from "../../../../lib/stores/url";
 	import { t } from "../../../../lib/utils/i8n";
 	import { BackOfficeRoutes } from "../../../constants/routes";
-	import LocaleSelect from "./LocaleSelect.svelte";
 </script>
 
 <nav>
@@ -90,7 +89,6 @@
 			</Link>
 		</li>
 	</ul>
-	<LocaleSelect />
 </nav>
 
 <style>

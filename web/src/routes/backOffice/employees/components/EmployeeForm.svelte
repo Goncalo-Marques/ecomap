@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from "../../../../lib/components/Button.svelte";
-	import { t } from "../../../../lib/utils/i8n";
+	import { locale, t } from "../../../../lib/utils/i8n";
 	import DetailsFields from "../../../../lib/components/details/DetailsFields.svelte";
 	import DetailsSection from "../../../../lib/components/details/DetailsSection.svelte";
 	import DetailsContent from "../../../../lib/components/details/DetailsContent.svelte";
@@ -19,6 +19,8 @@
 	import { rolesOptions } from "../constants/roles";
 	import Option from "../../../../lib/components/Option.svelte";
 	import { formatTime24H } from "../../../../lib/utils/date";
+	import { isViewingSelf } from "../../../../lib/utils/auth";
+	import { LocaleNames } from "../../../../lib/constants/locale";
 
 	/**
 	 * The back route.
@@ -68,6 +70,7 @@
 		location: GeoJSONFeaturePoint,
 		scheduleStart: string,
 		scheduleEnd: string,
+		selectedLocale: string,
 	) => void;
 
 	/**
@@ -351,6 +354,7 @@
 		const location = formData.get("location") ?? "";
 		const scheduleStart = formData.get("scheduleStart") ?? "";
 		const scheduleEnd = formData.get("scheduleEnd") ?? "";
+		const selectedLocale = formData.get("locale") ?? "";
 
 		// Check if all fields are strings.
 		if (
@@ -364,7 +368,8 @@
 			typeof scheduleStart !== "string" ||
 			typeof scheduleEnd !== "string" ||
 			typeof password !== "string" ||
-			typeof confirmPassword !== "string"
+			typeof confirmPassword !== "string" ||
+			typeof selectedLocale !== "string"
 		) {
 			return;
 		}
@@ -475,6 +480,7 @@
 			},
 			scheduleStart,
 			scheduleEnd,
+			selectedLocale,
 		);
 	}
 </script>
@@ -692,6 +698,21 @@
 				{/if}
 			</DetailsFields>
 		</DetailsSection>
+
+		<!-- Preferences -->
+		{#if action === "edit" && employee && isViewingSelf(employee.id)}
+			<DetailsSection label={$t("preferences")}>
+				<DetailsFields>
+					<!-- Locale -->
+					<FormControl label={$t("language")}>
+						<Select name="locale" value={$locale}>
+							<Option value="en">{LocaleNames.EN}</Option>
+							<Option value="pt">{LocaleNames.PT}</Option>
+						</Select>
+					</FormControl>
+				</DetailsFields>
+			</DetailsSection>
+		{/if}
 	</DetailsContent>
 </form>
 
