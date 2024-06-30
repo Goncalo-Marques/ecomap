@@ -43,6 +43,9 @@
 		"language": {
 			"type": "string"
 		},
+		"support": {
+			"type": "string"
+		},
 		"selectLocation": {
 			"type": "string"
 		},

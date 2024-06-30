@@ -23,12 +23,14 @@ ignoreWords:
   - focusable
   - golangci
   - goncalo
+  - Gonçalo
   - GOPATH
   - gradlew
   - healthcheck
   - ILIKE
   - isready
   - jackc
+  - João
   - kotlinx
   - lateinit
   - ldflags
@@ -49,6 +51,7 @@ ignoreWords:
   - pgtype
   - PGUSER
   - pgxpool
+  - Pinheiro
   - pkey
   - plpgsql
   - progressindicator
