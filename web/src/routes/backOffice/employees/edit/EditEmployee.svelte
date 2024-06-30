@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { navigate } from "svelte-routing";
 	import { BackOfficeRoutes } from "../../../constants/routes";
-	import { t } from "../../../../lib/utils/i8n";
+	import { locale, t } from "../../../../lib/utils/i8n";
 	import Spinner from "../../../../lib/components/Spinner.svelte";
 	import Card from "../../components/Card.svelte";
 	import ecomapHttpClient from "../../../../lib/clients/ecomap/http";
@@ -9,6 +9,7 @@
 	import type { Employee } from "../../../../domain/employees";
 	import { getToastContext } from "../../../../lib/contexts/toast";
 	import EmployeeForm from "../components/EmployeeForm.svelte";
+	import { isViewingSelf } from "../../../../lib/utils/auth";
 
 	/**
 	 * Employee ID.
@@ -51,6 +52,7 @@
 	 * @param location Employee location.
 	 * @param scheduleStart Employee scheduleStart.
 	 * @param scheduleEnd Employee scheduleEnd.
+	 * @param selectedLocale Selected locale for the application.
 	 */
 	async function updateEmployee(
 		username: string,
@@ -61,6 +63,7 @@
 		location: GeoJSONFeaturePoint,
 		scheduleStart: string,
 		scheduleEnd: string,
+		selectedLocale: string,
 	) {
 		isSubmittingForm = true;
 
@@ -108,6 +111,11 @@
 			}
 
 			return;
+		}
+
+		// If the employee is viewing themselves, update the application locale.
+		if (isViewingSelf(id)) {
+			locale.set(selectedLocale);
 		}
 
 		toast.show({
