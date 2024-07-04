@@ -6,7 +6,7 @@
 	const team = [
 		{
 			name: "Gonçalo Dias",
-			email: "goncalojdias@ua.pt",
+			email: "goncalo.gjad@gmail.com",
 			linkedInURL: "https://www.linkedin.com/in/gjdias",
 		},
 		{
