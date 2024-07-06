@@ -1705,7 +1705,7 @@ paths:
         403:
           $ref: "#/components/responses/Forbidden"
         409:
-          description: Truck or warehouse does not exist.
+          description: Truck or warehouse does not exist. Or truck is not associated with one of the warehouses.
           content:
             application/json:
               schema:
@@ -1840,7 +1840,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         409:
-          description: Truck or warehouse does not exist or route already has more employees associated with it than the new truck has capacity.
+          description: Truck or warehouse does not exist or route already has more employees associated with it than the new truck has capacity. Or truck is not associated with one of the warehouses.
           content:
             application/json:
               schema:
