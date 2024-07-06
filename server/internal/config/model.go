@@ -8,7 +8,8 @@ type Service struct {
 
 // ServerHTTP defines the http server configuration structure.
 type ServerHTTP struct {
-	Address string `yaml:"address"`
+	Address      string `yaml:"address"`
+	WriteTimeout string `yaml:"writeTimeout"`
 }
 
 // DatabaseMigrations defines the database migrations configuration structure.
