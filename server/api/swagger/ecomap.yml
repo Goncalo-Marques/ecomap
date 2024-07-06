@@ -1484,7 +1484,7 @@ paths:
         403:
           $ref: "#/components/responses/Forbidden"
         409:
-          description: Association does not exist.
+          description: Association does not exist or is already associated with a route.
           content:
             application/json:
               schema:
