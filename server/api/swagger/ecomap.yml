@@ -15,6 +15,8 @@ tags:
     description: Truck operations
   - name: Warehouse
     description: Warehouse operations
+  - name: Warehouse Truck
+    description: Warehouse truck operations
   - name: Landfill
     description: Landfill operations
   - name: Route
@@ -1368,6 +1370,128 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
+  /warehouses/{warehouseId}/trucks:
+    get:
+      summary: List warehouse trucks.
+      operationId: listWarehouseTrucks
+      description: Returns the warehouse trucks with the specified filter.
+      tags:
+        - Warehouse Truck
+      security:
+        - BearerAuth: [wasteOperator, manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+        - name: truckMake
+          in: query
+          description: Truck make to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckMake"
+        - name: truckModel
+          in: query
+          description: Truck model to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckModel"
+        - name: truckLicensePlate
+          in: query
+          description: Truck license plate to filter by.
+          schema:
+            $ref: "#/components/schemas/TruckLicensePlate"
+        - $ref: "#/components/parameters/LocationNameFilterQueryParam"
+        - $ref: "#/components/parameters/WarehouseTruckSortQueryParam"
+        - $ref: "#/components/parameters/OrderQueryParam"
+        - $ref: "#/components/parameters/LimitQueryParam"
+        - $ref: "#/components/parameters/OffsetQueryParam"
+      responses:
+        200:
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrucksPaginated"
+        400:
+          description: Invalid warehouse ID or filter value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /warehouses/{warehouseId}/trucks/{truckId}:
+    post:
+      summary: Create a warehouse truck association.
+      operationId: createWarehouseTruck
+      description: Creates a warehouse truck association.
+      tags:
+        - Warehouse Truck
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid warehouse ID or truck ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          description: Warehouse or truck not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        409:
+          description: Association already exists or warehouse does not have more truck capacity.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a warehouse truck association.
+      operationId: deleteWarehouseTruck
+      description: Deletes the warehouse truck association.
+      tags:
+        - Warehouse Truck
+      security:
+        - BearerAuth: [manager]
+      parameters:
+        - $ref: "#/components/parameters/WarehouseIdPathParam"
+        - $ref: "#/components/parameters/TruckIdPathParam"
+      responses:
+        204:
+          description: Successful operation.
+        400:
+          description: Invalid warehouse ID or truck ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          description: Association does not exist or is already associated with a route.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
   /landfills:
     post:
       summary: Create a landfill.
@@ -1581,7 +1705,7 @@ paths:
         403:
           $ref: "#/components/responses/Forbidden"
         409:
-          description: Truck or warehouse does not exist.
+          description: Truck or warehouse does not exist. Or truck is not associated with one of the warehouses.
           content:
             application/json:
               schema:
@@ -1716,7 +1840,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         409:
-          description: Truck or warehouse does not exist or route already has more employees associated with it than the new truck has capacity.
+          description: Truck or warehouse does not exist or route already has more employees associated with it than the new truck has capacity. Or truck is not associated with one of the warehouses.
           content:
             application/json:
               schema:
@@ -2242,6 +2366,21 @@ components:
           - municipalityName
           - createdAt
           - modifiedAt
+        default: createdAt
+    WarehouseTruckSortQueryParam:
+      name: sort
+      in: query
+      description: Name of the warehouse truck field to sort by.
+      schema:
+        type: string
+        enum:
+          - truckMake
+          - truckModel
+          - truckLicensePlate
+          - truckPersonCapacity
+          - truckWayName
+          - truckMunicipalityName
+          - createdAt
         default: createdAt
     LandfillSortQueryParam:
       name: sort
