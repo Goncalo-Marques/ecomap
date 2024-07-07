@@ -82,6 +82,10 @@ type Service interface {
 	PatchWarehouse(ctx context.Context, id uuid.UUID, editableWarehouse domain.EditableWarehousePatch) (domain.Warehouse, error)
 	DeleteWarehouseByID(ctx context.Context, id uuid.UUID) (domain.Warehouse, error)
 
+	CreateWarehouseTruck(ctx context.Context, warehouseID, truckID uuid.UUID) error
+	ListWarehouseTrucks(ctx context.Context, warehouseID uuid.UUID, filter domain.WarehouseTrucksPaginatedFilter) (domain.PaginatedResponse[domain.Truck], error)
+	DeleteWarehouseTruck(ctx context.Context, warehouseID, truckID uuid.UUID) error
+
 	CreateLandfill(ctx context.Context, editableLandfill domain.EditableLandfill) (domain.Landfill, error)
 	ListLandfills(ctx context.Context, filter domain.LandfillsPaginatedFilter) (domain.PaginatedResponse[domain.Landfill], error)
 	GetLandfillByID(ctx context.Context, id uuid.UUID) (domain.Landfill, error)

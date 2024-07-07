@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	errWarehouseNotFound                            = "warehouse not found"
-	errWarehouseAlreadyHasMoreTrucksThanNewCapacity = "warehouse already has more trucks than the new capacity"
-	errWarehouseAssociatedWithRouteDeparture        = "warehouse associated with route as departure"
-	errWarehouseAssociatedWithRouteArrival          = "warehouse associated with route as arrival"
+	errWarehouseNotFound                     = "warehouse not found"
+	errWarehouseTruckCapacityMinLimit        = "warehouse already has more trucks than the new capacity"
+	errWarehouseTruckCapacityMaxLimit        = "warehouse cannot have more trucks than it has capacity"
+	errWarehouseAssociatedWithRouteDeparture = "warehouse associated with route as departure"
+	errWarehouseAssociatedWithRouteArrival   = "warehouse associated with route as arrival"
 )
 
 // CreateWarehouse handles the http request to create a warehouse.
@@ -191,7 +192,7 @@ func (h *handler) PatchWarehouseByID(w http.ResponseWriter, r *http.Request, war
 		case errors.Is(err, domain.ErrWarehouseNotFound):
 			notFound(w, errWarehouseNotFound)
 		case errors.Is(err, domain.ErrWarehouseTruckCapacityMinLimit):
-			conflict(w, errWarehouseAlreadyHasMoreTrucksThanNewCapacity)
+			conflict(w, errWarehouseTruckCapacityMinLimit)
 		default:
 			internalServerError(w)
 		}

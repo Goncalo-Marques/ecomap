@@ -149,12 +149,12 @@ func (s *service) PatchWarehouse(ctx context.Context, id uuid.UUID, editableWare
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
 		if editableWarehouse.TruckCapacity != nil {
-			trucks, err := s.store.ListWarehouseTrucks(ctx, tx, id)
+			warehouseTrucks, err := s.store.ListWarehouseTrucks(ctx, tx, id, domain.WarehouseTrucksPaginatedFilter{})
 			if err != nil {
 				return err
 			}
 
-			if int(*editableWarehouse.TruckCapacity) < len(trucks) {
+			if int(*editableWarehouse.TruckCapacity) < warehouseTrucks.Total {
 				return domain.ErrWarehouseTruckCapacityMinLimit
 			}
 		}
