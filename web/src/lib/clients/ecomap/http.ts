@@ -63,7 +63,12 @@ const middleware: Middleware = {
 
 const ecomapHttpClient = createClient<paths>({
 	baseUrl: "/api",
-	signal: AbortSignal.timeout(1000 * 60), // 1 minute timeout.
+	fetch(request) {
+		return fetch(request, {
+			...request,
+			signal: AbortSignal.timeout(1000 * 60), // 1 minute timeout.
+		});
+	},
 });
 
 ecomapHttpClient.use(middleware);
