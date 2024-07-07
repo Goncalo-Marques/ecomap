@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from "svelte";
 	import { Chart } from "chart.js";
 	import Card from "../../components/Card.svelte";
 	import type { Container } from "../../../../domain/container";
@@ -19,13 +20,23 @@
 	/**
 	 * The canvas element where the chart is rendered.
 	 */
-	let canvas: HTMLCanvasElement;
+	let canvas: HTMLCanvasElement | undefined;
+
+	/**
+	 * The chart being rendered.
+	 */
+	let chart: Chart<"bar"> | undefined;
 
 	/**
 	 * Builds a chart with the containers.
 	 * @param containers Containers.
 	 */
 	function buildChart(containers: Container[]) {
+		// Exit if canvas is not bound to DOM element.
+		if (!canvas) {
+			return;
+		}
+
 		// Build a map with the amount of containers per municipality.
 		const containersPerMunicipality = new Map<string, number>();
 		for (const container of containers) {
@@ -44,7 +55,7 @@
 		// Get chart data.
 		const data = Array.from(containersPerMunicipality.values());
 
-		new Chart(canvas, {
+		chart = new Chart(canvas, {
 			type: "bar",
 			data: {
 				labels,
@@ -71,6 +82,11 @@
 
 		loading = false;
 	}
+
+	onDestroy(() => {
+		// Destroy chart before the component destruction.
+		chart?.destroy();
+	});
 
 	containersPromise.then(containers => buildChart(containers));
 </script>
