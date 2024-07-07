@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/goncalo-marques/ecomap/server/internal/authn"
 	"github.com/goncalo-marques/ecomap/server/internal/authz"
@@ -99,10 +100,19 @@ func main() {
 
 	handlerHTTP := transporthttp.New(authzService, service)
 
+	var writeTimeoutHTTP time.Duration
+	if len(serviceConfig.ServerHTTP.WriteTimeout) != 0 {
+		writeTimeoutHTTP, err = time.ParseDuration(serviceConfig.ServerHTTP.WriteTimeout)
+		if err != nil {
+			logging.Logger.ErrorContext(ctx, "main: failed to parse server http write timeout configuration", logging.Error(err))
+		}
+	}
+
 	serverHTTP := &http.Server{
-		Addr:     addressHTTP,
-		Handler:  handlerHTTP,
-		ErrorLog: slog.NewLogLogger(logging.Logger.Handler(), slog.LevelError),
+		Addr:         addressHTTP,
+		Handler:      handlerHTTP,
+		WriteTimeout: writeTimeoutHTTP,
+		ErrorLog:     slog.NewLogLogger(logging.Logger.Handler(), slog.LevelError),
 	}
 
 	go func() {

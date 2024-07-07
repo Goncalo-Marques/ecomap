@@ -1,3 +1,5 @@
+serverHTTP:
+  writeTimeout: 60s
 database:
   url: postgres://DB_USER:DB_PASSWORD@DB_HOST:DB_PORT/DB_NAME?sslmode=disable
   migrations:
