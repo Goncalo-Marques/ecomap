@@ -4,10 +4,12 @@ import "errors"
 
 // Warehouse truck errors.
 var (
-	ErrWarehouseTruckAlreadyExists                = errors.New("warehouse truck already exists")                     // Returned when a warehouse truck association already exists.
-	ErrWarehouseTruckNotFound                     = errors.New("warehouse truck not found")                          // Returned when a warehouse truck association is not found.
-	ErrWarehouseTruckAssociatedWithRouteDeparture = errors.New("warehouse truck associated with route as departure") // Returned when a warehouse truck is associated with a route as a departure.
-	ErrWarehouseTruckAssociatedWithRouteArrival   = errors.New("warehouse truck associated with route as arrival")   // Returned when a warehouse truck is associated with a route as an arrival.
+	ErrWarehouseTruckAlreadyExists                   = errors.New("warehouse truck already exists")                         // Returned when a warehouse truck association already exists.
+	ErrWarehouseTruckNotFound                        = errors.New("warehouse truck not found")                              // Returned when a warehouse truck association is not found.
+	ErrWarehouseTruckAssociatedWithRouteDeparture    = errors.New("warehouse truck associated with route as departure")     // Returned when a warehouse truck is associated with a route as a departure.
+	ErrWarehouseTruckAssociatedWithRouteArrival      = errors.New("warehouse truck associated with route as arrival")       // Returned when a warehouse truck is associated with a route as an arrival.
+	ErrWarehouseTruckNotAssociatedWithRouteDeparture = errors.New("warehouse truck not associated with route as departure") // Returned when a warehouse truck is not associated with a route as a departure.
+	ErrWarehouseTruckNotAssociatedWithRouteArrival   = errors.New("warehouse truck not associated with route as arrival")   // Returned when a warehouse truck is not associated with a route as an arrival.
 )
 
 // WarehouseTruckPaginatedSort defines the field of the warehouse truck to sort.

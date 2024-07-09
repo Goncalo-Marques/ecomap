@@ -51,6 +51,10 @@ func (h *handler) CreateRoute(w http.ResponseWriter, r *http.Request) {
 			conflict(w, errRouteDepartureWarehouseNotFound)
 		case errors.Is(err, domain.ErrRouteArrivalWarehouseNotFound):
 			conflict(w, errRouteArrivalWarehouseNotFound)
+		case errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteDeparture):
+			conflict(w, errWarehouseTruckNotAssociatedWithRouteDeparture)
+		case errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteArrival):
+			conflict(w, errWarehouseTruckNotAssociatedWithRouteArrival)
 		default:
 			internalServerError(w)
 		}
@@ -177,6 +181,10 @@ func (h *handler) PatchRouteByID(w http.ResponseWriter, r *http.Request, routeID
 			conflict(w, errRouteDepartureWarehouseNotFound)
 		case errors.Is(err, domain.ErrRouteArrivalWarehouseNotFound):
 			conflict(w, errRouteArrivalWarehouseNotFound)
+		case errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteDeparture):
+			conflict(w, errWarehouseTruckNotAssociatedWithRouteDeparture)
+		case errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteArrival):
+			conflict(w, errWarehouseTruckNotAssociatedWithRouteArrival)
 		case errors.Is(err, domain.ErrRouteTruckPersonCapacityMinLimit):
 			conflict(w, errRouteTruckPersonCapacityMinLimit)
 		default:

@@ -12,10 +12,12 @@ import (
 )
 
 const (
-	errWarehouseTruckAlreadyExists                = "warehouse truck association already exists"
-	errWarehouseTruckAssociatedWithRouteDeparture = "warehouse truck associated with route as departure"
-	errWarehouseTruckAssociatedWithRouteArrival   = "warehouse truck associated with route as arrival"
-	errWarehouseTruckNotFound                     = "warehouse truck association does not exist"
+	errWarehouseTruckAlreadyExists                   = "warehouse truck association already exists"
+	errWarehouseTruckAssociatedWithRouteDeparture    = "warehouse truck associated with route as departure"
+	errWarehouseTruckAssociatedWithRouteArrival      = "warehouse truck associated with route as arrival"
+	errWarehouseTruckNotAssociatedWithRouteDeparture = "warehouse truck not associated with route as departure"
+	errWarehouseTruckNotAssociatedWithRouteArrival   = "warehouse truck not associated with route as arrival"
+	errWarehouseTruckNotFound                        = "warehouse truck association does not exist"
 )
 
 // ListWarehouseTrucks handles the http request to list warehouse trucks.

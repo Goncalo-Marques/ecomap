@@ -74,6 +74,7 @@ type Store interface {
 
 	CreateWarehouseTruck(ctx context.Context, tx pgx.Tx, warehouseID, truckID uuid.UUID) error
 	ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, warehouseID uuid.UUID, filter domain.WarehouseTrucksPaginatedFilter) (domain.PaginatedResponse[domain.Truck], error)
+	ExistsWarehouseTruck(ctx context.Context, tx pgx.Tx, warehouseID, truckID uuid.UUID) (bool, error)
 	DeleteWarehouseTruck(ctx context.Context, tx pgx.Tx, warehouseID, truckID uuid.UUID) error
 
 	CreateLandfill(ctx context.Context, tx pgx.Tx, editableLandfill domain.EditableLandfill, roadID, municipalityID *int) (uuid.UUID, error)
