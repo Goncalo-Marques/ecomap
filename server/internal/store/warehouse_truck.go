@@ -48,7 +48,7 @@ func (s *store) ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, warehouseID 
 	var argsWhere []any
 
 	// Append the optional fields to filter.
-	filterFields = append(filterFields, "rc.warehouse_id::text")
+	filterFields = append(filterFields, "wt.warehouse_id::text")
 	argsWhere = append(argsWhere, warehouseID)
 	if filter.TruckMake != nil {
 		filterFields = append(filterFields, "t.make")
