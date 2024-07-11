@@ -43,6 +43,24 @@ func (s *service) CreateRoute(ctx context.Context, editableRoute domain.Editable
 	var route domain.Route
 
 	err := s.readWriteTx(ctx, func(tx pgx.Tx) error {
+		warehouseTruckExists, err := s.store.ExistsWarehouseTruck(ctx, tx, editableRoute.DepartureWarehouseID, editableRoute.TruckID)
+		if err != nil {
+			return err
+		}
+
+		if !warehouseTruckExists {
+			return domain.ErrWarehouseTruckNotAssociatedWithRouteDeparture
+		}
+
+		warehouseTruckExists, err = s.store.ExistsWarehouseTruck(ctx, tx, editableRoute.ArrivalWarehouseID, editableRoute.TruckID)
+		if err != nil {
+			return err
+		}
+
+		if !warehouseTruckExists {
+			return domain.ErrWarehouseTruckNotAssociatedWithRouteArrival
+		}
+
 		id, err := s.store.CreateRoute(ctx, tx, editableRoute)
 		if err != nil {
 			return err
@@ -57,7 +75,9 @@ func (s *service) CreateRoute(ctx context.Context, editableRoute domain.Editable
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrTruckNotFound),
+		case errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteDeparture),
+			errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteArrival),
+			errors.Is(err, domain.ErrTruckNotFound),
 			errors.Is(err, domain.ErrRouteDepartureWarehouseNotFound),
 			errors.Is(err, domain.ErrRouteArrivalWarehouseNotFound):
 			return domain.Route{}, logInfoAndWrapError(ctx, err, descriptionFailedGetRouteByID, logAttrs...)
@@ -144,6 +164,28 @@ func (s *service) PatchRoute(ctx context.Context, id uuid.UUID, editableRoute do
 
 	err = s.readWriteTx(ctx, func(tx pgx.Tx) error {
 		if editableRoute.TruckID != nil {
+			if editableRoute.DepartureWarehouseID != nil {
+				warehouseTruckExists, err := s.store.ExistsWarehouseTruck(ctx, tx, *editableRoute.DepartureWarehouseID, *editableRoute.TruckID)
+				if err != nil {
+					return err
+				}
+
+				if !warehouseTruckExists {
+					return domain.ErrWarehouseTruckNotAssociatedWithRouteDeparture
+				}
+			}
+
+			if editableRoute.ArrivalWarehouseID != nil {
+				warehouseTruckExists, err := s.store.ExistsWarehouseTruck(ctx, tx, *editableRoute.ArrivalWarehouseID, *editableRoute.TruckID)
+				if err != nil {
+					return err
+				}
+
+				if !warehouseTruckExists {
+					return domain.ErrWarehouseTruckNotAssociatedWithRouteArrival
+				}
+			}
+
 			truck, err := s.store.GetTruckByID(ctx, tx, *editableRoute.TruckID)
 			if err != nil {
 				return err
@@ -173,7 +215,9 @@ func (s *service) PatchRoute(ctx context.Context, id uuid.UUID, editableRoute do
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrRouteNotFound),
+		case errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteDeparture),
+			errors.Is(err, domain.ErrWarehouseTruckNotAssociatedWithRouteArrival),
+			errors.Is(err, domain.ErrRouteNotFound),
 			errors.Is(err, domain.ErrTruckNotFound),
 			errors.Is(err, domain.ErrRouteDepartureWarehouseNotFound),
 			errors.Is(err, domain.ErrRouteArrivalWarehouseNotFound),

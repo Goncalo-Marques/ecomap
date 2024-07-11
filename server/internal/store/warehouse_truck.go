@@ -136,6 +136,29 @@ func (s *store) ListWarehouseTrucks(ctx context.Context, tx pgx.Tx, warehouseID 
 	}, nil
 }
 
+// ExistsWarehouseTruck executes a query to return whether the warehouse truck association exists for the specified
+// identifiers.
+func (s *store) ExistsWarehouseTruck(ctx context.Context, tx pgx.Tx, warehouseID, truckID uuid.UUID) (bool, error) {
+	row := tx.QueryRow(ctx, `
+		SELECT EXISTS (
+			SELECT 1 FROM warehouses_trucks
+			WHERE warehouse_id = $1 AND truck_id = $2
+		)
+	`,
+		warehouseID,
+		truckID,
+	)
+
+	var exists bool
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, fmt.Errorf("%s: %w", descriptionFailedScanRow, err)
+	}
+
+	return exists, nil
+}
+
 // DeleteWarehouseTruck executes a query to delete the warehouse truck association with the specified identifiers.
 func (s *store) DeleteWarehouseTruck(ctx context.Context, tx pgx.Tx, warehouseID, truckID uuid.UUID) error {
 	commandTag, err := tx.Exec(ctx, `
