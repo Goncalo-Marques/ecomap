@@ -56,24 +56,20 @@
 	}
 </script>
 
-<button popovertarget={id} on:click={handleTriggerClick}>
+<button
+	class="flex items-center justify-center"
+	popovertarget={id}
+	on:click={handleTriggerClick}
+>
 	<slot name="trigger" />
 </button>
 
-<div bind:this={popover} role="menu" class="dropdown" popover="auto" {id}>
+<div
+	bind:this={popover}
+	role="menu"
+	class="m-0 rounded bg-white shadow-md"
+	popover="auto"
+	{id}
+>
 	<slot />
 </div>
-
-<style>
-	button {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.dropdown {
-		background-color: var(--white);
-		box-shadow: var(--shadow-md);
-		border-radius: 0.25rem;
-	}
-</style>

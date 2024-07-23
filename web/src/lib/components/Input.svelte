@@ -122,10 +122,10 @@
 	export let value: number | string | null = null;
 </script>
 
-<div class="input-container">
+<div class="relative">
 	<input
 		{autocomplete}
-		class={error ? "error" : ""}
+		class="w-full rounded border border-gray-300 px-2 py-[0.375rem] text-gray-900 placeholder:text-gray-400 read-only:cursor-default data-[error=true]:border-red-500 data-[endIcon]:pr-8 focus:data-[error=true]:outline-red-500"
 		{id}
 		{name}
 		{pattern}
@@ -137,6 +137,7 @@
 		{max}
 		{min}
 		{style}
+		data-error={error}
 		maxlength={maxLength}
 		minlength={minLength}
 		on:keydown={onKeyDown}
@@ -145,53 +146,10 @@
 		data-endIcon={endIcon}
 	/>
 	{#if endIcon}
-		<div class="end-icon">
+		<div
+			class="pointer-events-none absolute right-2 top-1/2 flex -translate-y-1/2 transform items-center text-gray-900"
+		>
 			<Icon name={endIcon} size="small" />
 		</div>
 	{/if}
 </div>
-
-<style>
-	.input-container {
-		position: relative;
-	}
-
-	input {
-		width: 100%;
-		padding: 0.375rem 0.5rem;
-		border: 1px solid var(--gray-300);
-		border-radius: 0.25rem;
-		color: var(--gray-900);
-
-		&[data-endIcon] {
-			padding-right: 2rem;
-		}
-
-		&:read-only {
-			cursor: default;
-		}
-
-		&.error {
-			border-color: var(--red-500);
-
-			&:focus {
-				outline-color: var(--red-500);
-			}
-		}
-
-		&::placeholder {
-			color: var(--gray-400);
-		}
-	}
-
-	.end-icon {
-		pointer-events: none;
-		display: flex;
-		align-items: center;
-		color: var(--gray-900);
-		position: absolute;
-		top: 50%;
-		right: 0.5rem;
-		transform: translateY(-50%);
-	}
-</style>

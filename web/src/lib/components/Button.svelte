@@ -76,9 +76,52 @@
 </script>
 
 <button
-	class={`${size} ${variant} ${actionType} ${className} ${onlyIcon ? "only-icon" : ""}`}
 	{disabled}
 	{type}
+	class={[
+		"relative flex items-center justify-center gap-1 rounded font-semibold transition-colors disabled:opacity-60",
+
+		// Sizes.
+		"data-[size=small]:data-[icon=true]:p-[0.375rem] data-[size=small]:px-2 data-[size=small]:py-[0.375rem] data-[size=small]:text-xs",
+		"data-[size=medium]:data-[icon=true]:p-2 data-[size=medium]:px-3 data-[size=medium]:py-2 data-[size=medium]:text-sm",
+		"data-[size=large]:data-[icon=true]:p-[0.625rem] data-[size=large]:px-4 data-[size=large]:py-[0.625rem] data-[size=large]:text-base",
+
+		// Primary default variant.
+		"data-[variant=primary]:data-[actiontype=default]:bg-green-700 data-[variant=primary]:data-[actiontype=default]:text-white",
+		"enabled:hover:data-[variant=primary]:data-[actiontype=default]:bg-green-800",
+		"enabled:active:data-[variant=primary]:data-[actiontype=default]:bg-green-900",
+
+		// Primary danger variant.
+		"data-[variant=primary]:data-[actiontype=danger]:bg-red-700 data-[variant=primary]:data-[actiontype=danger]:text-white",
+		"enabled:hover:data-[variant=primary]:data-[actiontype=danger]:bg-red-800",
+		"enabled:active:data-[variant=primary]:data-[actiontype=danger]:bg-red-900",
+
+		// Secondary default variant.
+		"data-[variant=secondary]:data-[actiontype=default]:border data-[variant=secondary]:data-[actiontype=default]:border-green-700 data-[variant=secondary]:data-[actiontype=default]:bg-white data-[variant=secondary]:data-[actiontype=default]:text-green-700",
+		"enabled:hover:data-[variant=secondary]:data-[actiontype=default]:border-green-800 enabled:hover:data-[variant=secondary]:data-[actiontype=default]:bg-green-50 enabled:hover:data-[variant=secondary]:data-[actiontype=default]:text-green-800",
+		"enabled:active:data-[variant=secondary]:data-[actiontype=default]:border-green-800 enabled:active:data-[variant=secondary]:data-[actiontype=default]:bg-green-100 enabled:active:data-[variant=secondary]:data-[actiontype=default]:text-green-800",
+
+		// Secondary danger variant.
+		"data-[variant=secondary]:data-[actiontype=danger]:border data-[variant=secondary]:data-[actiontype=danger]:border-red-700 data-[variant=secondary]:data-[actiontype=danger]:bg-white data-[variant=secondary]:data-[actiontype=danger]:text-red-700",
+		"enabled:hover:data-[variant=secondary]:data-[actiontype=danger]:border-red-800 enabled:hover:data-[variant=secondary]:data-[actiontype=danger]:bg-red-50 enabled:hover:data-[variant=secondary]:data-[actiontype=danger]:text-red-800",
+		"enabled:active:data-[variant=secondary]:data-[actiontype=danger]:border-red-800 enabled:active:data-[variant=secondary]:data-[actiontype=danger]:bg-red-100 enabled:active:data-[variant=secondary]:data-[actiontype=danger]:text-red-800",
+
+		// Tertiary default variant.
+		"data-[variant=tertiary]:data-[actiontype=default]:bg-white data-[variant=tertiary]:data-[actiontype=default]:text-green-700",
+		"enabled:hover:data-[variant=tertiary]:data-[actiontype=default]:bg-green-50 enabled:hover:data-[variant=tertiary]:data-[actiontype=default]:text-green-800",
+		"enabled:active:data-[variant=tertiary]:data-[actiontype=default]:bg-green-100 enabled:active:data-[variant=tertiary]:data-[actiontype=default]:text-green-800",
+
+		// Tertiary danger variant.
+		"data-[variant=tertiary]:data-[actiontype=danger]:bg-white data-[variant=tertiary]:data-[actiontype=danger]:text-red-700",
+		"enabled:hover:data-[variant=tertiary]:data-[actiontype=danger]:bg-red-50 enabled:hover:data-[variant=tertiary]:data-[actiontype=danger]:text-red-800",
+		"enabled:active:data-[variant=tertiary]:data-[actiontype=danger]:bg-red-100 enabled:active:data-[variant=tertiary]:data-[actiontype=danger]:text-red-800",
+
+		className,
+	].join(" ")}
+	data-actiontype={actionType}
+	data-variant={variant}
+	data-size={size}
+	data-icon={onlyIcon}
 	on:click={onClick}
 >
 	{#if startIcon}
@@ -86,142 +129,3 @@
 	{/if}
 	<slot />
 </button>
-
-<style>
-	button {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 0.25rem;
-		border-radius: 0.25rem;
-		transition-property: var(--transition-colors);
-		transition-duration: var(--transition-duration);
-		transition-timing-function: var(--transition-timing-function);
-
-		&:disabled {
-			opacity: 0.6;
-		}
-	}
-
-	.primary {
-		&.default {
-			color: var(--white);
-			background-color: var(--green-700);
-
-			&:hover:enabled {
-				background-color: var(--green-800);
-			}
-
-			&:active:enabled {
-				background-color: var(--green-900);
-			}
-		}
-
-		&.danger {
-			color: var(--white);
-			background-color: var(--red-700);
-
-			&:hover:enabled {
-				background-color: var(--red-800);
-			}
-
-			&:active:enabled {
-				background-color: var(--red-900);
-			}
-		}
-	}
-	.secondary {
-		&.default {
-			color: var(--green-700);
-			background-color: var(--white);
-			border: 1px solid var(--green-700);
-
-			&:hover:enabled {
-				color: var(--green-800);
-				border-color: var(--green-800);
-				background-color: var(--green-50);
-			}
-
-			&:active:enabled {
-				color: var(--green-800);
-				border-color: var(--green-800);
-				background-color: var(--green-100);
-			}
-		}
-
-		&.danger {
-			color: var(--red-700);
-			background-color: var(--white);
-			border: 1px solid var(--red-700);
-
-			&:hover:enabled {
-				color: var(--red-800);
-				border-color: var(--red-800);
-				background-color: var(--red-50);
-			}
-
-			&:active:enabled {
-				color: var(--red-800);
-				border-color: var(--red-800);
-				background-color: var(--red-100);
-			}
-		}
-	}
-	.tertiary {
-		&.default {
-			color: var(--green-700);
-			background-color: var(--white);
-
-			&:hover:enabled {
-				color: var(--green-800);
-				background-color: var(--green-50);
-			}
-
-			&:active:enabled {
-				color: var(--green-800);
-				background-color: var(--green-100);
-			}
-		}
-
-		&.danger {
-			color: var(--red-700);
-			background-color: var(--white);
-
-			&:hover:enabled {
-				color: var(--red-800);
-				background-color: var(--red-50);
-			}
-
-			&:active:enabled {
-				color: var(--red-800);
-				background-color: var(--red-100);
-			}
-		}
-	}
-
-	.small {
-		font: var(--text-xs-semibold);
-		padding: 0.375rem 0.5rem;
-
-		&.only-icon {
-			padding: 0.375rem;
-		}
-	}
-	.medium {
-		font: var(--text-sm-semibold);
-		padding: 0.5rem 0.75rem;
-
-		&.only-icon {
-			padding: 0.5rem;
-		}
-	}
-	.large {
-		font: var(--text-base-semibold);
-		padding: 0.625rem 1rem;
-
-		&.only-icon {
-			padding: 0.625rem;
-		}
-	}
-</style>

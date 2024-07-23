@@ -136,12 +136,17 @@
 	});
 </script>
 
-<main>
-	<article>
-		<h1>{$t("signin.title")}</h1>
+<main class="grid min-h-screen place-items-center">
+	<article class="flex w-96 flex-col gap-8 rounded-3xl bg-white p-12 shadow-md">
+		<h1 class="text-4xl font-semibold">{$t("signin.title")}</h1>
 
-		<form novalidate method="post" on:submit|preventDefault={handleSubmit}>
-			<div class="container">
+		<form
+			novalidate
+			method="post"
+			class="flex flex-col gap-8"
+			on:submit|preventDefault={handleSubmit}
+		>
+			<div class="flex flex-col gap-4">
 				<FormControl
 					error={!!formErrorMessages.username}
 					label={$t("signin.username.label")}
@@ -172,7 +177,7 @@
 				</FormControl>
 
 				{#if responseErrorMessage}
-					<p class="error">{responseErrorMessage}</p>
+					<p class="text-xs text-red-500">{responseErrorMessage}</p>
 				{/if}
 			</div>
 
@@ -182,39 +187,3 @@
 		</form>
 	</article>
 </main>
-
-<style>
-	main {
-		min-height: 100vh;
-		display: grid;
-		place-items: center;
-	}
-
-	article {
-		background-color: var(--white);
-		border-radius: 1.5rem;
-		padding: 3rem;
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		width: 24rem;
-		box-shadow: var(--shadow-md);
-	}
-
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-	}
-
-	.container {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.error {
-		font: var(--text-xs-regular);
-		color: var(--red-500);
-	}
-</style>

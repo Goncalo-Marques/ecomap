@@ -11,41 +11,26 @@
 	 * @default "medium"
 	 */
 	export let size: IconSize = "medium";
+
+	/**
+	 * A space-separated list of the classes of the element.
+	 * @default ""
+	 */
+	let className: string = "";
+	export { className as class };
 </script>
 
-<span class={`material-symbols-rounded ${size}`}>{name}</span>
-
-<style>
-	span {
-		-webkit-user-select: none;
-		user-select: none;
-	}
-	.xx-small {
-		line-height: 0.875rem;
-		font-size: 0.875rem;
-	}
-	.x-small {
-		line-height: 1rem;
-		font-size: 1rem;
-	}
-	.small {
-		line-height: 1.25rem;
-		font-size: 1.25rem;
-	}
-	.medium {
-		line-height: 1.5rem;
-		font-size: 1.5rem;
-	}
-	.large {
-		line-height: 2rem;
-		font-size: 2rem;
-	}
-	.x-large {
-		line-height: 2.5rem;
-		font-size: 2.5rem;
-	}
-	.xx-large {
-		line-height: 3rem;
-		font-size: 3rem;
-	}
-</style>
+<span
+	class={[
+		"material-symbols-rounded select-none",
+		"data-[size=xx-small]:text-sm data-[size=xx-small]:leading-[0.875rem]",
+		"data-[size=x-small]:text-base data-[size=x-small]:leading-4",
+		"data-[size=small]:text-xl data-[size=small]:leading-5",
+		"data-[size=medium]:text-2xl data-[size=medium]:leading-6",
+		"data-[size=large]:text-[2rem] data-[size=large]:leading-8",
+		"data-[size=x-large]:text-[2.5rem] data-[size=x-large]:leading-10",
+		"data-[size=xx-large]:text-5xl data-[size=xx-large]:leading-[3rem]",
+		className,
+	].join(" ")}
+	data-size={size}>{name}</span
+>

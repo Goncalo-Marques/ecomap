@@ -7,7 +7,7 @@ import { LocaleNames, SupportedLocales } from "../constants/locale";
 /**
  * Identifiers of the locale schema.
  */
-type LocaleTextID = keyof (typeof schema)["properties"];
+export type LocaleTextID = keyof (typeof schema)["properties"];
 
 /**
  * The standard locale in which the application is configured.

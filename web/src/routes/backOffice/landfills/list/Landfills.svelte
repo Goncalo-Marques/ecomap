@@ -7,25 +7,13 @@
 	import Button from "../../../../lib/components/Button.svelte";
 </script>
 
-<Card class="page-layout">
-	<h1>{$t("landfills")}</h1>
-	<div class="top-bar">
+<Card class="m-10 flex flex-col gap-10">
+	<h1 class="text-2xl font-semibold">{$t("landfills")}</h1>
+	<div class="flex items-center justify-between">
 		<SearchLandfills />
-		<Link to="create" style="display:contents">
+		<Link to="create" class="contents">
 			<Button startIcon="add">{$t("landfills.create.title")}</Button>
 		</Link>
 	</div>
 	<LandfillsTable />
 </Card>
-
-<style>
-	h1 {
-		font: var(--text-2xl-semibold);
-	}
-
-	.top-bar {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-</style>

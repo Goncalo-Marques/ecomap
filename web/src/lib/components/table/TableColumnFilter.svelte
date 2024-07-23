@@ -70,13 +70,16 @@
 </script>
 
 <Popover bind:popover>
-	<div slot="trigger" class="filter">
+	<div slot="trigger" class="relative flex items-center justify-center">
 		<Icon name="filter_alt" size="small" />
-		<span class="badge" style:display={selectedValue ? "" : "none"} />
+		<span
+			class="absolute right-[2px] top-[2px] size-[0.375rem] rounded-full bg-green-700"
+			style:display={selectedValue ? "" : "none"}
+		/>
 	</div>
 
-	<div class="content">
-		<fieldset>
+	<div class="flex min-w-32 flex-col gap-4 p-4">
+		<fieldset class="flex flex-col gap-1">
 			{#each options as option}
 				<Radio
 					name="option"
@@ -88,51 +91,15 @@
 			{/each}
 		</fieldset>
 
-		<div class="actions">
-			<Button variant="primary" size="small" onClick={clearFilter}>
+		<div class="flex">
+			<Button
+				class="flex-1"
+				variant="primary"
+				size="small"
+				onClick={clearFilter}
+			>
 				{$t("clear")}
 			</Button>
 		</div>
 	</div>
 </Popover>
-
-<style>
-	.filter {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.badge {
-		position: absolute;
-		top: 2px;
-		right: 2px;
-		height: 0.375rem;
-		width: 0.375rem;
-		background-color: var(--green-700);
-		border-radius: 50%;
-	}
-
-	.content {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		min-width: 8rem;
-		padding: 1rem;
-	}
-
-	.actions {
-		display: flex;
-
-		& > button {
-			flex: 1;
-		}
-	}
-
-	fieldset {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-</style>

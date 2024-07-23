@@ -17,7 +17,7 @@
 	}
 </script>
 
-<div class="layer-item">
+<div class="flex h-6 items-center gap-2">
 	{#if layer.get(colorLayerKey)}
 		<Dot color={layer.get(colorLayerKey)} size="x-small" />
 	{:else}
@@ -25,21 +25,8 @@
 	{/if}
 
 	{#if layer.get(nameLayerKey)}
-		<h2>{layer.get(nameLayerKey)}</h2>
+		<h2 class="text-sm">{layer.get(nameLayerKey)}</h2>
 	{/if}
 
 	<Switch checked={layer.getVisible()} onClick={toggleVisibility} />
 </div>
-
-<style>
-	h2 {
-		font: var(--text-sm-regular);
-	}
-
-	.layer-item {
-		display: flex;
-		gap: 0.5rem;
-		height: 1.5rem;
-		align-items: center;
-	}
-</style>

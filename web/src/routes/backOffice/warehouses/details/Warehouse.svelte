@@ -88,11 +88,9 @@
 	const warehousePromise = fetchWarehouse();
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	{#await warehousePromise}
-		<div class="warehouse-loading">
-			<Spinner />
-		</div>
+		<Spinner class="flex h-full items-center justify-center" />
 	{:then warehouse}
 		{@const locationName = getLocationName(
 			warehouse.geoJson.properties.wayName,
@@ -105,12 +103,12 @@
 				variant="secondary"
 				onClick={deleteWarehouse}
 			/>
-			<Link to={`${warehouse.id}/map`} style="display:contents">
+			<Link to={`${warehouse.id}/map`} class="contents">
 				<Button variant="secondary" startIcon="map">
 					{$t("map")}
 				</Button>
 			</Link>
-			<Link to={`${warehouse.id}/edit`} style="display:contents">
+			<Link to={`${warehouse.id}/edit`} class="contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
@@ -135,26 +133,9 @@
 			</DetailsSection>
 		</DetailsContent>
 	{:catch}
-		<div class="warehouse-not-found">
-			<h2>{$t("warehouses.notFound.title")}</h2>
+		<div class="flex h-1/2 flex-col items-center justify-center">
+			<h2 class="text-2xl font-semibold">{$t("warehouses.notFound.title")}</h2>
 			<p>{$t("warehouses.notFound.description")}</p>
 		</div>
 	{/await}
 </Card>
-
-<style>
-	.warehouse-loading {
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.warehouse-not-found {
-		height: 50%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

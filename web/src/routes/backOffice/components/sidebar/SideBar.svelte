@@ -2,146 +2,77 @@
 	import { Link } from "svelte-routing";
 	import Icon from "../../../../lib/components/Icon.svelte";
 	import url from "../../../../lib/stores/url";
-	import { t } from "../../../../lib/utils/i8n";
+	import { t, type LocaleTextID } from "../../../../lib/utils/i8n";
 	import { BackOfficeRoutes } from "../../../constants/routes";
 	import Support from "./Support.svelte";
+
+	type MenuItem = {
+		route: BackOfficeRoutes;
+		icon: string;
+		localeTextId: LocaleTextID;
+	};
+
+	const menuItems: MenuItem[] = [
+		{
+			route: BackOfficeRoutes.DASHBOARD,
+			icon: "dashboard",
+			localeTextId: "dashboard",
+		},
+		{
+			route: BackOfficeRoutes.MAP,
+			icon: "map",
+			localeTextId: "map",
+		},
+		{
+			route: BackOfficeRoutes.ROUTES,
+			icon: "route",
+			localeTextId: "routes",
+		},
+		{
+			route: BackOfficeRoutes.CONTAINERS,
+			icon: "delete",
+			localeTextId: "containers",
+		},
+		{
+			route: BackOfficeRoutes.TRUCKS,
+			icon: "local_shipping",
+			localeTextId: "trucks",
+		},
+		{
+			route: BackOfficeRoutes.WAREHOUSES,
+			icon: "warehouse",
+			localeTextId: "warehouses",
+		},
+		{
+			route: BackOfficeRoutes.LANDFILLS,
+			icon: "landslide",
+			localeTextId: "landfills",
+		},
+		{
+			route: BackOfficeRoutes.EMPLOYEES,
+			icon: "group",
+			localeTextId: "employees",
+		},
+	];
 </script>
 
-<nav>
-	<ul>
-		<li>
-			<Link
-				to={BackOfficeRoutes.DASHBOARD}
-				data-selected={$url.pathname === BackOfficeRoutes.DASHBOARD ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.DASHBOARD}/`)}
-			>
-				<Icon name="dashboard" />
-				<span>{$t("dashboard")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
-				to={BackOfficeRoutes.MAP}
-				data-selected={$url.pathname === BackOfficeRoutes.MAP ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.MAP}/`)}
-			>
-				<Icon name="map" />
-				<span>{$t("map")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
-				to={BackOfficeRoutes.ROUTES}
-				data-selected={$url.pathname === BackOfficeRoutes.ROUTES ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.ROUTES}/`)}
-			>
-				<Icon name="route" />
-				<span>{$t("routes")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
-				to={BackOfficeRoutes.CONTAINERS}
-				data-selected={$url.pathname === BackOfficeRoutes.CONTAINERS ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.CONTAINERS}/`)}
-			>
-				<Icon name="delete" />
-				<span>{$t("containers")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
-				to={BackOfficeRoutes.TRUCKS}
-				data-selected={$url.pathname === BackOfficeRoutes.TRUCKS ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.TRUCKS}/`)}
-			>
-				<Icon name="local_shipping" />
-				<span>{$t("trucks")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
-				to={BackOfficeRoutes.WAREHOUSES}
-				data-selected={$url.pathname === BackOfficeRoutes.WAREHOUSES ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.WAREHOUSES}/`)}
-			>
-				<Icon name="warehouse" />
-				<span>{$t("warehouses")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
-				to={BackOfficeRoutes.LANDFILLS}
-				data-selected={$url.pathname === BackOfficeRoutes.LANDFILLS ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.LANDFILLS}/`)}
-			>
-				<Icon name="landslide" />
-				<span>{$t("landfills")}</span>
-			</Link>
-		</li>
-		<li>
-			<Link
-				to={BackOfficeRoutes.EMPLOYEES}
-				data-selected={$url.pathname === BackOfficeRoutes.EMPLOYEES ||
-					$url.pathname.startsWith(`${BackOfficeRoutes.EMPLOYEES}/`)}
-			>
-				<Icon name="group" />
-				<span>{$t("employees")}</span>
-			</Link>
-		</li>
+<nav
+	class="flex w-52 flex-col justify-between border-r border-gray-300 bg-white p-4"
+>
+	<ul class="flex flex-col justify-center gap-4">
+		{#each menuItems as menuItem}
+			<li class="block flex-1">
+				<Link
+					class="flex w-full justify-items-center gap-2 rounded px-3 py-2 transition-colors hover:bg-green-50 hover:text-green-800 active:bg-green-100 active:text-green-800 data-[selected=true]:bg-green-100 data-[selected=true]:font-semibold data-[selected=true]:text-green-800"
+					to={menuItem.route}
+					data-selected={$url.pathname === menuItem.route ||
+						$url.pathname.startsWith(`${menuItem.route}/`)}
+				>
+					<Icon name={menuItem.icon} />
+					<span>{$t(menuItem.localeTextId)}</span>
+				</Link>
+			</li>
+		{/each}
 	</ul>
 	<Support />
 </nav>
-
-<style>
-	nav {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		width: 13rem;
-		padding: 1rem;
-		background-color: var(--white);
-		border-right: 1px solid var(--gray-300);
-	}
-
-	ul {
-		display: flex;
-		flex-direction: column;
-		justify-items: center;
-		gap: 1rem;
-	}
-
-	li {
-		flex: 1;
-		display: block;
-	}
-
-	nav li > :global(a),
-	nav > :global(button) {
-		display: flex;
-		justify-items: center;
-		gap: 0.5rem;
-		border-radius: 0.25rem;
-		width: 100%;
-		padding: 0.5rem 0.75rem;
-		transition-property: var(--transition-colors);
-		transition-duration: var(--transition-duration);
-		transition-timing-function: var(--transition-timing-function);
-
-		&:hover {
-			background-color: var(--green-50);
-			color: var(--green-800);
-		}
-
-		&:active {
-			background-color: var(--green-100);
-			color: var(--green-800);
-		}
-
-		&[data-selected="true"] {
-			background-color: var(--green-100);
-			color: var(--green-800);
-			font-weight: 600;
-		}
-	}
-</style>

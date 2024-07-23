@@ -507,18 +507,21 @@
 	});
 </script>
 
-<main>
+<main class="relative w-full">
 	<MapComponent bind:map maxZoom={22} showLayers={!selectedFeature} />
 
 	{#if loading}
-		<div class="landfill-loading">
+		<div
+			class="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2"
+		>
 			<Spinner />
 		</div>
 	{/if}
 
 	{#if selectedFeature}
-		<div class="close-selected-feature">
+		<div class="absolute left-10 top-10">
 			<Button
+				class="shadow-md"
 				variant="tertiary"
 				startIcon="close"
 				size="large"
@@ -542,28 +545,3 @@
 		/>
 	{/if}
 </main>
-
-<style>
-	main {
-		position: relative;
-		width: 100%;
-	}
-
-	.landfill-loading {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		z-index: 100;
-	}
-
-	.close-selected-feature {
-		position: absolute;
-		top: 2.5rem;
-		left: 2.5rem;
-
-		& > button {
-			box-shadow: var(--shadow-md);
-		}
-	}
-</style>

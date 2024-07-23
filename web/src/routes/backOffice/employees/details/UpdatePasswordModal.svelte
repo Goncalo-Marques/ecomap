@@ -245,7 +245,7 @@
 	title={$t("employees.updatePassword.title")}
 	onSubmit={handleSubmit}
 >
-	<div class="content">
+	<div class="flex w-[40rem] flex-col gap-2">
 		<FormControl
 			label={$t("employees.updatePassword.currentPassword.label")}
 			error={!!formErrorMessages.currentPassword}
@@ -294,12 +294,3 @@
 		<Button type="submit">{$t("confirm")}</Button>
 	</svelte:fragment>
 </FormModal>
-
-<style>
-	.content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		width: 40rem;
-	}
-</style>

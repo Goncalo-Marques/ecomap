@@ -16,15 +16,6 @@
 	export let size: IconSize = "xx-large";
 </script>
 
-<div role="progressbar" class={`loading ${className}`}>
-	<Icon name="progress_activity" {size} />
+<div role="progressbar" class={`text-green-700 ${className}`}>
+	<Icon class="animate-spin" name="progress_activity" {size} />
 </div>
-
-<style>
-	.loading {
-		color: var(--green-700);
-	}
-	.loading > :global(.material-symbols-rounded) {
-		animation: var(--animation-spin);
-	}
-</style>

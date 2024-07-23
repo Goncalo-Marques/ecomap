@@ -57,69 +57,18 @@
 
 <slot />
 <div
-	class="toast"
+	class="flex max-w-[36rem] gap-2 rounded border bg-white px-4 py-3 shadow-lg data-[type=error]:border-red-300 data-[type=success]:border-green-300 data-[type=error]:bg-red-50 data-[type=success]:bg-green-50 data-[type=error]:text-red-700 data-[type=success]:text-green-700 [&:popover-open]:absolute [&:popover-open]:inset-[unset] [&:popover-open]:bottom-4 [&:popover-open]:left-4"
 	popover="manual"
 	data-type={$toastOptions.type}
 	bind:this={toast}
 >
 	<Icon name={icons[$toastOptions.type]} size="small" />
-	<div class="content">
-		<h3>{$toastOptions.title}</h3>
+	<div class="flex flex-col">
+		<h3 class="font-semibold">{$toastOptions.title}</h3>
 		{#if $toastOptions.description}
-			<p>{$toastOptions.description}</p>
+			<p class="text-sm text-gray-900">
+				{$toastOptions.description}
+			</p>
 		{/if}
 	</div>
 </div>
-
-<style>
-	.toast {
-		display: flex;
-		gap: 0.5rem;
-		padding: 0.75rem 1rem;
-		border-radius: 0.25rem;
-		background-color: var(--white);
-		box-shadow: var(--shadow-lg);
-		border-style: solid;
-		border-width: 1px;
-		max-width: 36rem;
-
-		&[data-type="success"] {
-			background-color: var(--green-50);
-			color: var(--green-700);
-			border-color: var(--green-300);
-
-			& p {
-				color: var(--gray-900);
-			}
-		}
-		&[data-type="error"] {
-			background-color: var(--red-50);
-			color: var(--red-700);
-			border-color: var(--red-300);
-
-			& p {
-				color: var(--gray-900);
-			}
-		}
-
-		& .content {
-			display: flex;
-			flex-direction: column;
-		}
-
-		& h3 {
-			font: var(--text-base-semibold);
-		}
-
-		& p {
-			font: var(--text-sm-regular);
-		}
-	}
-
-	:popover-open {
-		position: absolute;
-		inset: unset;
-		left: 1rem;
-		bottom: 1rem;
-	}
-</style>

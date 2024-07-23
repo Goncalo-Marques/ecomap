@@ -485,9 +485,9 @@
 	}
 </script>
 
-<form novalidate on:submit|preventDefault={handleSubmit}>
+<form novalidate class="contents" on:submit|preventDefault={handleSubmit}>
 	<DetailsHeader to={back} {title}>
-		<Link to={back} style="display:contents">
+		<Link to={back} class="contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
 		<Button type="submit" startIcon="check" disabled={isSubmitting}>
@@ -715,9 +715,3 @@
 		{/if}
 	</DetailsContent>
 </form>
-
-<style>
-	form {
-		display: contents;
-	}
-</style>

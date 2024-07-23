@@ -13,15 +13,9 @@
 	export let element: string = "main";
 </script>
 
-<svelte:element this={element} class={`card ${className}`}>
+<svelte:element
+	this={element}
+	class={`rounded border border-gray-300 bg-white p-8 ${className}`}
+>
 	<slot />
 </svelte:element>
-
-<style>
-	.card {
-		padding: 2rem;
-		background-color: var(--white);
-		border: 1px solid var(--gray-300);
-		border-radius: 0.25rem;
-	}
-</style>

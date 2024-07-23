@@ -76,6 +76,14 @@
 	export let mapId: string = "map_id";
 
 	/**
+	 * A space-separated list of the classes of the element.
+	 *
+	 * @default ""
+	 */
+	let className: string = "";
+	export { className as class };
+
+	/**
 	 * Callback fired when map is initialized.
 	 *
 	 * @default null
@@ -106,14 +114,19 @@
 	});
 </script>
 
-<div id={mapId} class="map">
+<div
+	id={mapId}
+	class={`relative h-[var(--height,100%)] max-h-[var(--max-height,100%)] w-[var(--width,100%)] max-w-[var(--max-width,100%)] ${className}`}
+>
 	{#if showLayers && layers.length}
-		<section class="layers">
-			<header>
+		<section
+			class="absolute bottom-12 left-12 z-50 max-h-[37.5rem] min-w-64 overflow-auto rounded bg-white p-[0.625rem]"
+		>
+			<header class="flex items-center gap-1">
 				<Icon name="layers" />
-				<h1>{$t("layers")}</h1>
+				<h1 class="font-semibold">{$t("layers")}</h1>
 			</header>
-			<div class="item-container">
+			<div class="mt-3 flex flex-col gap-2">
 				{#each layers as layer}
 					{#if layer.get(nameLayerKey) != mapLayerName}
 						<LayerItem {layer} />
@@ -123,43 +136,3 @@
 		</section>
 	{/if}
 </div>
-
-<style>
-	header {
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-	}
-
-	h1 {
-		font: var(--text-base-semibold);
-	}
-
-	.map {
-		width: var(--width, 100%);
-		height: var(--height, 100%);
-		max-width: var(--max-width, 100%);
-		max-height: var(--max-height, 100%);
-		position: relative;
-	}
-
-	.layers {
-		position: absolute;
-		background-color: var(--white);
-		min-width: 16rem;
-		max-height: 37.5rem;
-		border-radius: 0.25rem;
-		padding: 0.625rem;
-		overflow: auto;
-		bottom: 3rem;
-		left: 3rem;
-		z-index: 999;
-	}
-
-	.item-container {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-top: 0.75rem;
-	}
-</style>

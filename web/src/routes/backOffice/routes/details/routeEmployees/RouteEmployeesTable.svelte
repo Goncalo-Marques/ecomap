@@ -109,7 +109,7 @@
 
 <Table
 	{columns}
-	class="route-employees-table"
+	class="min-h-80"
 	loading={$loading}
 	rows={$data.employees}
 	pagination={{
@@ -120,9 +120,3 @@
 		onPageChange: handlePageChange,
 	}}
 />
-
-<style>
-	:global(.route-employees-table) {
-		min-height: 20rem;
-	}
-</style>

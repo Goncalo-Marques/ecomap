@@ -109,7 +109,7 @@
 	}
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	<EmployeeForm
 		back=""
 		action="create"

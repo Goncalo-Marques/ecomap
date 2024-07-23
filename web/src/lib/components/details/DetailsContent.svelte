@@ -1,12 +1,3 @@
-<div class="details-content">
+<div class="flex flex-1 flex-col gap-8">
 	<slot />
 </div>
-
-<style>
-	.details-content {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-	}
-</style>

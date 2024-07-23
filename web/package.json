@@ -18,7 +18,8 @@
 	"prettier": {
 		"arrowParens": "avoid",
 		"plugins": [
-			"prettier-plugin-svelte"
+			"prettier-plugin-svelte",
+			"prettier-plugin-tailwindcss"
 		],
 		"semi": true,
 		"overrides": [
@@ -78,16 +79,20 @@
 		"@typescript-eslint/eslint-plugin": "^7.8.0",
 		"@typescript-eslint/parser": "^7.8.0",
 		"@vitest/ui": "^1.6.0",
-		"eslint": "^8.57.0",
+		"autoprefixer": "^10.4.19",
+		"cssnano": "^7.0.4",
 		"eslint-plugin-svelte": "^2.38.0",
 		"jsdom": "^24.0.0",
 		"openapi-typescript": "^6.7.5",
-		"prettier": "^3.2.5",
-		"prettier-plugin-svelte": "^3.2.3",
+		"postcss": "^8.4.39",
+		"prettier": "^3.3.3",
+		"prettier-plugin-svelte": "^3.2.6",
+		"prettier-plugin-tailwindcss": "^0.6.5",
 		"svelte": "^4.2.15",
 		"svelte-check": "^3.7.0",
 		"svelte-eslint-parser": "^0.35.0",
 		"svelte-routing": "^2.12.0",
+		"tailwindcss": "^3.4.6",
 		"tslib": "^2.6.2",
 		"typescript": "^5.4.5",
 		"vite": "^5.2.10",

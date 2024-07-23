@@ -72,66 +72,31 @@
 	let landfillPromise = fetchLandfill();
 </script>
 
-<main class="map" data-mapVisible={isMapVisible}>
-	<Map bind:map />
+<main class="group relative h-auto w-full" data-mapVisible={isMapVisible}>
+	<Map class="group-data-[mapVisible=false]:hidden" bind:map />
 
 	{#await landfillPromise}
-		<div class="landfill-loading">
-			<Spinner />
-		</div>
+		<Spinner
+			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+		/>
 	{:then landfill}
-		<Link to={landfill.id} style="display:contents">
-			<div class="back">
-				<Button startIcon="arrow_back" size="large" variant="tertiary" />
+		<Link to={landfill.id} class="contents">
+			<div class="absolute left-10 top-10">
+				<Button
+					class="shadow-md"
+					startIcon="arrow_back"
+					size="large"
+					variant="tertiary"
+				/>
 			</div>
 		</Link>
 		<LandfillBottomSheet {landfill} />
 	{:catch}
-		<div class="landfill-not-found">
-			<h2>{$t("landfills.notFound.title")}</h2>
+		<div
+			class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center"
+		>
+			<h2 class="text-2xl font-semibold">{$t("landfills.notFound.title")}</h2>
 			<p>{$t("landfills.notFound.description")}</p>
 		</div>
 	{/await}
 </main>
-
-<style>
-	main {
-		position: relative;
-		height: auto;
-		width: 100%;
-
-		&[data-mapVisible="false"] {
-			& #map_id {
-				display: none;
-			}
-		}
-	}
-
-	.back {
-		position: absolute;
-		top: 2.5rem;
-		left: 2.5rem;
-
-		& > button {
-			box-shadow: var(--shadow-md);
-		}
-	}
-
-	.landfill-loading {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-	}
-
-	.landfill-not-found {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

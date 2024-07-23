@@ -21,9 +21,9 @@
 	const warehouseAmountPromise = getWarehouseAmount();
 </script>
 
-<Card element="article" class="warehouse-amount-card">
-	<h2>{$t("dashboard.amountOfWarehouses")}</h2>
-	<p>
+<Card element="article" class="[grid-area:warehouseAmount]">
+	<h2 class="text-gray-500">{$t("dashboard.amountOfWarehouses")}</h2>
+	<p class="text-xl font-semibold">
 		{#await warehouseAmountPromise}
 			<Spinner />
 		{:then warehouseAmount}
@@ -33,18 +33,3 @@
 		{/await}
 	</p>
 </Card>
-
-<style>
-	:global(.warehouse-amount-card) {
-		grid-area: warehouseAmount;
-	}
-
-	h2 {
-		font: var(--text-base-regular);
-		color: var(--gray-500);
-	}
-
-	p {
-		font: var(--text-xl-semibold);
-	}
-</style>

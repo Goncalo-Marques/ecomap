@@ -33,10 +33,10 @@
 	export let title: string | null = null;
 </script>
 
-<label class={className}>
+<label class={`flex flex-col ${className}`}>
 	{#if label}
-		<span {title} class="header">
-			<span class="input-label">{label}</span>
+		<span {title} class="flex items-center gap-1">
+			<span class="text-gray-500">{label}</span>
 			{#if title}
 				<Icon name="info" size="xx-small" />
 			{/if}
@@ -44,32 +44,8 @@
 	{/if}
 	<slot />
 	{#if helperText}
-		<span class={`helper-text ${error ? "error" : ""}`}>{helperText}</span>
+		<span data-error={error} class="text-xs data-[error=true]:text-red-500">
+			{helperText}
+		</span>
 	{/if}
 </label>
-
-<style>
-	label {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.header {
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-
-		& .input-label {
-			color: var(--gray-500);
-		}
-	}
-
-	.helper-text {
-		font: var(--text-xs-regular);
-		color: var(--gray-400);
-
-		&.error {
-			color: var(--red-500);
-		}
-	}
-</style>

@@ -107,8 +107,8 @@
 	containersPromise.then(containers => buildChart(containers));
 </script>
 
-<Card element="article" class="containers-category-card">
-	<h2>{$t("dashboard.containersByCategory")}</h2>
+<Card element="article" class="[grid-area:containersByCategory]">
+	<h2 class="text-xl font-semibold">{$t("dashboard.containersByCategory")}</h2>
 	<canvas bind:this={canvas} style:display={loading ? "none" : ""} />
 	{#await containersPromise}
 		<Spinner />
@@ -116,13 +116,3 @@
 		<p>{$t("error.unexpected.title")}</p>
 	{/await}
 </Card>
-
-<style>
-	:global(.containers-category-card) {
-		grid-area: containersByCategory;
-	}
-
-	h2 {
-		font: var(--text-xl-semibold);
-	}
-</style>

@@ -8,6 +8,6 @@
 	export let id: string;
 </script>
 
-<Link style="display: contents;" to={id}>
+<Link class="contents" to={id}>
 	<Icon name="chevron_right" />
 </Link>

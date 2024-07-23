@@ -84,11 +84,9 @@
 	const containerPromise = fetchContainer();
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	{#await containerPromise}
-		<div class="container-loading">
-			<Spinner />
-		</div>
+		<Spinner class="flex h-full items-center justify-center" />
 	{:then container}
 		{@const locationName = getLocationName(
 			container.geoJson.properties.wayName,
@@ -101,12 +99,12 @@
 				variant="secondary"
 				onClick={deleteContainer}
 			/>
-			<Link to={`${container.id}/map`} style="display:contents">
+			<Link to={`${container.id}/map`} class="contents">
 				<Button variant="secondary" startIcon="map">
 					{$t("map")}
 				</Button>
 			</Link>
-			<Link to={`${container.id}/edit`} style="display:contents">
+			<Link to={`${container.id}/edit`} class="contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
@@ -134,26 +132,9 @@
 			</DetailsSection>
 		</DetailsContent>
 	{:catch}
-		<div class="container-not-found">
-			<h2>{$t("containers.notFound.title")}</h2>
+		<div class="flex h-1/2 flex-col items-center justify-center">
+			<h2 class="text-2xl font-semibold">{$t("containers.notFound.title")}</h2>
 			<p>{$t("containers.notFound.description")}</p>
 		</div>
 	{/await}
 </Card>
-
-<style>
-	.container-loading {
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.container-not-found {
-		height: 50%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

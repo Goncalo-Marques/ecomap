@@ -41,9 +41,11 @@
 	let containersPromise = getContainers();
 </script>
 
-<main class="page-layout">
-	<h1>{$t("dashboard")}</h1>
-	<div class="dashboard-content">
+<main class="m-10 flex flex-col gap-10">
+	<h1 class="text-2xl font-semibold">{$t("dashboard")}</h1>
+	<div
+		class="grid grid-cols-3 gap-4 [grid-template-areas:'activeEmployees_warehouseAmount_truckAmount''containersAdded_containersAdded_containersByCategory''containersByMunicipality_containersByMunicipality_containersByMunicipality']"
+	>
 		<ActiveEmployees />
 		<WarehouseAmount />
 		<TruckAmount />
@@ -52,19 +54,3 @@
 		<ContainersByMunicipality {containersPromise} />
 	</div>
 </main>
-
-<style>
-	h1 {
-		font: var(--text-2xl-semibold);
-	}
-
-	.dashboard-content {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-areas:
-			"activeEmployees warehouseAmount truckAmount"
-			"containersAdded containersAdded containersByCategory"
-			"containersByMunicipality containersByMunicipality containersByMunicipality";
-		gap: 1rem;
-	}
-</style>

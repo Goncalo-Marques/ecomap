@@ -2,21 +2,7 @@
 	import { t } from "../../lib/utils/i8n";
 </script>
 
-<main>
-	<h2>{$t("forbidden.title")}</h2>
+<main class="mx-auto my-0 flex w-[25rem] flex-col justify-center text-center">
+	<h2 class="text-3xl font-semibold">{$t("forbidden.title")}</h2>
 	<p>{$t("forbidden.description")}</p>
 </main>
-
-<style>
-	main {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		width: 25rem;
-		margin: 0 auto;
-		text-align: center;
-	}
-	h2 {
-		font: var(--text-3xl-semibold);
-	}
-</style>

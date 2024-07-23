@@ -20,23 +20,10 @@
 	export let onClick: MouseEventHandler<HTMLButtonElement> | null = null;
 </script>
 
-<button type="button" on:click={onClick}>
+<button
+	type="button"
+	class="flex items-center justify-center rounded-full p-1 hover:bg-gray-100 active:bg-gray-200"
+	on:click={onClick}
+>
 	<Icon name={icon} {size} />
 </button>
-
-<style>
-	button {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		border-radius: 50%;
-		padding: 0.25rem;
-
-		&:hover {
-			background-color: var(--gray-100);
-		}
-		&:active {
-			background-color: var(--gray-200);
-		}
-	}
-</style>
