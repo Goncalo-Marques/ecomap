@@ -34,7 +34,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/api": {
-				target: "https://server-7fzc7ivuwa-ue.a.run.app",
+				target: "http://127.0.0.1:8080",
 				changeOrigin: true,
 			},
 		},
