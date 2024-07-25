@@ -141,7 +141,6 @@
 	 * @param truckInput Truck input field.
 	 * @param departureWarehouseInput Departure warehouse input field.
 	 * @param arrivalWarehouseInput Arrival warehouse input field.
-	 * @param containersInput Containers input field.
 	 * @returns `true` if form is valid, `false` otherwise.
 	 */
 	function validateForm(
@@ -149,7 +148,6 @@
 		truckInput: HTMLSelectElement,
 		departureWarehouseInput: HTMLSelectElement,
 		arrivalWarehouseInput: HTMLSelectElement,
-		containersInput: HTMLInputElement,
 	) {
 		if (nameInput.validity.valueMissing) {
 			formErrorMessages.name = $t("error.valueMissing");
@@ -175,7 +173,12 @@
 			formErrorMessages.arrivalWarehouse = "";
 		}
 
-		if (containersInput.validity.valueMissing) {
+		const selectedContainerAmount = getSelectedContainerAmount(
+			containersMap.original.length,
+			containersMap.added.length,
+			containersMap.deleted.length,
+		);
+		if (!selectedContainerAmount) {
 			formErrorMessages.containers = $t("error.valueMissing");
 		} else {
 			formErrorMessages.containers = "";
@@ -204,14 +207,12 @@
 		const departureWarehouseInput =
 			formElements.namedItem("departureWarehouse");
 		const arrivalWarehouseInput = formElements.namedItem("arrivalWarehouse");
-		const containersInput = formElements.namedItem("containers");
 
 		if (
 			!(nameInput instanceof HTMLInputElement) ||
 			!(truckInput instanceof HTMLSelectElement) ||
 			!(departureWarehouseInput instanceof HTMLSelectElement) ||
-			!(arrivalWarehouseInput instanceof HTMLSelectElement) ||
-			!(containersInput instanceof HTMLInputElement)
+			!(arrivalWarehouseInput instanceof HTMLSelectElement)
 		) {
 			throw new Error("Form elements are not inputs");
 		}
@@ -223,7 +224,6 @@
 				truckInput,
 				departureWarehouseInput,
 				arrivalWarehouseInput,
-				containersInput,
 			)
 		) {
 			return;
@@ -333,19 +333,26 @@
 	}
 
 	/**
-	 * Retrieves the value displayed in the container input.
+	 * Retrieves the amount of selected containers of route.
 	 * @param originalAmount The number of containers on the route.
 	 * @param addedAmount The number of containers added to the route.
 	 * @param deletedAmount The number of containers deleted from the route.
-	 * @returns Container input value.
+	 * @returns Amount of selected containers of route.
 	 */
-	function getContainersInputValue(
+	function getSelectedContainerAmount(
 		originalAmount: number,
 		addedAmount: number,
 		deletedAmount: number,
 	) {
-		const containerAmount = originalAmount + addedAmount - deletedAmount;
+		return originalAmount + addedAmount - deletedAmount;
+	}
 
+	/**
+	 * Retrieves the value displayed in the container input.
+	 * @param containerAmount The number of selected containers for the route.
+	 * @returns Container input value.
+	 */
+	function getContainersInputValue(containerAmount: number) {
 		return `${containerAmount} ${$t(containerAmount === 1 ? "container" : "containers").toLowerCase()}`;
 	}
 
@@ -583,9 +590,11 @@
 					<LocationInput
 						required
 						value={getContainersInputValue(
-							containersMap.original.length,
-							containersMap.added.length,
-							containersMap.deleted.length,
+							getSelectedContainerAmount(
+								containersMap.original.length,
+								containersMap.added.length,
+								containersMap.deleted.length,
+							),
 						)}
 						name="containers"
 						placeholder={$t("routes.containers.placeholder")}
