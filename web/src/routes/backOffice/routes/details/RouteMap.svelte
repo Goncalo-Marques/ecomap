@@ -327,22 +327,22 @@
 
 <main class="group relative h-auto w-full" data-mapVisible={isMapVisible}>
 	<MapComponent class="group-data-[mapVisible=false]:hidden" bind:map />
-	<Link to={id} class="contents">
-		<div class="absolute left-10 top-10">
-			<Button
-				class="shadow-md"
-				startIcon="arrow_back"
-				size="large"
-				variant="tertiary"
-			/>
-		</div>
-	</Link>
 
 	{#await routePromise}
 		<Spinner
 			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
 		/>
 	{:then route}
+		<Link to={route.id} class="contents">
+			<div class="absolute left-10 top-10">
+				<Button
+					class="shadow-md"
+					startIcon="arrow_back"
+					size="large"
+					variant="tertiary"
+				/>
+			</div>
+		</Link>
 		<RouteBottomSheet {route} />
 	{:catch error}
 		{@const errorType =
