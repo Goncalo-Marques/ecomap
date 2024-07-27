@@ -121,6 +121,8 @@
 	"routes.update.conflict.description": "A rota já tem mais operadores associados do que a capacidade do novo camião.",
 	"routes.notFound.title": "Rota não encontrada",
 	"routes.notFound.description": "A rota que procura não existe.",
+	"routes.noContainersAssociated.title": "Rota não tem contentores associados",
+	"routes.noContainersAssociated.description": "Associe pelo menos um contentor à rota para a visualizar no mapa.",
 	"routes.delete.success": "Rota eliminada com sucesso",
 	"routes.delete.conflict.title": "Conflito",
 	"routes.delete.conflict.description": "Esta rota não pode ser eliminada porque está associada a um contentor ou a um operador.",

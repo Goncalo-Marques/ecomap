@@ -78,12 +78,6 @@
 	let selectedFeatures: Feature[] = [];
 
 	/**
-	 * Indicates if save action is disabled.
-	 * @default true
-	 */
-	let isSaveActionDisabled = true;
-
-	/**
 	 * Retrieves the ID of a feature.
 	 * @param coordinate Feature coordinate.
 	 */
@@ -164,7 +158,6 @@
 			if (originalContainersMap.has(container.id)) {
 				containerFeature.set("selected", true);
 				selectedFeatures.push(containerFeature);
-				isSaveActionDisabled = false;
 			}
 		}
 
@@ -284,8 +277,6 @@
 				selectFeature(feature);
 			}
 		}
-
-		isSaveActionDisabled = !selectedFeatures.length;
 	}
 
 	/**
@@ -339,11 +330,7 @@
 	/>
 	<svelte:fragment slot="actions">
 		<Button variant="tertiary" onClick={handleCancel}>{$t("cancel")}</Button>
-		<Button
-			startIcon="check"
-			disabled={isSaveActionDisabled}
-			onClick={handleSave}
-		>
+		<Button startIcon="check" onClick={handleSave}>
 			{$t("save")}
 		</Button>
 	</svelte:fragment>

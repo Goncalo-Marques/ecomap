@@ -24,6 +24,7 @@
 	import { convertToMapProjection } from "../../../../lib/utils/map";
 	import type { GeoJSONFeatureCollectionLineString } from "../../../../domain/geojson";
 	import { getCssVariable } from "../../../../lib/utils/cssVars";
+	import { RouteWithNoContainersError } from "../../../../lib/errors/route";
 
 	/**
 	 * Route ID.
@@ -255,6 +256,15 @@
 			throw new Error("Failed to retrieve route details");
 		}
 
+		// Check if there are no containers associated with the route.
+		if (
+			containerFeaturesRes.status === "fulfilled" &&
+			!containerFeaturesRes.value.length
+		) {
+			isMapVisible = false;
+			throw new RouteWithNoContainersError();
+		}
+
 		const mapHelper = new MapHelper(map);
 
 		addRouteToMap(routeWaysRes.value);
@@ -334,12 +344,18 @@
 			</div>
 		</Link>
 		<RouteBottomSheet {route} />
-	{:catch}
+	{:catch error}
+		{@const errorType =
+			error instanceof RouteWithNoContainersError
+				? "noContainersAssociated"
+				: "notFound"}
 		<div
 			class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center"
 		>
-			<h2 class="text-2xl font-semibold">{$t("routes.notFound.title")}</h2>
-			<p>{$t("routes.notFound.description")}</p>
+			<h2 class="text-2xl font-semibold">
+				{$t(`routes.${errorType}.title`)}
+			</h2>
+			<p>{$t(`routes.${errorType}.description`)}</p>
 		</div>
 	{/await}
 </main>

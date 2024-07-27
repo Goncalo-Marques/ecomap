@@ -122,6 +122,8 @@
 	"routes.update.conflict.description": "The route already has more employees associated with it than the new truck has capacity.",
 	"routes.notFound.title": "Route not found",
 	"routes.notFound.description": "The route you are looking for does not exist.",
+	"routes.noContainersAssociated.title": "Route has no containers associated with it",
+	"routes.noContainersAssociated.description": "Associate at least one container with the route to display it on the map.",
 	"routes.delete.success": "Route deleted successfully",
 	"routes.delete.conflict.title": "Conflict",
 	"routes.delete.conflict.description": "This route cannot be deleted because it's associated with a container or employee.",
