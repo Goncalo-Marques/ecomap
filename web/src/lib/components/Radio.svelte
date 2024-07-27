@@ -38,15 +38,7 @@
 	export let onChange: ChangeEventHandler<HTMLInputElement> | null = null;
 </script>
 
-<label>
+<label class="flex gap-2 text-base font-normal">
 	<input type="radio" {id} {name} {value} {checked} on:change={onChange} />
 	{label}
 </label>
-
-<style>
-	label {
-		display: flex;
-		gap: 0.5rem;
-		font: var(--text-base-regular);
-	}
-</style>

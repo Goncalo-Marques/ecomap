@@ -27,7 +27,10 @@
 	let openSupportModal: boolean;
 </script>
 
-<button on:click={() => (openSupportModal = true)}>
+<button
+	class="flex w-full justify-items-center gap-2 rounded px-3 py-2 transition-colors hover:bg-green-50 hover:text-green-800 active:bg-green-100 active:text-green-800 data-[selected=true]:bg-green-100 data-[selected=true]:font-semibold data-[selected=true]:text-green-800"
+	on:click={() => (openSupportModal = true)}
+>
 	<Icon name="headset_mic" />
 	<span>{$t("support")}</span>
 </button>
@@ -38,62 +41,21 @@
 	title={$t("support")}
 	onOpenChange={open => (openSupportModal = open)}
 >
-	<ul>
+	<ul class="flex flex-col gap-2">
 		{#each team as member}
-			<li>
-				<div class="member-details">
-					<span class="member-details-name">{member.name}</span>
-					<span class="member-details-email">{member.email}</span>
+			<li class="flex flex-1 items-center justify-between gap-2">
+				<div class="flex flex-col">
+					<span>{member.name}</span>
+					<span class="text-sm text-gray-600">{member.email}</span>
 				</div>
-				<a target="_blank" href={member.linkedInURL}>
-					<img src="/images/linkedin.svg" alt="LinkedIn logo" />
+				<a
+					class="flex size-8 items-center justify-center rounded-full bg-[#007ebb]"
+					target="_blank"
+					href={member.linkedInURL}
+				>
+					<img class="size-5" src="/images/linkedin.svg" alt="LinkedIn logo" />
 				</a>
 			</li>
 		{/each}
 	</ul>
 </Modal>
-
-<style>
-	ul {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-
-		& li {
-			flex: 1;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			gap: 0.5rem;
-
-			& .member-details {
-				display: flex;
-				flex-direction: column;
-
-				& .member-details-name {
-					font: var(--text-base-regular);
-				}
-
-				& .member-details-email {
-					font: var(--text-sm-regular);
-					color: var(--gray-600);
-				}
-			}
-
-			& a {
-				width: 2rem;
-				height: 2rem;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				border-radius: 50%;
-				background-color: #007ebb;
-
-				& img {
-					width: 1.25rem;
-					height: 1.25rem;
-				}
-			}
-		}
-	}
-</style>

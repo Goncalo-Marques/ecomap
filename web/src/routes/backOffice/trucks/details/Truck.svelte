@@ -88,11 +88,9 @@
 	const truckPromise = fetchTruck();
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	{#await truckPromise}
-		<div class="truck-loading">
-			<Spinner />
-		</div>
+		<Spinner class="flex h-full items-center justify-center" />
 	{:then truck}
 		{@const locationName = getLocationName(
 			truck.geoJson.properties.wayName,
@@ -105,12 +103,12 @@
 				variant="secondary"
 				onClick={deleteTruck}
 			/>
-			<Link to={`${truck.id}/map`} style="display:contents">
+			<Link to={`${truck.id}/map`} class="contents">
 				<Button variant="secondary" startIcon="map">
 					{$t("map")}
 				</Button>
 			</Link>
-			<Link to={`${truck.id}/edit`} style="display:contents">
+			<Link to={`${truck.id}/edit`} class="contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
@@ -138,26 +136,9 @@
 			</DetailsSection>
 		</DetailsContent>
 	{:catch}
-		<div class="truck-not-found">
-			<h2>{$t("trucks.notFound.title")}</h2>
+		<div class="flex h-1/2 flex-col items-center justify-center">
+			<h2 class="text-2xl font-semibold">{$t("trucks.notFound.title")}</h2>
 			<p>{$t("trucks.notFound.description")}</p>
 		</div>
 	{/await}
 </Card>
-
-<style>
-	.truck-loading {
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.truck-not-found {
-		height: 50%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

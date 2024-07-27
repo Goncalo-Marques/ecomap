@@ -89,11 +89,9 @@
 	const routePromise = fetchRoute();
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	{#await routePromise}
-		<div class="route-loading">
-			<Spinner />
-		</div>
+		<Spinner class="flex h-full items-center justify-center" />
 	{:then route}
 		<DetailsHeader to="" title={route.name}>
 			<Button
@@ -102,12 +100,12 @@
 				variant="secondary"
 				onClick={deleteRoute}
 			/>
-			<Link to={`${route.id}/map`} style="display:contents">
+			<Link to={`${route.id}/map`} class="contents">
 				<Button variant="secondary" startIcon="map">
 					{$t("map")}
 				</Button>
 			</Link>
-			<Link to={`${route.id}/edit`} style="display:contents">
+			<Link to={`${route.id}/edit`} class="contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
@@ -146,35 +144,14 @@
 					/>
 				</DetailsFields>
 			</DetailsSection>
-			<DetailsSection class="route-employees" label={$t("operators")}>
+			<DetailsSection class="h-full" label={$t("operators")}>
 				<RouteOperatorsTable routeId={id} />
 			</DetailsSection>
 		</DetailsContent>
 	{:catch}
-		<div class="route-not-found">
-			<h2>{$t("routes.notFound.title")}</h2>
+		<div class="flex h-1/2 flex-col items-center justify-center">
+			<h2 class="text-2xl font-semibold">{$t("routes.notFound.title")}</h2>
 			<p>{$t("routes.notFound.description")}</p>
 		</div>
 	{/await}
 </Card>
-
-<style>
-	.route-loading {
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.route-not-found {
-		height: 50%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-
-	:global(.route-employees) {
-		height: 100%;
-	}
-</style>

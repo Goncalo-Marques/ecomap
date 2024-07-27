@@ -24,16 +24,9 @@
 	}
 </script>
 
-<div class="search">
-	<Search
-		value={$filters.username}
-		placeholder={$t("employees.search")}
-		onInput={debounce(handleSearchChange)}
-	/>
-</div>
-
-<style>
-	.search {
-		width: 20rem;
-	}
-</style>
+<Search
+	class="w-80"
+	value={$filters.username}
+	placeholder={$t("employees.search")}
+	onInput={debounce(handleSearchChange)}
+/>

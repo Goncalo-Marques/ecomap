@@ -5,38 +5,20 @@
 	import EmployeeMenu from "./EmployeeMenu.svelte";
 </script>
 
-<nav>
+<nav
+	class="root flex h-[var(--top-bar-height)] justify-between justify-items-center border border-b-gray-300 bg-white px-7 py-4"
+>
 	<Link to={BackOfficeRoutes.DASHBOARD}>
-		<div class="logo-container">
+		<div class="flex justify-center gap-1">
 			<Logo />
-			<h1>EcoMap</h1>
+			<h1 class="text-xl font-semibold">EcoMap</h1>
 		</div>
 	</Link>
 	<EmployeeMenu />
 </nav>
 
-<style>
+<style lang="postcss">
 	:root {
 		--top-bar-height: 4rem;
-	}
-
-	nav {
-		height: var(--top-bar-height);
-		display: flex;
-		justify-content: space-between;
-		justify-items: center;
-		padding: 1rem 1.75rem;
-		background-color: var(--white);
-		border-bottom: 1px solid var(--gray-300);
-	}
-
-	.logo-container {
-		display: flex;
-		justify-items: center;
-		gap: 0.25rem;
-	}
-
-	.logo-container h1 {
-		font: var(--text-xl-semibold);
 	}
 </style>

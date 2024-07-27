@@ -6,12 +6,6 @@
 	export let value: string = "";
 </script>
 
-<option {value}>
+<option class="text-gray-900" {value}>
 	<slot />
 </option>
-
-<style>
-	option {
-		color: var(--gray-900);
-	}
-</style>

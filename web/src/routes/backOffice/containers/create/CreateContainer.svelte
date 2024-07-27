@@ -59,7 +59,7 @@
 	}
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	<ContainerForm
 		back=""
 		title={$t("containers.create.title")}

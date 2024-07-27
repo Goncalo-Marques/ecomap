@@ -1,11 +1,3 @@
-<ul>
+<ul class="flex flex-col py-1">
 	<slot />
 </ul>
-
-<style>
-	ul {
-		padding-block: 0.25rem;
-		display: flex;
-		flex-direction: column;
-	}
-</style>

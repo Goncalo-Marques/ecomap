@@ -15,22 +15,9 @@
 </script>
 
 <TopBar />
-<div class="content">
+<div class="flex h-[calc(100vh-var(--top-bar-height))]">
 	<SideBar />
-	<div class="layout">
+	<div class="grid flex-1 overflow-auto">
 		<slot />
 	</div>
 </div>
-
-<style>
-	.content {
-		display: flex;
-		height: calc(100vh - var(--top-bar-height));
-	}
-
-	.layout {
-		flex: 1;
-		display: grid;
-		overflow: auto;
-	}
-</style>

@@ -21,9 +21,9 @@
 	const truckAmountPromise = getTruckAmount();
 </script>
 
-<Card element="article" class="truck-amount-card">
-	<h2>{$t("dashboard.amountOfTrucks")}</h2>
-	<p>
+<Card element="article" class="[grid-area:truckAmount]">
+	<h2 class="text-gray-500">{$t("dashboard.amountOfTrucks")}</h2>
+	<p class="text-xl font-semibold">
 		{#await truckAmountPromise}
 			<Spinner />
 		{:then truckAmount}
@@ -33,18 +33,3 @@
 		{/await}
 	</p>
 </Card>
-
-<style>
-	:global(.truck-amount-card) {
-		grid-area: truckAmount;
-	}
-
-	h2 {
-		font: var(--text-base-regular);
-		color: var(--gray-500);
-	}
-
-	p {
-		font: var(--text-xl-semibold);
-	}
-</style>

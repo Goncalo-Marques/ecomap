@@ -82,9 +82,9 @@
 	const activeEmployeeAmountPromise = getActiveEmployeeAmount();
 </script>
 
-<Card element="article">
-	<h2>{$t("dashboard.activeEmployees")}</h2>
-	<p>
+<Card element="article" class="[grid-area:activeEmployees]">
+	<h2 class="text-gray-500">{$t("dashboard.activeEmployees")}</h2>
+	<p class="text-xl font-semibold">
 		{#await activeEmployeeAmountPromise}
 			<Spinner />
 		{:then activeEmployeeAmount}
@@ -94,18 +94,3 @@
 		{/await}
 	</p>
 </Card>
-
-<style>
-	:global(.active-employees-card) {
-		grid-area: activeEmployees;
-	}
-
-	h2 {
-		font: var(--text-base-regular);
-		color: var(--gray-500);
-	}
-
-	p {
-		font: var(--text-xl-semibold);
-	}
-</style>

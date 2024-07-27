@@ -470,9 +470,9 @@
 	}
 </script>
 
-<form novalidate on:submit|preventDefault={handleSubmit}>
+<form novalidate class="contents" on:submit|preventDefault={handleSubmit}>
 	<DetailsHeader to={back} {title}>
-		<Link to={back} style="display:contents">
+		<Link to={back} class="contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
 		<Button type="submit" disabled={isSubmitting} startIcon="check">
@@ -595,10 +595,7 @@
 				</FormControl>
 			</DetailsFields>
 		</DetailsSection>
-		<DetailsSection
-			class="drivers-collectors"
-			label={$t("routes.employees.role.drivers")}
-		>
+		<DetailsSection class="flex-1" label={$t("routes.employees.role.drivers")}>
 			<OperatorsTable
 				operators={wasteOperators}
 				loading={loadingWasteOperators}
@@ -607,7 +604,7 @@
 			/>
 		</DetailsSection>
 		<DetailsSection
-			class="drivers-collectors"
+			class="flex-1"
 			label={$t("routes.employees.role.collectors")}
 		>
 			<OperatorsTable
@@ -628,13 +625,3 @@
 		}}
 	/>
 </form>
-
-<style>
-	form {
-		display: contents;
-	}
-
-	:global(.drivers-collectors) {
-		flex: 1;
-	}
-</style>

@@ -19,44 +19,15 @@
 	export let resourceLink: string;
 </script>
 
-<article>
-	<div class="top-bar">
-		<div class="title">
+<article class="flex flex-col gap-2 rounded border border-gray-300 p-4">
+	<div class="flex items-center gap-2">
+		<div class="flex flex-1 items-center gap-1">
 			<Icon name={icon} />
-			<h3>{title}</h3>
+			<h3 class="flex-1">{title}</h3>
 		</div>
-		<Link to={resourceLink} style="display:contents">
+		<Link to={resourceLink} class="contents">
 			<Button startIcon="open_in_new" variant="tertiary" />
 		</Link>
 	</div>
 	<slot />
 </article>
-
-<style>
-	article {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		border-radius: 0.25rem;
-		padding: 1rem;
-		border: 1px solid var(--gray-300);
-	}
-
-	.top-bar {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.title {
-		flex: 1;
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-
-		& h3 {
-			flex: 1;
-			font: var(--text-base-regular);
-		}
-	}
-</style>

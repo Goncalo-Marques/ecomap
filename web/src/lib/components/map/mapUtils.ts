@@ -47,7 +47,7 @@ const defaultVectorStyle: VectorStyle = {
  */
 const clusterStyle = new Style({
 	text: new Text({
-		font: getCssVariable("--text-sm-semibold"),
+		font: "600 0.875rem/1.25rem Inter, sans-serif",
 		textAlign: "center",
 		fill: new Fill({
 			color: getCssVariable("--black"),

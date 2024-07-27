@@ -74,10 +74,13 @@
 	}
 </script>
 
-<dialog bind:this={dialog}>
-	<header>
-		<div class="header-content">
-			<h2>{title}</h2>
+<dialog
+	class="m-auto max-h-[90vh] min-w-[32rem] max-w-[90vw] overflow-hidden rounded shadow-md backdrop:bg-black backdrop:opacity-50"
+	bind:this={dialog}
+>
+	<header class="border-b border-gray-300 py-6">
+		<div class="flex items-center gap-2 px-6">
+			<h2 class="flex-1 text-2xl font-semibold">{title}</h2>
 			<IconButton icon="close" onClick={closeModal} />
 		</div>
 	</header>
@@ -85,52 +88,8 @@
 		<slot />
 	</section>
 	{#if containsActions}
-		<footer>
+		<footer class="flex items-center justify-end gap-2 p-6">
 			<slot name="actions" />
 		</footer>
 	{/if}
 </dialog>
-
-<style>
-	dialog {
-		padding: 0;
-		margin: auto;
-		min-width: 32rem;
-		max-width: 90vw;
-		max-height: 90vh;
-		border: unset;
-		border-radius: 0.25rem;
-		box-shadow: var(--shadow-md);
-		overflow: hidden;
-	}
-
-	dialog::backdrop {
-		background-color: var(--black);
-		opacity: 0.5;
-	}
-
-	header {
-		padding-block: 1.5rem;
-		border-bottom: 1px solid var(--gray-300);
-
-		& > .header-content {
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-			padding-inline: 1.5rem;
-
-			& > h2 {
-				font: var(--text-2xl-semibold);
-				flex: 1;
-			}
-		}
-	}
-
-	footer {
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 1.5rem;
-	}
-</style>

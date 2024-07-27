@@ -32,12 +32,23 @@
 	export let onChange: ChangeEventHandler<HTMLInputElement> | null = null;
 </script>
 
-<label data-size={size} data-disabled={disabled}>
+<label
+	class="group relative flex items-center gap-2 data-[disabled=true]:text-gray-400"
+	data-size={size}
+	data-disabled={disabled}
+>
 	<input
 		{disabled}
 		{checked}
 		type="checkbox"
-		class="material-symbols-rounded"
+		class={[
+			"material-symbols-rounded appearance-none rounded border border-gray-300 leading-normal",
+			"checked:relative checked:border-none checked:bg-green-700 checked:text-white before:checked:absolute before:checked:left-1/2 before:checked:top-1/2 before:checked:-translate-x-1/2 before:checked:-translate-y-1/2 before:checked:content-['check']",
+			"group-data-[size=small]:size-3 group-data-[size=small]:text-[0.5rem]",
+			"group-data-[size=medium]:size-4 group-data-[size=medium]:text-xs",
+			"group-data-[size=large]:size-6 group-data-[size=large]:text-base",
+			"group-data-[disabled=false]:cursor-pointer group-data-[disabled=true]:cursor-not-allowed group-data-[disabled=true]:bg-gray-300",
+		].join(" ")}
 		on:change={onChange}
 	/>
 
@@ -45,68 +56,3 @@
 		{label}
 	{/if}
 </label>
-
-<style>
-	label {
-		cursor: pointer;
-		position: relative;
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	input {
-		appearance: none;
-		cursor: inherit;
-		line-height: normal;
-		border: 1px solid var(--gray-300);
-		border-radius: 0.25rem;
-		accent-color: var(--green-700);
-
-		&:checked {
-			position: relative;
-			border: none;
-			color: var(--white);
-			background-color: var(--green-700);
-
-			&::before {
-				content: "check";
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-			}
-		}
-
-		&:hover {
-			accent-color: var(--green-700);
-		}
-	}
-
-	[data-size="small"] input {
-		height: 0.75rem;
-		width: 0.75rem;
-		font-size: 0.5rem;
-	}
-
-	[data-size="medium"] input {
-		height: 1rem;
-		width: 1rem;
-		font-size: 0.75rem;
-	}
-
-	[data-size="large"] input {
-		height: 1.5rem;
-		width: 1.5rem;
-		font-size: 1rem;
-	}
-
-	[data-disabled="true"] {
-		cursor: not-allowed;
-		color: var(--gray-400);
-
-		& input {
-			background-color: var(--gray-300);
-		}
-	}
-</style>

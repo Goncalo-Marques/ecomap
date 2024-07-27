@@ -14,72 +14,18 @@
 	export let onClick: MouseEventHandler<HTMLInputElement> | null = null;
 </script>
 
-<label class="switch">
-	<input type="checkbox" bind:checked on:click={onClick} />
-	<span class="slider round" />
+<label class="relative ml-auto inline-block h-5 w-10">
+	<input
+		class="peer opacity-0"
+		type="checkbox"
+		bind:checked
+		on:click={onClick}
+	/>
+	<span
+		class={[
+			"absolute inset-0 cursor-pointer rounded-xl outline outline-1 outline-gray-400",
+			"before:absolute before:bottom-1 before:size-3 before:translate-x-1 before:rounded-full before:bg-gray-400 before:transition before:content-['']",
+			"peer-checked:bg-green-100 peer-checked:outline-0 peer-checked:before:translate-x-[1.375rem] peer-checked:before:bg-green-800",
+		].join(" ")}
+	/>
 </label>
-
-<style>
-	.switch {
-		margin-left: auto;
-
-		position: relative;
-		display: inline-block;
-		width: 2.5rem;
-		height: 1.25rem;
-	}
-
-	.switch input {
-		opacity: 0;
-	}
-
-	.slider {
-		position: absolute;
-		cursor: pointer;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		transition: 0.2s;
-	}
-
-	.slider:before {
-		position: absolute;
-		content: "";
-		height: 0.75rem;
-		width: 0.75rem;
-		bottom: 0.25rem;
-		transition: 0.2s;
-	}
-
-	input:checked + .slider {
-		outline: 0;
-		background-color: var(--green-100);
-	}
-
-	input:focus + .slider {
-		box-shadow: 0 0 1px var(--green-100);
-	}
-
-	input:checked + .slider:before {
-		transform: translateX(1.375rem);
-		background-color: var(--green-800);
-	}
-
-	input + .slider::before {
-		transform: translateX(0.25rem);
-		background-color: var(--gray-400);
-	}
-
-	input + .slider {
-		outline: 1px solid var(--gray-400);
-	}
-
-	.slider.round {
-		border-radius: 0.75rem;
-	}
-
-	.slider.round:before {
-		border-radius: 50%;
-	}
-</style>

@@ -90,11 +90,9 @@
 	const employeePromise = fetchEmployee();
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	{#await employeePromise}
-		<div class="employee-loading">
-			<Spinner />
-		</div>
+		<Spinner class="flex h-full items-center justify-center" />
 	{:then employee}
 		{@const locationName = getLocationName(
 			employee.geoJson.properties.wayName,
@@ -118,7 +116,7 @@
 					onClick={deleteEmployee}
 				/>
 			{/if}
-			<Link to={`${employee.id}/edit`} style="display:contents">
+			<Link to={`${employee.id}/edit`} class="contents">
 				<Button startIcon="edit">{$t("editInfo")}</Button>
 			</Link>
 		</DetailsHeader>
@@ -181,26 +179,9 @@
 			onOpenChange={open => (openUpdatePasswordModal = open)}
 		/>
 	{:catch}
-		<div class="employee-not-found">
-			<h2>{$t("employees.notFound.title")}</h2>
+		<div class="flex h-1/2 flex-col items-center justify-center">
+			<h2 class="text-2xl font-semibold">{$t("employees.notFound.title")}</h2>
 			<p>{$t("employees.notFound.description")}</p>
 		</div>
 	{/await}
 </Card>
-
-<style>
-	.employee-loading {
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.employee-not-found {
-		height: 50%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

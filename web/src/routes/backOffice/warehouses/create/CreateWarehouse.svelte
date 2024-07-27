@@ -58,7 +58,7 @@
 	}
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	<WarehouseForm
 		back=""
 		title={$t("warehouses.create.title")}

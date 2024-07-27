@@ -20,7 +20,8 @@
 		"src/**/*.js",
 		"src/**/*.svelte",
 		"api/**/*.d.ts",
-		"vite.config.ts"
+		"vite.config.ts",
+		"tailwind.config.ts"
 	],
 	"references": [{ "path": "./tsconfig.node.json" }]
 }

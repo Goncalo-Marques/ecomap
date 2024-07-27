@@ -58,8 +58,8 @@
 
 {#await employeePromise then employee}
 	<Popover bind:popover id="employee-popover" align="right">
-		<div slot="trigger" class="employee-menu-trigger">
-			<div class="avatar">
+		<div slot="trigger" class="flex items-center justify-end gap-2">
+			<div class="flex items-center gap-1">
 				<Icon name="account_circle" />
 				<span>{employee.firstName} {employee.lastName}</span>
 			</div>
@@ -70,7 +70,7 @@
 			<MenuItem>
 				<Link
 					to={`${BackOfficeRoutes.EMPLOYEES}/${employee.id}`}
-					style="display:contents"
+					class="contents"
 					on:click={() => popover.hidePopover()}
 				>
 					<Icon name="person" size="small" />
@@ -79,7 +79,7 @@
 			</MenuItem>
 			<Divider />
 			<MenuItem>
-				<button class="signOut" on:click={signOut}>
+				<button class="flex w-full items-center gap-2" on:click={signOut}>
 					<Icon name="logout" size="small" />
 					{$t("signOut.button")}
 				</button>
@@ -89,25 +89,3 @@
 {:catch}
 	{signOut()}
 {/await}
-
-<style>
-	.signOut {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		width: 100%;
-	}
-
-	.avatar {
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-	}
-
-	.employee-menu-trigger {
-		display: flex;
-		gap: 0.5rem;
-		justify-content: flex-end;
-		align-items: center;
-	}
-</style>

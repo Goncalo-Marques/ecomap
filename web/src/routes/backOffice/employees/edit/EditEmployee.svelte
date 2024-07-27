@@ -130,11 +130,9 @@
 	const employeePromise = fetchEmployee();
 </script>
 
-<Card class="page-layout">
+<Card class="m-10 flex flex-col gap-10">
 	{#await employeePromise}
-		<div class="employee-loading">
-			<Spinner />
-		</div>
+		<Spinner class="flex h-full items-center justify-center" />
 	{:then employee}
 		<EmployeeForm
 			{employee}
@@ -145,26 +143,9 @@
 			onSave={updateEmployee}
 		/>
 	{:catch}
-		<div class="employee-not-found">
+		<div class="flex h-1/2 flex-col items-center justify-center">
 			<h2>{$t("employees.notFound.title")}</h2>
 			<p>{$t("employees.notFound.description")}</p>
 		</div>
 	{/await}
 </Card>
-
-<style>
-	.employee-loading {
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.employee-not-found {
-		height: 50%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

@@ -12,21 +12,9 @@
 	export let label: string;
 </script>
 
-<section class={className}>
+<section class={`flex flex-col gap-2 ${className}`}>
 	<header>
-		<h2>{label}</h2>
+		<h2 class="font-semibold">{label}</h2>
 	</header>
 	<slot />
 </section>
-
-<style>
-	section {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	h2 {
-		font: var(--text-base-semibold);
-	}
-</style>

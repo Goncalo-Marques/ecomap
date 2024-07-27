@@ -72,66 +72,31 @@
 	let warehousePromise = fetchWarehouse();
 </script>
 
-<main class="map" data-mapVisible={isMapVisible}>
-	<Map bind:map />
+<main class="group relative h-auto w-full" data-mapVisible={isMapVisible}>
+	<Map class="group-data-[mapVisible=false]:hidden" bind:map />
 
 	{#await warehousePromise}
-		<div class="warehouse-loading">
-			<Spinner />
-		</div>
+		<Spinner
+			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+		/>
 	{:then warehouse}
-		<Link to={warehouse.id} style="display:contents">
-			<div class="back">
-				<Button startIcon="arrow_back" size="large" variant="tertiary" />
+		<Link to={warehouse.id} class="contents">
+			<div class="absolute left-10 top-10">
+				<Button
+					class="shadow-md"
+					startIcon="arrow_back"
+					size="large"
+					variant="tertiary"
+				/>
 			</div>
 		</Link>
 		<WarehouseBottomSheet {warehouse} />
 	{:catch}
-		<div class="warehouse-not-found">
-			<h2>{$t("warehouses.notFound.title")}</h2>
+		<div
+			class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center"
+		>
+			<h2 class="text-2xl font-semibold">{$t("warehouses.notFound.title")}</h2>
 			<p>{$t("warehouses.notFound.description")}</p>
 		</div>
 	{/await}
 </main>
-
-<style>
-	main {
-		position: relative;
-		height: auto;
-		width: 100%;
-
-		&[data-mapVisible="false"] {
-			& #map_id {
-				display: none;
-			}
-		}
-	}
-
-	.back {
-		position: absolute;
-		top: 2.5rem;
-		left: 2.5rem;
-
-		& > button {
-			box-shadow: var(--shadow-md);
-		}
-	}
-
-	.warehouse-loading {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-	}
-
-	.warehouse-not-found {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-</style>

@@ -14,12 +14,6 @@
 </script>
 
 <div>
-	<dt>{label}</dt>
+	<dt class="text-gray-500">{label}</dt>
 	<dd>{value ?? MISSING_VALUE_SYMBOL}</dd>
 </div>
-
-<style>
-	dt {
-		color: var(--gray-500);
-	}
-</style>

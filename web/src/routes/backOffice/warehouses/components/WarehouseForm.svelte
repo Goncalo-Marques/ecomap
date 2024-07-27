@@ -223,9 +223,9 @@
 	}
 </script>
 
-<form novalidate on:submit|preventDefault={handleSubmit}>
+<form novalidate class="contents" on:submit|preventDefault={handleSubmit}>
 	<DetailsHeader to={back} {title}>
-		<Link to={back} style="display:contents">
+		<Link to={back} class="contents">
 			<Button variant="tertiary">{$t("cancel")}</Button>
 		</Link>
 		<Button type="submit" startIcon="check" disabled={isSubmitting}>
@@ -267,7 +267,7 @@
 				</FormControl>
 			</DetailsFields>
 		</DetailsSection>
-		<DetailsSection class="warehouse-map-preview" label={$t("preview")}>
+		<DetailsSection class="flex-1" label={$t("preview")}>
 			<Map
 				bind:map={mapPreview}
 				onInit={() => {
@@ -294,13 +294,3 @@
 		/>
 	</DetailsContent>
 </form>
-
-<style>
-	:global(.warehouse-map-preview) {
-		flex: 1;
-	}
-
-	form {
-		display: contents;
-	}
-</style>

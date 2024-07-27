@@ -24,16 +24,9 @@
 	}
 </script>
 
-<div class="search">
-	<Search
-		value={$filters.location}
-		placeholder={$t("location.search")}
-		onInput={debounce(handleSearchChange)}
-	/>
-</div>
-
-<style>
-	.search {
-		width: 16rem;
-	}
-</style>
+<Search
+	class="w-64"
+	value={$filters.location}
+	placeholder={$t("location.search")}
+	onInput={debounce(handleSearchChange)}
+/>

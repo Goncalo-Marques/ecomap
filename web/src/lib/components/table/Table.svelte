@@ -181,13 +181,14 @@
 	$: columnsSorting = getColumnsSorting(columns, sortingField, sortingOrder);
 </script>
 
-<div class={`table-container ${className}`}>
-	<table>
-		<thead>
-			<tr>
+<div class={`relative flex h-full flex-col ${className}`}>
+	<table class="flex flex-1 flex-col">
+		<thead class="flex-shrink-0 overflow-y-auto [scrollbar-gutter:stable]">
+			<tr class="flex border-b border-gray-300">
 				{#each columns as column}
 					<th
-						align={column.align}
+						class="flex flex-shrink-0 flex-grow basis-0 items-center gap-2 overflow-hidden px-2 py-3 text-left font-semibold data-[align=left]:justify-start data-[align=right]:justify-end data-[align=center]:justify-center [&:not([data-align])]:justify-start"
+						data-align={column.align}
 						data-field={column.type === "accessor" ? column.field : null}
 						data-sortable={column.type === "accessor"
 							? column.enableSorting
@@ -197,7 +198,7 @@
 							: null}
 						style={getCellStyle(column)}
 					>
-						{column.header}
+						<span class="truncate">{column.header}</span>
 						{#if column.type === "accessor"}
 							{#if column.enableSorting}
 								{@const arrowDirection =
@@ -205,12 +206,12 @@
 										? "upward"
 										: "downward"}
 								{@const sortingClass = columnsSorting[column.field]
-									? "sorted"
+									? "text-green-700"
 									: ""}
 
 								<button
 									on:click={handleSortingClick}
-									class={`sort ${sortingClass}`}
+									class={`flex items-center justify-center ${sortingClass}`}
 								>
 									<Icon name={`arrow_${arrowDirection}`} size="small" />
 								</button>
@@ -228,19 +229,21 @@
 				{/each}
 			</tr>
 		</thead>
-		<tbody>
+		<tbody
+			class="flex-shrink flex-grow basis-0 overflow-y-auto overflow-x-hidden border-b border-gray-300 [scrollbar-gutter:stable]"
+		>
 			{#each rows as row}
-				<tr>
+				<tr class="flex border-b border-gray-300 last:border-b-0">
 					{#each columns as column}
 						{@const cell = getCell(column, row)}
-
 						<td
-							align={column.align}
+							class="flex flex-shrink-0 flex-grow basis-0 items-center overflow-hidden px-2 py-3 text-left data-[align=left]:justify-start data-[align=right]:justify-end data-[align=center]:justify-center [&:not([data-align])]:justify-start"
 							style={getCellStyle(column)}
+							data-align={column.align}
 							data-field={column.type === "accessor" ? column.field : null}
 						>
 							{#if typeof cell === "string"}
-								{cell}
+								<span class="truncate">{cell}</span>
 							{:else if cell.slotContent}
 								<svelte:component this={cell.component} {...cell.props}>
 									{cell.slotContent}
@@ -255,7 +258,9 @@
 		</tbody>
 	</table>
 	{#if loading}
-		<Spinner class="table-loading-spinner" />
+		<Spinner
+			class="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
+		/>
 	{/if}
 	{#if pagination}
 		{@const start = pagination.pageSize * pagination.pageIndex + 1}
@@ -267,8 +272,8 @@
 		{@const pagesArray = Array.from({ length: pages }, (_, idx) => idx)}
 		{@const visiblePages = getVisiblePages(pagesArray, pagination.pageIndex)}
 
-		<div class="pagination">
-			<span class="pagination-info">
+		<div class="flex items-center gap-2 pt-4">
+			<span class="flex-1 text-sm">
 				{start > pagination.total ? pagination.total : start}-{end >
 				pagination.total
 					? pagination.total
@@ -278,9 +283,9 @@
 				{pagination.name}
 			</span>
 
-			<div class="pagination-pages">
+			<div class="flex items-center justify-center gap-2">
 				<button
-					class="pagination-page-previous"
+					class="flex items-center justify-center disabled:opacity-60"
 					disabled={pagination.pageIndex === 0}
 					on:click={handlePreviousPageClick}
 				>
@@ -289,7 +294,7 @@
 
 				{#each visiblePages as pageIndex}
 					<button
-						class="pagination-page"
+						class="size-6 rounded text-xs font-semibold data-[active=true]:bg-green-700 data-[active=true]:text-white"
 						data-index={pageIndex}
 						data-active={pageIndex === pagination.pageIndex}
 						on:click={handlePageClick}
@@ -299,7 +304,7 @@
 				{/each}
 
 				<button
-					class="pagination-page-next"
+					class="flex items-center justify-center disabled:opacity-60"
 					disabled={pagination.pageIndex === pages - 1}
 					on:click={handleNextPageClick}
 				>
@@ -309,117 +314,3 @@
 		</div>
 	{/if}
 </div>
-
-<style>
-	.table-container {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-	}
-	table {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-
-	thead {
-		overflow-y: auto;
-		scrollbar-gutter: stable;
-		flex-shrink: 0;
-	}
-	tbody {
-		overflow-x: hidden;
-		scrollbar-gutter: stable;
-		overflow-y: auto;
-		flex: 1 1 0;
-		border-bottom: 1px solid var(--gray-300);
-	}
-	tr {
-		display: flex;
-		border-bottom: 1px solid var(--gray-300);
-	}
-	tbody tr:last-child {
-		border-bottom: none;
-	}
-	th,
-	td {
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		flex: 1 0;
-		padding: 0.75rem 0.5rem;
-		text-align: left;
-
-		&[align="center"] {
-			justify-content: center;
-		}
-		&[align="right"] {
-			justify-content: flex-end;
-		}
-	}
-	th {
-		gap: 0.5rem;
-		font: var(--text-base-semibold);
-	}
-	th .sorted {
-		color: var(--green-700);
-	}
-	td {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		text-wrap: nowrap;
-	}
-
-	.table-container :global(.table-loading-spinner) {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		z-index: 10;
-	}
-
-	.sort {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.pagination {
-		display: flex;
-		align-items: center;
-		padding-top: 1rem;
-		gap: 0.5rem;
-	}
-	.pagination-info {
-		font: var(--text-sm-regular);
-		flex: 1;
-	}
-	.pagination-pages {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	.pagination-page {
-		width: 1.5rem;
-		height: 1.5rem;
-		border-radius: 0.25rem;
-		font: var(--text-xs-semibold);
-
-		&[data-active="true"] {
-			background-color: var(--green-700);
-			color: var(--white);
-		}
-	}
-	.pagination-page-previous,
-	.pagination-page-next {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
-		&:disabled {
-			opacity: 0.6;
-		}
-	}
-</style>
