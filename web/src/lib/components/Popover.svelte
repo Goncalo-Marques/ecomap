@@ -67,7 +67,7 @@
 <div
 	bind:this={popover}
 	role="menu"
-	class="m-0 rounded bg-white shadow-md"
+	class="m-0 rounded bg-white p-0 shadow-md"
 	popover="auto"
 	{id}
 >
