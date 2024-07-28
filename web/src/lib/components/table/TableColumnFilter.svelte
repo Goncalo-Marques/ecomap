@@ -3,13 +3,11 @@
 	generics="TRow extends Record<string, unknown>, TValue extends TRow[keyof TRow]"
 >
 	import { t } from "../../utils/i8n";
-
-	import type { FilterOption } from "./types";
-
 	import Button from "../Button.svelte";
 	import Icon from "../Icon.svelte";
 	import Popover from "../Popover.svelte";
 	import Radio from "../Radio.svelte";
+	import type { FilterOption } from "./types";
 
 	/**
 	 * The filter options of the column.

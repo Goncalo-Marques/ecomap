@@ -3,8 +3,16 @@
 	generics="TRow extends Record<string, unknown>, TSortableFields extends string"
 >
 	import { t } from "../../utils/i8n";
-
 	import Icon from "../Icon.svelte";
+	import Spinner from "../Spinner.svelte";
+	import TableColumnFilter from "./TableColumnFilter.svelte";
+	import type {
+		Columns,
+		onSortingChangeFn,
+		Pagination,
+		SortingColumns,
+		SortingDirection,
+	} from "./types";
 	import {
 		getCell,
 		getCellStyle,
@@ -12,15 +20,6 @@
 		getVisiblePages,
 		toggleDirection,
 	} from "./utils";
-	import type {
-		Columns,
-		Pagination,
-		SortingColumns,
-		SortingDirection,
-		onSortingChangeFn,
-	} from "./types";
-	import TableColumnFilter from "./TableColumnFilter.svelte";
-	import Spinner from "../Spinner.svelte";
 
 	/**
 	 * The columns of the table.

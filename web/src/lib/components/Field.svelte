@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MISSING_VALUE_SYMBOL } from "../constants/symbols";
+	import { MISSING_VALUE_SYMBOL } from "$lib/constants/symbols";
 
 	/**
 	 * The label of the field.

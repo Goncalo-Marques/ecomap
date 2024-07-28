@@ -1,6 +1,7 @@
 import type { Coordinate } from "ol/coordinate";
 import { transform } from "ol/proj";
-import { OL_PROJECTION, RESOURCE_PROJECTION } from "../constants/map";
+
+import { OL_PROJECTION, RESOURCE_PROJECTION } from "$lib/constants/map";
 
 /**
  * Converts coordinate in {@link OL_PROJECTION} projection to the resource geometry projection.

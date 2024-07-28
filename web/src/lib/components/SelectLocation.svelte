@@ -1,26 +1,29 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
-	import OlMap from "ol/Map";
-	import Modal from "./Modal.svelte";
-	import Map from "./map/Map.svelte";
-	import VectorLayer from "ol/layer/Vector";
+
 	import { Feature, MapBrowserEvent } from "ol";
-	import { Point } from "ol/geom";
-	import VectorSource from "ol/source/Vector";
-	import Button from "./Button.svelte";
 	import type { Coordinate } from "ol/coordinate";
-	import {
-		convertToMapProjection,
-		convertToResourceProjection,
-	} from "../utils/map";
-	import { t } from "../utils/i8n";
-	import ecomapHttpClient from "../clients/ecomap/http";
-	import { getLocationName } from "../utils/location";
+	import { Point } from "ol/geom";
+	import VectorLayer from "ol/layer/Vector";
+	import OlMap from "ol/Map";
+	import VectorSource from "ol/source/Vector";
+
 	import {
 		DEFAULT_ANIMATION_DURATION,
 		DEFAULT_MAX_ZOOM,
 		DEFAULT_PIN_ICON_SRC,
-	} from "../constants/map";
+	} from "$lib/constants/map";
+
+	import ecomapHttpClient from "../clients/ecomap/http";
+	import { t } from "../utils/i8n";
+	import { getLocationName } from "../utils/location";
+	import {
+		convertToMapProjection,
+		convertToResourceProjection,
+	} from "../utils/map";
+	import Button from "./Button.svelte";
+	import Map from "./map/Map.svelte";
+	import Modal from "./Modal.svelte";
 
 	/**
 	 * Indicates if the modal is open.

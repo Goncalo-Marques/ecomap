@@ -5,6 +5,7 @@
 		KeyboardEventHandler,
 		MouseEventHandler,
 	} from "svelte/elements";
+
 	import Icon from "./Icon.svelte";
 
 	/**

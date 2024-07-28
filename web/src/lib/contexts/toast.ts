@@ -1,5 +1,6 @@
 import { getContext, setContext } from "svelte";
-import type { ToastContext } from "../../domain/toast";
+
+import type { ToastContext } from "$domain/toast";
 
 const TOAST_CONTEXT_KEY = "toast";
 

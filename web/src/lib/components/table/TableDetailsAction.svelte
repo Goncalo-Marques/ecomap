@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { Link } from "svelte-routing";
 	import Icon from "../Icon.svelte";
 
 	/**
-	 * Resource ID.
+	 * Resource href.
 	 */
-	export let id: string;
+	export let href: string;
 </script>
 
-<Link class="contents" to={id}>
+<a class="contents" {href}>
 	<Icon name="chevron_right" />
-</Link>
+</a>

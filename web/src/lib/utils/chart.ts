@@ -1,18 +1,19 @@
 import {
-	Chart,
-	LineElement,
-	LineController,
-	LinearScale,
+	ArcElement,
+	BarController,
+	BarElement,
 	CategoryScale,
+	Chart,
+	DoughnutController,
+	Filler,
+	Legend,
+	LinearScale,
+	LineController,
+	LineElement,
 	PointElement,
 	Tooltip,
-	Legend,
-	DoughnutController,
-	ArcElement,
-	BarElement,
-	BarController,
-	Filler,
 } from "chart.js";
+
 import { getCssVariable } from "./cssVars";
 
 /**

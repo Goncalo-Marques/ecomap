@@ -1,8 +1,9 @@
-import { navigate } from "svelte-routing";
 import createClient, { type Middleware } from "openapi-fetch";
-import type { components, paths } from "../../../../api/ecomap/http";
-import { clearToken, getToken } from "../../utils/auth";
-import { CommonRoutes } from "../../../routes/constants/routes";
+
+import type { components, paths } from "$api/ecomap/http";
+import { goto } from "$app/navigation";
+import { CommonRoutes } from "$lib/constants/routes";
+import { clearToken, getToken } from "$lib/utils/auth";
 
 /**
  * Endpoints that should be ignored if the status code from the server response is 401.
@@ -40,13 +41,13 @@ const middleware: Middleware = {
 				clearToken();
 				// Only redirect if the page is not the sign in page.
 				if (location.pathname !== CommonRoutes.SIGN_IN) {
-					navigate(CommonRoutes.SIGN_IN);
+					goto(CommonRoutes.SIGN_IN);
 				}
 				break;
 			}
 
 			case 403:
-				navigate(CommonRoutes.FORBIDDEN, { replace: true });
+				goto(CommonRoutes.FORBIDDEN, { replaceState: true });
 				break;
 		}
 

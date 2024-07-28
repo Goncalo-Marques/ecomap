@@ -89,7 +89,7 @@ ignorePaths:
   - server/database/scripts
   - server/deployments
   - server/config.yml
-  - web/public
+  - web/static
   - web/src/locales
 ignoreRegExpList:
   - "import\\s*\\((.|[\r\n])*?\\)" # Ignore go multiline imports.

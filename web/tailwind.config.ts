@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-	content: ["./index.html", "./src/**/*.svelte"],
+	content: ["./src/**/*.{html,svelte}"],
 	theme: {
 		extend: {
 			backgroundImage: {

@@ -1,38 +1,36 @@
+import Rotate from "ol/control/Rotate";
+import type { FeatureLike } from "ol/Feature";
+import type Feature from "ol/Feature";
+import type { Geometry } from "ol/geom";
+import { Layer, WebGLTile as TileLayer } from "ol/layer";
+import { Vector as VectorLayer } from "ol/layer";
+import type { Options as OptionsLayer } from "ol/layer/Layer";
+import WebGLPointsLayer from "ol/layer/WebGLPoints";
 import Map from "ol/Map";
+import { fromLonLat } from "ol/proj";
+import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
+import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer";
+import { Cluster, OSM, Vector as VectorSource } from "ol/source";
+import type { Options } from "ol/source/Vector";
+import { Circle, Fill, Icon, Stroke, Style, Text } from "ol/style";
 import View from "ol/View";
 
-import { Vector as VectorSource, Cluster, OSM } from "ol/source";
-import { WebGLTile as TileLayer, Layer } from "ol/layer";
-import { fromLonLat } from "ol/proj";
-
-import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer";
-import WebGLPointsLayer from "ol/layer/WebGLPoints";
-
-import { Circle, Fill, Icon, Stroke, Style, Text } from "ol/style";
-import { Vector as VectorLayer } from "ol/layer";
-
-import type { FeatureLike } from "ol/Feature";
-import type { Options as OptionsLayer } from "ol/layer/Layer";
-import type { VectorStyle } from "ol/render/webgl/VectorStyleRenderer";
-import {
-	mapLayerName,
-	colorLayerKey,
-	nameLayerKey,
-	DEFAULT_MAX_ZOOM,
-	DEFAULT_PIN_ICON_SRC,
-	DEFAULT_MIN_ZOOM,
-	OL_PROJECTION,
-} from "../../constants/map";
-import type { Geometry } from "ol/geom";
-import type Feature from "ol/Feature";
-import type { Options } from "ol/source/Vector";
-import Rotate from "ol/control/Rotate";
-import { getCssVariable } from "../../utils/cssVars";
 import type {
 	CreateMapOptions,
 	MapHelperClusterLayerOptions,
 	MapHelperPointLayerOptions,
-} from "../../../domain/components/map";
+} from "$domain/components/map";
+import {
+	colorLayerKey,
+	DEFAULT_MAX_ZOOM,
+	DEFAULT_MIN_ZOOM,
+	DEFAULT_PIN_ICON_SRC,
+	mapLayerName,
+	nameLayerKey,
+	OL_PROJECTION,
+} from "$lib/constants/map";
+
+import { getCssVariable } from "../../utils/cssVars";
 
 /**
  * Default style for vector layer.
@@ -119,7 +117,7 @@ export class MapHelper {
 	 * @param options Layer options.
 	 */
 	public addPointLayer(
-		features: Feature<Geometry>[],
+		features: FeatureLike[],
 		options?: MapHelperPointLayerOptions,
 	) {
 		const pointsLayer = new WebGLPointsLayer({

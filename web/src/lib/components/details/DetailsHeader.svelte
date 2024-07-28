@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Link } from "svelte-routing";
 	import Icon from "../Icon.svelte";
 
 	/**
@@ -10,13 +9,13 @@
 	/**
 	 * The route to navigate to when the back button is clicked.
 	 */
-	export let to: string;
+	export let href: string;
 </script>
 
 <header class="flex flex-wrap items-center gap-4">
-	<Link {to} class="contents text-green-700">
+	<a {href} class="contents text-green-700">
 		<Icon name="arrow_back" size="medium" />
-	</Link>
+	</a>
 	<h1 class="flex-1 text-2xl font-semibold">{title}</h1>
 	<div class="flex items-center gap-4">
 		<slot />

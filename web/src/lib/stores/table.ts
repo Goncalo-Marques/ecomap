@@ -1,12 +1,14 @@
-import { derived, get, writable, type Writable } from "svelte/store";
+import { derived, get, type Writable, writable } from "svelte/store";
+
+import { page } from "$app/stores";
 import type {
+	DataFn,
 	FiltersToSearchParams,
 	SearchParamsToFilters,
-	DataFn,
 	TableStore,
-} from "../../domain/stores/table";
+} from "$domain/stores/table";
+
 import { updateSearchParams } from "../utils/url";
-import url from "./url";
 
 /**
  * Fetches data to be displayed on a table.
@@ -49,12 +51,11 @@ export function createTableStore<TData, TFilters>(
 
 	const loading = writable(false);
 
-	const filters = derived(url, currentUrl => {
-		const filtersFromSearchParams = searchParamsToFilters(
-			currentUrl.searchParams,
-		);
+	const filters = derived(page, () => {
+		const searchParams = new URLSearchParams(location.search);
+		const filtersFromSearchParams = searchParamsToFilters(searchParams);
 
-		if (currentUrl.pathname === pathname) {
+		if (location.pathname === pathname) {
 			fetchData(loading, data, filtersFromSearchParams, dataFn);
 		} else {
 			// Reset data store to its initial state when the user exits the pathname that the store belongs to.

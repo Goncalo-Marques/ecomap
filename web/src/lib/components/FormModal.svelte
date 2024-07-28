@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { FormEventHandler } from "svelte/elements";
+
 	import Modal from "./Modal.svelte";
 
 	/**

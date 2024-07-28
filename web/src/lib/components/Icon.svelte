@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { IconSize } from "../../domain/components/icon";
+	import type { IconSize } from "$domain/components/icon";
 
 	/**
 	 * The icon name.
