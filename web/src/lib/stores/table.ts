@@ -1,13 +1,13 @@
 import { derived, get, type Writable, writable } from "svelte/store";
 
 import { page } from "$app/stores";
-
 import type {
 	DataFn,
 	FiltersToSearchParams,
 	SearchParamsToFilters,
 	TableStore,
-} from "../../domain/stores/table";
+} from "$domain/stores/table";
+
 import { updateSearchParams } from "../utils/url";
 
 /**

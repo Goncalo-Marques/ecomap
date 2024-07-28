@@ -1,6 +1,5 @@
+import type { components } from "$api/ecomap/http";
 import type { SortingDirection } from "$lib/components/table/types";
-
-import type { components } from "../../api/ecomap/http";
 
 /**
  * Warehouse.

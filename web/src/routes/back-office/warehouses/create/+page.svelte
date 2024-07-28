@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import type { GeoJSONFeaturePoint } from "$domain/geojson";
 	import ecomapHttpClient from "$lib/clients/ecomap/http";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { getToastContext } from "$lib/contexts/toast";
 	import { t } from "$lib/utils/i8n";
 
-	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import Card from "../../components/Card.svelte";
 	import WarehouseForm from "../components/WarehouseForm.svelte";
 

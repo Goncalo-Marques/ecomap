@@ -1,9 +1,10 @@
 import { derived, get, type Writable, writable } from "svelte/store";
 
+import { LocaleNames, SupportedLocales } from "$lib/constants/locale";
+
 import en from "../../locales/en.json";
 import pt from "../../locales/pt.json";
 import type schema from "../../locales/schema.json";
-import { LocaleNames, SupportedLocales } from "../constants/locale";
 
 /**
  * Identifiers of the locale schema.

@@ -1,18 +1,15 @@
 <script lang="ts">
 	import type { ComponentProps } from "svelte";
 
+	import type { Employee, EmployeeSortableFields } from "$domain/employees";
 	import Table from "$lib/components/table/Table.svelte";
 	import TableDetailsAction from "$lib/components/table/TableDetailsAction.svelte";
 	import type { Columns, SortingDirection } from "$lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "$lib/constants/pagination";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { formatTime } from "$lib/utils/date";
 	import { t } from "$lib/utils/i8n";
 
-	import type {
-		Employee,
-		EmployeeSortableFields,
-	} from "../../../../domain/employees";
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import { rolesOptions } from "../constants/roles";
 	import employeesStore from "./employeesStore";
 

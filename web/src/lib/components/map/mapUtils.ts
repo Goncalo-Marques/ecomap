@@ -19,7 +19,7 @@ import type {
 	CreateMapOptions,
 	MapHelperClusterLayerOptions,
 	MapHelperPointLayerOptions,
-} from "../../../domain/components/map";
+} from "$domain/components/map";
 import {
 	colorLayerKey,
 	DEFAULT_MAX_ZOOM,
@@ -28,7 +28,8 @@ import {
 	mapLayerName,
 	nameLayerKey,
 	OL_PROJECTION,
-} from "../../constants/map";
+} from "$lib/constants/map";
+
 import { getCssVariable } from "../../utils/cssVars";
 
 /**

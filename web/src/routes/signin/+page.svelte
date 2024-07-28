@@ -6,10 +6,9 @@
 	import Button from "$lib/components/Button.svelte";
 	import FormControl from "$lib/components/FormControl.svelte";
 	import Input from "$lib/components/Input.svelte";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { decodeTokenPayload, getToken, storeToken } from "$lib/utils/auth";
 	import { t } from "$lib/utils/i8n";
-
-	import { BackOfficeRoutes } from "../constants/routes";
 
 	/**
 	 * Error message displayed after an error occurs with the server.

@@ -1,4 +1,5 @@
-import { ROOT_FONT_SIZE } from "../../constants/fontSize";
+import { ROOT_FONT_SIZE } from "$lib/constants/fontSize";
+
 import type {
 	Column,
 	Columns,

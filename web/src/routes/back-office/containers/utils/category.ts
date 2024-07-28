@@ -1,4 +1,4 @@
-import type { ContainerCategory } from "../../../../domain/container";
+import type { ContainerCategory } from "$domain/container";
 
 /**
  * Indicates if a given input is a valid container category.

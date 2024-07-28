@@ -12,9 +12,9 @@
 	import { MapHelper } from "$lib/components/map/mapUtils";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { LANDFILL_ICON_SRC } from "$lib/constants/map";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { t } from "$lib/utils/i8n";
 
-	import { BackOfficeRoutes } from "../../../../constants/routes";
 	import LandfillBottomSheet from "./LandfillBottomSheet.svelte";
 
 	/**

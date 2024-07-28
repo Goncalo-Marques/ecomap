@@ -4,12 +4,12 @@
 
 	import { Chart } from "chart.js";
 
+	import type { Container } from "$domain/container";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { getColorWithOpacity } from "$lib/utils/color";
 	import { getCssVariable } from "$lib/utils/cssVars";
 	import { locale, t } from "$lib/utils/i8n";
 
-	import type { Container } from "../../../../domain/container";
 	import Card from "../../components/Card.svelte";
 
 	/**

@@ -6,10 +6,10 @@
 	import TableDetailsAction from "$lib/components/table/TableDetailsAction.svelte";
 	import type { Columns } from "$lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "$lib/constants/pagination";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { t } from "$lib/utils/i8n";
 	import { getLocationName } from "$lib/utils/location";
 
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import landfillsStore from "./landfillsStore";
 
 	const { loading, data, filters } = landfillsStore;

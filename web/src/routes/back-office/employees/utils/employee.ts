@@ -1,4 +1,4 @@
-import type { EmployeeRole } from "../../../../domain/employees";
+import type { EmployeeRole } from "$domain/employees";
 
 /**
  * Indicates if given input is a valid employee role.

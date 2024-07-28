@@ -6,6 +6,8 @@
 	import OlMap from "ol/Map";
 	import VectorSource from "ol/source/Vector";
 
+	import type { GeoJSONFeaturePoint } from "$domain/geojson";
+	import type { Warehouse } from "$domain/warehouse";
 	import Button from "$lib/components/Button.svelte";
 	import DetailsContent from "$lib/components/details/DetailsContent.svelte";
 	import DetailsFields from "$lib/components/details/DetailsFields.svelte";
@@ -23,9 +25,6 @@
 		convertToMapProjection,
 		convertToResourceProjection,
 	} from "$lib/utils/map";
-
-	import type { GeoJSONFeaturePoint } from "../../../../domain/geojson";
-	import type { Warehouse } from "../../../../domain/warehouse";
 
 	/**
 	 * The back route.

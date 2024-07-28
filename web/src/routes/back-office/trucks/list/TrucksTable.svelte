@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { ComponentProps } from "svelte";
 
+	import type { Truck, TruckSortableFields } from "$domain/truck";
 	import Table from "$lib/components/table/Table.svelte";
 	import TableDetailsAction from "$lib/components/table/TableDetailsAction.svelte";
 	import type { Columns, SortingDirection } from "$lib/components/table/types";
 	import { DEFAULT_PAGE_SIZE } from "$lib/constants/pagination";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { t } from "$lib/utils/i8n";
 
-	import type { Truck, TruckSortableFields } from "../../../../domain/truck";
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import trucksStore from "./trucksStore";
 
 	const { loading, data, filters } = trucksStore;

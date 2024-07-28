@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import Icon from "$lib/components/Icon.svelte";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { type LocaleTextID, t } from "$lib/utils/i8n";
 
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import Support from "./Support.svelte";
 
 	type MenuItem = {

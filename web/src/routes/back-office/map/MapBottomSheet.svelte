@@ -1,16 +1,16 @@
 <script lang="ts">
+	import type { Container } from "$domain/container";
+	import type { Landfill } from "$domain/landfill";
+	import type { Truck } from "$domain/truck";
+	import type { Warehouse } from "$domain/warehouse";
 	import BottomSheet from "$lib/components/BottomSheet.svelte";
 	import Field from "$lib/components/Field.svelte";
 	import { DateFormats } from "$lib/constants/date";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { formatDate } from "$lib/utils/date";
 	import { t } from "$lib/utils/i8n";
 	import { getLocationName } from "$lib/utils/location";
 
-	import type { Container } from "../../../domain/container";
-	import type { Landfill } from "../../../domain/landfill";
-	import type { Truck } from "../../../domain/truck";
-	import type { Warehouse } from "../../../domain/warehouse";
-	import { BackOfficeRoutes } from "../../constants/routes";
 	import FeatureCard from "../components/FeatureCard.svelte";
 
 	/**

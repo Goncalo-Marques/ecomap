@@ -5,11 +5,11 @@
 	import type { Warehouse } from "$domain/warehouse";
 	import ecomapHttpClient from "$lib/clients/ecomap/http";
 	import Spinner from "$lib/components/Spinner.svelte";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { getToastContext } from "$lib/contexts/toast";
 	import { t } from "$lib/utils/i8n";
 	import { getLocationName } from "$lib/utils/location";
 
-	import { BackOfficeRoutes } from "../../../../constants/routes";
 	import Card from "../../../components/Card.svelte";
 	import WarehouseForm from "../../components/WarehouseForm.svelte";
 

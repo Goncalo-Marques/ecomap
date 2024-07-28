@@ -20,13 +20,13 @@
 		TRUCK_ICON_SRC,
 		WAREHOUSE_ICON_SRC,
 	} from "$lib/constants/map";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { RouteWithNoContainersError } from "$lib/errors/route";
 	import { getCssVariable } from "$lib/utils/cssVars";
 	import { t } from "$lib/utils/i8n";
 	import { convertToMapProjection } from "$lib/utils/map";
 	import { getBatchPaginatedResponse } from "$lib/utils/request";
 
-	import { BackOfficeRoutes } from "../../../../constants/routes";
 	import RouteBottomSheet from "./RouteBottomSheet.svelte";
 
 	/**

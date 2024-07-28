@@ -1,10 +1,9 @@
 import createClient, { type Middleware } from "openapi-fetch";
 
+import type { components, paths } from "$api/ecomap/http";
 import { goto } from "$app/navigation";
+import { CommonRoutes } from "$lib/constants/routes";
 import { clearToken, getToken } from "$lib/utils/auth";
-
-import type { components, paths } from "../../../../api/ecomap/http";
-import { CommonRoutes } from "../../../routes/constants/routes";
 
 /**
  * Endpoints that should be ignored if the status code from the server response is 401.

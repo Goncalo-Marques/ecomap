@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { IconSize } from "../../domain/components/icon";
+	import type { IconSize } from "$domain/components/icon";
+
 	import Icon from "./Icon.svelte";
 
 	/**

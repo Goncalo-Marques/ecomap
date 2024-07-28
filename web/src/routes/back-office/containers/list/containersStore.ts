@@ -1,12 +1,8 @@
+import type { ContainersFilters, PaginatedContainers } from "$domain/container";
 import ecomapHttpClient from "$lib/clients/ecomap/http";
 import { DEFAULT_PAGE_SIZE } from "$lib/constants/pagination";
+import { BackOfficeRoutes } from "$lib/constants/routes";
 import { createTableStore } from "$lib/stores/table";
-
-import type {
-	ContainersFilters,
-	PaginatedContainers,
-} from "../../../../domain/container";
-import { BackOfficeRoutes } from "../../../constants/routes";
 
 /**
  * The search parameter names for each filter of the containers table.

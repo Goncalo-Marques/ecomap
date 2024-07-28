@@ -1,4 +1,4 @@
-import type { TokenPayload } from "../../domain/jwt";
+import type { TokenPayload } from "$domain/jwt";
 
 /**
  * Cookie name for the JWT token.

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
+	import type { Warehouse } from "$domain/warehouse";
 	import ecomapHttpClient from "$lib/clients/ecomap/http";
 	import Button from "$lib/components/Button.svelte";
 	import DetailsContent from "$lib/components/details/DetailsContent.svelte";
@@ -10,13 +11,12 @@
 	import Field from "$lib/components/Field.svelte";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { DateFormats } from "$lib/constants/date";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { getToastContext } from "$lib/contexts/toast";
 	import { formatDate } from "$lib/utils/date";
 	import { t } from "$lib/utils/i8n";
 	import { getLocationName } from "$lib/utils/location";
 
-	import type { Warehouse } from "../../../../domain/warehouse";
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import Card from "../../components/Card.svelte";
 
 	/**

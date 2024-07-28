@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { BackOfficeRoutes } from "../../../constants/routes";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
+
 	import EmployeeMenu from "./EmployeeMenu.svelte";
 	import Logo from "./Logo.svelte";
 </script>

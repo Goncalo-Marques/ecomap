@@ -3,11 +3,11 @@
 
 	import { Chart } from "chart.js";
 
+	import type { Container } from "$domain/container";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { getCssVariable } from "$lib/utils/cssVars";
 	import { t } from "$lib/utils/i8n";
 
-	import type { Container } from "../../../../domain/container";
 	import Card from "../../components/Card.svelte";
 
 	/**

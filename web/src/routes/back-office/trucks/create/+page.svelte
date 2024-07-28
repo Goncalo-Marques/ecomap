@@ -2,10 +2,10 @@
 	import { goto } from "$app/navigation";
 	import type { GeoJSONFeaturePoint } from "$domain/geojson";
 	import ecomapHttpClient from "$lib/clients/ecomap/http";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { getToastContext } from "$lib/contexts/toast";
 	import { t } from "$lib/utils/i8n";
 
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import Card from "../../components/Card.svelte";
 	import TruckForm from "../components/TruckForm.svelte";
 

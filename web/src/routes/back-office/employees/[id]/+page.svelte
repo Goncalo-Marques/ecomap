@@ -11,13 +11,13 @@
 	import Field from "$lib/components/Field.svelte";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { DateFormats } from "$lib/constants/date";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { getToastContext } from "$lib/contexts/toast";
 	import { isViewingSelf } from "$lib/utils/auth";
 	import { formatDate, formatTime } from "$lib/utils/date";
 	import { getSupportedLocaleName, locale, t } from "$lib/utils/i8n";
 	import { getLocationName } from "$lib/utils/location";
 
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import UpdatePasswordModal from "../components/UpdatePasswordModal.svelte";
 
 	/**

@@ -7,10 +7,9 @@
 	import Menu from "$lib/components/Menu.svelte";
 	import MenuItem from "$lib/components/MenuItem.svelte";
 	import Popover from "$lib/components/Popover.svelte";
+	import { BackOfficeRoutes, CommonRoutes } from "$lib/constants/routes";
 	import { clearToken, decodeTokenPayload, getToken } from "$lib/utils/auth";
 	import { t } from "$lib/utils/i8n";
-
-	import { BackOfficeRoutes, CommonRoutes } from "../../../constants/routes";
 
 	/**
 	 * The employee popover element.

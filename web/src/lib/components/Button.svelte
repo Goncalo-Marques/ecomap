@@ -4,7 +4,8 @@
 		MouseEventHandler,
 	} from "svelte/elements";
 
-	import type { IconSize } from "../../domain/components/icon";
+	import type { IconSize } from "$domain/components/icon";
+
 	import Icon from "./Icon.svelte";
 
 	type Variant = "primary" | "secondary" | "tertiary";

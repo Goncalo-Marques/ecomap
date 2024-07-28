@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Button from "$lib/components/Button.svelte";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { t } from "$lib/utils/i8n";
 
-	import { BackOfficeRoutes } from "../../constants/routes";
 	import Card from "../components/Card.svelte";
 	import SearchTrucks from "./list/SearchTrucks.svelte";
 	import TrucksTable from "./list/TrucksTable.svelte";

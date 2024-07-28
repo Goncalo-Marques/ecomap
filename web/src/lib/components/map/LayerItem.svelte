@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Layer } from "ol/layer";
 
-	import { colorLayerKey, nameLayerKey } from "../../constants/map";
+	import { colorLayerKey, nameLayerKey } from "$lib/constants/map";
+
 	import Switch from "../Switch.svelte";
 	import Dot from "./Dot.svelte";
 

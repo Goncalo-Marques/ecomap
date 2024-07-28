@@ -1,4 +1,4 @@
-import type { Employee } from "../../../../domain/employees";
+import type { Employee } from "$domain/employees";
 
 /**
  * List of employees roles.

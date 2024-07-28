@@ -8,12 +8,13 @@
 	import OlMap from "ol/Map";
 	import VectorSource from "ol/source/Vector";
 
-	import ecomapHttpClient from "../clients/ecomap/http";
 	import {
 		DEFAULT_ANIMATION_DURATION,
 		DEFAULT_MAX_ZOOM,
 		DEFAULT_PIN_ICON_SRC,
-	} from "../constants/map";
+	} from "$lib/constants/map";
+
+	import ecomapHttpClient from "../clients/ecomap/http";
 	import { t } from "../utils/i8n";
 	import { getLocationName } from "../utils/location";
 	import {

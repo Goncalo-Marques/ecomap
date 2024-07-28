@@ -11,7 +11,8 @@
 		DEFAULT_MIN_ZOOM,
 		mapLayerName,
 		nameLayerKey,
-	} from "../../constants/map";
+	} from "$lib/constants/map";
+
 	import { t } from "../../utils/i8n";
 	import Icon from "../Icon.svelte";
 	import LayerItem from "./LayerItem.svelte";

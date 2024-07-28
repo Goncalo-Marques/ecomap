@@ -1,10 +1,10 @@
 <script lang="ts">
+	import type { Employee } from "$domain/employees";
 	import ecomapHttpClient from "$lib/clients/ecomap/http";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { t } from "$lib/utils/i8n";
 	import { getBatchPaginatedResponse } from "$lib/utils/request";
 
-	import type { Employee } from "../../../../domain/employees";
 	import Card from "../../components/Card.svelte";
 
 	/**

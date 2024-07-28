@@ -11,12 +11,12 @@
 	import Field from "$lib/components/Field.svelte";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { DateFormats } from "$lib/constants/date";
+	import { BackOfficeRoutes } from "$lib/constants/routes";
 	import { getToastContext } from "$lib/contexts/toast";
 	import { formatDate } from "$lib/utils/date";
 	import { t } from "$lib/utils/i8n";
 	import { getLocationName } from "$lib/utils/location";
 
-	import { BackOfficeRoutes } from "../../../constants/routes";
 	import Card from "../../components/Card.svelte";
 	import RouteOperatorsTable from "./details/routeEmployees/RouteEmployeesTable.svelte";
 

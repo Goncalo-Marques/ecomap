@@ -1,4 +1,4 @@
-import type { components } from "../../api/ecomap/http";
+import type { components } from "$api/ecomap/http";
 
 /**
  * Landfill.

@@ -1,9 +1,8 @@
 import type { EmployeesFilters, PaginatedEmployees } from "$domain/employees";
 import ecomapHttpClient from "$lib/clients/ecomap/http";
 import { DEFAULT_PAGE_SIZE } from "$lib/constants/pagination";
+import { BackOfficeRoutes } from "$lib/constants/routes";
 import { createTableStore } from "$lib/stores/table";
-
-import { BackOfficeRoutes } from "../../../constants/routes";
 
 /**
  * The search parameter names for each filter of the employees table.
