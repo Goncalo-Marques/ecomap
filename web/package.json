@@ -5,15 +5,13 @@
 	"type": "module",
 	"scripts": {
 		"build": "vite build",
-		"dev": "vite",
+		"dev": "vite dev",
 		"generate-oapi": "openapi-typescript ../server/api/swagger/ecomap.yml -o ./api/ecomap/http.d.ts",
 		"postinstall": "npm run generate-oapi",
-		"lint": "svelte-check --tsconfig ./tsconfig.json && eslint . --ext .js,.ts,.svelte && prettier . --check --ignore-path ../.gitignore",
-		"lint:fix": "eslint . --ext .js,.ts,.svelte --fix && prettier . --write --ignore-path ../.gitignore",
+		"lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && eslint . && prettier . --check --ignore-path ../.gitignore",
+		"lint:fix": "eslint . --fix && prettier . --write --ignore-path ../.gitignore",
 		"preview": "vite preview",
-		"test": "vitest run",
-		"test:ui": "vitest --ui",
-		"test:watch": "vitest"
+		"test": "vitest run"
 	},
 	"prettier": {
 		"arrowParens": "avoid",
@@ -31,74 +29,34 @@
 			}
 		]
 	},
-	"eslintConfig": {
-		"env": {
-			"browser": true,
-			"es2021": true
-		},
-		"parser": "@typescript-eslint/parser",
-		"parserOptions": {
-			"ecmaVersion": "latest",
-			"extraFileExtensions": [
-				".svelte"
-			],
-			"sourceType": "module"
-		},
-		"plugins": [
-			"@typescript-eslint"
-		],
-		"extends": [
-			"eslint:recommended",
-			"plugin:@typescript-eslint/recommended",
-			"plugin:svelte/recommended",
-			"plugin:svelte/prettier"
-		],
-		"overrides": [
-			{
-				"files": [
-					"*.svelte"
-				],
-				"parser": "svelte-eslint-parser",
-				"parserOptions": {
-					"parser": "@typescript-eslint/parser",
-					"svelteFeatures": {
-						"experimentalGenerics": true
-					}
-				}
-			}
-		]
-	},
 	"dependencies": {
 		"chart.js": "^4.4.3",
 		"ol": "^9.1.0",
 		"openapi-fetch": "^0.9.5"
 	},
 	"devDependencies": {
-		"@sveltejs/vite-plugin-svelte": "^3.1.0",
-		"@tsconfig/svelte": "^5.0.4",
-		"@typescript-eslint/eslint-plugin": "^7.8.0",
-		"@typescript-eslint/parser": "^7.8.0",
-		"@vitest/ui": "^1.6.0",
+		"@sveltejs/adapter-static": "^3.0.2",
+		"@sveltejs/kit": "^2.5.18",
+		"@sveltejs/vite-plugin-svelte": "^3.1.1",
+		"@types/eslint": "^9.6.0",
 		"autoprefixer": "^10.4.19",
 		"cssnano": "^7.0.4",
-		"eslint-plugin-svelte": "^2.38.0",
-		"jsdom": "^24.0.0",
+		"eslint": "^9.8.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"eslint-plugin-svelte": "^2.43.0",
+		"globals": "^15.8.0",
 		"openapi-typescript": "^6.7.5",
 		"postcss": "^8.4.39",
 		"prettier": "^3.3.3",
 		"prettier-plugin-svelte": "^3.2.6",
 		"prettier-plugin-tailwindcss": "^0.6.5",
-		"svelte": "^4.2.15",
-		"svelte-check": "^3.7.0",
-		"svelte-eslint-parser": "^0.35.0",
-		"svelte-routing": "^2.12.0",
+		"svelte": "^4.2.18",
+		"svelte-check": "^3.8.4",
 		"tailwindcss": "^3.4.6",
-		"tslib": "^2.6.2",
-		"typescript": "^5.4.5",
-		"vite": "^5.2.10",
-		"vitest": "^1.5.3"
-	},
-	"engines": {
-		"node": ">=20.0.0 <21.0.0"
+		"typescript": "^5.5.4",
+		"typescript-eslint": "^8.0.0-alpha.20",
+		"vite": "^5.0.0",
+		"vitest": "^2.0.4"
 	}
 }

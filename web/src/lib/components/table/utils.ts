@@ -2,11 +2,11 @@ import { ROOT_FONT_SIZE } from "../../constants/fontSize";
 import type {
 	Column,
 	Columns,
-	TableCellSvelteComponent,
 	Row,
+	SortableField,
 	SortingColumns,
 	SortingDirection,
-	SortableField,
+	TableCellSvelteComponent,
 } from "./types";
 
 /**

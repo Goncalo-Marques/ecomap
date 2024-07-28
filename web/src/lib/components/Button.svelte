@@ -3,8 +3,9 @@
 		HTMLButtonAttributes,
 		MouseEventHandler,
 	} from "svelte/elements";
-	import Icon from "./Icon.svelte";
+
 	import type { IconSize } from "../../domain/components/icon";
+	import Icon from "./Icon.svelte";
 
 	type Variant = "primary" | "secondary" | "tertiary";
 	type Size = "small" | "medium" | "large";

@@ -1,5 +1,6 @@
 import type { Coordinate } from "ol/coordinate";
 import { transform } from "ol/proj";
+
 import { OL_PROJECTION, RESOURCE_PROJECTION } from "../constants/map";
 
 /**

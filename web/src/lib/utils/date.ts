@@ -1,6 +1,7 @@
 import { get } from "svelte/store";
-import { locale } from "./i8n";
+
 import { DateFormats } from "../constants/date";
+import { locale } from "./i8n";
 
 /**
  * Date the Unix time 0.

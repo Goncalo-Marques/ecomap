@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { MouseEventHandler } from "svelte/elements";
+
 	import type { IconSize } from "../../domain/components/icon";
 	import Icon from "./Icon.svelte";
 

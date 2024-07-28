@@ -1,18 +1,21 @@
 <script lang="ts">
-	import { createMap } from "./mapUtils";
-	import { onMount } from "svelte";
 	import "ol/ol.css";
+
+	import { onMount } from "svelte";
+
 	import type { Layer } from "ol/layer";
-	import LayerItem from "./LayerItem.svelte";
-	import Icon from "../Icon.svelte";
-	import { t } from "../../utils/i8n";
 	import Map from "ol/Map";
+
 	import {
 		DEFAULT_MAX_ZOOM,
 		DEFAULT_MIN_ZOOM,
 		mapLayerName,
 		nameLayerKey,
 	} from "../../constants/map";
+	import { t } from "../../utils/i8n";
+	import Icon from "../Icon.svelte";
+	import LayerItem from "./LayerItem.svelte";
+	import { createMap } from "./mapUtils";
 
 	/**
 	 * Zoom value for map view.

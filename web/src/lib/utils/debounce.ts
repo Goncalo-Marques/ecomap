@@ -8,7 +8,7 @@
 function debounce<
 	TCallback extends (...args: Parameters<TCallback>) => ReturnType<TCallback>,
 >(callback: TCallback, waitFor: number = 200) {
-	let timeout: NodeJS.Timeout;
+	let timeout: ReturnType<typeof setTimeout>;
 
 	return (...args: Parameters<TCallback>) => {
 		clearTimeout(timeout);

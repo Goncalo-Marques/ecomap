@@ -88,7 +88,7 @@ Or, if the goal is to run each application independently, see the following step
 
 ### Web App
 
-The web application can be found in the `web` directory. It uses [Svelte](https://svelte.dev/).
+The web application can be found in the `web` directory. It uses [SvelteKit](https://kit.svelte.dev/).
 
 The web application contains several scripts to lint, build and run the project. To check the available scripts, run the following command inside the `web` directory:
 

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import type { ToastOptions } from "../../domain/toast";
-	import Icon from "./Icon.svelte";
 	import { writable } from "svelte/store";
+
+	import type { ToastOptions } from "../../domain/toast";
 	import { setToastContext } from "../contexts/toast";
+	import Icon from "./Icon.svelte";
 
 	let toast: HTMLElement;
 

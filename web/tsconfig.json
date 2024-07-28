@@ -1,19 +1,15 @@
 {
-	"extends": "@tsconfig/svelte/tsconfig.json",
+	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		"target": "ESNext",
-		"useDefineForClassFields": true,
-		"module": "ESNext",
-		"resolveJsonModule": true,
-		/**
-		 * Type check JS in `.svelte` and `.js` files by default.
-		 * Disable checkJs if you'd like to use dynamic types in JS.
-		 * Note that setting allowJs false does not prevent the use
-		 * of JS in `.svelte` files.
-		 */
 		"allowJs": true,
 		"checkJs": true,
-		"isolatedModules": true
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"moduleResolution": "bundler"
 	},
 	"include": [
 		"src/**/*.ts",
@@ -22,6 +18,5 @@
 		"api/**/*.d.ts",
 		"vite.config.ts",
 		"tailwind.config.ts"
-	],
-	"references": [{ "path": "./tsconfig.node.json" }]
+	]
 }
