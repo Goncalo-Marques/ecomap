@@ -16,6 +16,7 @@ const (
 var (
 	ErrWarehouseNotFound                     = errors.New("warehouse not found")                          // Returned when a warehouse is not found.
 	ErrWarehouseTruckCapacityMinLimit        = errors.New("warehouse truck capacity below minimum limit") // Returned when a warehouse truck capacity is below the minimum limit.
+	ErrWarehouseTruckCapacityMaxLimit        = errors.New("warehouse truck capacity above maximum limit") // Returned when a warehouse truck capacity is above the maximum limit.
 	ErrWarehouseAssociatedWithRouteDeparture = errors.New("warehouse associated with route as departure") // Returned when a warehouse is associated with a route as a departure.
 	ErrWarehouseAssociatedWithRouteArrival   = errors.New("warehouse associated with route as arrival")   // Returned when a warehouse is associated with a route as an arrival.
 )
