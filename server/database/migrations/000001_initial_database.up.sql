@@ -173,7 +173,8 @@ CREATE TABLE warehouses_trucks (
     created_at      timestamp   NOT NULL    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT warehouses_trucks_pkey               PRIMARY KEY (warehouse_id, truck_id),
     CONSTRAINT warehouses_trucks_warehouse_id_fkey  FOREIGN KEY (warehouse_id)              REFERENCES warehouses (id)  ON DELETE CASCADE,
-    CONSTRAINT warehouses_trucks_truck_id_fkey      FOREIGN KEY (truck_id)                  REFERENCES trucks (id)
+    CONSTRAINT warehouses_trucks_truck_id_fkey      FOREIGN KEY (truck_id)                  REFERENCES trucks (id),
+    CONSTRAINT warehouses_trucks_truck_id_key       UNIQUE (truck_id)
 );
 
 -- Routes.
